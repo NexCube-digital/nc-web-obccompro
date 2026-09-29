@@ -59,20 +59,26 @@ function GalleryPage() {
 			<LandingNavbar />
 
 			{/* Hero slider image */}
-			<section className="relative h-[100svh] min-h-[560px] max-h-[820px] overflow-hidden">
+			<section className="relative h-[100svh] min-h-[560px] max-h-none overflow-hidden md:max-h-[820px]">
 				<img
-					src={sliderGalleryImage}
-					alt="Kolase fasilitas dan aktivitas OBC"
-					className="absolute inset-0 h-full w-full object-cover"
-				/>
-				<div className="absolute inset-y-0 left-0 w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.592749)_26.2%,rgba(250,250,242,0.9)_47.02%,rgba(250,250,242,0.6)_82%,rgba(250,250,242,0)_100%)] md:w-[58%]" />
-				<div className="relative flex h-full items-center px-6 py-12 md:-translate-y-8 md:px-10 md:py-16">
+				src={sliderGalleryImage}
+				alt="Kolase fasilitas dan aktivitas OBC"
+				className="absolute inset-0 h-full w-full origin-top scale-[1.15] object-cover object-top md:origin-center md:scale-100 md:object-center"
+			/>
+
+				{/* Overlay MOBILE: gradient vertikal (transparan di atas → krem di bawah) */}
+				<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0)_55%,rgba(250,250,242,0.75)_78%,rgba(250,250,242,0.95)_100%)] md:hidden" />
+
+				{/* Overlay DESKTOP: gradient horizontal (tidak diubah) */}
+				<div className="absolute inset-y-0 left-0 hidden w-[58%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.592749)_26.2%,rgba(250,250,242,0.9)_47.02%,rgba(250,250,242,0.6)_82%,rgba(250,250,242,0)_100%)] md:block" />
+
+				<div className="relative flex h-full items-end px-8 pb-[68px] pt-12 md:-translate-y-8 md:items-center md:px-10 md:py-16">
 					<div className="w-full max-w-[472px] text-black">
 						<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
-						<h1 className="mt-5 font-['Montserrat'] text-[36px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[56px] md:leading-[70px]">
+						<h1 className="mt-5 font-['Montserrat'] text-[24px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[56px] md:leading-[70px]">
 							Cerita di Setiap Sudut OBC
 						</h1>
-						<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[16px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[18px] md:leading-[29.25px]">
+						<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[14px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[18px] md:leading-[29.25px]">
 							Jelajahi berbagai momen, fasilitas, aktivitas, dan pengalaman yang menjadi bagian dari perjalanan OBC.
 						</p>
 					</div>
@@ -81,7 +87,7 @@ function GalleryPage() {
 
 			{/* Filter kategori */}
 			<section className="mx-auto max-w-[1200px] px-5 pt-10 md:px-8">
-				<div className="flex flex-nowrap justify-center gap-2">
+				<div className="flex flex-wrap justify-center gap-x-2 gap-y-3 md:flex-nowrap md:gap-y-0">
 					{CATEGORIES.map((category) => {
 						const isActive = category === activeCategory
 						return (
@@ -89,7 +95,7 @@ function GalleryPage() {
 								key={category}
 								type="button"
 								onClick={() => setActiveCategory(category)}
-								className={`flex h-[33px] w-auto shrink-0 items-center justify-center rounded-[20px] border px-[10px] font-['Montserrat'] text-[18px] font-normal leading-none whitespace-nowrap transition-colors ${
+								className={`flex h-[33px] w-auto shrink-0 items-center justify-center rounded-[20px] border px-[10px] font-['Montserrat'] text-[16px] font-normal leading-none whitespace-nowrap transition-colors md:text-[18px] ${
 									isActive
 										? 'border-black bg-black text-white'
 										: 'border-black bg-white text-black hover:bg-black hover:text-white'
@@ -103,21 +109,19 @@ function GalleryPage() {
 			</section>
 
 			{/* Grid galeri */}
-			<section className="mx-auto max-w-[1200px] px-5 py-10 md:px-8">
+			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
 				<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
 					{visiblePhotos.map((photo) => (
 						<button
 							key={photo.src}
 							type="button"
 							onClick={() => setSelectedGalleryImage(photo.src)}
-							className="group aspect-square overflow-hidden rounded-xl"
+							className="group aspect-square overflow-hidden rounded-[24px] md:rounded-xl"
 							aria-label={`Buka gambar ${photo.alt}`}
 						>
 							<img src={photo.src} alt={photo.alt} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
 						</button>
 					))}
-
-					
 				</div>
 			</section>
 

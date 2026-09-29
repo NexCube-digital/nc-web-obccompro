@@ -84,12 +84,12 @@ function AgribisnisPage() {
 			<LandingNavbar />
 
 			{/* Hero */}
-			<section className="relative min-h-[100svh] overflow-hidden">
-				<img src={heroImage} alt="OBC Agribisnis" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 right-0 w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:w-[58%]" />
-				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
+				<img src={heroImage} alt="OBC Agribisnis" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
+				<div className="absolute inset-y-0 right-0 hidden w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:block md:w-[58%]" />
+				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 
-				<div className="relative flex min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:px-8">
+				<div className="relative hidden min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:flex md:px-8">
 					<div className="w-full max-w-[472px] text-black md:mr-6">
 						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
 							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
@@ -108,39 +108,42 @@ function AgribisnisPage() {
 			</section>
 
 			{/* Tentang + CTA */}
-			<section className="mx-auto max-w-[1200px] gap-10 px-5 py-14 md:flex md:px-8">
-				<div className="max-w-[653px] md:w-2/3">
-					<h2 className="flex h-[30px] items-center font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
-						Tentang OBC Agribisnis
-					</h2>
-					<p className="mt-4 max-w-[653px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0px] text-black">
-						OBC Agribisnis merupakan salah satu unit bisnis OBC Group yang hadir untuk mengembangkan potensi
-						agribisnis sekaligus menghadirkan ruang yang dekat dengan alam. Berada di kawasan yang asri, OBC
-						Agribisnis menjadi bagian dari perjalanan OBC Group dalam menciptakan peluang dan pengalaman baru.
-					</p>
-
-					{/* Tiga kartu info dengan shadow tipis */}
-					<div className="mt-8 grid grid-cols-1 gap-[15px] py-2 sm:grid-cols-3">
+			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
+				<div className="flex max-w-[653px] flex-col md:w-2/3">
+					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+						OBC Agribisnis
+					</h1>
+					<div className="order-2 mb-8 mt-4 grid grid-cols-2 gap-[15px] py-2 sm:grid-cols-3 md:order-3 md:mb-0 md:mt-8">
 						{AREAS.map((area) => (
 							<div
 								key={area.name}
 								className="flex items-center gap-3 rounded-lg bg-white p-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
 							>
 								<img src={agricultureIcon} alt="" className="h-[22px] w-[22px] shrink-0 object-contain" aria-hidden="true" />
-								<div>
+								<div className="min-w-0">
 									<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
 										{area.name}
 									</p>
-									<p className="whitespace-nowrap font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
+									<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
 										Luas area : {area.size} m²
 									</p>
 								</div>
 							</div>
 						))}
 					</div>
+
+					<h2 className="order-3 mt-2 flex items-center font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:mt-0 md:h-[30px] md:text-[25px]">
+						Tentang OBC Agribisnis
+					</h2>
+					<p className="order-4 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
+						OBC Agribisnis merupakan salah satu unit bisnis OBC Group yang hadir untuk mengembangkan potensi
+						agribisnis sekaligus menghadirkan ruang yang dekat dengan alam. Berada di kawasan yang asri, OBC
+						Agribisnis menjadi bagian dari perjalanan OBC Group dalam menciptakan peluang dan pengalaman baru.
+					</p>
 				</div>
 
 				<WhatsAppCard
+					className="hidden md:block"
 					title="Mari Terhubung dan Mengenal OBC Agribisnis Lebih Dekat"
 					description="Ingin tahu lebih banyak tentang OBC Agribisnis atau berkunjung langsung? Hubungi kami untuk mendapatkan informasi selengkapnya."
 					link={WHATSAPP_LINK}
@@ -148,50 +151,51 @@ function AgribisnisPage() {
 			</section>
 
 			{/* Area OBC Agribisnis */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+			<section className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-5 md:px-8">
 				<div className="md:w-2/3">
 					{/* Garis pemisah tipis di atas & bawah section, sesuai desain */}
 					<div className="border-y border-black/[0.06] py-8">
-						{/* Badge + judul menjorok 26px dari tepi, sesuai desain */}
-						<div className="pl-[26px]">
-							<span className="inline-flex h-[22px] w-[210px] items-center gap-1 rounded-full bg-[#F3F3F3] px-4 py-1 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[14px] tracking-[0.55px] text-black shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+						{/* Badge + judul: mobile menjorok 17px dari tepi kartu, sm ke atas 26px */}
+						<div className="pl-[17px] sm:pl-[26px]">
+							<span className="inline-flex h-5 items-center gap-1 rounded-full bg-[#F3F3F3] px-4 py-1 font-['Montserrat'] text-[10px] font-medium uppercase leading-[14px] tracking-[0px] text-black shadow-[0_1px_2px_rgba(0,0,0,0.05)] sm:h-[22px] sm:w-[210px] sm:text-[11px] sm:font-semibold sm:tracking-[0.55px]">
 								<LayoutGrid size={12} className="shrink-0 text-black" />
 								Kawasan & Plot Lahan
 							</span>
-							<h2 className="mt-4 flex h-[30px] w-[260px] items-center font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+							<h2 className="mt-1 flex h-[30px] w-[260px] items-center font-['Montserrat'] text-[20px] font-semibold uppercase leading-[100%] tracking-[0%] text-black sm:mt-4 sm:text-[25px] sm:normal-case">
 								Area OBC Agribisnis
 							</h2>
 						</div>
 
-						<div className="mt-8 flex max-w-[630px] flex-col gap-8 px-4">
+						{/* Mobile: kartu full width tanpa padding tambahan, jarak antar kartu 20px */}
+						<div className="mt-[30px] flex max-w-[630px] flex-col gap-5 px-0 sm:mt-8 sm:gap-8 sm:px-4">
 							{AREAS.map((area) => (
 								<div
 									key={area.name}
-									className="h-[256px] w-full max-w-[598px] rounded-xl border border-[#0000004D] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+									className="h-auto min-h-[256px] w-full max-w-[598px] rounded-xl border border-[#0000004D] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.05)] md:h-[256px]"
 								>
-									<h3 className="flex h-[30px] items-center font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+									<h3 className="flex h-[22px] items-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:h-[30px] sm:text-[25px]">
 										{area.name}
 									</h3>
 
-									<p className="mt-6 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[14px] tracking-[0.55px] text-[#727973]">
+									<p className="mt-7 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[14px] tracking-[0.55px] text-[#727973] sm:mt-6 sm:text-[11px]">
 										Lokasi
 									</p>
-									<p className="mt-1 flex items-center gap-1.5 font-['Montserrat'] text-[15px] font-medium leading-[20.63px] tracking-[0px] text-[#1A1C19]">
+									<p className="mt-2.5 flex items-center gap-1 font-['Montserrat'] text-[13px] font-medium leading-[20.63px] tracking-[0px] text-[#1A1C19] sm:mt-1 sm:gap-1.5 sm:text-[15px]">
 										{/* Pin di desain berwarna hitam solid */}
 										<MapPin
 											size={15}
 											fill="currentColor"
-											className="shrink-0 text-[#1A1C19] [&_circle]:fill-white"
+											className="h-[14px] w-[14px] shrink-0 text-[#1A1C19] sm:h-[15px] sm:w-[15px] [&_circle]:fill-white"
 										/>
 										{area.location}
 									</p>
 
-									<div className="mt-5 flex h-[91px] flex-col justify-center gap-1 rounded-lg bg-[#F3F3F3] p-4">
-										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[14px] tracking-[0.55px] text-black">
+									<div className="mt-5 flex h-[100px] flex-col justify-start gap-3 rounded-lg bg-[#F3F3F3] p-4 sm:h-[91px] sm:justify-center sm:gap-1">
+										<p className="font-['Montserrat'] text-[18px] font-semibold uppercase leading-6 tracking-[0px] text-black sm:text-[11px] sm:leading-[14px] sm:tracking-[0.55px]">
 											Luas Area
 										</p>
-										<p className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
-											{area.size} <span className="text-[24px]">m²</span>
+										<p className="font-['Montserrat'] text-[20px] font-semibold leading-6 tracking-[0%] text-black sm:text-[25px] sm:leading-[100%]">
+											{area.size} <span className="text-[20px] sm:text-[24px]">m²</span>
 										</p>
 									</div>
 								</div>
@@ -213,13 +217,15 @@ function AgribisnisPage() {
 					<div className="mx-auto mt-3 h-[2px] w-[396px] rounded-[2px] bg-[#0000004D]" />
 				</div>
 
-				<div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-					{GALLERY_IMAGES.map((image, index) => (
+				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
+					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
 						<button
 							key={index}
 							type="button"
 							onClick={() => setSelectedGalleryImage(image)}
-							className="group h-[296px] w-[280px] overflow-hidden rounded-xl"
+							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-auto md:h-[296px] md:w-[280px] md:rounded-xl ${
+								index >= 4 ? 'hidden md:block' : ''
+							}`}
 							aria-label={`Buka gambar Momen OBC Agribisnis ${index + 1}`}
 						>
 							<img
@@ -255,13 +261,13 @@ function AgribisnisPage() {
 			)}
 
 			{/* Lokasi */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<h2 className="h-[30px] w-full max-w-[318px] font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
+				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
+					<div className="order-1 md:order-none">
+						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-[30px] md:max-w-[318px] md:text-[25px]">
 							Lokasi OBC Agribisnis
 						</h2>
-						<p className="mt-1 h-[24px] w-full max-w-[845px] font-['Montserrat'] text-[15px] font-normal leading-[24px] tracking-[0.15px] text-black">
+						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-[24px] md:text-[15px]">
 							Jl. Tugulaksana, Lembang, Kabupaten Bandung Barat
 						</p>
 					</div>
@@ -269,14 +275,14 @@ function AgribisnisPage() {
 						href={GOOGLE_MAPS_LINK}
 						target="_blank"
 						rel="noreferrer"
-						className="inline-flex h-[32px] w-[229px] items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1]"
+						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
 					>
-						<ExternalLink className="h-[13.5px] w-[13.5px] text-[#222022]" />
+						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
 						Buka di Google Maps
 					</a>
 				</div>
 
-				<div className="mt-6 h-[360px] overflow-hidden rounded-2xl border border-obc-border md:h-[420px]">
+				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Agribisnis */}
 					<iframe
 						title="Lokasi OBC Agribisnis"
@@ -291,6 +297,15 @@ function AgribisnisPage() {
 			<UnitBisnis items={OTHER_UNITS} />
 
 			<LandingFooter />
+
+			<div className="px-4 pb-8 pt-8 md:hidden">
+				<WhatsAppCard
+					className="!mt-0"
+					title="Mari Terhubung dan Mengenal OBC Agribisnis Lebih Dekat"
+					description="Ingin tahu lebih banyak tentang OBC Agribisnis atau berkunjung langsung? Hubungi kami untuk mendapatkan informasi selengkapnya."
+					link={WHATSAPP_LINK}
+				/>
+			</div>
 		</div>
 	)
 }

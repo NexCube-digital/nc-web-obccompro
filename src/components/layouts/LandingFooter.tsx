@@ -54,31 +54,36 @@ function TikTokLogo({ className = 'h-[14px] w-[14px]' }: { className?: string })
 
 /* Kelas bersama */
 const headingClass =
-	"h-4 w-[169px] font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white"
+	"h-4 w-[169px] font-['Montserrat'] text-[15px] font-bold uppercase leading-4 tracking-[0px] text-white md:text-[14px]"
 const linkClass =
-	"font-['Montserrat'] text-[12px] font-medium leading-4 tracking-[0px] text-white! transition-colors hover:text-[#CDF178]!"
+	"font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white! transition-colors hover:text-[#CDF178]! md:text-[12px]"
 
 function LandingFooter() {
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	return (
-		<footer id="kontak" className="bg-white p-[17px]">
+		<footer id="kontak" className="bg-white p-2 md:p-[17px]">
 			<div
-				className="relative mx-auto min-h-[550px] w-full max-w-[1246px] overflow-hidden rounded-[25px] bg-cover bg-center bg-no-repeat"
+				className="relative mx-auto w-full max-w-[1246px] overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat md:min-h-[550px] md:rounded-[25px]"
 				style={{
 					backgroundColor: 'rgba(1, 38, 3, 0.84)',
 					backgroundImage: `linear-gradient(180deg, rgba(1, 38, 3, 0.84) 0%, rgba(1, 38, 3, 0.84) 100%), url(${lapangF1Image})`,
 				}}
 			>
 				{/* ===== Konten utama ===== */}
-				<div className="mx-auto max-w-[1246px] px-6 pt-10 md:px-[89px] md:pt-[60px]">
-					<div className="grid grid-cols-1 gap-10 md:grid-cols-[328fr_243fr_223fr_270fr] md:gap-0">
+				<div className="mx-auto max-w-[1246px] px-4 pt-5 md:px-[89px] md:pt-[60px]">
+					{/* Mobile: logo → hubungi kami → (perusahaan | unit bisnis). Desktop: 4 kolom */}
+					<div className="grid grid-cols-[236fr_143fr] gap-y-8 md:grid-cols-[328fr_243fr_223fr_270fr] md:gap-0">
 						{/* Logo + sosial media */}
-						<div className="box-border h-[167px] w-[291px] min-w-[252px] pr-[43px]">
-							<Link to="/" aria-label="OBC beranda" className="inline-flex h-[129px] w-[258px] gap-[10px] pt-[10px] pr-[10px] pl-[10px]">
+						<div className="order-1 col-span-2 box-border flex w-full flex-col items-center md:order-none md:col-span-1 md:block md:h-[167px] md:w-[291px] md:min-w-[252px] md:pr-[43px]">
+							<Link
+								to="/"
+								aria-label="OBC beranda"
+								className="inline-flex h-[122px] w-[320px] max-w-full gap-[10px] p-[10px] md:h-[129px] md:w-[258px]"
+							>
 								<img src={logo} alt="OBC" className="h-full w-full object-contain" />
 							</Link>
-							<div className="box-border flex h-[32px] w-[248px] items-end justify-center gap-[30px] px-[15px] pt-[10px]">
+							<div className="mt-4 box-border flex h-[32px] items-center justify-center gap-8 md:mt-0 md:w-[248px] md:items-end md:gap-[30px] md:px-[15px] md:pt-[10px]">
 								<a
 									href={CONTACT.whatsapp}
 									target="_blank"
@@ -110,9 +115,9 @@ function LandingFooter() {
 						</div>
 
 						{/* Perusahaan */}
-						<div>
+						<div className="order-3 px-2 md:order-none md:px-0">
 							<h3 className={headingClass}>Perusahaan</h3>
-							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[12px] font-medium leading-4 tracking-[0px] text-white">
+							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:text-[12px]">
 								{NAVIGASI_LINKS.map((link) => (
 									<li key={link.label}>
 										{link.to.startsWith('#') ? (
@@ -130,9 +135,9 @@ function LandingFooter() {
 						</div>
 
 						{/* Unit bisnis */}
-						<div>
+						<div className="order-4 px-2 md:order-none md:px-0">
 							<h3 className={headingClass}>Unit Bisnis</h3>
-							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[12px] font-medium leading-4 tracking-[0px] text-white">
+							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:text-[12px]">
 								{UNIT_LINKS.map((unit) => (
 									<li key={unit} className={linkClass}>
 										{unit}
@@ -142,13 +147,13 @@ function LandingFooter() {
 						</div>
 
 						{/* Hubungi kami */}
-						<div>
+						<div className="order-2 col-span-2 md:order-none md:col-span-1">
 							<h3 className={`${headingClass} flex items-center gap-1`}>
 								<Headphones size={14} />
 								Hubungi Kami
 							</h3>
-							<ul className="mt-[15px] flex flex-col gap-[14px] font-['Montserrat'] text-[12px] font-medium leading-4 tracking-[0px] text-white">
-								<li className="flex items-center gap-2 text-white">
+							<ul className="mt-[15px] flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-5 tracking-[0px] text-white md:text-[12px] md:leading-4">
+								<li className="flex items-center gap-3 text-[15px] text-white md:gap-2 md:text-[12px]">
 									<Mail size={15} className="shrink-0" />
 									<a
 										href={`mailto:${CONTACT.email}`}
@@ -157,8 +162,8 @@ function LandingFooter() {
 										{CONTACT.email}
 									</a>
 								</li>
-								<li className="flex items-start gap-2 text-white">
-									<MapPin size={15} className="mt-[3px] shrink-0" />
+								<li className="flex items-start gap-2.5 text-white md:gap-2">
+									<MapPin size={15} className="mt-[3px] shrink-0 md:mt-[3px]" />
 									<span className="text-justify">
 										{CONTACT.address}
 									</span>
@@ -169,10 +174,10 @@ function LandingFooter() {
 				</div>
 
 				{/* ===== Teks besar "OBC GROUP" (memudar ke bawah) ===== */}
-				<div className="mx-auto mt-10 flex h-[116px] w-full max-w-[1146px] justify-center overflow-hidden md:mt-[44px]">
+				<div className="mx-auto mt-10 flex h-[80px] w-full max-w-[1146px] justify-center overflow-hidden md:mt-[44px] md:h-[116px]">
 					<span
 						aria-hidden="true"
-						className="mt-[14.33px] h-[83px] w-[678px] max-w-full select-none whitespace-nowrap bg-clip-text font-['Montserrat'] text-[56px] font-black leading-[83px] text-transparent md:text-[100px]"
+						className="mt-[6px] h-[65px] w-[678px] max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[44px] font-black leading-[65px] text-transparent md:mt-[14.33px] md:h-[83px] md:text-[100px] md:leading-[83px]"
 						style={{
 							backgroundImage:
 								'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
@@ -182,18 +187,18 @@ function LandingFooter() {
 					</span>
 				</div>
 
-				{/* Tombol kembali ke atas */}
+				{/* Tombol kembali ke atas: tampil juga di mobile */}
 				<button
 					type="button"
 					onClick={scrollToTop}
 					aria-label="Kembali ke atas"
-					className="absolute right-[53px] top-[415px] hidden h-[47px] w-[36px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] transition-transform hover:-translate-y-1 md:grid"
+					className="absolute bottom-[124px] right-[72px] grid h-[52px] w-[48px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] transition-transform hover:-translate-y-1 md:bottom-auto md:right-[53px] md:top-[415px] md:h-[47px] md:w-[36px]"
 				>
-					<ArrowUp width={15} height={20} />
+					<ArrowUp className="h-[26px] w-[20px] md:h-5 md:w-[15px]" />
 				</button>
 
 				{/* ===== Bar bawah ===== */}
-				<div className="box-border mx-auto flex min-h-[70px] w-full max-w-[1440px] flex-col items-center gap-[5px] px-6 py-5 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:flex-row md:justify-between md:text-left">
+				<div className="box-border mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[5px] px-6 pb-[10px] pt-0 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:py-5 md:text-left">
 					<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
 
 					<p>
@@ -208,7 +213,8 @@ function LandingFooter() {
 						</a>
 					</p>
 
-					<div className="flex items-center gap-6">
+					{/* Bahasa + ikon sosial hanya di desktop; di mobile tidak ada di desain */}
+					<div className="hidden items-center gap-6 md:flex">
 						<span className="flex items-center gap-2">
 							<Globe width={15.5} height={15.5} className="text-white" />
 							Bahasa Indonesia (ID)

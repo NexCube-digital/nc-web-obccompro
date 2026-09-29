@@ -111,14 +111,12 @@ function VillaPage() {
 			<LandingNavbar />
 
 			{/* Hero */}
-			<section className="relative min-h-[100svh] overflow-hidden">
-				<img src={heroImage} alt="OBC Villa" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 left-0 w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.94)_26%,rgba(250,250,242,0.7)_52%,rgba(250,250,242,0.2)_72%,rgba(250,250,242,0)_100%)] md:w-[58%]" />
-				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
+				<img src={heroImage} alt="OBC Villa" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
+				<div className="absolute inset-y-0 left-0 hidden w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.94)_26%,rgba(250,250,242,0.7)_52%,rgba(250,250,242,0.2)_72%,rgba(250,250,242,0)_100%)] md:block md:w-[58%]" />
+				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 
-				
-
-				<div className="relative flex min-h-[100svh] items-center justify-start px-4 py-24 sm:px-6 md:px-8">
+				<div className="relative hidden min-h-[100svh] items-center justify-start px-4 py-24 sm:px-6 md:flex md:px-8">
 					<div className="w-full max-w-[472px] text-black md:ml-6">
 						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
 							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
@@ -127,12 +125,12 @@ function VillaPage() {
 						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
 							OBC Villa
 						</h1>
-						<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black">
+						<p className="mt-4 hidden max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black md:block">
 							Nikmati kenyamanan dan ketenangan dalam pengalaman menginap di OBC Villa, dengan suasana asri yang
 							memberikan ruang untuk beristirahat, menikmati waktu bersama, dan menciptakan momen berkesan di
 							Ciumbuleuit, Bandung.
 						</p>
-						<p className="mt-4 font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black">
+						<p className="mt-4 hidden font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black md:block">
 							{QUICK_FACTS.join(' · ')}
 						</p>
 					</div>
@@ -140,12 +138,40 @@ function VillaPage() {
 			</section>
 
 			{/* Tentang + CTA */}
-			<section className="mx-auto max-w-[1200px] gap-10 px-5 py-14 md:flex md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
+				<div className="flex flex-col md:w-2/3">
+					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+						OBC Villa
+					</h1>
+
+					<div className="order-2 mb-8 mt-4 flex flex-nowrap items-center justify-between gap-2 md:order-4 md:mb-0 md:mt-8 md:flex-wrap md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+						<div className="flex items-center justify-center gap-2 text-left md:text-center">
+							<img src={roomIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
+							<div>
+								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
+								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">3 Kamar Tidur</p>
+							</div>
+						</div>
+						<div className="flex items-center justify-center gap-2 text-left md:text-center">
+							<LogIn size={18} className="shrink-0 text-[#222022]" />
+							<div>
+								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
+								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
+							</div>
+						</div>
+						<div className="flex items-center justify-center gap-2 text-left md:text-center">
+							<LogOut size={18} className="shrink-0 text-[#222022]" />
+							<div>
+								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
+								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
+							</div>
+						</div>
+					</div>
+
+					<h2 className="order-5 mt-8 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:mt-0 md:text-[25px]">
 						Tentang OBC Villa
 					</h2>
-					<p className="mt-4 max-w-[653px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0px] text-black">
+					<p className="order-6 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
 						Nikmati waktu bersama keluarga atau teman di OBC Villa, dengan ruang yang dirancang untuk beristirahat
 						sekaligus berkumpul dengan nyaman. Tersedia tiga kamar tidur, tiga kamar mandi, ruang keluarga, dan dua
 						ruang santai, serta taman dan balkon untuk menikmati waktu bersama. OBC Villa juga dilengkapi kitchen
@@ -153,44 +179,10 @@ function VillaPage() {
 						selama menginap.
 					</p>
 
-					<div className="mt-8 flex flex-wrap items-center justify-center gap-12 border-t border-obc-border pt-6">
-						<div className="flex items-center justify-center gap-2 text-center">
-							<img src={roomIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
-							<div>
-								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-									Kapasitas
-								</p>
-								<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-									3 Kamar Tidur
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-center">
-							<LogIn size={18} className="text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-									Check-in
-								</p>
-								<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-									14.00 WIB
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-center">
-							<LogOut size={18} className="text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-									Check-out
-								</p>
-								<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-									12.00 WIB
-								</p>
-							</div>
-						</div>
-					</div>
 				</div>
 
 				<WhatsAppCard
+					className="hidden md:block"
 					title="Tertarik menginap di OBC Villa?"
 					description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Villa"
 					link={WHATSAPP_LINK}
@@ -198,17 +190,22 @@ function VillaPage() {
 			</section>
 
 			{/* Fasilitas */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
+			<section className="mx-auto max-w-[1200px] px-[30px] pb-14 md:px-8">
 				<div className="md:w-2/3">
 					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[1px] text-[#222022]">
 						Fasilitas yang Ditawarkan
 					</h2>
-					<div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 md:mt-6 md:gap-x-6 md:gap-y-4 lg:grid-cols-3">
 						{FACILITIES.map((facility) => {
 							return (
 								<div key={facility.label} className="flex items-center gap-3">
-									<img src={facility.icon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
-									<span className="font-['Montserrat'] text-[14px] font-medium leading-[19.6px] tracking-[0.56px] text-[#222022]">
+									<img
+										src={facility.icon}
+										alt=""
+										className="h-6 w-6 shrink-0 object-contain md:h-5 md:w-5"
+										aria-hidden="true"
+									/>
+									<span className="font-['Montserrat'] text-[13px] font-medium leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">
 										{facility.label}
 									</span>
 								</div>
@@ -219,24 +216,26 @@ function VillaPage() {
 			</section>
 
 			{/* Galeri */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
 				<div className="text-center">
-					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
+					<span className="font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-[1.4px] text-black md:uppercase">
 						Galeri
 					</span>
 					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
 						Momen dari OBC Villa
 					</h2>
-					<div className="mx-auto mt-3 h-[2px] w-[396px] rounded-[2px] bg-[#0000004D]" />
+					<div className="mx-auto mt-3 hidden h-[2px] w-[396px] rounded-[2px] bg-[#0000004D] md:block" />
 				</div>
 
-				<div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-					{GALLERY_IMAGES.map((image, index) => (
+				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
+					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
 						<button
 							key={index}
 							type="button"
 							onClick={() => setSelectedGalleryImage(image)}
-							className="group h-[296px] w-[280px] overflow-hidden rounded-xl"
+							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-auto md:h-[296px] md:w-[280px] md:rounded-xl ${
+								index >= 4 ? 'hidden md:block' : ''
+							}`}
 							aria-label={`Buka gambar Momen OBC Villa ${index + 1}`}
 						>
 							<img
@@ -276,13 +275,13 @@ function VillaPage() {
 			)}
 
 			{/* Lokasi */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<h2 className="h-[30px] w-full max-w-[318px] font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
+				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
+					<div className="order-1 md:order-none">
+						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-[30px] md:max-w-[318px] md:text-[25px]">
 							Lokasi OBC Villa
 						</h2>
-						<p className="mt-1 h-[24px] w-full max-w-[845px] font-['Montserrat'] text-[15px] font-normal leading-[24px] tracking-[0.15px] text-black">
+						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-[24px] md:text-[15px]">
 							Jl. Rancabentang 1 No.10, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
 						</p>
 					</div>
@@ -290,14 +289,14 @@ function VillaPage() {
 						href={GOOGLE_MAPS_LINK}
 						target="_blank"
 						rel="noreferrer"
-						className="inline-flex h-[32px] w-[229px] items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1]"
+						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
 					>
-						<ExternalLink className="h-[13.5px] w-[13.5px] text-[#222022]" />
+						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
 						Buka di Google Maps
 					</a>
 				</div>
 
-				<div className="mt-6 h-[360px] overflow-hidden rounded-2xl border border-obc-border md:h-[420px]">
+				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
 					<iframe
 						title="Lokasi OBC Villa"
 						src="https://www.google.com/maps?q=Jl.+Rancabentang+1+No.10,+Kec.+Cidadap,+Kota+Bandung&output=embed"
@@ -311,6 +310,15 @@ function VillaPage() {
 			<UnitBisnis items={OTHER_UNITS} />
 
 			<LandingFooter />
+
+			<div className="px-4 pb-8 pt-8 md:hidden">
+				<WhatsAppCard
+					className="!mt-0"
+					title="Tertarik menginap di OBC Villa?"
+					description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Villa"
+					link={WHATSAPP_LINK}
+				/>
+			</div>
 		</div>
 	)
 }

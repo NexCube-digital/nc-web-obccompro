@@ -235,12 +235,12 @@ function LaundryPage() {
 			<LandingNavbar />
 
 			{/* Hero */}
-			<section className="relative min-h-[100svh] overflow-hidden">
-				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 right-0 w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:w-[58%]" />
-				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
+				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
+				<div className="absolute inset-y-0 right-0 hidden w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:block md:w-[58%]" />
+				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 
-				<div className="relative flex min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:px-8">
+				<div className="relative hidden min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:flex md:px-8">
 					<div className="w-full max-w-[472px] text-black md:mr-6">
 						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
 							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
@@ -259,18 +259,21 @@ function LaundryPage() {
 			</section>
 
 			{/* Tentang + CTA */}
-			<section className="mx-auto max-w-[1200px] gap-10 px-5 py-14 md:flex md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-heading text-[25px] font-semibold text-[#000000]">Tentang OBC Laundry</h2>
-					<p className="mt-4 max-w-2xl text-justify align-middle font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0px] text-black">
+			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
+				<div className="flex flex-col md:w-2/3">
+					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+						OBC Laundry
+					</h1>
+					<h2 className="order-3 mt-8 font-heading text-[18px] font-semibold text-[#000000] md:order-1 md:mt-0 md:text-[25px]">Tentang OBC Laundry</h2>
+					<p className="order-4 mt-3 max-w-2xl text-justify align-middle font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
 						OBC Laundry merupakan salah satu unit bisnis OBC Group yang menyediakan berbagai layanan perawatan
 						pakaian dan perlengkapan, mulai dari cuci satu, cuci setrika, laundry satuan, hingga perawatan sepatu.
 						Pilihan layanan dan durasi dibuat untuk menyesuaikan kebutuhan, baik untuk pakaian sehari-hari maupun
 						barang yang membutuhkan penanganan khusus.
 					</p>
 
-					<div className="mt-8 flex flex-wrap items-center justify-center gap-12 border-t border-obc-border pt-6">
-						<div className="flex items-center justify-center gap-2 text-center">
+					<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+						<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
 							<img src={serviceTypeIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 							<div>
 								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
@@ -281,7 +284,7 @@ function LaundryPage() {
 								</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-center gap-2 text-center">
+						<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
 							<img src={clockIcon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" aria-hidden="true" />
 							<div>
 								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
@@ -296,6 +299,7 @@ function LaundryPage() {
 				</div>
 
 				<WhatsAppCard
+					className="hidden md:block"
 					title="Laundry Beres, Aktivitas Jalan Terus"
 					description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
 					link={WHATSAPP_LINK}
@@ -303,41 +307,43 @@ function LaundryPage() {
 			</section>
 
 			{/* Layanan OBC Laundry */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
+			<section className="mx-auto max-w-[1200px] px-4 pb-14 md:px-8">
 				<div className="md:w-2/3">
-					<div className="flex items-start justify-between gap-3">
-						<h2 className="font-heading text-2xl font-semibold text-[25px] text-[#000000]">Layanan OBC Laundry</h2>
+					<div className="flex flex-col items-end gap-1 px-4 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:px-0">
+						<h2 className="self-start font-heading text-[20px] font-semibold text-[#000000] sm:text-[25px]">
+							Layanan OBC Laundry
+						</h2>
 						<a
 							href="#price-list"
-							className="mt-7 inline-flex items-center gap-1 font-heading text-[12px] font-semibold text-obc-green hover:text-obc-green-hover"
+							className="mt-0 inline-flex items-center gap-1 font-heading text-[12px] font-semibold text-obc-green hover:text-obc-green-hover sm:mt-7"
 						>
 							Lihat  Price List Lengkap
 							<ArrowRight size={14} />
 						</a>
 					</div>
 
-					<div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+					<div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 sm:gap-4">
 						{LAUNDRY_SERVICES.map((service) => {
 							return (
 								<div
 									key={service.title}
-									className="rounded-2xl border border-obc-border bg-obc-white p-5 shadow-[0_4px_16px_rgba(52,49,51,0.05)]"
+									className="rounded-2xl border border-obc-border bg-obc-white p-3 shadow-[0_4px_16px_rgba(52,49,51,0.05)] sm:p-5"
 								>
 									<div className="flex items-start justify-between">
-										<span className="inline-flex items-center rounded-[2px] font-semibold bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.65px] text-black">
+										<span className="inline-flex items-center rounded-[2px] font-semibold bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]">
 											{service.badge}
 										</span>
 										<img src={service.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
 									</div>
-									<h3 className="mt-4 font-heading text-lg font-semibold text-obc-charcoal">{service.title}</h3>
+									<h3 className="mt-4 font-heading text-base font-semibold text-obc-charcoal sm:text-lg">{service.title}</h3>
 									<p className="mt-4 font-body text-[11px] font-bold uppercase tracking-[0.08em] text-[#000000E5]">
 										Pilihan Durasi:
 									</p>
-									<div className="mt-2 flex flex-wrap gap-2">
+									<div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
 										{service.durations.map((duration) => (
 											<span
 												key={duration}
-												className="inline-flex items-center font-medium rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.65px] text-black"
+												className="inline-flex items-center font-medium rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]"
 											>
 												{duration}
 											</span>
@@ -351,41 +357,58 @@ function LaundryPage() {
 			</section>
 
 			{/* Price List OBC Laundry */}
-			<section id="price-list" className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
+			<section id="price-list" className="mx-auto max-w-[1200px] px-6 pb-14 md:px-8">
 				<div className="md:w-2/3">
-					<h2 className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+					<h2 className="text-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:text-left sm:text-[25px]">
 						Price List OBC Laundry
 					</h2>
-					<p className="mt-1 font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.16px] text-[#615D5F]">
+					<p className="mx-auto mt-2 max-w-[300px] text-center font-['Montserrat'] text-[13px] font-normal leading-[20px] tracking-[0.16px] text-[#615D5F] sm:mx-0 sm:mt-1 sm:max-w-none sm:text-left sm:text-[16px] sm:leading-[26px]">
 						Pilih layanan dan durasi yang sesuai dengan kebutuhanmu.
 					</p>
 
-					<div className="mt-6 grid grid-cols-1 gap-1 md:grid-cols-3">
+					<div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3">
 						{PRICE_LIST.map((price) => (
 							<div
 								key={price.title}
-								className="flex h-[303px] w-[240px] flex-col gap-4 rounded-[8px] border border-[#00000033] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+										className={`flex h-auto min-w-0 w-full flex-col gap-4 rounded-[8px] border border-[#00000033] bg-white p-2.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:min-h-[303px] sm:p-5 ${
+											price.favorit
+												? 'order-first col-span-2 md:order-none md:col-span-1'
+												: 'order-2 md:order-none'
+								}`}
 							>
-								<div className={`flex items-center gap-2 ${price.favorit ? '' : 'justify-center'}`}>
-									<span className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.65px] text-black">
+								<div
+									className={`flex items-center gap-2 ${
+										price.favorit ? 'relative justify-center sm:static sm:justify-start' : 'justify-center'
+									}`}
+								>
+									<span
+										className={`inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px] ${
+											price.favorit ? '' : 'w-full justify-center sm:w-auto'
+										}`}
+									>
 										{price.badge}
 									</span>
 									{price.favorit && (
-										<span className="inline-flex items-center rounded-[2px] bg-[#004000] px-2 py-[2px] font-['Montserrat'] text-[11px] font-semibold leading-[14px] tracking-[1.1px] text-white">
+										<span className="absolute left-2 inline-flex items-center rounded-[2px] bg-[#004000] px-2 py-[2px] font-['Montserrat'] text-[11px] font-semibold leading-[14px] tracking-[1.1px] text-white sm:static">
 											Favorit
 										</span>
 									)}
 								</div>
-								<h3 className="text-center whitespace-nowrap font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[0px] text-black">
+								<h3 className="text-center whitespace-nowrap font-['Montserrat'] text-[clamp(13px,3.7vw,16px)] font-semibold leading-[28px] tracking-[0px] text-black sm:text-[20px]">
 									{price.title}
 								</h3>
-								<div className=" flex flex-col divide-y divide-obc-border">
+								<div className="flex flex-col divide-y divide-obc-border">
 									{price.rows.map((row) => (
-										<div key={row.duration} className="flex items-center justify-between py-2">
-											<span className="font-['Montserrat'] text-[14px] font-normal leading-[22px] tracking-[0.14px] text-black">
+										<div
+											key={row.duration}
+											className={`flex items-center justify-between gap-2 py-3 sm:py-2 ${
+												price.favorit ? 'px-[22%] sm:px-0' : ''
+											}`}
+										>
+											<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-normal leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
 												{row.duration}
 											</span>
-											<span className="font-['Montserrat'] text-[14px] font-semibold leading-[22px] tracking-[0.14px] text-black">
+											<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-semibold leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
 												{row.price}
 											</span>
 										</div>
@@ -401,45 +424,50 @@ function LaundryPage() {
 			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
 				<div className="md:w-2/3">
 					{/* Card pembungkus judul */}
-						<h2 className="flex items-center gap-2 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
-							<img src={washAndIronServiceIcon} alt="" className="h-6 w-6 shrink-0 object-contain" aria-hidden="true" />
-							Layanan Cuci Satuan
-						</h2>
-						<div className="mt-6 overflow-x-auto">
-							<table className="w-full min-w-[480px] table-fixed border-collapse">
-								<thead>
-									<tr className="border-b border-black/[0.06] text-left">
-										<th className="w-[32%] px-4 py-4 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.2px] text-black">
-											Item
-										</th>
-										<th className="w-[30%] px-4 py-4 text-center font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.2px] text-black">
-											Durasi Pengerjaan
-										</th>
-										<th className="w-[38%] px-4 py-4 text-center font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.2px] text-black">
-											Harga Satuan
-										</th>
+					<h2 className="flex items-center gap-1.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:gap-2 sm:text-[25px]">
+						<img
+							src={washAndIronServiceIcon}
+							alt=""
+							className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
+							aria-hidden="true"
+						/>
+						Layanan Cuci Satuan
+					</h2>
+					<div className="mt-6 overflow-x-auto">
+						<table className="w-full table-fixed border-collapse sm:min-w-[480px]">
+							<thead>
+								<tr className="border-b border-black/[0.06] text-left">
+									<th className="w-[34%] py-4 pl-4 pr-1 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[32%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
+										Item
+									</th>
+									<th className="w-[24%] px-0 py-4 text-center font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[30%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
+										Durasi Pengerjaan
+									</th>
+									<th className="w-[42%] px-2 py-4 text-left font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[38%] sm:px-4 sm:text-center sm:text-[12px] sm:tracking-[1.2px]">
+										Harga Satuan
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{SATUAN_ITEMS.map((row) => (
+									<tr key={row.item} className="border-b border-black/[0.06] last:border-b-0">
+										<td className="py-[15px] pl-4 pr-1 font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-medium leading-[20px] tracking-[0.56px] text-[#222022] sm:px-4 sm:text-[14px]">
+											{row.item}
+										</td>
+										<td className="px-1 py-[15px] text-center sm:px-4">
+											{/* Badge durasi abu-abu */}
+											<span className="inline-flex items-center whitespace-nowrap rounded-[4px] bg-[#F2F2F2] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-[#222022] sm:tracking-[1.1px]">
+												{row.duration}
+											</span>
+										</td>
+										<td className="px-4 py-[15px] font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-semibold leading-[20px] tracking-[0.28px] text-black sm:text-[14px]">
+											{row.price}
+										</td>
 									</tr>
-								</thead>
-								<tbody>
-									{SATUAN_ITEMS.map((row) => (
-										<tr key={row.item} className="border-b border-black/[0.06] last:border-b-0">
-											<td className="px-4 py-[15px] font-['Montserrat'] text-[14px] font-medium leading-[20px] tracking-[0.56px] text-[#222022]">
-												{row.item}
-											</td>
-											<td className="px-4 py-[15px] text-center">
-												{/* Badge durasi abu-abu */}
-												<span className="inline-flex items-center rounded-[4px] bg-[#F2F2F2] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.1px] text-[#222022]">
-													{row.duration}
-												</span>
-											</td>
-											<td className="px-4 py-[15px] font-['Montserrat'] text-[14px] font-semibold leading-[20px] tracking-[0.28px] text-black">
-												{row.price}
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
+								))}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</section>
 
@@ -447,12 +475,12 @@ function LaundryPage() {
 			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
 				<div className="md:w-2/3">
 					{/* Judul + garis tipis di bawahnya */}
-					<h2 className="border-b border-black/[0.06] pb-3 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+					<h2 className="border-b border-black/[0.06] px-2 pb-3 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:px-0 sm:text-[25px]">
 						Price List Laundry Sepatu
 					</h2>
 
 					{/* Label & chip bagian sepatu, rata kanan */}
-					<div className="mt-4 flex flex-col items-end gap-2">
+					<div className="mt-4 flex flex-col items-end gap-2 px-2 sm:px-0">
 						<span className="font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black">
 							Detail Treatment
 						</span>
@@ -460,7 +488,7 @@ function LaundryPage() {
 							{['Upper', 'Insole', 'Midsole', 'Outsole'].map((part) => (
 								<span
 									key={part}
-									className="inline-flex items-center rounded-full border border-black/10 bg-white px-4 py-1 font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.1px] text-black"
+									className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:px-4 sm:tracking-[1.1px]"
 								>
 									{part}
 								</span>
@@ -468,12 +496,12 @@ function LaundryPage() {
 						</div>
 					</div>
 
-					<div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-[50px]">
+					<div className="mt-5 grid grid-cols-2 gap-2.5 px-2 sm:mt-6 sm:gap-[50px] sm:px-0">
 						{SHOE_TREATMENTS.map((treatment) => {
 							return (
 								<div
 									key={treatment.number}
-									className={`flex h-full flex-col rounded-lg border border-[#D5E6CF] bg-white p-6 ${
+									className={`flex h-full min-w-0 flex-col rounded-lg border border-[#D5E6CF] bg-white p-2.5 sm:p-6 ${
 										treatment.favorit ? 'shadow-[0_2px_6px_rgba(0,0,0,0.15)]' : ''
 									}`}
 								>
@@ -493,24 +521,27 @@ function LaundryPage() {
 										)}
 									</div>
 
-									<h3 className="mt-5 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[0px] text-black">
+									<h3 className="mt-3.5 font-['Montserrat'] text-base font-semibold leading-6 tracking-[0px] text-black sm:mt-5 sm:text-[20px] sm:leading-[28px]">
 										{treatment.title}
 									</h3>
-									<p className="mt-1 font-['Montserrat'] text-[12px] font-bold uppercase leading-[16px] tracking-[0.6px] text-black">
+									<p className="mt-0.5 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15px] tracking-[0.5px] text-black sm:mt-1 sm:text-[12px] sm:leading-[16px] sm:tracking-[0.6px]">
 										{treatment.price}
 									</p>
-									<p className="mt-3 text-justify font-['Montserrat'] text-[14px] font-normal leading-[22px] tracking-[0.28px] text-[#41493D]">
+									<p className="mt-1.5 text-justify font-['Montserrat'] text-[12px] font-normal leading-[18px] tracking-[0.1px] text-[#41493D] sm:mt-3 sm:text-[14px] sm:leading-[22px] sm:tracking-[0.28px]">
 										{treatment.description}
 									</p>
 
 									{/* Garis pemisah + tag, selalu menempel di bawah card */}
-									<div className="mt-auto pt-5">
-										<div className="border-t border-black/[0.06] pt-4">
-											<div className="flex flex-wrap gap-2">
+									<div className="mt-auto pt-1 sm:pt-5">
+										<div className="border-t border-black/[0.06] pt-2 sm:pt-4">
+											<p className="mb-1 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black sm:hidden">
+												Fokus Treatment:
+											</p>
+											<div className="flex flex-wrap gap-1.5 sm:gap-2">
 												{treatment.tags.map((tag) => (
 													<span
 														key={tag}
-														className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1.1px] text-black"
+														className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.1px]"
 													>
 														{tag}
 													</span>
@@ -528,19 +559,19 @@ function LaundryPage() {
 			{/* Aset & Alat */}
 			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
 				<div className="w-full md:w-[709px]">
-					<h2 className="h-[30px] w-full max-w-[610px] font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+					<h2 className="h-[30px] w-full max-w-[610px] pl-5 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black md:pl-0">
 						Aset & Alat
 					</h2>
 					<div className="mt-6 flex w-full flex-wrap gap-4 md:h-[77px] md:flex-nowrap">
 						{ASSET_STATS.map((stat) => (
 							<div
 								key={stat.label}
-								className="flex h-[77px] w-[129px] shrink-0 flex-col items-center justify-center gap-[11px] rounded-[8px] border border-[#EEEEE799] bg-[#F3F3F3] px-[5px] py-[10px] text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+								className="flex h-[77px] flex-1 flex-col items-center justify-center gap-[11px] rounded-[8px] border border-[#EEEEE799] bg-[#F3F3F3] px-[5px] py-[10px] text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] md:w-[129px] md:flex-none md:shrink-0"
 							>
 								<p className="font-['Montserrat'] text-[25px] font-medium leading-[100%] tracking-[0%] text-black">
 									{stat.value}
 								</p>
-								<p className="w-[117px] whitespace-nowrap font-['Montserrat'] text-[11px] font-medium uppercase leading-[14px] tracking-[0.55px] text-[#303030]">
+								<p className="w-auto whitespace-nowrap font-['Montserrat'] text-[11px] font-medium uppercase leading-[14px] tracking-[0.55px] text-[#303030] md:w-[117px]">
 									{stat.label}
 								</p>
 							</div>
@@ -555,11 +586,16 @@ function LaundryPage() {
 					<h2 className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
 						Fasilitas
 					</h2>
-					<div className="mt-6 flex flex-wrap gap-x-10 gap-y-4">
+					<div className="mt-6 flex flex-wrap gap-x-9 gap-y-[26px] px-2 sm:gap-x-10 sm:gap-y-4 sm:px-0">
 						{FACILITIES.map((facility) => {
 							return (
 								<div key={facility.label} className="flex items-center gap-3">
-									<img src={facility.icon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
+									<img
+										src={facility.icon}
+										alt=""
+										className="h-6 w-6 shrink-0 object-contain sm:h-5 sm:w-5"
+										aria-hidden="true"
+									/>
 									<span className="font-['Montserrat'] text-[16px] font-semibold leading-[24px] tracking-[0.16px] text-black">
 										{facility.label}
 									</span>
@@ -582,13 +618,15 @@ function LaundryPage() {
 					<div className="mx-auto mt-3 h-[2px] w-[396px] rounded-[2px] bg-[#0000004D]" />
 				</div>
 
-				<div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-					{GALLERY_IMAGES.map((image, index) => (
+				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
+					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
 						<button
 							key={index}
 							type="button"
 							onClick={() => setSelectedGalleryImage(image)}
-							className="group h-[296px] w-[280px] overflow-hidden rounded-xl"
+							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-auto md:h-[296px] md:w-[280px] md:rounded-xl ${
+								index >= 4 ? 'hidden md:block' : ''
+							}`}
 							aria-label={`Buka gambar Momen OBC Laundry ${index + 1}`}
 						>
 							<img
@@ -624,13 +662,13 @@ function LaundryPage() {
 			)}
 
 			{/* Lokasi — tetap full width */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<h2 className="h-[30px] w-full max-w-[318px] font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
+				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
+					<div className="order-1 md:order-none">
+						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-[30px] md:max-w-[318px] md:text-[25px]">
 							Lokasi OBC Laundry
 						</h2>
-						<p className="mt-1 h-[24px] w-full max-w-[845px] font-['Montserrat'] text-[15px] font-normal leading-[24px] tracking-[0.15px] text-black">
+						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-[24px] md:text-[15px]">
 							Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
 						</p>
 					</div>
@@ -638,14 +676,14 @@ function LaundryPage() {
 						href={GOOGLE_MAPS_LINK}
 						target="_blank"
 						rel="noreferrer"
-						className="inline-flex h-[32px] w-[229px] items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1]"
+						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
 					>
-						<ExternalLink className="h-[13.5px] w-[13.5px] text-[#222022]" />
+						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
 						Buka di Google Maps
 					</a>
 				</div>
 
-				<div className="mt-6 h-[360px] overflow-hidden rounded-2xl border border-obc-border md:h-[420px]">
+				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Laundry */}
 					<iframe
 						title="Lokasi OBC Laundry"
@@ -661,6 +699,15 @@ function LaundryPage() {
 			<UnitBisnis items={OTHER_UNITS} title="Jelajahi Unit Bisnis OBC Group Lainnya" />
 
 			<LandingFooter />
+
+			<div className="px-4 pb-8 pt-8 md:hidden">
+				<WhatsAppCard
+					className="!mt-0"
+					title="Laundry Beres, Aktivitas Jalan Terus"
+					description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
+					link={WHATSAPP_LINK}
+				/>
+			</div>
 		</div>
 	)
 }

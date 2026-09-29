@@ -187,36 +187,40 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 	const columns = [blok.tenants.slice(0, half), blok.tenants.slice(half)]
 
 	return (
-		// Di desain, garis pemisah baru muncul mulai sebelum Blok D (index >= 2)
-		<div className={`py-6 ${index >= 2 ? 'border-t border-black/[0.06]' : ''}`}>
+		// Garis pemisah baru muncul mulai sebelum Blok D (index >= 2)
+		<div
+			className={`py-[19px] sm:py-6 ${
+				index >= 2 ? 'mt-2 border-t border-black/[0.06] pt-[38px] sm:mt-0 sm:pt-6' : ''
+			}`}
+		>
 			{/* Judul blok: titik hitam + nama */}
-			<h3 className="flex items-center gap-2 font-['Montserrat'] text-[24px] font-semibold uppercase leading-[32px] tracking-[-0.6px] text-black">
+			<h3 className="flex items-center gap-2 font-['Montserrat'] text-[20px] font-semibold uppercase leading-[32px] tracking-[-0.6px] text-black sm:text-[24px]">
 				<span className="h-[8px] w-[8px] shrink-0 rounded-full bg-black" />
 				{blok.name}
 			</h3>
 
 			{blok.operationalHours && (
-				<p className="mt-1 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16.5px] tracking-[1.1px] text-black">
+				<p className="mt-1 font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-black sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
 					Waktu Operasional: {blok.operationalHours}
 				</p>
 			)}
 
-			<p className="mt-4 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16.5px] tracking-[1.1px] text-[#41493D]">
+			<p className="mt-3 font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-[#41493D] sm:mt-4 sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
 				Informasi Area
 			</p>
 
-			{/* Card tenant */}
-			<div className="mt-3 w-full rounded-lg border border-[#E2E2E2] bg-white px-4 py-3">
-				<div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+			{/* Card tenant: 2 kolom juga di mobile */}
+			<div className="mt-2 w-full rounded-lg border border-[#E2E2E2] bg-white px-3.5 py-3 sm:mt-3 sm:px-4">
+				<div className="grid grid-cols-2 items-start gap-x-2 sm:gap-x-4">
 					{columns.map((column, colIndex) => (
-						<div key={colIndex} className="flex flex-col">
+						<div key={colIndex} className="flex min-w-0 flex-col">
 							{column.map((tenant) => {
 								const isVacant = tenant.toLowerCase().includes('vacant')
 								return (
 									<span
 										key={tenant}
-										className={`py-2 font-['Montserrat'] text-[14px] leading-5 tracking-[0px] ${
-											isVacant ? 'font-normal italic text-[#8A8A8A]' : 'font-medium text-black'
+										className={`border-b border-black/[0.06] py-2 font-['Montserrat'] text-[13px] leading-[18px] tracking-[0px] last:border-b-0 sm:text-[14px] sm:leading-5 ${
+											isVacant ? 'font-normal text-[#8A8A8A]' : 'font-medium text-black'
 										}`}
 									>
 										{tenant}
@@ -229,17 +233,22 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 			</div>
 
 			{/* Card fasilitas */}
-			<div className="mt-4 rounded-lg border border-[#E2E2E2B2] bg-[#F3F3F3] p-5">
-				<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16.5px] tracking-[1.1px] text-[#363636]">
+			<div className="mt-4 rounded-lg border border-[#E2E2E2B2] bg-[#F3F3F3] px-4 py-3.5 sm:p-5">
+				<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-[#363636] sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
 					Fasilitas
 				</p>
-				<div className="mt-5 flex flex-col gap-2">
+				<div className="mt-1.5 flex flex-col gap-1 sm:mt-5 sm:gap-2">
 					{blok.facilities.map((facility) => {
 						const icon = getFacilityIcon(facility)
 						return (
-							<div key={facility} className="flex items-center gap-2">
-								<img src={icon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" aria-hidden="true" />
-								<span className="font-['Montserrat'] text-[13px] font-normal leading-[19.5px] tracking-[0px] text-black">
+							<div key={facility} className="flex items-center gap-1.5 sm:gap-2">
+								<img
+									src={icon}
+									alt=""
+									className="h-[14px] w-[14px] shrink-0 object-contain sm:h-[18px] sm:w-[18px]"
+									aria-hidden="true"
+								/>
+								<span className="font-['Montserrat'] text-[12px] font-normal leading-[18px] tracking-[0px] text-black sm:text-[13px] sm:leading-[19.5px]">
 									{facility}
 								</span>
 							</div>
@@ -270,12 +279,12 @@ function FoodCourtPage() {
 			<LandingNavbar />
 
 			{/* Hero */}
-			<section className="relative min-h-[100svh] overflow-hidden">
-				<img src={heroImage} alt="OBC Food Court" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 right-0 w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:w-[58%]" />
-				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
+				<img src={heroImage} alt="OBC Food Court" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
+				<div className="absolute inset-y-0 right-0 hidden w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:block md:w-[58%]" />
+				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 
-				<div className="relative flex min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:px-8">
+				<div className="relative hidden min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:flex md:px-8">
 					<div className="w-full max-w-[472px] text-black md:mr-6">
 						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
 							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
@@ -293,18 +302,21 @@ function FoodCourtPage() {
 			</section>
 
 			{/* Tentang + CTA */}
-			<section className="mx-auto max-w-[1200px] gap-10 px-5 py-14 md:flex md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-heading text-[25px] font-semibold text-[#000000]">
+			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
+				<div className="flex flex-col md:w-2/3">
+					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+						OBC Food Court
+					</h1>
+					<h2 className="order-3 mt-8 font-heading text-[18px] font-semibold text-[#000000] md:order-1 md:mt-0 md:text-[25px]">
 						Tentang OBC Food Court
 					</h2>
-					<p className="mt-4 max-w-2xl text-justify align-middle font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0px] text-black">
+					<p className="order-4 mt-3 max-w-2xl text-justify align-middle font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
 						OBC Food Court merupakan salah satu bagian dari kawasan OBC yang menyediakan beragam pilihan makanan
 						dan minuman dari berbagai tenant. Area makan yang tersedia dapat digunakan untuk menikmati hidangan,
 						berkumpul bersama sahabat, maupun beristirahat santai setelah beraktivitas di kawasan OBC.
 					</p>
 
-					<div className="mt-8 flex flex-wrap items-center justify-start gap-12 border-t border-obc-border pt-6">
+					<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-start md:gap-12 md:border-t md:border-obc-border md:pt-6">
 						<div className="flex items-center justify-start gap-2 text-left">
 							<img src={foodCourtIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 							<div>
@@ -333,6 +345,7 @@ function FoodCourtPage() {
 				</div>
 
 				<WhatsAppCard
+					className="hidden md:block"
 					title="Sudah Tahu Mau Makan Apa?"
 					description="Jelajahi pilihan tenant di OBC Food Court dan temukan tempat yang paling sesuai untuk menikmati hidangan lezat dan waktu berkualitas bersama."
 					link={WHATSAPP_LINK}
@@ -340,8 +353,8 @@ function FoodCourtPage() {
 			</section>
 
 			{/* Blok per blok */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="md:w-2/3">
+			<section className="mx-auto max-w-[1200px] px-8 pb-14">
+				<div className="w-full md:w-2/3">
 					{BLOKS.map((blok, index) => (
 						<BlokSection key={blok.name} blok={blok} index={index} />
 					))}
@@ -360,13 +373,15 @@ function FoodCourtPage() {
 					<div className="mx-auto mt-3 h-[2px] w-[396px] rounded-[2px] bg-[#0000004D]" />
 				</div>
 
-				<div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-					{GALLERY_IMAGES.map((image, index) => (
+				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
+					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
 						<button
 							key={index}
 							type="button"
 							onClick={() => setSelectedGalleryImage(image)}
-							className="group h-[296px] w-[280px] overflow-hidden rounded-xl"
+							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-auto md:h-[296px] md:w-[280px] md:rounded-xl ${
+								index >= 4 ? 'hidden md:block' : ''
+							}`}
 							aria-label={`Buka gambar Momen OBC Food Court ${index + 1}`}
 						>
 							<img
@@ -402,13 +417,13 @@ function FoodCourtPage() {
 			)}
 
 			{/* Lokasi */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<h2 className="h-[30px] w-full max-w-[318px] font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
+				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
+					<div className="order-1 md:order-none">
+						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-[30px] md:max-w-[318px] md:text-[25px]">
 							Lokasi OBC Food Court
 						</h2>
-						<p className="mt-1 h-[24px] w-full max-w-[845px] font-['Montserrat'] text-[15px] font-normal leading-[24px] tracking-[0.15px] text-black">
+						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-[24px] md:text-[15px]">
 							Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
 						</p>
 					</div>
@@ -416,14 +431,14 @@ function FoodCourtPage() {
 						href={GOOGLE_MAPS_LINK}
 						target="_blank"
 						rel="noreferrer"
-						className="inline-flex h-[32px] w-[229px] items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1]"
+						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
 					>
-						<ExternalLink className="h-[13.5px] w-[13.5px] text-[#222022]" />
+						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
 						Buka di Google Maps
 					</a>
 				</div>
 
-				<div className="mt-6 h-[360px] overflow-hidden rounded-2xl border border-obc-border md:h-[420px]">
+				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Food Court */}
 					<iframe
 						title="Lokasi OBC Food Court"
@@ -438,6 +453,15 @@ function FoodCourtPage() {
 			<UnitBisnis items={OTHER_UNITS} />
 
 			<LandingFooter />
+
+			<div className="px-4 pb-8 pt-8 md:hidden">
+				<WhatsAppCard
+					className="!mt-0"
+					title="Sudah Tahu Mau Makan Apa?"
+					description="Jelajahi pilihan tenant di OBC Food Court dan temukan tempat yang paling sesuai untuk menikmati hidangan lezat dan waktu berkualitas bersama."
+					link={WHATSAPP_LINK}
+				/>
+			</div>
 		</div>
 	)
 }
