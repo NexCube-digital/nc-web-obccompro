@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/*
+  CATATAN: token warna & role font di bawah disesuaikan dengan
+  "Design System & Brand Guideline — OBC Sport". Sebelumnya
+  font-heading terpasang ke Montserrat & font-body ke Poppins,
+  padahal brand guideline resmi menetapkan sebaliknya
+  (Poppins = heading/geometric-friendly, Montserrat = body/structured).
+  Sudah dibalik di bawah supaya konsisten dengan dokumen brand.
+*/
+@theme {
+  /* Brand primary */
+  --color-obc-charcoal: #343133;
+  --color-obc-green: #004000;
+  --color-obc-green-hover: #002d00;
+  --color-obc-olive: #404f14;
+  --color-obc-olive-hover: #323e10;
+  --color-obc-ivory: #fffff7;
+  --color-obc-white: #ffffff;
+  --color-obc-red: #bf0021;
+  --color-obc-red-hover: #9e001b;
+
+  /* Supporting & neutral tints */
+  --color-obc-cream: #f0f0d4;
+  --color-obc-muted: #6f6b6e;
+  --color-obc-border: #e2dfd2;
+  --color-obc-hover-surface: #f4f4e6;
+
+  /* Status token (slot booking) — dipakai lagi di halaman lain */
+  --color-obc-status-booked-bg: #fdecee;
+  --color-obc-status-booked-border: #f5c2c7;
+  --color-obc-status-locked-bg: #ebeedc;
+  --color-obc-status-locked-border: #c8d1a8;
+
+  --font-heading: "Poppins", sans-serif;
+  --font-body: "Montserrat", sans-serif;
+}
+
+:root {
+  font-family: "Montserrat", sans-serif;
+  color: #343133;
+  background: #fffff7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; font-family: "Montserrat", sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif; }
+a { color: inherit; text-decoration: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/font/Poppins/Poppins-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/font/Poppins/Poppins-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/font/Poppins/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/font/Poppins/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./assets/font/Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Caveat";
+  src: url("./assets/font/Caveat/Caveat-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Caveat";
+  src: url("./assets/font/Caveat/Caveat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Caveat";
+  src: url("./assets/font/Caveat/Caveat-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Caveat";
+  src: url("./assets/font/Caveat/Caveat-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
