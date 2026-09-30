@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import {
 	ArrowRight, Home,
-	MapPin, Clock, CalendarDays, Zap,
+	MapPin,
 	type LucideIcon,
 } from 'lucide-react'
 import { WhatsAppLogo } from '../../components/common/WhatsAppIcon'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
-import lapangF1Image from '../../assets/layanan/Lapang F1.png'
+import heroSignpostImage from '../../assets/unit-bisnis/slider/a8068cd70eafb7bacbeca863ef32256ede57a5d0.png'
 import lapangF2Image from '../../assets/layanan/Lapang F2.png'
 import guestHouseLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
 import villaLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
@@ -135,33 +135,35 @@ function BusinessUnitPage() {
 			{/* Hero slider */}
 			<section className="relative min-h-[100svh] overflow-hidden">
 				<img
-					src={lapangF1Image}
+					src={heroSignpostImage}
 					alt="Papan penunjuk unit bisnis OBC Group"
-					className="absolute inset-0 h-full w-full object-cover"
+					className="absolute inset-0 h-full w-full object-cover object-[center_58%] translate-x-10 md:translate-x-20 lg:translate-x-28 xl:translate-x-36"
 				/>
-				{/* Overlay: warna gradient sama, hanya arahnya. Mobile vertikal (pekat di bawah), desktop horizontal (pekat di kiri) */}
-				<div className="absolute inset-0 h-full w-full bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_30%,rgba(250,250,242,0.592749)_42%,rgba(250,250,242,0)_60%)] opacity-100 md:inset-y-0 md:left-[0.32px] md:right-auto md:h-[724px] md:w-[763.5928344726562px] md:bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,rgba(250,250,242,0)_100%)]" />
-				<div className="relative flex min-h-[100svh] items-end px-[30px] pb-[70px] pt-24 md:mt-4 md:-translate-y-8 md:items-center md:px-10 md:pb-24">
-					<div className="w-full max-w-[443px] text-black">
-						<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
-							<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
-								UNIT BISNIS
+				{/* Overlay: mobile vertikal (pekat di bawah), desktop horizontal (pekat di kiri, lebar mengikuti breakpoint dev) */}
+				<div className="absolute inset-0 h-full w-full bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_30%,rgba(250,250,242,0.592749)_42%,rgba(250,250,242,0)_60%)] md:inset-y-0 md:left-0 md:right-auto md:w-[68%] md:bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)] lg:w-[62%] xl:w-[58%] 2xl:w-[55%]" />
+				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[70px] pt-24 md:items-center md:pb-12">
+					<div className="mx-auto w-full max-w-[1246px] px-[30px] md:px-10">
+						<div className="w-full max-w-[440px] text-black">
+							<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
+								<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
+									UNIT BISNIS
+								</span>
 							</span>
-						</span>
-						{/* H1: tidak tampil di mobile (tidak ada di desain), tetap ada untuk screen reader/SEO */}
-						<h1 className="sr-only mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black md:not-sr-only">
-							Bisnis Kami
-						</h1>
-						{/* Subjudul: mobile jadi judul tebal 24px, desktop tetap 40px */}
-						<p className="mt-4 h-auto w-full max-w-full font-['Montserrat'] text-[24px] font-bold leading-[32px] tracking-normal text-[#000000] md:h-[96px] md:w-[443px] md:text-[40px] md:font-medium md:leading-[48px] md:tracking-[-0.8px]">
-							Satu Ekosistem, Beragam Layanan
-						</p>
-						{/* Deskripsi: mobile 13px, tinggi otomatis */}
-						<p className="mt-3 h-auto w-full max-w-full text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-[#000000] md:mt-5 md:h-[168px] md:w-[443px] md:text-[18px] md:leading-[28px]">
-							OBC Group menghadirkan beragam unit bisnis dalam satu ekosistem yang saling melengkapi. Setiap unit
-							memiliki layanan dan karakteristiknya masing-masing untuk memberikan pengalaman yang sesuai dengan
-							kebutuhan pelanggan.
-						</p>
+							{/* H1: tidak tampil di mobile (tidak ada di desain), tetap ada untuk screen reader/SEO */}
+							<h1 className="sr-only font-['Montserrat'] font-bold tracking-[1.5px] text-black md:not-sr-only md:mt-5 md:text-[56px] md:leading-[70px]">
+								Bisnis Kami
+							</h1>
+							{/* Subjudul: mobile tebal 24px, desktop 40px medium */}
+							<p className="mt-4 font-['Montserrat'] text-[24px] font-bold leading-[32px] tracking-normal text-[#000000] sm:text-[30px] md:font-medium md:text-[40px] md:leading-[48px] md:tracking-[-0.8px]">
+								Satu Ekosistem, Beragam Layanan
+							</p>
+							{/* Deskripsi: mobile 13px, desktop 18px */}
+							<p className="mt-3 text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-[#000000] md:mt-5 md:text-[18px] md:leading-[28px]">
+								OBC Group menghadirkan beragam unit bisnis dalam satu ekosistem yang saling melengkapi. Setiap unit
+								memiliki layanan dan karakteristiknya masing-masing untuk memberikan pengalaman yang sesuai dengan
+								kebutuhan pelanggan.
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -326,8 +328,6 @@ function BusinessUnitPage() {
 					})}
 				</div>
 			</section>
-
-			
 
 			<LandingFooter />
 		</div>

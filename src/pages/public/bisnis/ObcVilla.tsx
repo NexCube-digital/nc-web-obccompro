@@ -107,113 +107,135 @@ function VillaPage() {
 	}, [selectedGalleryImage])
 
 	return (
-		<div className="min-h-screen bg-obc-ivory">
+		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
+		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-0">
 			<LandingNavbar />
 
-			{/* Hero */}
+			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev (rata kiri) */}
 			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Villa" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
-				<div className="absolute inset-y-0 left-0 hidden w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.94)_26%,rgba(250,250,242,0.7)_52%,rgba(250,250,242,0.2)_72%,rgba(250,250,242,0)_100%)] md:block md:w-[58%]" />
+				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
+				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.94)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				<div className="relative hidden min-h-[100svh] items-center justify-start px-4 py-24 sm:px-6 md:flex md:px-8">
-					<div className="w-full max-w-[472px] text-black md:ml-6">
-						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
-							Hospitality & Accommodation
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							OBC Villa
-						</h1>
-						<p className="mt-4 hidden max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black md:block">
-							Nikmati kenyamanan dan ketenangan dalam pengalaman menginap di OBC Villa, dengan suasana asri yang
-							memberikan ruang untuk beristirahat, menikmati waktu bersama, dan menciptakan momen berkesan di
-							Ciumbuleuit, Bandung.
-						</p>
-						<p className="mt-4 hidden font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black md:block">
-							{QUICK_FACTS.join(' · ')}
-						</p>
+				{/* Teks hero: hanya desktop, container max-w 1246px, rata kiri */}
+				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
+					<div className="mx-auto w-full max-w-[1246px] px-8 md:px-10">
+						<div className="w-full max-w-[472px] text-black">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
+								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+								Hospitality & Accommodation
+							</span>
+							<h1 className="mt-5 font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
+								OBC Villa
+							</h1>
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-normal leading-[29.25px] tracking-[0.18px] text-black">
+								Nikmati kenyamanan dan ketenangan dalam pengalaman menginap di OBC Villa, dengan suasana asri yang
+								memberikan ruang untuk beristirahat, menikmati waktu bersama, dan menciptakan momen berkesan di
+								Ciumbuleuit, Bandung.
+							</p>
+							<p className="mt-4 font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black">
+								{QUICK_FACTS.join(' · ')}
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Tentang + CTA */}
-			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
-				<div className="flex flex-col md:w-2/3">
-					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-						OBC Villa
-					</h1>
+			{/*
+				Wrapper dua kolom (Tentang + Fasilitas).
+				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
+				yaitu tepat sebelum Galeri (lebar penuh).
+				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
+				karena akan mematikan position: sticky.
+			*/}
+			<div className="mx-auto max-w-[1200px] md:flex md:items-stretch md:gap-10 md:px-8">
+				{/* Kolom kiri */}
+				<div className="min-w-0 md:w-2/3">
+					{/* Tentang */}
+					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+						<div className="flex flex-col">
+							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+								OBC Villa
+							</h1>
 
-					<div className="order-2 mb-8 mt-4 flex flex-nowrap items-center justify-between gap-2 md:order-4 md:mb-0 md:mt-8 md:flex-wrap md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<img src={roomIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">3 Kamar Tidur</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<LogIn size={18} className="shrink-0 text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<LogOut size={18} className="shrink-0 text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
-							</div>
-						</div>
-					</div>
-
-					<h2 className="order-5 mt-8 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:mt-0 md:text-[25px]">
-						Tentang OBC Villa
-					</h2>
-					<p className="order-6 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-						Nikmati waktu bersama keluarga atau teman di OBC Villa, dengan ruang yang dirancang untuk beristirahat
-						sekaligus berkumpul dengan nyaman. Tersedia tiga kamar tidur, tiga kamar mandi, ruang keluarga, dan dua
-						ruang santai, serta taman dan balkon untuk menikmati waktu bersama. OBC Villa juga dilengkapi kitchen
-						dengan kulkas, kompor, dan microwave, ditambah AC, TV, serta free WiFi untuk menunjang kebutuhan
-						selama menginap.
-					</p>
-
-				</div>
-
-				<WhatsAppCard
-					className="hidden md:block"
-					title="Tertarik menginap di OBC Villa?"
-					description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Villa"
-					link={WHATSAPP_LINK}
-				/>
-			</section>
-
-			{/* Fasilitas */}
-			<section className="mx-auto max-w-[1200px] px-[30px] pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[1px] text-[#222022]">
-						Fasilitas yang Ditawarkan
-					</h2>
-					<div className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 md:mt-6 md:gap-x-6 md:gap-y-4 lg:grid-cols-3">
-						{FACILITIES.map((facility) => {
-							return (
-								<div key={facility.label} className="flex items-center gap-3">
-									<img
-										src={facility.icon}
-										alt=""
-										className="h-6 w-6 shrink-0 object-contain md:h-5 md:w-5"
-										aria-hidden="true"
-									/>
-									<span className="font-['Montserrat'] text-[13px] font-medium leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">
-										{facility.label}
-									</span>
+							<div className="order-2 mb-8 mt-4 flex flex-nowrap items-center justify-between gap-2 md:order-4 md:mb-0 md:mt-8 md:flex-wrap md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<img src={roomIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">3 Kamar Tidur</p>
+									</div>
 								</div>
-							)
-						})}
-					</div>
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<LogIn size={18} className="shrink-0 text-[#222022]" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
+									</div>
+								</div>
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<LogOut size={18} className="shrink-0 text-[#222022]" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
+									</div>
+								</div>
+							</div>
+
+							<h2 className="order-5 mt-8 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:mt-0 md:text-[25px]">
+								Tentang OBC Villa
+							</h2>
+							<p className="order-6 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
+								Nikmati waktu bersama keluarga atau teman di OBC Villa, dengan ruang yang dirancang untuk beristirahat
+								sekaligus berkumpul dengan nyaman. Tersedia tiga kamar tidur, tiga kamar mandi, ruang keluarga, dan dua
+								ruang santai, serta taman dan balkon untuk menikmati waktu bersama. OBC Villa juga dilengkapi kitchen
+								dengan kulkas, kompor, dan microwave, ditambah AC, TV, serta free WiFi untuk menunjang kebutuhan
+								selama menginap.
+							</p>
+						</div>
+					</section>
+
+					{/* Fasilitas */}
+					<section className="px-[30px] pb-14 md:px-0">
+						<div>
+							<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[1px] text-[#222022]">
+								Fasilitas yang Ditawarkan
+							</h2>
+							<div className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 md:mt-6 md:gap-x-6 md:gap-y-4 lg:grid-cols-3">
+								{FACILITIES.map((facility) => {
+									return (
+										<div key={facility.label} className="flex items-center gap-3">
+											<img
+												src={facility.icon}
+												alt=""
+												className="h-6 w-6 shrink-0 object-contain md:h-5 md:w-5"
+												aria-hidden="true"
+											/>
+											<span className="font-['Montserrat'] text-[13px] font-medium leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">
+												{facility.label}
+											</span>
+										</div>
+									)
+								})}
+							</div>
+						</div>
+					</section>
 				</div>
-			</section>
+
+				{/* Kolom kanan (desktop): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
+				<aside className="hidden md:block md:w-1/3 md:pt-14">
+					<div className="sticky top-24">
+						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
+						<WhatsAppCard
+							className="md:!w-full"
+							title="Tertarik menginap di OBC Villa?"
+							description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Villa"
+							link={WHATSAPP_LINK}
+						/>
+					</div>
+				</aside>
+			</div>
 
 			{/* Galeri */}
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
@@ -311,7 +333,8 @@ function VillaPage() {
 
 			<LandingFooter />
 
-			<div className="px-4 pb-8 pt-8 md:hidden">
+			{/* Card WhatsApp versi mobile: fixed di bawah layar, selalu di depan; hanya konten yang bergeser saat scroll */}
+			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-6 pt-6 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden">
 				<WhatsAppCard
 					className="!mt-0"
 					title="Tertarik menginap di OBC Villa?"

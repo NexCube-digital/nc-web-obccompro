@@ -1,6 +1,5 @@
 import {
 	ArrowRight,
-	ClipboardList,
 	ExternalLink,
 	X,
 } from 'lucide-react'
@@ -231,380 +230,403 @@ function LaundryPage() {
 	}, [selectedGalleryImage])
 
 	return (
-		<div className="min-h-screen bg-obc-ivory">
+		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
+		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-0">
 			<LandingNavbar />
 
-			{/* Hero */}
+			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev */}
 			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
-				<div className="absolute inset-y-0 right-0 hidden w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:block md:w-[58%]" />
+				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
+				<div className="absolute inset-y-0 right-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(270deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				<div className="relative hidden min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:flex md:px-8">
-					<div className="w-full max-w-[472px] text-black md:mr-6">
-						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
-							Laundry Services
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							OBC Laundry
-						</h1>
-						<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black">
-							Nikmati layanan laundry kiloan dan satuan yang praktis untuk kebutuhan sehari-hari. Dengan free pick up
-							& delivery serta layanan Quick 4 Jam Selesai, urusan laundry jadi lebih mudah tanpa mengganggu
-							aktivitas Anda.
-						</p>
-					</div>
-				</div>
-			</section>
-
-			{/* Tentang + CTA */}
-			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
-				<div className="flex flex-col md:w-2/3">
-					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-						OBC Laundry
-					</h1>
-					<h2 className="order-3 mt-8 font-heading text-[18px] font-semibold text-[#000000] md:order-1 md:mt-0 md:text-[25px]">Tentang OBC Laundry</h2>
-					<p className="order-4 mt-3 max-w-2xl text-justify align-middle font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-						OBC Laundry merupakan salah satu unit bisnis OBC Group yang menyediakan berbagai layanan perawatan
-						pakaian dan perlengkapan, mulai dari cuci satu, cuci setrika, laundry satuan, hingga perawatan sepatu.
-						Pilihan layanan dan durasi dibuat untuk menyesuaikan kebutuhan, baik untuk pakaian sehari-hari maupun
-						barang yang membutuhkan penanganan khusus.
-					</p>
-
-					<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
-						<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
-							<img src={serviceTypeIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
-							<div>
-								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-									Jenis Layanan
-								</p>
-								<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-									Cuci Setrika · Satuan · Laundry Sepatu
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
-							<img src={clockIcon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" aria-hidden="true" />
-							<div>
-								<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-									Buka Setiap Hari
-								</p>
-								<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-									07.00 WIB - 20.00 WIB
-								</p>
-							</div>
+				{/* Teks hero: hanya desktop, container max-w 1246px, rata kanan */}
+				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
+					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
+						<div className="w-full max-w-[472px] text-black">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
+								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+								Laundry Services
+							</span>
+							<h1 className="mt-5 font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
+								OBC Laundry
+							</h1>
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-normal leading-[29.25px] tracking-[0.18px] text-black">
+								Nikmati layanan laundry kiloan dan satuan yang praktis untuk kebutuhan sehari-hari. Dengan free pick up
+								& delivery serta layanan Quick 4 Jam Selesai, urusan laundry jadi lebih mudah tanpa mengganggu
+								aktivitas Anda.
+							</p>
 						</div>
 					</div>
 				</div>
-
-				<WhatsAppCard
-					className="hidden md:block"
-					title="Laundry Beres, Aktivitas Jalan Terus"
-					description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
-					link={WHATSAPP_LINK}
-				/>
 			</section>
 
-			{/* Layanan OBC Laundry */}
-			<section className="mx-auto max-w-[1200px] px-4 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<div className="flex flex-col items-end gap-1 px-4 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:px-0">
-						<h2 className="self-start font-heading text-[20px] font-semibold text-[#000000] sm:text-[25px]">
-							Layanan OBC Laundry
-						</h2>
-						<a
-							href="#price-list"
-							className="mt-0 inline-flex items-center gap-1 font-heading text-[12px] font-semibold text-obc-green hover:text-obc-green-hover sm:mt-7"
-						>
-							Lihat  Price List Lengkap
-							<ArrowRight size={14} />
-						</a>
-					</div>
+			{/*
+				Wrapper dua kolom (Tentang, Layanan, Price List, Cuci Satuan, Laundry Sepatu, Aset & Alat, Fasilitas).
+				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
+				yaitu tepat sebelum Galeri (lebar penuh).
+				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
+				karena akan mematikan position: sticky.
+			*/}
+			<div className="mx-auto max-w-[1200px] md:flex md:items-stretch md:gap-10 md:px-8">
+				{/* Kolom kiri */}
+				<div className="min-w-0 md:w-2/3">
+					{/* Tentang */}
+					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+						<div className="flex flex-col">
+							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+								OBC Laundry
+							</h1>
+							<h2 className="order-3 mt-8 font-heading text-[18px] font-semibold text-[#000000] md:order-1 md:mt-0 md:text-[25px]">Tentang OBC Laundry</h2>
+							<p className="order-4 mt-3 max-w-2xl text-justify align-middle font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
+								OBC Laundry merupakan salah satu unit bisnis OBC Group yang menyediakan berbagai layanan perawatan
+								pakaian dan perlengkapan, mulai dari cuci satu, cuci setrika, laundry satuan, hingga perawatan sepatu.
+								Pilihan layanan dan durasi dibuat untuk menyesuaikan kebutuhan, baik untuk pakaian sehari-hari maupun
+								barang yang membutuhkan penanganan khusus.
+							</p>
 
-					<div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 sm:gap-4">
-						{LAUNDRY_SERVICES.map((service) => {
-							return (
-								<div
-									key={service.title}
-									className="rounded-2xl border border-obc-border bg-obc-white p-3 shadow-[0_4px_16px_rgba(52,49,51,0.05)] sm:p-5"
-								>
-									<div className="flex items-start justify-between">
-										<span className="inline-flex items-center rounded-[2px] font-semibold bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]">
-											{service.badge}
-										</span>
-										<img src={service.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
-									</div>
-									<h3 className="mt-4 font-heading text-base font-semibold text-obc-charcoal sm:text-lg">{service.title}</h3>
-									<p className="mt-4 font-body text-[11px] font-bold uppercase tracking-[0.08em] text-[#000000E5]">
-										Pilihan Durasi:
-									</p>
-									<div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
-										{service.durations.map((duration) => (
-											<span
-												key={duration}
-												className="inline-flex items-center font-medium rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]"
-											>
-												{duration}
-											</span>
-										))}
+							<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+								<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
+									<img src={serviceTypeIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
+									<div>
+										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
+											Jenis Layanan
+										</p>
+										<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
+											Cuci Setrika · Satuan · Laundry Sepatu
+										</p>
 									</div>
 								</div>
-							)
-						})}
-					</div>
-				</div>
-			</section>
-
-			{/* Price List OBC Laundry */}
-			<section id="price-list" className="mx-auto max-w-[1200px] px-6 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="text-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:text-left sm:text-[25px]">
-						Price List OBC Laundry
-					</h2>
-					<p className="mx-auto mt-2 max-w-[300px] text-center font-['Montserrat'] text-[13px] font-normal leading-[20px] tracking-[0.16px] text-[#615D5F] sm:mx-0 sm:mt-1 sm:max-w-none sm:text-left sm:text-[16px] sm:leading-[26px]">
-						Pilih layanan dan durasi yang sesuai dengan kebutuhanmu.
-					</p>
-
-					<div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3">
-						{PRICE_LIST.map((price) => (
-							<div
-								key={price.title}
-										className={`flex h-auto min-w-0 w-full flex-col gap-4 rounded-[8px] border border-[#00000033] bg-white p-2.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:min-h-[303px] sm:p-5 ${
-											price.favorit
-												? 'order-first col-span-2 md:order-none md:col-span-1'
-												: 'order-2 md:order-none'
-								}`}
-							>
-								<div
-									className={`flex items-center gap-2 ${
-										price.favorit ? 'relative justify-center sm:static sm:justify-start' : 'justify-center'
-									}`}
-								>
-									<span
-										className={`inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px] ${
-											price.favorit ? '' : 'w-full justify-center sm:w-auto'
-										}`}
-									>
-										{price.badge}
-									</span>
-									{price.favorit && (
-										<span className="absolute left-2 inline-flex items-center rounded-[2px] bg-[#004000] px-2 py-[2px] font-['Montserrat'] text-[11px] font-semibold leading-[14px] tracking-[1.1px] text-white sm:static">
-											Favorit
-										</span>
-									)}
+								<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
+									<img src={clockIcon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" aria-hidden="true" />
+									<div>
+										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
+											Buka Setiap Hari
+										</p>
+										<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
+											07.00 WIB - 20.00 WIB
+										</p>
+									</div>
 								</div>
-								<h3 className="text-center whitespace-nowrap font-['Montserrat'] text-[clamp(13px,3.7vw,16px)] font-semibold leading-[28px] tracking-[0px] text-black sm:text-[20px]">
-									{price.title}
-								</h3>
-								<div className="flex flex-col divide-y divide-obc-border">
-									{price.rows.map((row) => (
+							</div>
+						</div>
+					</section>
+
+					{/* Layanan OBC Laundry */}
+					<section className="px-4 pb-14 md:px-0">
+						<div>
+							<div className="flex flex-col items-end gap-1 px-4 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:px-0">
+								<h2 className="self-start font-heading text-[20px] font-semibold text-[#000000] sm:text-[25px]">
+									Layanan OBC Laundry
+								</h2>
+								<a
+									href="#price-list"
+									className="mt-0 inline-flex items-center gap-1 font-heading text-[12px] font-semibold text-obc-green hover:text-obc-green-hover sm:mt-7"
+								>
+									Lihat  Price List Lengkap
+									<ArrowRight size={14} />
+								</a>
+							</div>
+
+							<div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 sm:gap-4">
+								{LAUNDRY_SERVICES.map((service) => {
+									return (
 										<div
-											key={row.duration}
-											className={`flex items-center justify-between gap-2 py-3 sm:py-2 ${
-												price.favorit ? 'px-[22%] sm:px-0' : ''
-											}`}
+											key={service.title}
+											className="rounded-2xl border border-obc-border bg-obc-white p-3 shadow-[0_4px_16px_rgba(52,49,51,0.05)] sm:p-5"
 										>
-											<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-normal leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
-												{row.duration}
-											</span>
-											<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-semibold leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
-												{row.price}
-											</span>
-										</div>
-									))}
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
-			{/* Layanan Cuci Satuan */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					{/* Card pembungkus judul */}
-					<h2 className="flex items-center gap-1.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:gap-2 sm:text-[25px]">
-						<img
-							src={washAndIronServiceIcon}
-							alt=""
-							className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
-							aria-hidden="true"
-						/>
-						Layanan Cuci Satuan
-					</h2>
-					<div className="mt-6 overflow-x-auto">
-						<table className="w-full table-fixed border-collapse sm:min-w-[480px]">
-							<thead>
-								<tr className="border-b border-black/[0.06] text-left">
-									<th className="w-[34%] py-4 pl-4 pr-1 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[32%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
-										Item
-									</th>
-									<th className="w-[24%] px-0 py-4 text-center font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[30%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
-										Durasi Pengerjaan
-									</th>
-									<th className="w-[42%] px-2 py-4 text-left font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[38%] sm:px-4 sm:text-center sm:text-[12px] sm:tracking-[1.2px]">
-										Harga Satuan
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{SATUAN_ITEMS.map((row) => (
-									<tr key={row.item} className="border-b border-black/[0.06] last:border-b-0">
-										<td className="py-[15px] pl-4 pr-1 font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-medium leading-[20px] tracking-[0.56px] text-[#222022] sm:px-4 sm:text-[14px]">
-											{row.item}
-										</td>
-										<td className="px-1 py-[15px] text-center sm:px-4">
-											{/* Badge durasi abu-abu */}
-											<span className="inline-flex items-center whitespace-nowrap rounded-[4px] bg-[#F2F2F2] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-[#222022] sm:tracking-[1.1px]">
-												{row.duration}
-											</span>
-										</td>
-										<td className="px-4 py-[15px] font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-semibold leading-[20px] tracking-[0.28px] text-black sm:text-[14px]">
-											{row.price}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</section>
-
-			{/* Price List Laundry Sepatu */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					{/* Judul + garis tipis di bawahnya */}
-					<h2 className="border-b border-black/[0.06] px-2 pb-3 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:px-0 sm:text-[25px]">
-						Price List Laundry Sepatu
-					</h2>
-
-					{/* Label & chip bagian sepatu, rata kanan */}
-					<div className="mt-4 flex flex-col items-end gap-2 px-2 sm:px-0">
-						<span className="font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black">
-							Detail Treatment
-						</span>
-						<div className="flex flex-wrap justify-end gap-2">
-							{['Upper', 'Insole', 'Midsole', 'Outsole'].map((part) => (
-								<span
-									key={part}
-									className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:px-4 sm:tracking-[1.1px]"
-								>
-									{part}
-								</span>
-							))}
-						</div>
-					</div>
-
-					<div className="mt-5 grid grid-cols-2 gap-2.5 px-2 sm:mt-6 sm:gap-[50px] sm:px-0">
-						{SHOE_TREATMENTS.map((treatment) => {
-							return (
-								<div
-									key={treatment.number}
-									className={`flex h-full min-w-0 flex-col rounded-lg border border-[#D5E6CF] bg-white p-2.5 sm:p-6 ${
-										treatment.favorit ? 'shadow-[0_2px_6px_rgba(0,0,0,0.15)]' : ''
-									}`}
-								>
-									{/* Ikon + badge nomor / Favorit */}
-									<div className="flex items-start justify-between">
-										<span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#EEEEE7] text-black">
-											<img src={treatment.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
-										</span>
-										{treatment.favorit ? (
-											<span className="inline-flex items-center rounded-[2px] bg-black px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-semibold leading-[15.4px] tracking-[1.1px] text-white">
-												Favorit
-											</span>
-										) : (
-											<span className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-semibold leading-[15.4px] tracking-[1.1px] text-black">
-												{treatment.number}
-											</span>
-										)}
-									</div>
-
-									<h3 className="mt-3.5 font-['Montserrat'] text-base font-semibold leading-6 tracking-[0px] text-black sm:mt-5 sm:text-[20px] sm:leading-[28px]">
-										{treatment.title}
-									</h3>
-									<p className="mt-0.5 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15px] tracking-[0.5px] text-black sm:mt-1 sm:text-[12px] sm:leading-[16px] sm:tracking-[0.6px]">
-										{treatment.price}
-									</p>
-									<p className="mt-1.5 text-justify font-['Montserrat'] text-[12px] font-normal leading-[18px] tracking-[0.1px] text-[#41493D] sm:mt-3 sm:text-[14px] sm:leading-[22px] sm:tracking-[0.28px]">
-										{treatment.description}
-									</p>
-
-									{/* Garis pemisah + tag, selalu menempel di bawah card */}
-									<div className="mt-auto pt-1 sm:pt-5">
-										<div className="border-t border-black/[0.06] pt-2 sm:pt-4">
-											<p className="mb-1 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black sm:hidden">
-												Fokus Treatment:
+											<div className="flex items-start justify-between">
+												<span className="inline-flex items-center rounded-[2px] font-semibold bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]">
+													{service.badge}
+												</span>
+												<img src={service.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
+											</div>
+											<h3 className="mt-4 font-heading text-base font-semibold text-obc-charcoal sm:text-lg">{service.title}</h3>
+											<p className="mt-4 font-body text-[11px] font-bold uppercase tracking-[0.08em] text-[#000000E5]">
+												Pilihan Durasi:
 											</p>
-											<div className="flex flex-wrap gap-1.5 sm:gap-2">
-												{treatment.tags.map((tag) => (
+											<div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
+												{service.durations.map((duration) => (
 													<span
-														key={tag}
-														className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.1px]"
+														key={duration}
+														className="inline-flex items-center font-medium rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]"
 													>
-														{tag}
+														{duration}
 													</span>
 												))}
 											</div>
 										</div>
-									</div>
-								</div>
-							)
-						})}
-					</div>
-				</div>
-			</section>
-
-			{/* Aset & Alat */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="w-full md:w-[709px]">
-					<h2 className="h-[30px] w-full max-w-[610px] pl-5 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black md:pl-0">
-						Aset & Alat
-					</h2>
-					<div className="mt-6 flex w-full flex-wrap gap-4 md:h-[77px] md:flex-nowrap">
-						{ASSET_STATS.map((stat) => (
-							<div
-								key={stat.label}
-								className="flex h-[77px] flex-1 flex-col items-center justify-center gap-[11px] rounded-[8px] border border-[#EEEEE799] bg-[#F3F3F3] px-[5px] py-[10px] text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] md:w-[129px] md:flex-none md:shrink-0"
-							>
-								<p className="font-['Montserrat'] text-[25px] font-medium leading-[100%] tracking-[0%] text-black">
-									{stat.value}
-								</p>
-								<p className="w-auto whitespace-nowrap font-['Montserrat'] text-[11px] font-medium uppercase leading-[14px] tracking-[0.55px] text-[#303030] md:w-[117px]">
-									{stat.label}
-								</p>
+									)
+								})}
 							</div>
-						))}
-					</div>
-				</div>
-			</section>
+						</div>
+					</section>
 
-			{/* Fasilitas */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
-						Fasilitas
-					</h2>
-					<div className="mt-6 flex flex-wrap gap-x-9 gap-y-[26px] px-2 sm:gap-x-10 sm:gap-y-4 sm:px-0">
-						{FACILITIES.map((facility) => {
-							return (
-								<div key={facility.label} className="flex items-center gap-3">
-									<img
-										src={facility.icon}
-										alt=""
-										className="h-6 w-6 shrink-0 object-contain sm:h-5 sm:w-5"
-										aria-hidden="true"
-									/>
-									<span className="font-['Montserrat'] text-[16px] font-semibold leading-[24px] tracking-[0.16px] text-black">
-										{facility.label}
-									</span>
+					{/* Price List OBC Laundry */}
+					<section id="price-list" className="px-6 pb-14 md:px-0">
+						<div>
+							<h2 className="text-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:text-left sm:text-[25px]">
+								Price List OBC Laundry
+							</h2>
+							<p className="mx-auto mt-2 max-w-[300px] text-center font-['Montserrat'] text-[13px] font-normal leading-[20px] tracking-[0.16px] text-[#615D5F] sm:mx-0 sm:mt-1 sm:max-w-none sm:text-left sm:text-[16px] sm:leading-[26px]">
+								Pilih layanan dan durasi yang sesuai dengan kebutuhanmu.
+							</p>
+
+							<div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3">
+								{PRICE_LIST.map((price) => (
+									<div
+										key={price.title}
+										className={`flex h-auto min-w-0 w-full flex-col gap-4 rounded-[8px] border border-[#00000033] bg-white p-2.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:min-h-[303px] sm:p-5 ${
+											price.favorit
+												? 'order-first col-span-2 md:order-none md:col-span-1'
+												: 'order-2 md:order-none'
+										}`}
+									>
+										<div
+											className={`flex items-center gap-2 ${
+												price.favorit ? 'relative justify-center sm:static sm:justify-start' : 'justify-center'
+											}`}
+										>
+											<span
+												className={`inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px] ${
+													price.favorit ? '' : 'w-full justify-center sm:w-auto'
+												}`}
+											>
+												{price.badge}
+											</span>
+											{price.favorit && (
+												<span className="absolute left-2 inline-flex items-center rounded-[2px] bg-[#004000] px-2 py-[2px] font-['Montserrat'] text-[11px] font-semibold leading-[14px] tracking-[1.1px] text-white sm:static">
+													Favorit
+												</span>
+											)}
+										</div>
+										<h3 className="text-center whitespace-nowrap font-['Montserrat'] text-[clamp(13px,3.7vw,16px)] font-semibold leading-[28px] tracking-[0px] text-black sm:text-[20px]">
+											{price.title}
+										</h3>
+										<div className="flex flex-col divide-y divide-obc-border">
+											{price.rows.map((row) => (
+												<div
+													key={row.duration}
+													className={`flex items-center justify-between gap-2 py-3 sm:py-2 ${
+														price.favorit ? 'px-[22%] sm:px-0' : ''
+													}`}
+												>
+													<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-normal leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
+														{row.duration}
+													</span>
+													<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-semibold leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
+														{row.price}
+													</span>
+												</div>
+											))}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+
+					{/* Layanan Cuci Satuan */}
+					<section className="px-5 pb-14 md:px-0">
+						<div>
+							{/* Card pembungkus judul */}
+							<h2 className="flex items-center gap-1.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:gap-2 sm:text-[25px]">
+								<img
+									src={washAndIronServiceIcon}
+									alt=""
+									className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
+									aria-hidden="true"
+								/>
+								Layanan Cuci Satuan
+							</h2>
+							<div className="mt-6 overflow-x-auto">
+								<table className="w-full table-fixed border-collapse sm:min-w-[480px]">
+									<thead>
+										<tr className="border-b border-black/[0.06] text-left">
+											<th className="w-[34%] py-4 pl-4 pr-1 font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[32%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
+												Item
+											</th>
+											<th className="w-[24%] px-0 py-4 text-center font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[30%] sm:px-4 sm:text-[12px] sm:tracking-[1.2px]">
+												Durasi Pengerjaan
+											</th>
+											<th className="w-[42%] px-2 py-4 text-left font-['Montserrat'] text-[11px] font-semibold uppercase leading-[16px] tracking-[1px] text-black sm:w-[38%] sm:px-4 sm:text-center sm:text-[12px] sm:tracking-[1.2px]">
+												Harga Satuan
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{SATUAN_ITEMS.map((row) => (
+											<tr key={row.item} className="border-b border-black/[0.06] last:border-b-0">
+												<td className="py-[15px] pl-4 pr-1 font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-medium leading-[20px] tracking-[0.56px] text-[#222022] sm:px-4 sm:text-[14px]">
+													{row.item}
+												</td>
+												<td className="px-1 py-[15px] text-center sm:px-4">
+													{/* Badge durasi abu-abu */}
+													<span className="inline-flex items-center whitespace-nowrap rounded-[4px] bg-[#F2F2F2] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-[#222022] sm:tracking-[1.1px]">
+														{row.duration}
+													</span>
+												</td>
+												<td className="px-4 py-[15px] font-['Montserrat'] text-[clamp(12px,3.3vw,14px)] font-semibold leading-[20px] tracking-[0.28px] text-black sm:text-[14px]">
+													{row.price}
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</section>
+
+					{/* Price List Laundry Sepatu */}
+					<section className="px-5 pb-14 md:px-0">
+						<div>
+							{/* Judul + garis tipis di bawahnya */}
+							<h2 className="border-b border-black/[0.06] px-2 pb-3 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:px-0 sm:text-[25px]">
+								Price List Laundry Sepatu
+							</h2>
+
+							{/* Label & chip bagian sepatu, rata kanan */}
+							<div className="mt-4 flex flex-col items-end gap-2 px-2 sm:px-0">
+								<span className="font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black">
+									Detail Treatment
+								</span>
+								<div className="flex flex-wrap justify-end gap-2">
+									{['Upper', 'Insole', 'Midsole', 'Outsole'].map((part) => (
+										<span
+											key={part}
+											className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:px-4 sm:tracking-[1.1px]"
+										>
+											{part}
+										</span>
+									))}
 								</div>
-							)
-						})}
-					</div>
+							</div>
+
+							<div className="mt-5 grid grid-cols-2 gap-2.5 px-2 sm:mt-6 sm:gap-[50px] sm:px-0">
+								{SHOE_TREATMENTS.map((treatment) => {
+									return (
+										<div
+											key={treatment.number}
+											className={`flex h-full min-w-0 flex-col rounded-lg border border-[#D5E6CF] bg-white p-2.5 sm:p-6 ${
+												treatment.favorit ? 'shadow-[0_2px_6px_rgba(0,0,0,0.15)]' : ''
+											}`}
+										>
+											{/* Ikon + badge nomor / Favorit */}
+											<div className="flex items-start justify-between">
+												<span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#EEEEE7] text-black">
+													<img src={treatment.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
+												</span>
+												{treatment.favorit ? (
+													<span className="inline-flex items-center rounded-[2px] bg-black px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-semibold leading-[15.4px] tracking-[1.1px] text-white">
+														Favorit
+													</span>
+												) : (
+													<span className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-semibold leading-[15.4px] tracking-[1.1px] text-black">
+														{treatment.number}
+													</span>
+												)}
+											</div>
+
+											<h3 className="mt-3.5 font-['Montserrat'] text-base font-semibold leading-6 tracking-[0px] text-black sm:mt-5 sm:text-[20px] sm:leading-[28px]">
+												{treatment.title}
+											</h3>
+											<p className="mt-0.5 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15px] tracking-[0.5px] text-black sm:mt-1 sm:text-[12px] sm:leading-[16px] sm:tracking-[0.6px]">
+												{treatment.price}
+											</p>
+											<p className="mt-1.5 text-justify font-['Montserrat'] text-[12px] font-normal leading-[18px] tracking-[0.1px] text-[#41493D] sm:mt-3 sm:text-[14px] sm:leading-[22px] sm:tracking-[0.28px]">
+												{treatment.description}
+											</p>
+
+											{/* Garis pemisah + tag, selalu menempel di bawah card */}
+											<div className="mt-auto pt-1 sm:pt-5">
+												<div className="border-t border-black/[0.06] pt-2 sm:pt-4">
+													<p className="mb-1 font-['Montserrat'] text-[11px] font-bold uppercase leading-[15.4px] tracking-[0.55px] text-black sm:hidden">
+														Fokus Treatment:
+													</p>
+													<div className="flex flex-wrap gap-1.5 sm:gap-2">
+														{treatment.tags.map((tag) => (
+															<span
+																key={tag}
+																className="inline-flex items-center rounded-[2px] bg-[#EEEEE7] px-[10px] py-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.1px]"
+															>
+																{tag}
+															</span>
+														))}
+													</div>
+												</div>
+											</div>
+										</div>
+									)
+								})}
+							</div>
+						</div>
+					</section>
+
+					{/* Aset & Alat */}
+					<section className="px-5 pb-14 md:px-0">
+						<div className="w-full md:w-[709px] md:max-w-full">
+							<h2 className="h-[30px] w-full max-w-[610px] pl-5 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black md:pl-0">
+								Aset & Alat
+							</h2>
+							<div className="mt-6 flex w-full flex-wrap gap-4 md:h-[77px] md:flex-nowrap">
+								{ASSET_STATS.map((stat) => (
+									<div
+										key={stat.label}
+										className="flex h-[77px] flex-1 flex-col items-center justify-center gap-[11px] rounded-[8px] border border-[#EEEEE799] bg-[#F3F3F3] px-[5px] py-[10px] text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] md:w-[129px] md:flex-none md:shrink-0"
+									>
+										<p className="font-['Montserrat'] text-[25px] font-medium leading-[100%] tracking-[0%] text-black">
+											{stat.value}
+										</p>
+										<p className="w-auto whitespace-nowrap font-['Montserrat'] text-[11px] font-medium uppercase leading-[14px] tracking-[0.55px] text-[#303030] md:w-[117px]">
+											{stat.label}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+
+					{/* Fasilitas */}
+					<section className="px-5 pb-14 md:px-0">
+						<div>
+							<h2 className="font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black">
+								Fasilitas
+							</h2>
+							<div className="mt-6 flex flex-wrap gap-x-9 gap-y-[26px] px-2 sm:gap-x-10 sm:gap-y-4 sm:px-0">
+								{FACILITIES.map((facility) => {
+									return (
+										<div key={facility.label} className="flex items-center gap-3">
+											<img
+												src={facility.icon}
+												alt=""
+												className="h-6 w-6 shrink-0 object-contain sm:h-5 sm:w-5"
+												aria-hidden="true"
+											/>
+											<span className="font-['Montserrat'] text-[16px] font-semibold leading-[24px] tracking-[0.16px] text-black">
+												{facility.label}
+											</span>
+										</div>
+									)
+								})}
+							</div>
+						</div>
+					</section>
 				</div>
-			</section>
+
+				{/* Kolom kanan (desktop): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
+				<aside className="hidden md:block md:w-1/3 md:pt-14">
+					<div className="sticky top-24">
+						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
+						<WhatsAppCard
+							className="md:!w-full"
+							title="Laundry Beres, Aktivitas Jalan Terus"
+							description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
+							link={WHATSAPP_LINK}
+						/>
+					</div>
+				</aside>
+			</div>
 
 			{/* Galeri — tetap full width */}
 			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
@@ -700,7 +722,8 @@ function LaundryPage() {
 
 			<LandingFooter />
 
-			<div className="px-4 pb-8 pt-8 md:hidden">
+			{/* Card WhatsApp versi mobile: fixed di bawah layar, selalu di depan; hanya konten yang bergeser saat scroll */}
+			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-6 pt-6 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden">
 				<WhatsAppCard
 					className="!mt-0"
 					title="Laundry Beres, Aktivitas Jalan Terus"

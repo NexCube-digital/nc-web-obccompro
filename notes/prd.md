@@ -1,16 +1,13 @@
-
-
-
-
-
 Product Requirement Document (PRD)
 Company Profile Website 
 Onny Barber Center (OBC) 
 
-
 Versi 1.0 • 10 September 2026
 Status: Draft - Pending Final Confirmation
 Referensi: https://www.airbnb.co.id/
+
+---
+
 
 1. Overview
 Website company profile untuk OBC GROUP, menaungi Onny Barber Center (OBC) dan 8 kategori bisnis lain di bawah penamaan konsisten "OBC [Nama Kategori]" (OBC Sport Center, OBC Guest House, OBC Villa, OBC Penthouse, OBC Laundry, OBC Food Court, OBC Agrobisnis, OBC Coffee). 
@@ -52,8 +49,6 @@ Review pelanggan
 Kontak & Lokasi
 mendukung multi-lokasi — menampilkan peta/alamat berbeda untuk tiap kategori bisnis yang lokasinya terpisah (misal Villa/Guest House/Penthouse mungkin beda titik dari kompleks utama Sport Center dll di Jl. Rancabentang I No.12). Tiap halaman directory kategori juga menampilkan alamat spesifiknya sendiri (bukan cuma di halaman Kontak terpusat). 
 
-
-
 6. Functional Requirements
 Responsive (mobile-first, mayoritas traffic dari HP).
 Integrasi tombol WhatsApp untuk pertanyaan cepat & pengajuan sewa gedung.
@@ -69,9 +64,7 @@ Loading cepat (<3 detik di koneksi 4G).
 Desain konsisten dengan brand identity OBC (logo, warna, tone).
 Aman (HTTPS).
 
-
-
-  8. Out of Scope
+8. Out of Scope
 Sistem booking online untuk Guest House, Villa, Penthouse (fase depan, jika dibutuhkan).
 Sistem order online untuk Food Court/Coffee/Agrobisnis (fase depan).
 Sistem booking OBC online (masih walk-in/WA, sudah dicatat sebelumnya).
@@ -92,7 +85,6 @@ Bounce rate & waktu kunjungan halaman fasilitas.
 10. UseCase
 
 11. FlowChart
-
 
 10. Open Questions
 Apakah perlu multi-bahasa (ID/EN)? → Terjawab: YA

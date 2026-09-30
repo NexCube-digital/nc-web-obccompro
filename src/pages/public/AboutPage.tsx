@@ -31,14 +31,20 @@ function AboutPage() {
 			<LandingNavbar />
 			<main className="bg-obc-ivory font-body text-obc-green">
 			{/* ===== HERO ===== */}
-			<section className="relative flex h-[100svh] min-h-[540px] items-end justify-center overflow-hidden pb-[100px] md:h-[640px] md:min-h-0 md:items-center md:pb-0">
+			<section className="relative flex h-[100svh] min-h-[540px] w-full items-end justify-center overflow-hidden pb-[100px] md:h-auto md:min-h-screen md:items-center md:pb-12 md:pt-16">
 				<img
 					src={heroImage}
 					alt="Lapangan futsal OBC"
 					className="absolute inset-0 h-full w-full object-cover"
 				/>
-				{/* Overlay gelap supaya teks tetap terbaca */}
-				<div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/50" />
+				{/* Base overlay lembut agar foto tetap jernih & teks kontras */}
+				<div className="absolute inset-0 bg-black/25" />
+
+				{/* Shadow ujung atas (tidak terlalu lebar) */}
+				<div className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-32 md:h-36 bg-gradient-to-b from-black/80 via-black/35 to-transparent" />
+
+				{/* Shadow ujung bawah (tidak terlalu lebar) */}
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
 
 				<div className="relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
 					{/* Judul: 36px di mobile */}
@@ -175,4 +181,3 @@ function AboutPage() {
 }
 
 export default AboutPage
-

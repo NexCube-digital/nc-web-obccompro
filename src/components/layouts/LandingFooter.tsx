@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
-import { WhatsAppLogo } from '../common/WhatsAppIcon'
 import logo from '../../assets/logo/obclogo.png'
 import lapangF1Image from '../../assets/layanan/Lapang F1.png'
 
@@ -52,6 +51,18 @@ function TikTokLogo({ className = 'h-[14px] w-[14px]' }: { className?: string })
 	)
 }
 
+function WhatsAppSocialIcon({ className = 'h-[16px] w-[16px]' }: { className?: string }) {
+	return (
+		<svg viewBox="0 0 33 33" aria-hidden="true" className={`${className} fill-current`}>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M25.8199 23.0456C25.4266 24.159 23.8631 25.08 22.6163 25.3494C21.7627 25.5306 20.6497 25.6739 16.8994 24.1199C12.6872 22.3747 6.83808 16.1584 6.83808 12.0217C6.83808 9.91575 8.05229 7.46353 10.1755 7.46353C11.1972 7.46353 11.4224 7.48345 11.7586 8.28989C12.1519 9.24 13.1115 11.5809 13.2257 11.8208C13.6974 12.8052 12.7459 13.3814 12.0556 14.2385C11.8353 14.4965 11.5856 14.7754 11.8647 15.2554C12.1421 15.7255 13.1017 17.2895 14.5117 18.5448C16.3331 20.1676 17.81 20.6856 18.3388 20.9061C18.7321 21.0693 19.2021 21.0312 19.4893 20.7244C19.8533 20.3309 20.3053 19.6781 20.7656 19.035C21.0903 18.5746 21.5032 18.5171 21.9357 18.6803C22.2278 18.7816 25.9406 20.5058 26.0973 20.7818C26.2132 20.9825 26.2132 21.9323 25.8199 23.0456ZM16.3233 0H16.3151C7.31787 0 0 7.32009 0 16.32C0 19.8886 1.15057 23.1994 3.10734 25.8849L1.07387 31.9491L7.34565 29.945C9.92584 31.6525 13.0054 32.64 16.3233 32.64C25.3205 32.64 32.64 25.3199 32.64 16.32C32.64 7.32009 25.3205 0 16.3233 0Z"
+			/>
+		</svg>
+	)
+}
+
 /* Kelas bersama */
 const headingClass =
 	"h-4 w-[169px] font-['Montserrat'] text-[15px] font-bold uppercase leading-4 tracking-[0px] text-white md:text-[14px]"
@@ -62,28 +73,28 @@ function LandingFooter() {
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	return (
-		<footer id="kontak" className="bg-white p-2 md:p-[17px]">
+		<footer id="kontak" className="bg-white p-2 sm:px-[34px] sm:py-[20px]">
 			<div
-				className="relative mx-auto w-full max-w-[1246px] overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat md:min-h-[550px] md:rounded-[25px]"
+				className="relative mx-auto w-full overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat md:min-h-[550px] md:rounded-[25px]"
 				style={{
 					backgroundColor: 'rgba(1, 38, 3, 0.84)',
 					backgroundImage: `linear-gradient(180deg, rgba(1, 38, 3, 0.84) 0%, rgba(1, 38, 3, 0.84) 100%), url(${lapangF1Image})`,
 				}}
 			>
 				{/* ===== Konten utama ===== */}
-				<div className="mx-auto max-w-[1246px] px-4 pt-5 md:px-[89px] md:pt-[60px]">
+				<div className="mx-auto w-full max-w-[1246px] px-4 pt-5 md:px-10 md:pt-[60px] lg:px-12">
 					{/* Mobile: logo → hubungi kami → (perusahaan | unit bisnis). Desktop: 4 kolom */}
-					<div className="grid grid-cols-[236fr_143fr] gap-y-8 md:grid-cols-[328fr_243fr_223fr_270fr] md:gap-0">
+					<div className="grid grid-cols-[236fr_143fr] gap-y-8 md:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] md:gap-8 lg:gap-12">
 						{/* Logo + sosial media */}
-						<div className="order-1 col-span-2 box-border flex w-full flex-col items-center md:order-none md:col-span-1 md:block md:h-[167px] md:w-[291px] md:min-w-[252px] md:pr-[43px]">
+						<div className="order-1 col-span-2 box-border flex w-full flex-col items-center md:order-none md:col-span-1 md:items-start md:gap-3">
 							<Link
 								to="/"
 								aria-label="OBC beranda"
-								className="inline-flex h-[122px] w-[320px] max-w-full gap-[10px] p-[10px] md:h-[129px] md:w-[258px]"
+								className="inline-flex h-[140px] w-full max-w-[350px] gap-[10px] p-[10px] md:h-[95px] md:w-auto md:gap-0 md:p-0"
 							>
-								<img src={logo} alt="OBC" className="h-full w-full object-contain" />
+								<img src={logo} alt="OBC" className="h-full w-full object-contain md:w-auto md:object-left" />
 							</Link>
-							<div className="mt-4 box-border flex h-[32px] items-center justify-center gap-8 md:mt-0 md:w-[248px] md:items-end md:gap-[30px] md:px-[15px] md:pt-[10px]">
+							<div className="mt-4 flex h-[32px] items-center justify-center gap-8 md:mt-0 md:justify-start md:gap-4 md:pt-1">
 								<a
 									href={CONTACT.whatsapp}
 									target="_blank"
@@ -91,7 +102,7 @@ function LandingFooter() {
 									aria-label="WhatsApp OBC Group"
 									className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110"
 								>
-									<WhatsAppLogo className="h-4 w-[17px]" />
+									<WhatsAppSocialIcon className="h-4 w-4 text-black" />
 								</a>
 								<a
 									href={CONTACT.instagram}
@@ -174,10 +185,10 @@ function LandingFooter() {
 				</div>
 
 				{/* ===== Teks besar "OBC GROUP" (memudar ke bawah) ===== */}
-				<div className="mx-auto mt-10 flex h-[80px] w-full max-w-[1146px] justify-center overflow-hidden md:mt-[44px] md:h-[116px]">
+				<div className="mx-auto mt-10 flex h-[80px] w-full max-w-[1246px] justify-center overflow-hidden md:mt-[36px] md:h-[110px]">
 					<span
 						aria-hidden="true"
-						className="mt-[6px] h-[65px] w-[678px] max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[44px] font-black leading-[65px] text-transparent md:mt-[14.33px] md:h-[83px] md:text-[100px] md:leading-[83px]"
+						className="mt-[6px] h-[65px] w-auto max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[44px] font-black leading-[65px] text-transparent md:mt-[10px] md:h-[83px] md:text-[90px] md:leading-[83px] lg:text-[105px]"
 						style={{
 							backgroundImage:
 								'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
@@ -192,43 +203,45 @@ function LandingFooter() {
 					type="button"
 					onClick={scrollToTop}
 					aria-label="Kembali ke atas"
-					className="absolute bottom-[124px] right-[72px] grid h-[52px] w-[48px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] transition-transform hover:-translate-y-1 md:bottom-auto md:right-[53px] md:top-[415px] md:h-[47px] md:w-[36px]"
+					className="absolute bottom-[150px] right-[72px] grid h-[52px] w-[48px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:bottom-[105px] md:right-12 md:h-[44px] md:w-[36px]"
 				>
 					<ArrowUp className="h-[26px] w-[20px] md:h-5 md:w-[15px]" />
 				</button>
 
 				{/* ===== Bar bawah ===== */}
-				<div className="box-border mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[5px] px-6 pb-[10px] pt-0 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:py-5 md:text-left">
-					<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
+				<div className="md:border-t md:border-white/10">
+					<div className="box-border mx-auto flex w-full max-w-[1246px] flex-col items-center gap-[5px] px-6 pb-[10px] pt-0 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:gap-4 md:px-10 md:py-5 md:text-left lg:px-12">
+						<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
 
-					<p>
-						Dikembangkan oleh{' '}
-						<a
-							href="https://nexcube.digital"
-							target="_blank"
-							rel="noreferrer"
-							className="underline transition-colors hover:text-[#CDF178]"
-						>
-							Nexcube Digital
-						</a>
-					</p>
+						<p>
+							Dikembangkan oleh{' '}
+							<a
+								href="https://nexcube.digital"
+								target="_blank"
+								rel="noreferrer"
+								className="underline transition-colors hover:text-[#CDF178]"
+							>
+								Nexcube Digital
+							</a>
+						</p>
 
-					{/* Bahasa + ikon sosial hanya di desktop; di mobile tidak ada di desain */}
-					<div className="hidden items-center gap-6 md:flex">
-						<span className="flex items-center gap-2">
-							<Globe width={15.5} height={15.5} className="text-white" />
-							Bahasa Indonesia (ID)
-						</span>
-						<div className="flex items-center gap-5">
-							<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<WhatsAppLogo className="h-[16.5px] w-[16.5px]" />
-							</a>
-							<a href={CONTACT.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<TikTokLogo className="h-[14px] w-[14px] bg-white text-black" />
-							</a>
-							<a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<InstagramLogo className="h-[16.5px] w-[16.5px]" />
-							</a>
+						{/* Bahasa + ikon sosial hanya di desktop; di mobile tidak ada di desain */}
+						<div className="hidden items-center gap-6 md:flex">
+							<span className="flex items-center gap-2">
+								<Globe width={15.5} height={15.5} className="text-white" />
+								Bahasa Indonesia (ID)
+							</span>
+							<div className="flex items-center gap-5">
+								<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<WhatsAppSocialIcon className="h-[16.5px] w-[16.5px]" />
+								</a>
+								<a href={CONTACT.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<TikTokLogo className="h-[14px] w-[14px] bg-white text-black" />
+								</a>
+								<a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<InstagramLogo className="h-[16.5px] w-[16.5px]" />
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>

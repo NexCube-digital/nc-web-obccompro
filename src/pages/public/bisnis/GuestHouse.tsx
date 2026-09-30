@@ -123,7 +123,8 @@ function GuestHousePage() {
 	}, [selectedGalleryImage])
 
 	return (
-		<div className="min-h-screen bg-obc-ivory">
+		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
+		<div className="min-h-screen bg-obc-ivory pb-[150px] md:pb-0">
 			<LandingNavbar />
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop tetap seperti semula */}
@@ -133,141 +134,161 @@ function GuestHousePage() {
 					alt="Fasad OBC Guest House"
 					className="absolute inset-0 h-full w-full object-cover object-top md:object-center"
 				/>
-				<div className="absolute inset-y-0 right-0 hidden w-[58%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:block" />
+				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
+				<div className="absolute inset-y-0 right-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(270deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				<div className="relative hidden min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:flex md:px-8">
-					<div className="w-full max-w-[472px] text-black md:mr-6">
-						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
-							Hospitality & Accommodation
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							OBC Guest House
-						</h1>
-						<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black">
-							Penginapan yang nyaman untuk melengkapi pengalaman menginap Anda di kawasan Ciumbuleuit, Bandung.
-						</p>
+				{/* Teks hero: hanya desktop, container mengikuti dev (max-w 1246px, rata kanan) */}
+				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
+					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
+						<div className="w-full max-w-[472px] text-black">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
+								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+								Hospitality & Accommodation
+							</span>
+							<h1 className="mt-5 font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
+								OBC Guest House
+							</h1>
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-normal leading-[29.25px] tracking-[0.18px] text-black">
+								Penginapan yang nyaman untuk melengkapi pengalaman menginap Anda di kawasan Ciumbuleuit, Bandung.
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Tentang + CTA */}
-			<section className="relative z-10 mx-auto -mt-7 max-w-[1200px] rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:flex md:gap-10 md:rounded-none md:bg-transparent md:px-8 md:py-14">
-				<div className="flex flex-col md:w-2/3">
-					{/* Judul: hanya mobile */}
-					<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-						OBC Guest House
-					</h1>
+			{/*
+				Wrapper dua kolom (Tentang + Pilihan Kamar + Fasilitas).
+				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
+				yaitu tepat sebelum Galeri (lebar penuh).
+				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
+				karena akan mematikan position: sticky.
+			*/}
+			<div className="mx-auto max-w-[1200px] md:flex md:items-stretch md:gap-10 md:px-8">
+				{/* Kolom kiri */}
+				<div className="min-w-0 md:w-2/3">
+					{/* Tentang */}
+					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+						<div className="flex flex-col">
+							{/* Judul: hanya mobile */}
+							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
+								OBC Guest House
+							</h1>
 
-					{/* Info singkat: di mobile tampil di atas "Tentang", di desktop tetap di bawah paragraf */}
-					<div className="order-2 mb-8 mt-4 flex flex-nowrap items-center justify-between gap-2 md:order-3 md:mb-0 md:mt-8 md:flex-wrap md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<img src={roomIcon} alt="" width={20} height={14} aria-hidden="true" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">{TOTAL_ROOMS} Rooms</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<LogIn size={18} className="text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
-							</div>
-						</div>
-						<div className="flex items-center justify-center gap-2 text-left md:text-center">
-							<LogOut size={18} className="text-[#222022]" />
-							<div>
-								<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
-								<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
-							</div>
-						</div>
-					</div>
-
-					<h2 className="order-3 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:text-[25px]">Tentang OBC Guest House</h2>
-					<p className="order-4 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-						OBC Guest House berada di kawasan OBC, Ciumbuleuit, Bandung, dan menjadi salah satu pilihan tempat
-						menginap bagi kamu yang ingin beristirahat dengan nyaman. Lokasinya berada dalam satu kawasan dengan
-						berbagai fasilitas OBC, sehingga kamu bisa dengan mudah menikmati Food Court, Sport Center, maupun
-						fasilitas lainnya selama menginap.
-					</p>
-				</div>
-
-				{/* Card WhatsApp versi desktop (di mobile pindah ke bawah footer) */}
-				<WhatsAppCard
-					className="hidden md:block"
-					title="Tertarik menginap di OBC Guest House?"
-					description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Guest House"
-					link={WHATSAPP_LINK}
-				/>
-			</section>
-
-			{/* Pilihan Kamar */}
-			<section className="mx-auto max-w-[1200px] px-5 pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<div className="flex items-center justify-between">
-						<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">Pilihan Kamar</h2>
-						<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
-							Total {TOTAL_ROOMS} Ruangan
-						</span>
-					</div>
-					<p className="mt-1 font-['Montserrat'] text-[16px] font-normal leading-[24px] tracking-[0.15px] text-black md:text-[15px]">Unit kamar yang terkelola di OBC Guest House.</p>
-
-					<div className="mt-6 flex flex-col gap-8 md:mt-8 md:gap-0 md:divide-y md:divide-obc-border">
-						{ROOM_TYPES.map((type) => {
-							// Nama kamar pendek (Room 1A dst) dibuat grid 4 kolom di mobile,
-							// nama panjang (Penthouse 1) tetap lebar natural
-							const isCompact = type.rooms.every((room) => room.length <= 8)
-							return (
-								<div key={type.name} className="md:py-6 md:first:pt-0">
-									<div className="flex items-center justify-between">
-										<h3 className="flex items-center gap-2 font-['Montserrat'] text-[18px] font-semibold uppercase leading-[28.8px] tracking-[0.15px] text-black md:normal-case">
-											<span className="h-[10px] w-[10px] rounded-full bg-[#9C9C9C]" />
-											{type.name}
-										</h3>
-										<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
-											{type.rooms.length} Kamar
-										</span>
+							{/* Info singkat: di mobile tampil di atas "Tentang", di desktop tetap di bawah paragraf */}
+							<div className="order-2 mb-8 mt-4 flex flex-nowrap items-center justify-between gap-2 md:order-3 md:mb-0 md:mt-8 md:flex-wrap md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<img src={roomIcon} alt="" width={20} height={14} aria-hidden="true" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">{TOTAL_ROOMS} Rooms</p>
 									</div>
-									<p className="mt-3 hidden font-['Montserrat'] text-[13px] font-normal leading-[19.5px] tracking-[0.26px] text-[#222222] md:block">Daftar unit nomor kamar:</p>
-									<div
-										className={`mt-4 gap-2 md:mt-3 ${
-											isCompact ? 'grid grid-cols-4 md:flex md:flex-wrap' : 'flex flex-wrap'
-										}`}
-									>
-										{type.rooms.map((room) => (
-											<span
-												key={room}
-												className="inline-flex items-center justify-center rounded-[2px] bg-[#EEEEE7] px-1 pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[0.8px] whitespace-nowrap text-black md:justify-start md:px-[10px] md:tracking-[1.65px]"
+								</div>
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<LogIn size={18} className="text-[#222022]" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
+									</div>
+								</div>
+								<div className="flex items-center justify-center gap-2 text-left md:text-center">
+									<LogOut size={18} className="text-[#222022]" />
+									<div>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
+									</div>
+								</div>
+							</div>
+
+							<h2 className="order-3 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:text-[25px]">Tentang OBC Guest House</h2>
+							<p className="order-4 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
+								OBC Guest House berada di kawasan OBC, Ciumbuleuit, Bandung, dan menjadi salah satu pilihan tempat
+								menginap bagi kamu yang ingin beristirahat dengan nyaman. Lokasinya berada dalam satu kawasan dengan
+								berbagai fasilitas OBC, sehingga kamu bisa dengan mudah menikmati Food Court, Sport Center, maupun
+								fasilitas lainnya selama menginap.
+							</p>
+						</div>
+					</section>
+
+					{/* Pilihan Kamar */}
+					<section className="px-5 pb-14 md:px-0">
+						<div>
+							<div className="flex items-center justify-between">
+								<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">Pilihan Kamar</h2>
+								<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
+									Total {TOTAL_ROOMS} Ruangan
+								</span>
+							</div>
+							<p className="mt-1 font-['Montserrat'] text-[16px] font-normal leading-[24px] tracking-[0.15px] text-black md:text-[15px]">Unit kamar yang terkelola di OBC Guest House.</p>
+
+							<div className="mt-6 flex flex-col gap-8 md:mt-8 md:gap-0 md:divide-y md:divide-obc-border">
+								{ROOM_TYPES.map((type) => {
+									// Nama kamar pendek (Room 1A dst) dibuat grid 4 kolom di mobile,
+									// nama panjang (Penthouse 1) tetap lebar natural
+									const isCompact = type.rooms.every((room) => room.length <= 8)
+									return (
+										<div key={type.name} className="md:py-6 md:first:pt-0">
+											<div className="flex items-center justify-between">
+												<h3 className="flex items-center gap-2 font-['Montserrat'] text-[18px] font-semibold uppercase leading-[28.8px] tracking-[0.15px] text-black md:normal-case">
+													<span className="h-[10px] w-[10px] rounded-full bg-[#9C9C9C]" />
+													{type.name}
+												</h3>
+												<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
+													{type.rooms.length} Kamar
+												</span>
+											</div>
+											<p className="mt-3 hidden font-['Montserrat'] text-[13px] font-normal leading-[19.5px] tracking-[0.26px] text-[#222222] md:block">Daftar unit nomor kamar:</p>
+											<div
+												className={`mt-4 gap-2 md:mt-3 ${
+													isCompact ? 'grid grid-cols-4 md:flex md:flex-wrap' : 'flex flex-wrap'
+												}`}
 											>
-												{room}
-											</span>
-										))}
-									</div>
-								</div>
-							)
-						})}
-					</div>
-				</div>
-			</section>
+												{type.rooms.map((room) => (
+													<span
+														key={room}
+														className="inline-flex items-center justify-center rounded-[2px] bg-[#EEEEE7] px-1 pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[0.8px] whitespace-nowrap text-black md:justify-start md:px-[10px] md:tracking-[1.65px]"
+													>
+														{room}
+													</span>
+												))}
+											</div>
+										</div>
+									)
+								})}
+							</div>
+						</div>
+					</section>
 
-			{/* Fasilitas */}
-			<section className="mx-auto max-w-[1200px] px-[30px] pb-14 md:px-8">
-				<div className="md:w-2/3">
-					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#222022] md:tracking-[1px]">Fasilitas yang Ditawarkan</h2>
-					<div className="mt-7 grid grid-cols-1 gap-y-5 sm:grid-cols-2 md:mt-6 md:gap-y-4">
-						{FACILITIES.map((facility) => {
-							return (
-								<div key={facility.label} className="flex items-center gap-3">
-									<img src={facility.icon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
-									<span className="font-['Montserrat'] text-[14px] font-medium leading-[19.6px] tracking-[0.56px] text-[#222022]">{facility.label}</span>
-								</div>
-							)
-						})}
-					</div>
+					{/* Fasilitas */}
+					<section className="px-[30px] pb-14 md:px-0">
+						<div>
+							<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#222022] md:tracking-[1px]">Fasilitas yang Ditawarkan</h2>
+							<div className="mt-7 grid grid-cols-1 gap-y-5 sm:grid-cols-2 md:mt-6 md:gap-y-4">
+								{FACILITIES.map((facility) => {
+									return (
+										<div key={facility.label} className="flex items-center gap-3">
+											<img src={facility.icon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
+											<span className="font-['Montserrat'] text-[14px] font-medium leading-[19.6px] tracking-[0.56px] text-[#222022]">{facility.label}</span>
+										</div>
+									)
+								})}
+							</div>
+						</div>
+					</section>
 				</div>
-			</section>
+
+				{/* Kolom kanan (desktop): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
+				<aside className="hidden md:block md:w-1/3 md:pt-14">
+					<div className="sticky top-24">
+						<WhatsAppCard
+							className="md:!w-full"
+							title="Tertarik menginap di OBC Guest House?"
+							description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Guest House"
+							link={WHATSAPP_LINK}
+						/>
+					</div>
+				</aside>
+			</div>
 
 			{/* Galeri */}
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
@@ -366,8 +387,8 @@ function GuestHousePage() {
 
 			<LandingFooter />
 
-			{/* Card WhatsApp versi mobile: di bawah footer, tanpa kartu/bayangan */}
-			<div className="px-4 pb-8 pt-8 md:hidden">
+			{/* Card WhatsApp versi mobile: fixed di bawah layar, selalu di depan; hanya konten yang bergeser saat scroll */}
+			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden">
 				<WhatsAppCard
 					className="!mt-0"
 					title="Tertarik menginap di OBC Guest House?"
