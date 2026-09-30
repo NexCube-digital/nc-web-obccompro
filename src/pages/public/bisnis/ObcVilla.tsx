@@ -113,28 +113,28 @@ function VillaPage() {
 			{/* Hero */}
 			<section className="relative min-h-[100svh] overflow-hidden">
 				<img src={heroImage} alt="OBC Villa" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 left-0 w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.94)_26%,rgba(250,250,242,0.7)_52%,rgba(250,250,242,0.2)_72%,rgba(250,250,242,0)_100%)] md:w-[58%]" />
 				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+				<div className="absolute inset-y-0 left-0 h-full w-full sm:w-[92%] md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.94)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				
-
-				<div className="relative flex min-h-[100svh] items-center justify-start px-4 py-24 sm:px-6 md:px-8">
-					<div className="w-full max-w-[472px] text-black md:ml-6">
-						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
-							Hospitality & Accommodation
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							OBC Villa
-						</h1>
-						<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black">
-							Nikmati kenyamanan dan ketenangan dalam pengalaman menginap di OBC Villa, dengan suasana asri yang
-							memberikan ruang untuk beristirahat, menikmati waktu bersama, dan menciptakan momen berkesan di
-							Ciumbuleuit, Bandung.
-						</p>
-						<p className="mt-4 font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black">
-							{QUICK_FACTS.join(' · ')}
-						</p>
+				<div className="relative z-10 flex min-h-[100svh] w-full items-center pt-24 pb-12">
+					<div className="mx-auto w-[calc(100%-32px)] max-w-[1246px] px-4 sm:px-6">
+						<div className="w-full max-w-[472px] text-black">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
+								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+								Hospitality & Accommodation
+							</span>
+							<h1 className="mt-5 font-['Montserrat'] text-[38px] font-bold leading-[1.2] tracking-[1.5px] text-black sm:text-[46px] md:text-[56px] md:leading-[70px]">
+								OBC Villa
+							</h1>
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[15px] font-normal leading-[26px] tracking-[0.18px] text-black sm:text-[16px] md:text-[18px] md:leading-[29.25px]">
+								Nikmati kenyamanan dan ketenangan dalam pengalaman menginap di OBC Villa, dengan suasana asri yang
+								memberikan ruang untuk beristirahat, menikmati waktu bersama, dan menciptakan momen berkesan di
+								Ciumbuleuit, Bandung.
+							</p>
+							<p className="mt-4 font-['Montserrat'] text-[13px] font-medium leading-[18px] tracking-[0.52px] text-black">
+								{QUICK_FACTS.join(' · ')}
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>

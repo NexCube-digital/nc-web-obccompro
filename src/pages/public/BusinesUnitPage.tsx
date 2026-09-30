@@ -7,7 +7,7 @@ import {
 import { WhatsAppLogo } from '../../components/common/WhatsAppIcon'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
-import lapangF1Image from '../../assets/layanan/Lapang F1.png'
+import heroSignpostImage from '../../assets/unit-bisnis/slider/a8068cd70eafb7bacbeca863ef32256ede57a5d0.png'
 import lapangF2Image from '../../assets/layanan/Lapang F2.png'
 import guestHouseLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
 import villaLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
@@ -135,29 +135,31 @@ function BusinessUnitPage() {
 			{/* Hero slider */}
 			<section className="relative min-h-[100svh] overflow-hidden">
 				<img
-					src={lapangF1Image}
+					src={heroSignpostImage}
 					alt="Papan penunjuk unit bisnis OBC Group"
-					className="absolute inset-0 h-full w-full object-cover"
+					className="absolute inset-0 h-full w-full object-cover object-[center_58%] translate-x-10 md:translate-x-20 lg:translate-x-28 xl:translate-x-36"
 				/>
-				<div className="absolute inset-y-0 left-[0.32px] h-[724px] w-[763.5928344726562px] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,rgba(250,250,242,0)_100%)] opacity-100" />
-				<div className="relative flex min-h-[100svh] items-center px-6 py-24 md:-translate-y-8 md:px-10 mt-4">
-					<div className="w-full max-w-[443px] text-black">
-						<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
-							<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
-								UNIT BISNIS
+				<div className="absolute inset-y-0 left-0 h-full w-full sm:w-[95%] md:w-[68%] lg:w-[62%] xl:w-[58%] 2xl:w-[55%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)]" />
+				<div className="relative z-10 flex min-h-[100svh] w-full items-center pt-24 pb-12">
+					<div className="mx-auto w-[calc(100%-32px)] max-w-[1246px] px-4 sm:px-6">
+						<div className="w-full max-w-[440px] text-black">
+							<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
+								<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
+									UNIT BISNIS
+								</span>
 							</span>
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							Bisnis Kami
-						</h1>
-						<p className="mt-4 h-[96px] w-[443px] max-w-full font-['Montserrat'] text-[40px] font-medium leading-[48px] tracking-[-0.8px] text-[#000000]">
-							Satu Ekosistem, Beragam Layanan
-						</p>
-						<p className="mt-5 h-[168px] w-[443px] max-w-full text-justify font-['Montserrat'] text-[18px] font-normal leading-[28px] tracking-[0px] text-[#000000]">
-							OBC Group menghadirkan beragam unit bisnis dalam satu ekosistem yang saling melengkapi. Setiap unit
-							memiliki layanan dan karakteristiknya masing-masing untuk memberikan pengalaman yang sesuai dengan
-							kebutuhan pelanggan.
-						</p>
+							<h1 className="mt-5 font-['Montserrat'] text-[38px] font-bold leading-[1.2] tracking-[1.5px] text-black sm:text-[46px] md:text-[56px] md:leading-[70px]">
+								Bisnis Kami
+							</h1>
+							<p className="mt-4 font-['Montserrat'] text-[24px] font-medium leading-[1.25] tracking-[-0.8px] text-[#000000] sm:text-[30px] md:text-[40px] md:leading-[48px]">
+								Satu Ekosistem, Beragam Layanan
+							</p>
+							<p className="mt-5 text-justify font-['Montserrat'] text-[15px] font-normal leading-[26px] tracking-[0px] text-[#000000] sm:text-[16px] md:text-[18px] md:leading-[28px]">
+								OBC Group menghadirkan beragam unit bisnis dalam satu ekosistem yang saling melengkapi. Setiap unit
+								memiliki layanan dan karakteristiknya masing-masing untuk memberikan pengalaman yang sesuai dengan
+								kebutuhan pelanggan.
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>

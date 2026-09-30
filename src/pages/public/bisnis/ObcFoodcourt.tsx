@@ -272,22 +272,24 @@ function FoodCourtPage() {
 			{/* Hero */}
 			<section className="relative min-h-[100svh] overflow-hidden">
 				<img src={heroImage} alt="OBC Food Court" className="absolute inset-0 h-full w-full object-cover" />
-				<div className="absolute inset-y-0 right-0 w-[92%] bg-[linear-gradient(90deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0.6)_18%,rgba(250,250,242,0.9)_52.98%,rgba(250,250,242,0.592749)_73.8%,#FAFAF2_100%)] md:w-[58%]" />
 				<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent" />
+				<div className="absolute inset-y-0 right-0 h-full w-full sm:w-[92%] md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(270deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				<div className="relative flex min-h-[100svh] items-center justify-end px-4 py-24 sm:px-6 md:px-8">
-					<div className="w-full max-w-[472px] text-black md:mr-6">
-						<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-							<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
-							Food & Beverage
-						</span>
-						<h1 className="mt-5 max-w-[400px] font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
-							OBC Food Court
-						</h1>
-						<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-medium leading-[29.25px] tracking-[0.18px] text-black">
-							Nikmati beragam pilihan makanan dan minuman dalam satu tempat yang nyaman untuk berkumpul, bersantai,
-							dan berbagi cerita.
-						</p>
+				<div className="relative z-10 flex min-h-[100svh] w-full items-center pt-24 pb-12">
+					<div className="mx-auto flex w-[calc(100%-32px)] max-w-[1246px] justify-end px-4 sm:px-6">
+						<div className="w-full max-w-[472px] text-black">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
+								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+								Food & Beverage
+							</span>
+							<h1 className="mt-5 font-['Montserrat'] text-[38px] font-bold leading-[1.2] tracking-[1.5px] text-black sm:text-[46px] md:text-[56px] md:leading-[70px]">
+								OBC Food Court
+							</h1>
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[15px] font-normal leading-[26px] tracking-[0.18px] text-black sm:text-[16px] md:text-[18px] md:leading-[29.25px]">
+								Nikmati beragam pilihan makanan dan minuman dalam satu tempat yang nyaman untuk berkumpul, bersantai,
+								dan berbagi cerita.
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>

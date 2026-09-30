@@ -69,16 +69,18 @@ function GalleryPage() {
 					alt="Kolase fasilitas dan aktivitas OBC"
 					className="absolute inset-0 h-full w-full object-cover"
 				/>
-				<div className="absolute inset-y-0 left-0 w-[92%] bg-[linear-gradient(90deg,#FAFAF2_0%,rgba(250,250,242,0.592749)_26.2%,rgba(250,250,242,0.9)_47.02%,rgba(250,250,242,0.6)_82%,rgba(250,250,242,0)_100%)] md:w-[58%]" />
-				<div className="relative flex h-full items-center px-6 py-12 md:-translate-y-8 md:px-10 md:py-16">
-					<div className="w-full max-w-[472px] text-black">
-						<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
-						<h1 className="mt-5 font-['Montserrat'] text-[36px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[56px] md:leading-[70px]">
-							Cerita di Setiap Sudut OBC
-						</h1>
-						<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[16px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[18px] md:leading-[29.25px]">
-							Jelajahi berbagai momen, fasilitas, aktivitas, dan pengalaman yang menjadi bagian dari perjalanan OBC.
-						</p>
+				<div className="absolute inset-y-0 left-0 h-full w-full sm:w-[92%] md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
+				<div className="relative z-10 flex h-full w-full items-center pt-24 pb-12">
+					<div className="mx-auto w-[calc(100%-32px)] max-w-[1246px] px-4 sm:px-6">
+						<div className="w-full max-w-[472px] text-black">
+							<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
+							<h1 className="mt-5 font-['Montserrat'] text-[36px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[56px] md:leading-[70px]">
+								Cerita di Setiap Sudut OBC
+							</h1>
+							<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[16px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[18px] md:leading-[29.25px]">
+								Jelajahi berbagai momen, fasilitas, aktivitas, dan pengalaman yang menjadi bagian dari perjalanan OBC.
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
