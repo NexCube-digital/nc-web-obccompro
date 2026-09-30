@@ -16,16 +16,16 @@ export default function TentangKami() {
 				<span className="mb-3 block font-['Montserrat'] text-[18px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-[#000000CC]">
 					Tentang OBC Group
 				</span>
-				<h2 className="h-auto min-h-[45px] w-full max-w-[590px] font-['Montserrat'] text-[36px] font-bold leading-[45px] tracking-[1.5px] text-[#000000] opacity-100">
+				<h2 className="h-auto w-full font-['Montserrat'] text-[32px] sm:text-[36px] font-bold leading-[42px] sm:leading-[45px] tracking-[1.5px] text-[#000000]">
 					Sejarah Singkat &amp; Komitmen OBC
 				</h2>
-				<p className="my-3 mb-2 h-auto min-h-[96px] w-full max-w-[577px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
+				<p className="my-3 mb-2 h-auto w-full font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
 					Berawal dari usaha potong rambut Onny Barber Center (OBC) yang didirikan pada
 					7 Mei 1999 oleh Alm. Bpk. Djoni, OBC tumbuh dari langkah sederhana yang lahir
 					dari rasa tanggung jawab keluarga. Dari satu unit kecil, OBC terus berproses,
 					menjaga nilai kekeluargaan, dan bertransformasi menjadi OBC Group.
 				</p>
-				<p className="my-3 mb-5 h-auto min-h-[96px] w-full max-w-[577px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
+				<p className="my-3 mb-5 h-auto w-full font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
 					Kini, OBC Group menaungi berbagai unit bisnis mulai dari sport center,
 					hospitality, kuliner, hingga jasa dan agribisnis. Kami berkomitmen untuk terus
 					memberikan pelayanan terbaik yang hangat, relevan, dan bermanfaat bagi
@@ -55,7 +55,7 @@ export default function TentangKami() {
 				</div>
 				<Link
 					to="/tentang-kami"
-					className="inline-flex h-[25px] w-full max-w-[600px] items-center justify-end gap-2 font-['Montserrat'] text-right text-[19px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 cursor-pointer"
+					className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[19px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 cursor-pointer"
 				>
 					Lihat Lebih Lanjut tentang Kami <ArrowRight size={20} />
 				</Link>

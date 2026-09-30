@@ -31,14 +31,20 @@ function AboutPage() {
 			<LandingNavbar />
 			<main className="bg-obc-ivory font-body text-obc-green">
 			{/* ===== HERO ===== */}
-			<section className="relative flex h-[420px] items-center justify-center overflow-hidden md:h-[640px]">
+			<section className="relative flex min-h-screen min-h-[100svh] w-full items-center justify-center overflow-hidden pt-16 pb-12">
 				<img
 					src={heroImage}
 					alt="Lapangan futsal OBC"
 					className="absolute inset-0 h-full w-full object-cover"
 				/>
-				{/* Overlay gelap supaya teks tetap terbaca */}
-				<div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/50" />
+				{/* Base overlay lembut agar foto tetap jernih & teks kontras */}
+				<div className="absolute inset-0 bg-black/25" />
+
+				{/* Shadow ujung atas (tidak terlalu lebar) */}
+				<div className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-32 md:h-36 bg-gradient-to-b from-black/80 via-black/35 to-transparent" />
+
+				{/* Shadow ujung bawah (tidak terlalu lebar) */}
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
 
 				<div className="relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
 					<h1 className="font-heading text-[42px] font-bold leading-[46px] tracking-[0.5px] text-white drop-shadow-[0_6px_4px_rgba(0,0,0,0.25)] sm:text-[54px] md:text-[65px] md:leading-[65px]">

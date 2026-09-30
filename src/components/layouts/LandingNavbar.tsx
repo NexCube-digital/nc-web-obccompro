@@ -21,11 +21,36 @@ const menuClass = (isActive: boolean) =>
 	}`
 
 function LandingNavbar() {
+	const scrollToTop = () => {
+		window.scrollTo({
+			top: 0,
+			left: 0,
+			behavior: 'smooth',
+		})
+	}
+
+	const handleHeaderClick = (e: React.MouseEvent<HTMLElement>) => {
+		const target = e.target as HTMLElement | null
+		// Jangan scroll ke atas jika klik pada hash link (misal #kontak) atau button bahasa
+		if (target?.closest('a[href^="#"]') || target?.closest('button')) {
+			return
+		}
+		scrollToTop()
+	}
+
 	return (
-		<header className="fixed left-1/2 top-3 z-50 h-[60px] w-[1246px] max-w-[calc(100%-32px)] -translate-x-1/2 rounded-[50px] border-b-2 border-b-[#000000CC] bg-[#FFFFFFCC] opacity-100 backdrop-blur-md">
+		<header
+			onClick={handleHeaderClick}
+			className="fixed left-1/2 top-3 z-50 h-[60px] w-[1246px] max-w-[calc(100%-32px)] -translate-x-1/2 cursor-pointer rounded-[50px] border-b-2 border-b-[#000000CC] bg-[#FFFFFFCC] opacity-100 backdrop-blur-md"
+		>
 			<div className="relative flex h-full items-center justify-between gap-6 px-6">
 				{/* Logo */}
-				<NavLink className="shrink-0" to="/" aria-label="OBC beranda">
+				<NavLink
+					className="shrink-0"
+					to="/"
+					aria-label="OBC beranda"
+					onClick={scrollToTop}
+				>
 					<img className="block h-[46px] w-[100px] object-contain" src={logo} alt="OBC" />
 				</NavLink>
 
@@ -36,7 +61,14 @@ function LandingNavbar() {
 				>
 					{menus.map((menu) =>
 						menu.href.startsWith('#') ? (
-							<a key={menu.label} className={menuClass(false)} href={menu.href}>
+							<a
+								key={menu.label}
+								className={menuClass(false)}
+								href={menu.href}
+								onClick={(e) => {
+									e.stopPropagation()
+								}}
+							>
 								{menu.label}
 							</a>
 						) : (
@@ -45,6 +77,7 @@ function LandingNavbar() {
 								className={({ isActive }) => menuClass(isActive)}
 								to={menu.href}
 								end={menu.href === '/'}
+								onClick={scrollToTop}
 							>
 								{menu.label}
 							</NavLink>
@@ -59,6 +92,7 @@ function LandingNavbar() {
 						className="grid h-[40px] w-[40px] place-items-center rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90"
 						type="button"
 						aria-label="Pilih bahasa"
+						onClick={(e) => e.stopPropagation()}
 					>
 						<img src={internetIcon} alt="" className="h-[22px] w-[22px]" />
 					</button>
@@ -67,6 +101,7 @@ function LandingNavbar() {
 					<NavLink
 						className="inline-flex h-[40px] w-[135px] items-center justify-center gap-2 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] px-5 py-[10px] font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90"
 						to="/kontak"
+						onClick={scrollToTop}
 					>
 						<img src={userCircleIcon} alt="" className="h-[30px] w-[30px] shrink-0" />
 						<span>Login</span>
