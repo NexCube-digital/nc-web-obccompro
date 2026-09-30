@@ -1,6 +1,5 @@
 import {
 	ArrowRight,
-	ClipboardList,
 	ExternalLink,
 	X,
 } from 'lucide-react'

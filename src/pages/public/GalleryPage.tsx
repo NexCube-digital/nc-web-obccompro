@@ -39,6 +39,10 @@ function GalleryPage() {
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
+		window.scrollTo(0, 0)
+	}, [])
+
+	useEffect(() => {
 		if (!selectedGalleryImage) return
 
 		const handleEscape = (event: KeyboardEvent) => {

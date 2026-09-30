@@ -22,7 +22,7 @@ const menuClass = (isActive: boolean) =>
 
 function LandingNavbar() {
 	return (
-		<header className="fixed left-1/2 top-3 z-50 h-[60px] w-[1150px] max-w-[calc(100%-32px)] -translate-x-1/2 rounded-[50px] border-b-2 border-b-[#000000CC] bg-[#FFFFFFCC] opacity-100 backdrop-blur-md">
+		<header className="fixed left-1/2 top-3 z-50 h-[60px] w-[1246px] max-w-[calc(100%-32px)] -translate-x-1/2 rounded-[50px] border-b-2 border-b-[#000000CC] bg-[#FFFFFFCC] opacity-100 backdrop-blur-md">
 			<div className="relative flex h-full items-center justify-between gap-6 px-6">
 				{/* Logo */}
 				<NavLink className="shrink-0" to="/" aria-label="OBC beranda">

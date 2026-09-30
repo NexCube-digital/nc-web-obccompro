@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
 	ArrowRight, Home,
-	MapPin, Clock, CalendarDays, Zap,
+	MapPin,
 	type LucideIcon,
 } from 'lucide-react'
 import { WhatsAppLogo } from '../../components/common/WhatsAppIcon'

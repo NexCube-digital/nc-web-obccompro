@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
-import { WhatsAppLogo } from '../common/WhatsAppIcon'
 import logo from '../../assets/logo/obclogo.png'
 import lapangF1Image from '../../assets/layanan/Lapang F1.png'
 
@@ -52,6 +51,18 @@ function TikTokLogo({ className = 'h-[14px] w-[14px]' }: { className?: string })
 	)
 }
 
+function WhatsAppSocialIcon({ className = 'h-[16px] w-[16px]' }: { className?: string }) {
+	return (
+		<svg viewBox="0 0 33 33" aria-hidden="true" className={`${className} fill-current`}>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M25.8199 23.0456C25.4266 24.159 23.8631 25.08 22.6163 25.3494C21.7627 25.5306 20.6497 25.6739 16.8994 24.1199C12.6872 22.3747 6.83808 16.1584 6.83808 12.0217C6.83808 9.91575 8.05229 7.46353 10.1755 7.46353C11.1972 7.46353 11.4224 7.48345 11.7586 8.28989C12.1519 9.24 13.1115 11.5809 13.2257 11.8208C13.6974 12.8052 12.7459 13.3814 12.0556 14.2385C11.8353 14.4965 11.5856 14.7754 11.8647 15.2554C12.1421 15.7255 13.1017 17.2895 14.5117 18.5448C16.3331 20.1676 17.81 20.6856 18.3388 20.9061C18.7321 21.0693 19.2021 21.0312 19.4893 20.7244C19.8533 20.3309 20.3053 19.6781 20.7656 19.035C21.0903 18.5746 21.5032 18.5171 21.9357 18.6803C22.2278 18.7816 25.9406 20.5058 26.0973 20.7818C26.2132 20.9825 26.2132 21.9323 25.8199 23.0456ZM16.3233 0H16.3151C7.31787 0 0 7.32009 0 16.32C0 19.8886 1.15057 23.1994 3.10734 25.8849L1.07387 31.9491L7.34565 29.945C9.92584 31.6525 13.0054 32.64 16.3233 32.64C25.3205 32.64 32.64 25.3199 32.64 16.32C32.64 7.32009 25.3205 0 16.3233 0Z"
+			/>
+		</svg>
+	)
+}
+
 /* Kelas bersama */
 const headingClass =
 	"h-4 w-[169px] font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white"
@@ -62,23 +73,23 @@ function LandingFooter() {
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	return (
-		<footer id="kontak" className="bg-white p-[17px]">
+		<footer id="kontak" className="bg-white px-4 sm:px-[34px] py-4 sm:py-[20px]">
 			<div
-				className="relative mx-auto min-h-[550px] w-full max-w-[1246px] overflow-hidden rounded-[25px] bg-cover bg-center bg-no-repeat"
+				className="relative mx-auto min-h-[550px] w-full overflow-hidden rounded-[25px] bg-cover bg-center bg-no-repeat"
 				style={{
 					backgroundColor: 'rgba(1, 38, 3, 0.84)',
 					backgroundImage: `linear-gradient(180deg, rgba(1, 38, 3, 0.84) 0%, rgba(1, 38, 3, 0.84) 100%), url(${lapangF1Image})`,
 				}}
 			>
 				{/* ===== Konten utama ===== */}
-				<div className="mx-auto max-w-[1246px] px-6 pt-10 md:px-[89px] md:pt-[60px]">
-					<div className="grid grid-cols-1 gap-10 md:grid-cols-[328fr_243fr_223fr_270fr] md:gap-0">
+				<div className="mx-auto w-full max-w-[1246px] px-6 sm:px-10 lg:px-12 pt-10 md:pt-[60px]">
+					<div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] md:gap-8 lg:gap-12">
 						{/* Logo + sosial media */}
-						<div className="box-border h-[167px] w-[291px] min-w-[252px] pr-[43px]">
-							<Link to="/" aria-label="OBC beranda" className="inline-flex h-[129px] w-[258px] gap-[10px] pt-[10px] pr-[10px] pl-[10px]">
-								<img src={logo} alt="OBC" className="h-full w-full object-contain" />
+						<div className="box-border flex flex-col items-start gap-3">
+							<Link to="/" aria-label="OBC beranda" className="inline-flex h-[95px] w-auto">
+								<img src={logo} alt="OBC" className="h-full w-auto object-contain object-left" />
 							</Link>
-							<div className="box-border flex h-[32px] w-[248px] items-end justify-center gap-[30px] px-[15px] pt-[10px]">
+							<div className="flex h-[32px] items-center gap-4 pt-1">
 								<a
 									href={CONTACT.whatsapp}
 									target="_blank"
@@ -86,7 +97,7 @@ function LandingFooter() {
 									aria-label="WhatsApp OBC Group"
 									className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110"
 								>
-									<WhatsAppLogo className="h-4 w-[17px]" />
+									<WhatsAppSocialIcon className="h-4 w-4 text-black" />
 								</a>
 								<a
 									href={CONTACT.instagram}
@@ -169,10 +180,10 @@ function LandingFooter() {
 				</div>
 
 				{/* ===== Teks besar "OBC GROUP" (memudar ke bawah) ===== */}
-				<div className="mx-auto mt-10 flex h-[116px] w-full max-w-[1146px] justify-center overflow-hidden md:mt-[44px]">
+				<div className="mx-auto mt-8 flex h-[90px] md:h-[110px] w-full max-w-[1246px] justify-center overflow-hidden md:mt-[36px]">
 					<span
 						aria-hidden="true"
-						className="mt-[14.33px] h-[83px] w-[678px] max-w-full select-none whitespace-nowrap bg-clip-text font-['Montserrat'] text-[56px] font-black leading-[83px] text-transparent md:text-[100px]"
+						className="mt-[10px] h-[83px] w-auto max-w-full select-none whitespace-nowrap bg-clip-text font-['Montserrat'] text-[56px] font-black leading-[83px] text-transparent md:text-[90px] lg:text-[105px]"
 						style={{
 							backgroundImage:
 								'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
@@ -187,42 +198,44 @@ function LandingFooter() {
 					type="button"
 					onClick={scrollToTop}
 					aria-label="Kembali ke atas"
-					className="absolute right-[53px] top-[415px] hidden h-[47px] w-[36px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] transition-transform hover:-translate-y-1 md:grid"
+					className="absolute right-6 sm:right-10 md:right-12 bottom-[85px] hidden h-[44px] w-[36px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:grid"
 				>
 					<ArrowUp width={15} height={20} />
 				</button>
 
 				{/* ===== Bar bawah ===== */}
-				<div className="box-border mx-auto flex min-h-[70px] w-full max-w-[1440px] flex-col items-center gap-[5px] px-6 py-5 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:flex-row md:justify-between md:text-left">
-					<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
+				<div className="border-t border-white/10">
+					<div className="box-border mx-auto flex min-h-[70px] w-full max-w-[1246px] px-6 sm:px-10 lg:px-12 flex-col items-center justify-between gap-4 py-5 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:flex-row md:text-left">
+						<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
 
-					<p>
-						Dikembangkan oleh{' '}
-						<a
-							href="https://nexcube.digital"
-							target="_blank"
-							rel="noreferrer"
-							className="underline transition-colors hover:text-[#CDF178]"
-						>
-							Nexcube Digital
-						</a>
-					</p>
+						<p>
+							Dikembangkan oleh{' '}
+							<a
+								href="https://nexcube.digital"
+								target="_blank"
+								rel="noreferrer"
+								className="underline transition-colors hover:text-[#CDF178]"
+							>
+								Nexcube Digital
+							</a>
+						</p>
 
-					<div className="flex items-center gap-6">
-						<span className="flex items-center gap-2">
-							<Globe width={15.5} height={15.5} className="text-white" />
-							Bahasa Indonesia (ID)
-						</span>
-						<div className="flex items-center gap-5">
-							<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<WhatsAppLogo className="h-[16.5px] w-[16.5px]" />
-							</a>
-							<a href={CONTACT.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<TikTokLogo className="h-[14px] w-[14px] bg-white text-black" />
-							</a>
-							<a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
-								<InstagramLogo className="h-[16.5px] w-[16.5px]" />
-							</a>
+						<div className="flex items-center gap-6">
+							<span className="flex items-center gap-2">
+								<Globe width={15.5} height={15.5} className="text-white" />
+								Bahasa Indonesia (ID)
+							</span>
+							<div className="flex items-center gap-5">
+								<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<WhatsAppSocialIcon className="h-[16.5px] w-[16.5px]" />
+								</a>
+								<a href={CONTACT.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<TikTokLogo className="h-[14px] w-[14px] bg-white text-black" />
+								</a>
+								<a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+									<InstagramLogo className="h-[16.5px] w-[16.5px]" />
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
