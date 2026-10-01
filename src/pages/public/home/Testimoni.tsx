@@ -96,7 +96,8 @@ export default function Testimoni() {
 						<span className="mb-2 flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase tracking-[1px] text-[#000000CC] md:text-[13px] md:tracking-[1.4px]">
 							TESTIMONI
 						</span>
-						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[46px] md:font-medium md:leading-[46px]">
+						{/* Di md judul 36px agar muat sebaris dengan deskripsi; 46px mulai lg */}
+						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[36px] md:font-medium md:leading-[42px] lg:text-[46px] lg:leading-[46px]">
 							Apa Kata Mereka
 							<br />
 							Tentang OBC Group
@@ -104,8 +105,8 @@ export default function Testimoni() {
 					</div>
 
 					<div className="contents md:flex md:flex-col md:items-end md:gap-3 md:text-right">
-						{/* Deskripsi: mobile rata tengah, 13px */}
-						<p className="order-2 mt-1 max-w-full text-center font-['Montserrat'] text-[13px] leading-[1.5] text-[#4b5563] md:order-none md:mt-0 md:max-w-[420px] md:text-right md:text-[15px]">
+						{/* Deskripsi: mobile rata tengah, 13px. Di md lebar dibatasi 320px agar tidak turun ke bawah judul */}
+						<p className="order-2 mt-1 max-w-full text-center font-['Montserrat'] text-[13px] leading-[1.5] text-[#4b5563] md:order-none md:mt-0 md:max-w-[320px] md:text-right md:text-[15px] lg:max-w-[420px]">
 							Pengalaman Menginap, Berolahraga, dan Beraktivitas di OBC Group
 						</p>
 						{/* Panah: mobile pindah ke bawah carousel, rata kanan, lebih kecil */}

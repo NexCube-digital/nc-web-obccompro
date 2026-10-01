@@ -15,13 +15,13 @@ const NAVIGASI_LINKS = [
 ]
 
 const UNIT_LINKS = [
-	'OBC Sport Center',
-	'OBC Guest House',
-	'OBC Villa',
-	'OBC Laundry',
-	'OBC Food Court',
-	'OBC Coffee',
-	'OBC Agrobisnis',
+	{ label: 'OBC Sport Center', to: '/unit-bisnis' },
+	{ label: 'OBC Guest House', to: '/unit-bisnis/guest-house' },
+	{ label: 'OBC Villa', to: '/unit-bisnis/villa' },
+	{ label: 'OBC Laundry', to: '/unit-bisnis/laundry' },
+	{ label: 'OBC Food Court', to: '/unit-bisnis/food-court' },
+	{ label: 'OBC Coffee', to: '/unit-bisnis/coffee' },
+	{ label: 'OBC Agrobisnis', to: '/unit-bisnis/agribisnis' },
 ]
 
 /* Data kontak — ganti dengan data resmi OBC kalau sudah tersedia dari admin/CMS. */
@@ -31,6 +31,7 @@ const CONTACT = {
 	instagram: 'https://instagram.com/obcgroup.bdg',
 	tiktok: 'https://www.tiktok.com/@obcgroup.bdg',
 	address: 'Jl. Rancabentang, No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142',
+	maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Jl. Rancabentang, No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142')}`,
 }
 
 function InstagramLogo({ className = 'h-[16px] w-[16px]' }: { className?: string }) {
@@ -65,9 +66,13 @@ function WhatsAppSocialIcon({ className = 'h-[16px] w-[16px]' }: { className?: s
 
 /* Kelas bersama */
 const headingClass =
-	"h-4 w-[169px] font-['Montserrat'] text-[15px] font-bold uppercase leading-4 tracking-[0px] text-white md:text-[14px]"
+	"font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white md:h-4 md:w-[169px]"
 const linkClass =
 	"font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white! transition-colors hover:text-[#CDF178]! md:text-[12px]"
+
+/* Kelas tombol sosmed bulat di bagian atas (mobile lebih besar supaya mudah di-tap) */
+const socialButtonClass =
+	'grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110 md:h-8 md:w-8'
 
 function LandingFooter() {
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -82,45 +87,49 @@ function LandingFooter() {
 				}}
 			>
 				{/* ===== Konten utama ===== */}
-				<div className="mx-auto w-full max-w-[1246px] px-4 pt-5 md:px-10 md:pt-[60px] lg:px-12">
-					{/* Mobile: logo → hubungi kami → (perusahaan | unit bisnis). Desktop: 4 kolom */}
-					<div className="grid grid-cols-[236fr_143fr] gap-y-8 md:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] md:gap-8 lg:gap-12">
-						{/* Logo + sosial media */}
-						<div className="order-1 col-span-2 box-border flex w-full flex-col items-center md:order-none md:col-span-1 md:items-start md:gap-3">
+				<div className="mx-auto w-full max-w-[1246px] px-4 md:px-10 md:pt-[60px] lg:px-12">
+					<div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] md:gap-8 lg:gap-12">
+						{/* Logo + sosial media — di mobile dipusatkan penuh */}
+						<div className="order-1 col-span-2 flex w-full flex-col items-center md:order-none md:col-span-1 md:items-start md:gap-3">
 							<Link
 								to="/"
 								aria-label="OBC beranda"
-								className="inline-flex h-[140px] w-full max-w-[350px] gap-[10px] p-[10px] md:h-[95px] md:w-auto md:gap-0 md:p-0"
+								className="inline-flex h-auto w-full max-w-[400px] items-center justify-center px-[10px] md:h-[95px] md:w-auto md:max-w-none md:justify-start md:p-0"
 							>
-								<img src={logo} alt="OBC" className="h-full w-full object-contain md:w-auto md:object-left" />
+								{/* Tinggi otomatis mengikuti lebar logo, jadi tidak ada ruang kosong atas-bawah */}
+								<img
+									src={logo}
+									alt="OBC"
+									className="h-auto w-full object-contain object-center md:h-full md:w-auto md:object-left"
+								/>
 							</Link>
-							<div className="mt-4 flex h-[32px] items-center justify-center gap-8 md:mt-0 md:justify-start md:gap-4 md:pt-1">
+							<div className="flex items-center justify-center gap-5 md:justify-start md:gap-4 md:pt-1">
 								<a
 									href={CONTACT.whatsapp}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="WhatsApp OBC Group"
-									className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110"
+									className={socialButtonClass}
 								>
-									<WhatsAppSocialIcon className="h-4 w-4 text-black" />
+									<WhatsAppSocialIcon className="h-5 w-5 text-black md:h-4 md:w-4" />
 								</a>
 								<a
 									href={CONTACT.instagram}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="Instagram OBC Group"
-									className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110"
+									className={socialButtonClass}
 								>
-									<InstagramLogo className="h-4 w-[17px]" />
+									<InstagramLogo className="h-5 w-5 md:h-4 md:w-4" />
 								</a>
 								<a
 									href={CONTACT.tiktok}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="TikTok OBC Group"
-									className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110"
+									className={socialButtonClass}
 								>
-									<TikTokLogo className="h-4 w-[17px]" />
+									<TikTokLogo className="h-[18px] w-[18px] md:h-4 md:w-4" />
 								</a>
 							</div>
 						</div>
@@ -128,7 +137,7 @@ function LandingFooter() {
 						{/* Perusahaan */}
 						<div className="order-3 px-2 md:order-none md:px-0">
 							<h3 className={headingClass}>Perusahaan</h3>
-							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:text-[12px]">
+							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px]">
 								{NAVIGASI_LINKS.map((link) => (
 									<li key={link.label}>
 										{link.to.startsWith('#') ? (
@@ -148,23 +157,25 @@ function LandingFooter() {
 						{/* Unit bisnis */}
 						<div className="order-4 px-2 md:order-none md:px-0">
 							<h3 className={headingClass}>Unit Bisnis</h3>
-							<ul className="mt-[15px] flex flex-col gap-[15px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:text-[12px]">
+							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px]">
 								{UNIT_LINKS.map((unit) => (
-									<li key={unit} className={linkClass}>
-										{unit}
+									<li key={unit.label}>
+										<Link to={unit.to} className={linkClass}>
+											{unit.label}
+										</Link>
 									</li>
 								))}
 							</ul>
 						</div>
 
-						{/* Hubungi kami */}
-						<div className="order-2 col-span-2 md:order-none md:col-span-1">
-							<h3 className={`${headingClass} flex items-center gap-1`}>
+						{/* Hubungi kami — padding mobile disamakan dengan kolom di bawahnya agar sejajar */}
+						<div className="order-2 col-span-2 px-2 md:order-none md:col-span-1 md:px-0">
+							<h3 className={`${headingClass} flex items-center gap-2 md:gap-1`}>
 								<Headphones size={14} />
 								Hubungi Kami
 							</h3>
-							<ul className="mt-[15px] flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-5 tracking-[0px] text-white md:text-[12px] md:leading-4">
-								<li className="flex items-center gap-3 text-[15px] text-white md:gap-2 md:text-[12px]">
+							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-5 tracking-[0px] text-white md:mt-[15px] md:text-[12px] md:leading-4">
+								<li className="flex items-center gap-3 md:gap-2">
 									<Mail size={15} className="shrink-0" />
 									<a
 										href={`mailto:${CONTACT.email}`}
@@ -173,22 +184,38 @@ function LandingFooter() {
 										{CONTACT.email}
 									</a>
 								</li>
-								<li className="flex items-start gap-2.5 text-white md:gap-2">
-									<MapPin size={15} className="mt-[3px] shrink-0 md:mt-[3px]" />
-									<span className="text-justify">
+								<li className="flex items-start gap-3 md:gap-2">
+									<MapPin size={15} className="mt-[3px] shrink-0" />
+									<a
+										href={CONTACT.maps}
+										target="_blank"
+										rel="noreferrer"
+										className="text-left transition-colors hover:text-[#CDF178] md:text-justify"
+									>
 										{CONTACT.address}
-									</span>
+									</a>
 								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 
+				<div className="mt-4 flex justify-end px-6 md:absolute md:bottom-[105px] md:right-12 md:mt-0 md:px-0">
+					<button
+						type="button"
+						onClick={scrollToTop}
+						aria-label="Kembali ke atas"
+						className="grid h-11 w-11 place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:h-[44px] md:w-[36px]"
+					>
+						<ArrowUp className="h-5 w-5 md:h-5 md:w-[15px]" />
+					</button>
+				</div>
+
 				{/* ===== Teks besar "OBC GROUP" (memudar ke bawah) ===== */}
-				<div className="mx-auto mt-10 flex h-[80px] w-full max-w-[1246px] justify-center overflow-hidden md:mt-[36px] md:h-[110px]">
+				<div className="mx-auto mt-2 flex h-[64px] w-full max-w-[1246px] justify-center overflow-hidden md:mt-[36px] md:h-[110px]">
 					<span
 						aria-hidden="true"
-						className="mt-[6px] h-[65px] w-auto max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[44px] font-black leading-[65px] text-transparent md:mt-[10px] md:h-[83px] md:text-[90px] md:leading-[83px] lg:text-[105px]"
+						className="mt-[4px] w-auto max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[clamp(40px,12vw,56px)] font-black leading-[60px] text-transparent md:mt-[10px] md:h-[83px] md:text-[90px] md:leading-[83px] lg:text-[105px]"
 						style={{
 							backgroundImage:
 								'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
@@ -198,19 +225,9 @@ function LandingFooter() {
 					</span>
 				</div>
 
-				{/* Tombol kembali ke atas: tampil juga di mobile */}
-				<button
-					type="button"
-					onClick={scrollToTop}
-					aria-label="Kembali ke atas"
-					className="absolute bottom-[150px] right-[72px] grid h-[52px] w-[48px] place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:bottom-[105px] md:right-12 md:h-[44px] md:w-[36px]"
-				>
-					<ArrowUp className="h-[26px] w-[20px] md:h-5 md:w-[15px]" />
-				</button>
-
 				{/* ===== Bar bawah ===== */}
 				<div className="md:border-t md:border-white/10">
-					<div className="box-border mx-auto flex w-full max-w-[1246px] flex-col items-center gap-[5px] px-6 pb-[10px] pt-0 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:gap-4 md:px-10 md:py-5 md:text-left lg:px-12">
+					<div className="mx-auto flex w-full max-w-[1246px] flex-col items-center gap-1 px-6 pb-5 pt-1 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:gap-4 md:px-10 md:py-5 md:text-left lg:px-12">
 						<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
 
 						<p>
@@ -225,7 +242,7 @@ function LandingFooter() {
 							</a>
 						</p>
 
-						{/* Bahasa + ikon sosial hanya di desktop; di mobile tidak ada di desain */}
+						{/* Bahasa + ikon sosial hanya di desktop; di mobile sudah ada di bagian atas */}
 						<div className="hidden items-center gap-6 md:flex">
 							<span className="flex items-center gap-2">
 								<Globe width={15.5} height={15.5} className="text-white" />

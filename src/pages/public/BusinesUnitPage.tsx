@@ -132,12 +132,12 @@ function BusinessUnitPage() {
 		<div className="min-h-screen bg-obc-ivory">
 			<LandingNavbar />
 
-			{/* Hero slider */}
+						{/* Hero slider */}
 			<section className="relative min-h-[100svh] overflow-hidden">
 				<img
 					src={heroSignpostImage}
 					alt="Papan penunjuk unit bisnis OBC Group"
-					className="absolute inset-0 h-full w-full object-cover object-[center_58%] translate-x-10 md:translate-x-20 lg:translate-x-28 xl:translate-x-36"
+					className="absolute inset-0 h-full w-full object-cover object-[25%_58%] md:object-[center_58%] md:translate-x-20 lg:translate-x-28 xl:translate-x-36"
 				/>
 				{/* Overlay: mobile vertikal (pekat di bawah), desktop horizontal (pekat di kiri, lebar mengikuti breakpoint dev) */}
 				<div className="absolute inset-0 h-full w-full bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_30%,rgba(250,250,242,0.592749)_42%,rgba(250,250,242,0)_60%)] md:inset-y-0 md:left-0 md:right-auto md:w-[68%] md:bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)] lg:w-[62%] xl:w-[58%] 2xl:w-[55%]" />
@@ -306,18 +306,22 @@ function BusinessUnitPage() {
 												href={WHATSAPP_LINK}
 												target="_blank"
 												rel="noreferrer"
-												className="flex items-center gap-1.5 font-['Montserrat'] text-[11px] font-medium leading-5 tracking-normal text-black hover:text-obc-green md:text-[15px]"
+												className="group flex items-center gap-1.5 font-['Montserrat'] text-[11px] font-medium leading-5 tracking-normal text-black transition-colors duration-500 hover:text-obc-green md:text-[15px]"
 											>
 												<span className="flex h-[23px] w-[23px] shrink-0 items-center justify-center rounded-full bg-[#25D366E5] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.25)]">
 													<WhatsAppLogo className="h-[16px] w-[16px] shrink-0 text-white" />
 												</span>
-												Hubungi WhatsApp Kami
+												<span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat pb-[2px] transition-[background-size] duration-500 ease-in-out group-hover:bg-[length:100%_1.5px]">
+													Hubungi WhatsApp Kami
+												</span>
 											</a>
 											<Link
 												to={`/unit-bisnis/${unit.slug}`}
-												className="flex items-center gap-1.5 font-['Montserrat'] text-[16px] font-semibold leading-6 tracking-normal text-black hover:text-obc-green-hover"
+												className="group flex items-center gap-1.5 font-['Montserrat'] text-[16px] font-semibold leading-6 tracking-normal text-black transition-colors duration-500 hover:text-obc-green-hover"
 											>
-												Detail Unit
+												<span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat pb-[2px] transition-[background-size] duration-500 ease-in-out group-hover:bg-[length:100%_1.5px]">
+													Detail Unit
+												</span>
 												<ArrowRight size={14} />
 											</Link>
 										</div>

@@ -73,17 +73,17 @@ function GalleryPage() {
 				{/* Overlay MOBILE: gradient vertikal (transparan di atas → krem di bawah) */}
 				<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0)_55%,rgba(250,250,242,0.75)_78%,rgba(250,250,242,0.95)_100%)] md:hidden" />
 
-				{/* Overlay DESKTOP: gradient horizontal, lebar mengikuti breakpoint dev */}
-				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
+				{/* Overlay DESKTOP: gradient horizontal, lebar mengikuti breakpoint dev (md dipersempit agar gambar lebih terlihat) */}
+				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[60%] lg:w-[62%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
 				<div className="relative z-10 flex h-full w-full items-end pb-[68px] pt-12 md:items-center md:pb-12 md:pt-24">
 					<div className="mx-auto w-full max-w-[1246px] px-8 md:px-10">
-						<div className="w-full max-w-[472px] text-black">
+						<div className="w-full max-w-[472px] text-black md:max-w-[400px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
-							<h1 className="mt-5 font-['Montserrat'] text-[24px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[56px] md:leading-[70px]">
+							<h1 className="mt-5 font-['Montserrat'] text-[24px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[40px] md:leading-[52px] lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
 								Cerita di Setiap Sudut OBC
 							</h1>
-							<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[14px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[18px] md:leading-[29.25px]">
+							<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[14px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[16px] md:leading-[26px] lg:text-[18px] lg:leading-[29.25px]">
 								Jelajahi berbagai momen, fasilitas, aktivitas, dan pengalaman yang menjadi bagian dari perjalanan OBC.
 							</p>
 						</div>
@@ -91,9 +91,9 @@ function GalleryPage() {
 				</div>
 			</section>
 
-			{/* Filter kategori */}
+			{/* Filter kategori: wrap & rata tengah sampai xl, satu baris mulai xl (>=1280px) */}
 			<section className="mx-auto max-w-[1200px] px-5 pt-10 md:px-8">
-				<div className="flex flex-wrap justify-center gap-x-2 gap-y-3 md:flex-nowrap md:gap-y-0">
+				<div className="flex flex-wrap justify-center gap-x-2 gap-y-3 xl:flex-nowrap xl:gap-y-0">
 					{CATEGORIES.map((category) => {
 						const isActive = category === activeCategory
 						return (
@@ -101,7 +101,7 @@ function GalleryPage() {
 								key={category}
 								type="button"
 								onClick={() => setActiveCategory(category)}
-								className={`flex h-[33px] w-auto shrink-0 items-center justify-center rounded-[20px] border px-[10px] font-['Montserrat'] text-[16px] font-normal leading-none whitespace-nowrap transition-colors md:text-[18px] ${
+								className={`flex h-[33px] w-auto shrink-0 items-center justify-center rounded-[20px] border px-[10px] font-['Montserrat'] text-[14px] font-normal leading-none whitespace-nowrap transition-colors md:h-[36px] md:px-3 md:text-[16px] xl:h-[33px] xl:px-[10px] xl:text-[18px] ${
 									isActive
 										? 'border-black bg-black text-white'
 										: 'border-black bg-white text-black hover:bg-black hover:text-white'
@@ -114,9 +114,9 @@ function GalleryPage() {
 				</div>
 			</section>
 
-			{/* Grid galeri */}
+			{/* Grid galeri: 2 kolom (mobile), 3 kolom (md), 4 kolom (lg+) */}
 			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
-				<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+				<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
 					{visiblePhotos.map((photo) => (
 						<button
 							key={photo.src}

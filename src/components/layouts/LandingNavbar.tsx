@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Heart, Menu, X } from 'lucide-react'
+import { ArrowLeft, Check, Heart, Menu, X } from 'lucide-react'
 import logo from '../../assets/logo/LOGO-OBC.png'
 import internetIcon from '../../assets/icon/internet.svg'
 import userCircleIcon from '../../assets/icon/iconstack.io - (User Circle).svg'
@@ -15,12 +15,19 @@ const menus = [
 	{ label: 'Kontak', href: '#kontak' },
 ]
 
+// Daftar pilihan bahasa (dropdown desktop)
+const languages = [
+	{ code: 'ID', label: 'Bahasa Indonesia' },
+	{ code: 'EN', label: 'Bahasa Inggris' },
+] as const
+
 // Kelas menu desktop: aktif = SemiBold (600) + garis bawah, non-aktif = Regular (400)
+// Garis bawah selalu ada tapi di-scale 0; saat hover/aktif membesar pelan-pelan dari kiri ke kanan
 const menuClass = (isActive: boolean) =>
-	`relative flex items-center whitespace-nowrap px-3 font-['Montserrat'] text-[14px] leading-[20px] tracking-[0px] !text-[#000000] transition-colors after:absolute after:bottom-[14px] after:left-3 after:right-3 after:h-[2px] lg:px-4 lg:text-[20px] ${
+	`relative flex items-center whitespace-nowrap px-3 font-['Montserrat'] text-[14px] leading-[20px] tracking-[0px] !text-[#000000] transition-colors after:absolute after:bottom-[14px] after:left-3 after:right-3 after:h-[2px] after:origin-left after:transition-transform after:duration-300 after:ease-out lg:px-4 lg:text-[20px] ${
 		isActive
-			? 'font-semibold after:bg-[#000000]'
-			: 'font-normal hover:after:bg-[#000000]/40'
+			? 'font-semibold after:scale-x-100 after:bg-[#000000]'
+			: 'font-normal after:scale-x-0 after:bg-[#000000]/40 hover:after:scale-x-100'
 	}`
 
 // Kelas menu mobile: aktif = bold + latar abu tipis, ada garis pemisah antar item
@@ -33,20 +40,43 @@ const mobileItemClass = (isActive: boolean) =>
 const circleBtnClass =
 	'grid h-[40px] w-[40px] shrink-0 place-items-center rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90'
 
-// Tombol bulat putih untuk navbar halaman detail unit bisnis (mobile)
+// Tombol navbar halaman detail unit bisnis (mobile): 40x40, radius 20, abu transparan + blur 72px
 const detailBtnClass =
-	'grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-white/90 text-[#000000] shadow-[0px_2px_6px_0px_rgba(0,0,0,0.25)] backdrop-blur-sm transition-transform active:scale-95'
+	'grid h-[40px] w-[40px] shrink-0 place-items-center rounded-[20px] bg-[#F0F0F080] text-[#000000] backdrop-blur-[72px] transition-transform active:scale-95'
 
 function LandingNavbar() {
 	const [open, setOpen] = useState(false)
 	const [lang, setLang] = useState<'ID' | 'EN'>('ID')
+	const [langOpen, setLangOpen] = useState(false)
 	const [liked, setLiked] = useState(false)
+	const langRef = useRef<HTMLDivElement>(null)
 	const navigate = useNavigate()
 	const { pathname } = useLocation()
 	const closeMenu = () => setOpen(false)
 
 	// Halaman detail unit bisnis: /unit-bisnis/guest-house, /unit-bisnis/villa, dst.
 	const isDetailPage = pathname.startsWith('/unit-bisnis/')
+
+	// Tutup dropdown bahasa saat klik di luar atau menekan Escape
+	useEffect(() => {
+		if (!langOpen) return
+
+		const handleClickOutside = (e: MouseEvent) => {
+			if (langRef.current && !langRef.current.contains(e.target as Node)) {
+				setLangOpen(false)
+			}
+		}
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') setLangOpen(false)
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+		document.addEventListener('keydown', handleEscape)
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+			document.removeEventListener('keydown', handleEscape)
+		}
+	}, [langOpen])
 
 	const scrollToTop = () => {
 		window.scrollTo({
@@ -93,12 +123,12 @@ function LandingNavbar() {
 			{isDetailPage && (
 				<div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 pt-4 md:hidden">
 					<button type="button" className={detailBtnClass} aria-label="Kembali ke Unit Bisnis" onClick={handleBack}>
-						<ArrowLeft size={22} />
+						<ArrowLeft size={20} strokeWidth={1.5} color="#000000" />
 					</button>
 
 					<div className="flex items-center gap-3">
 						<button type="button" className={detailBtnClass} aria-label="Bagikan" onClick={handleShare}>
-							<img src={shareIcon} alt="" aria-hidden="true" className="h-[15px] w-[13px]" />
+							<img src={shareIcon} alt="" aria-hidden="true" className="h-[13px] w-[11px] object-contain" />
 						</button>
 						<button
 							type="button"
@@ -107,7 +137,12 @@ function LandingNavbar() {
 							aria-pressed={liked}
 							onClick={handleLike}
 						>
-							<Heart size={20} className={liked ? 'fill-red-500 text-red-500' : ''} />
+							<Heart
+								size={20}
+								strokeWidth={1.5}
+								className={liked ? 'fill-red-500 text-red-500' : ''}
+								color={liked ? undefined : '#000000'}
+							/>
 						</button>
 					</div>
 				</div>
@@ -167,24 +202,66 @@ function LandingNavbar() {
 
 					{/* Kanan */}
 					<div className="flex items-center gap-3">
-						{/* Desktop: tombol bahasa */}
-						<button
-							className="hidden h-[40px] w-[40px] place-items-center rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:grid"
-							type="button"
-							aria-label="Pilih bahasa"
-							onClick={(e) => e.stopPropagation()}
-						>
-							<img src={internetIcon} alt="" className="h-[22px] w-[22px]" />
-						</button>
+						{/* Desktop: tombol bahasa + dropdown pilihan bahasa */}
+						<div ref={langRef} className="relative hidden md:block">
+							<button
+								className="grid h-[40px] w-[40px] place-items-center rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90"
+								type="button"
+								aria-label="Pilih bahasa"
+								aria-haspopup="listbox"
+								aria-expanded={langOpen}
+								onClick={(e) => {
+									e.stopPropagation()
+									setLangOpen((v) => !v)
+								}}
+							>
+								<img src={internetIcon} alt="" className="h-[22px] w-[22px]" />
+							</button>
 
-						{/* Desktop: Login ikon + teks */}
+							{langOpen && (
+								<div
+									className="absolute right-0 top-full mt-3 w-[220px] cursor-default overflow-hidden rounded-[12px] bg-white shadow-[0px_10px_25px_0px_rgba(0,0,0,0.25)]"
+									onClick={(e) => e.stopPropagation()}
+								>
+									<p className="border-b border-black/[0.06] px-4 py-3 font-['Montserrat'] text-[12px] font-bold leading-4 tracking-[0px] text-black">
+										Pilihan Bahasa
+									</p>
+									<ul role="listbox" aria-label="Pilihan Bahasa">
+										{languages.map((item) => (
+											<li key={item.code} role="option" aria-selected={lang === item.code}>
+												<button
+													type="button"
+													onClick={() => {
+														setLang(item.code)
+														setLangOpen(false)
+													}}
+													className={`flex w-full items-center justify-between px-4 py-3 text-left font-['Montserrat'] text-[14px] leading-5 tracking-[0px] text-black transition-colors hover:bg-black/[0.05] ${
+														lang === item.code ? 'bg-black/[0.03] font-bold' : 'font-normal'
+													}`}
+												>
+													<span>{item.label}</span>
+													{lang === item.code && <Check size={16} />}
+												</button>
+											</li>
+										))}
+									</ul>
+								</div>
+							)}
+						</div>
+
+						{/* Desktop: Login. Antara md–xl hanya ikon (agar tidak menabrak menu tengah), mulai xl ikon + teks */}
 						<NavLink
-							className="hidden h-[40px] w-[135px] items-center justify-center gap-2 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] px-5 py-[10px] font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex"
+							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
 							to="/kontak"
+							aria-label="Login"
 							onClick={scrollToTop}
 						>
-							<img src={userCircleIcon} alt="" className="h-[30px] w-[30px] shrink-0" />
-							<span>Login</span>
+							<img
+								src={userCircleIcon}
+								alt=""
+								className="h-[26px] w-[26px] shrink-0 xl:h-[30px] xl:w-[30px]"
+							/>
+							<span className="hidden xl:inline">Login</span>
 						</NavLink>
 
 						{/* Mobile: ikon login (hanya ikon) */}

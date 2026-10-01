@@ -55,9 +55,9 @@ function AboutPage() {
 					<p className="mx-auto mt-2 max-w-[280px] font-heading text-[34px] font-bold leading-[38px] tracking-[0.5px] text-white drop-shadow-[0_6px_4px_rgba(0,0,0,0.25)] sm:max-w-none sm:text-[32px] sm:leading-[32px] md:mt-3 md:text-[40px] md:leading-[40px]">
 						Onny Barber Center Group
 					</p>
-					<p className="mt-2 font-body text-[12px] font-medium uppercase leading-[15px] tracking-[1px] text-white md:mt-3 md:text-[13px]">
+					{/* <p className="mt-2 font-body text-[12px] font-medium uppercase leading-[15px] tracking-[1px] text-white md:mt-3 md:text-[13px]">
 						Connecting People | Creating Experiences
-					</p>
+					</p> */}
 				</div>
 			</section>
 

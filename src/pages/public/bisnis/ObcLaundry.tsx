@@ -230,29 +230,29 @@ function LaundryPage() {
 	}, [selectedGalleryImage])
 
 	return (
-		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
-		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-0">
+		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
+		<div className="min-h-screen bg-obc-ivory pb-[130px] lg:pb-0">
 			<LandingNavbar />
 
-			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev */}
+			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan) */}
 			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
-				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
+				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div className="absolute inset-y-0 right-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(270deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				{/* Teks hero: hanya desktop, container max-w 1246px, rata kanan */}
+				{/* Teks hero: md+, container max-w 1246px, rata kanan */}
 				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
-						<div className="w-full max-w-[472px] text-black">
-							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
-								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
+						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
+							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">
+								<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#000000]" />
 								Laundry Services
 							</span>
-							<h1 className="mt-5 font-['Montserrat'] text-[56px] font-bold leading-[70px] tracking-[1.5px] text-black">
+							<h1 className="mt-5 font-['Montserrat'] text-[40px] font-bold leading-[52px] tracking-[1.5px] text-black lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
 								OBC Laundry
 							</h1>
-							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[18px] font-normal leading-[29.25px] tracking-[0.18px] text-black">
+							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.18px] text-black lg:text-[18px] lg:leading-[29.25px]">
 								Nikmati layanan laundry kiloan dan satuan yang praktis untuk kebutuhan sehari-hari. Dengan free pick up
 								& delivery serta layanan Quick 4 Jam Selesai, urusan laundry jadi lebih mudah tanpa mengganggu
 								aktivitas Anda.
@@ -263,17 +263,18 @@ function LaundryPage() {
 			</section>
 
 			{/*
-				Wrapper dua kolom (Tentang, Layanan, Price List, Cuci Satuan, Laundry Sepatu, Aset & Alat, Fasilitas).
+				Wrapper dua kolom (Tentang, Layanan, Price List, Cuci Satuan, Laundry Sepatu, Aset & Alat, Fasilitas)
+				— dua kolom baru mulai lg (>=1024px). Di bawah lg: satu kolom penuh, WhatsApp card memakai bar fixed.
 				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
 				yaitu tepat sebelum Galeri (lebar penuh).
 				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
 				karena akan mematikan position: sticky.
 			*/}
-			<div className="mx-auto max-w-[1200px] md:flex md:items-stretch md:gap-10 md:px-8">
+			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
-				<div className="min-w-0 md:w-2/3">
+				<div className="min-w-0 lg:w-2/3">
 					{/* Tentang */}
-					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-[30px] pb-10 pt-8 md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-5 pb-10 pt-8 min-[400px]:px-[30px] md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
 						<div className="flex flex-col">
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
 								OBC Laundry
@@ -286,7 +287,7 @@ function LaundryPage() {
 								barang yang membutuhkan penanganan khusus.
 							</p>
 
-							<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-center md:gap-12 md:border-t md:border-obc-border md:pt-6">
+							<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-12 md:gap-y-4 md:border-t md:border-obc-border md:pt-6">
 								<div className="flex items-center justify-start gap-2 text-left md:justify-center md:text-center">
 									<img src={serviceTypeIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 									<div>
@@ -329,18 +330,19 @@ function LaundryPage() {
 								</a>
 							</div>
 
-							<div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 sm:gap-4">
+							{/* 1 kolom di layar sangat kecil (<360px), 2 kolom mulai 360px */}
+							<div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-6 min-[360px]:grid-cols-2 min-[360px]:gap-y-10 sm:gap-4">
 								{LAUNDRY_SERVICES.map((service) => {
 									return (
 										<div
 											key={service.title}
 											className="rounded-2xl border border-obc-border bg-obc-white p-3 shadow-[0_4px_16px_rgba(52,49,51,0.05)] sm:p-5"
 										>
-											<div className="flex items-start justify-between">
+											<div className="flex items-start justify-between gap-2">
 												<span className="inline-flex items-center rounded-[2px] font-semibold bg-[#EEEEE7] px-[10px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-medium leading-[15.4px] tracking-[1px] text-black sm:tracking-[1.65px]">
 													{service.badge}
 												</span>
-												<img src={service.icon} alt="" className="h-5 w-5 object-contain" aria-hidden="true" />
+												<img src={service.icon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 											</div>
 											<h3 className="mt-4 font-heading text-base font-semibold text-obc-charcoal sm:text-lg">{service.title}</h3>
 											<p className="mt-4 font-body text-[11px] font-bold uppercase tracking-[0.08em] text-[#000000E5]">
@@ -364,7 +366,7 @@ function LaundryPage() {
 					</section>
 
 					{/* Price List OBC Laundry */}
-					<section id="price-list" className="px-6 pb-14 md:px-0">
+					<section id="price-list" className="px-5 pb-14 min-[400px]:px-6 md:px-0">
 						<div>
 							<h2 className="text-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:text-left sm:text-[25px]">
 								Price List OBC Laundry
@@ -373,13 +375,14 @@ function LaundryPage() {
 								Pilih layanan dan durasi yang sesuai dengan kebutuhanmu.
 							</p>
 
-							<div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3">
+							{/* 1 kolom (<360px), 2 kolom (mobile), 3 kolom (md+) */}
+							<div className="mt-6 grid grid-cols-1 gap-2.5 min-[360px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
 								{PRICE_LIST.map((price) => (
 									<div
 										key={price.title}
 										className={`flex h-auto min-w-0 w-full flex-col gap-4 rounded-[8px] border border-[#00000033] bg-white p-2.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:min-h-[303px] sm:p-5 ${
 											price.favorit
-												? 'order-first col-span-2 md:order-none md:col-span-1'
+												? 'order-first min-[360px]:col-span-2 md:order-none md:col-span-1'
 												: 'order-2 md:order-none'
 										}`}
 									>
@@ -409,7 +412,7 @@ function LaundryPage() {
 												<div
 													key={row.duration}
 													className={`flex items-center justify-between gap-2 py-3 sm:py-2 ${
-														price.favorit ? 'px-[22%] sm:px-0' : ''
+														price.favorit ? 'min-[360px]:px-[22%] sm:px-0' : ''
 													}`}
 												>
 													<span className="whitespace-nowrap font-['Montserrat'] text-[clamp(11px,3vw,13px)] font-normal leading-[22px] tracking-[0.14px] text-black sm:text-[14px]">
@@ -430,7 +433,6 @@ function LaundryPage() {
 					{/* Layanan Cuci Satuan */}
 					<section className="px-5 pb-14 md:px-0">
 						<div>
-							{/* Card pembungkus judul */}
 							<h2 className="flex items-center gap-1.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:gap-2 sm:text-[25px]">
 								<img
 									src={washAndIronServiceIcon}
@@ -503,7 +505,8 @@ function LaundryPage() {
 								</div>
 							</div>
 
-							<div className="mt-5 grid grid-cols-2 gap-2.5 px-2 sm:mt-6 sm:gap-[50px] sm:px-0">
+							{/* 1 kolom (<360px), 2 kolom mulai 360px; jarak antar kartu bertahap */}
+							<div className="mt-5 grid grid-cols-1 gap-2.5 px-2 min-[360px]:grid-cols-2 sm:mt-6 sm:gap-6 sm:px-0 lg:gap-[50px]">
 								{SHOE_TREATMENTS.map((treatment) => {
 									return (
 										<div
@@ -566,10 +569,10 @@ function LaundryPage() {
 					{/* Aset & Alat */}
 					<section className="px-5 pb-14 md:px-0">
 						<div className="w-full md:w-[709px] md:max-w-full">
-							<h2 className="h-[30px] w-full max-w-[610px] pl-5 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black md:pl-0">
+							<h2 className="h-auto w-full max-w-[610px] pl-5 font-['Montserrat'] text-[25px] font-semibold leading-[100%] tracking-[0%] text-black md:pl-0">
 								Aset & Alat
 							</h2>
-							<div className="mt-6 flex w-full flex-wrap gap-4 md:h-[77px] md:flex-nowrap">
+							<div className="mt-6 flex w-full flex-wrap gap-4 md:flex-nowrap">
 								{ASSET_STATS.map((stat) => (
 									<div
 										key={stat.label}
@@ -614,12 +617,12 @@ function LaundryPage() {
 					</section>
 				</div>
 
-				{/* Kolom kanan (desktop): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
-				<aside className="hidden md:block md:w-1/3 md:pt-14">
+				{/* Kolom kanan (lg+): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
+				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24">
-						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
+						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
-							className="md:!w-full"
+							className="lg:!w-full"
 							title="Laundry Beres, Aktivitas Jalan Terus"
 							description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
 							link={WHATSAPP_LINK}
@@ -637,16 +640,17 @@ function LaundryPage() {
 					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
 						Momen dari OBC Laundry
 					</h2>
-					<div className="mx-auto mt-3 h-[2px] w-[396px] rounded-[2px] bg-[#0000004D]" />
+					<div className="mx-auto mt-3 h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D]" />
 				</div>
 
+				{/* Foto fleksibel mengikuti lebar kolom (tidak lagi ukuran tetap 280px) */}
 				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
 					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
 						<button
 							key={index}
 							type="button"
 							onClick={() => setSelectedGalleryImage(image)}
-							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-auto md:h-[296px] md:w-[280px] md:rounded-xl ${
+							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-[280/296] md:rounded-xl ${
 								index >= 4 ? 'hidden md:block' : ''
 							}`}
 							aria-label={`Buka gambar Momen OBC Laundry ${index + 1}`}
@@ -687,10 +691,10 @@ function LaundryPage() {
 			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
 				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
 					<div className="order-1 md:order-none">
-						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-[30px] md:max-w-[318px] md:text-[25px]">
+						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
 							Lokasi OBC Laundry
 						</h2>
-						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-[24px] md:text-[15px]">
+						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
 							Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
 						</p>
 					</div>
@@ -698,14 +702,14 @@ function LaundryPage() {
 						href={GOOGLE_MAPS_LINK}
 						target="_blank"
 						rel="noreferrer"
-						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
+						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
 					>
 						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
 						Buka di Google Maps
 					</a>
 				</div>
 
-				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
+				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Laundry */}
 					<iframe
 						title="Lokasi OBC Laundry"
@@ -722,14 +726,16 @@ function LaundryPage() {
 
 			<LandingFooter />
 
-			{/* Card WhatsApp versi mobile: fixed di bawah layar, selalu di depan; hanya konten yang bergeser saat scroll */}
-			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-6 pt-6 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden">
-				<WhatsAppCard
-					className="!mt-0"
-					title="Laundry Beres, Aktivitas Jalan Terus"
-					description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
-					link={WHATSAPP_LINK}
-				/>
+			{/* Card WhatsApp (mobile & tablet, < lg): fixed di bawah layar, versi ringkas (variant="bar") */}
+			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
+				<div className="mx-auto w-full max-w-[720px]">
+					<WhatsAppCard
+						variant="bar"
+						title="Laundry Beres, Aktivitas Jalan Terus"
+						description="Butuh laundry kiloan atau satuan? Hubungi OBC Laundry untuk mendapatkan informasi lebih lanjut mengenai pick up & delivery, maupun kebutuhan laundry lainnya."
+						link={WHATSAPP_LINK}
+					/>
+				</div>
 			</div>
 		</div>
 	)

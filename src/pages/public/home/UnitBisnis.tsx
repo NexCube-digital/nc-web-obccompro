@@ -121,8 +121,8 @@ export default function UnitBisnis() {
 			<span className="mb-1 block text-center font-['Montserrat'] text-[16px] font-medium normal-case leading-[20px] tracking-normal text-[#000000] md:mb-3 md:text-[18px] md:font-semibold md:uppercase md:tracking-[1.4px] md:text-[#000000CC]">
 				Bisnis Kami
 			</span>
-			{/* Judul: mobile 22px 2 baris, desktop 36px */}
-			<h2 className="mx-auto h-auto w-full max-w-[320px] text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] tracking-normal text-[#000000] opacity-100 md:h-[45px] md:max-w-[1098px] md:text-[36px] md:font-bold md:leading-[45px] md:tracking-[1.5px]">
+			{/* Judul: mobile 22px 2 baris, md 28px 1 baris (tinggi otomatis), lg ke atas 36px tinggi tetap */}
+			<h2 className="mx-auto h-auto w-full max-w-[320px] text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] tracking-normal text-[#000000] opacity-100 md:h-auto md:max-w-[1098px] md:text-[28px] md:font-bold md:leading-[40px] md:tracking-[1px] lg:h-[45px] lg:text-[36px] lg:leading-[45px] lg:tracking-[1.5px]">
 				Beragam Layanan dalam Satu Ekosistem
 			</h2>
 			<div
@@ -130,7 +130,7 @@ export default function UnitBisnis() {
 				aria-hidden="true"
 			/>
 
-			{/* Baris 1: 4 unit. Mobile 2 kolom */}
+			{/* Baris 1: 4 unit. Mobile & md 2 kolom, lg 4 kolom */}
 			<div className="mt-6 grid grid-cols-2 gap-[14px] md:mt-9 md:gap-6 lg:grid-cols-4">
 				{units.slice(0, 4).map((unit) => (
 					<UnitCard
@@ -142,15 +142,16 @@ export default function UnitBisnis() {
 				))}
 			</div>
 
-			{/* Baris 2: 3 unit. Mobile 2 kolom, kartu terakhir di tengah */}
-			<div className="mx-auto mt-[14px] grid max-w-[calc(3*280px+2*1.5rem)] grid-cols-2 gap-[14px] md:mt-6 md:gap-6 lg:grid-cols-3">
+			{/* Baris 2: 3 unit. Mobile & md 2 kolom dengan kartu terakhir di tengah, lg 3 kolom.
+			    Di md kartu selebar kolom (tanpa max-w) supaya ukurannya sama dengan baris 1. */}
+			<div className="mx-auto mt-[14px] grid max-w-[calc(3*280px+2*1.5rem)] grid-cols-2 gap-[14px] md:mt-6 md:max-w-none md:gap-6 lg:max-w-[calc(3*280px+2*1.5rem)] lg:grid-cols-3">
 				{units.slice(4).map((unit) => (
 					<UnitCard
 						key={unit.name}
 						unit={unit}
 						isFavorite={favorites.includes(unit.name)}
 						onToggleFavorite={toggleFavorite}
-						className="w-full max-w-[280px] justify-self-center last:col-span-2 last:w-[calc(50%-7px)] md:last:col-span-1 md:last:w-full"
+						className="w-full max-w-[280px] justify-self-center last:col-span-2 last:w-[calc(50%-7px)] md:max-w-none md:last:w-[calc(50%-12px)] lg:max-w-[280px] lg:last:col-span-1 lg:last:w-full"
 					/>
 				))}
 			</div>

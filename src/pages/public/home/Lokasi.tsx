@@ -50,12 +50,14 @@ export default function Lokasi() {
 			  )
 
 	return (
+		// Layout: di bawah lg 1 kolom (daftar lokasi di atas, peta di bawah). Mulai lg 2 kolom.
+		// minmax(0, ...) mencegah kolom melebar melebihi ruang karena isi (penyebab kolom kiri tertekan sebelumnya).
 		<section
-			className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] items-start gap-[28px] py-[40px] pb-[50px] md:w-[calc(100%-48px)] md:grid-cols-[1fr_1.15fr] md:gap-15 md:pb-20"
+			className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] items-start gap-[28px] py-[40px] pb-[50px] md:w-[calc(100%-48px)] md:gap-10 md:pb-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-15"
 			id="kontak"
 		>
 			{/* Panel kiri: daftar lokasi */}
-			<div>
+			<div className="min-w-0">
 				{/* Label: min-w hanya untuk desktop supaya tidak melebar di mobile */}
 				<span className="mb-3 block h-[20px] w-full min-w-0 max-w-[856px] font-['Montserrat'] text-[13px] font-semibold uppercase leading-[20px] tracking-[2px] text-[#000000CC] md:min-w-[412px] md:text-[18px] md:tracking-[1.4px]">
 					LOKASI OBC GROUP
@@ -147,8 +149,8 @@ export default function Lokasi() {
 				</div>
 			</div>
 
-			{/* Panel kanan: peta. Mobile lebar penuh, tinggi menyesuaikan isi */}
-			<div className="box-border h-auto w-full max-w-full overflow-hidden rounded-[8px] bg-[#EDEDED80] p-[14px] shadow-[0px_1px_2px_0px_#0000000D] md:h-[580px] md:w-[613px]">
+			{/* Panel kanan: peta. Lebar fluid mengikuti kolom (maksimal 613px mulai lg), bukan lagi lebar tetap 613px */}
+			<div className="box-border h-auto w-full min-w-0 max-w-full overflow-hidden rounded-[8px] bg-[#EDEDED80] p-[14px] shadow-[0px_1px_2px_0px_#0000000D] md:h-[580px] lg:max-w-[613px]">
 				{/* Header peta */}
 				<div className="flex items-center justify-between gap-2 border-b border-[#e5e5e5] px-4 py-3 max-sm:px-2">
 					<div className="flex min-w-0 items-center gap-2">

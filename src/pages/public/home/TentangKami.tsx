@@ -9,7 +9,7 @@ import rosetteIcon from '../../../assets/icon/iconstack.io - (Rosette Discount C
 export default function TentangKami() {
 	return (
 		<section
-			className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] gap-[28px] py-[55px] md:w-[calc(100%-48px)] md:grid-cols-[1.15fr_1fr] md:items-center md:gap-[60px] md:py-[90px]"
+			className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] gap-[28px] py-[55px] md:w-[calc(100%-48px)] md:grid-cols-[1.15fr_1fr] md:items-center md:gap-10 md:py-[90px] lg:gap-[60px]"
 			id="tentang"
 		>
 			<div>
@@ -51,30 +51,32 @@ export default function TentangKami() {
 					</div>
 				</div>
 
-				{/* Link: mobile lebar penuh & rata kanan, desktop 600px */}
+				{/* Link: mobile lebar penuh & rata kanan, desktop maksimal 600px.
+				    Lebar dibatasi min(600px, 100%) supaya tidak melewati kolomnya dan menimpa gambar di layar sedang. */}
 				<Link
 					to="/tentang-kami"
-					className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[16px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 md:w-[600px] md:text-[19px]"
+					className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[16px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 md:w-[min(600px,100%)] lg:text-[19px]"
 				>
 					Lihat Lebih Lanjut tentang Kami <ArrowRight size={20} />
 				</Link>
 			</div>
 
-			{/* Gambar: mobile di atas (order-first) tinggi 175px; desktop di kanan */}
-			<div className="relative order-first h-[175px] md:order-none md:h-[480px] md:min-h-[460px]">
+			{/* Gambar: mobile di atas (order-first) tinggi 175px; md lebih pendek; lg ke atas ukuran penuh */}
+			<div className="relative order-first h-[175px] md:order-none md:h-[420px] md:min-h-0 lg:h-[480px] lg:min-h-[460px]">
 				<div
-					className="absolute left-0 top-0 h-[62%] w-[78%] rounded-full bg-cover bg-center shadow-[0_8px_24px_rgba(52,49,51,0.08)] md:left-[18%] md:h-[78%] md:w-[45%]"
+					className="absolute left-0 top-0 h-[62%] w-[78%] rounded-full bg-cover bg-center shadow-[0_8px_24px_rgba(52,49,51,0.08)] md:left-[6%] md:h-[78%] md:w-[56%] lg:left-[18%] lg:w-[45%]"
 					style={{ backgroundImage: `url(${lapangF1Image})` }}
 				/>
 				<div
-					className="absolute bottom-0 right-[7%] h-[53%] w-[78%] rounded-full border-[4px] border-[#fffff7] bg-cover bg-center shadow-[0_12px_36px_rgba(52,49,51,0.14)] md:bottom-[10%] md:right-[20%] md:h-[60%] md:w-[38%] md:border-[7px]"
+					className="absolute bottom-0 right-[7%] h-[53%] w-[78%] rounded-full border-[4px] border-[#fffff7] bg-cover bg-center shadow-[0_12px_36px_rgba(52,49,51,0.14)] md:bottom-[10%] md:right-[6%] md:h-[60%] md:w-[50%] md:border-[7px] lg:right-[20%] lg:w-[38%]"
 					style={{ backgroundImage: `url(${lapangF2Image})` }}
 				/>
-				<div className="absolute left-[52%] top-[53px] inline-flex items-center gap-2 rounded-[100px] bg-[#0040001A] p-1.5 text-black backdrop-blur md:top-5 md:p-2.5">
-					<span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#004000] to-[#009D00] text-white md:h-9 md:w-9">
+				{/* Badge EST: di md menempel ke kanan & lebih kecil agar tidak keluar kolom, di lg ke atas posisi semula */}
+				<div className="absolute left-[52%] top-[53px] inline-flex items-center gap-2 rounded-[100px] bg-[#0040001A] p-1.5 text-black backdrop-blur md:left-auto md:right-0 md:top-5 md:p-2 lg:left-[52%] lg:right-auto lg:p-2.5">
+					<span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#004000] to-[#009D00] text-white lg:h-9 lg:w-9">
 						<img src={medalIcon} alt="" aria-hidden="true" className="h-[20px] w-[20px] md:h-[22px] md:w-[22px]" />
 					</span>
-					<span className="font-body text-[14px] font-bold leading-[1.2] tracking-[0%] text-black md:text-[16px]">EST 7 MEI 1999</span>
+					<span className="font-body text-[14px] font-bold leading-[1.2] tracking-[0%] text-black md:text-[13px] lg:text-[16px]">EST 7 MEI 1999</span>
 				</div>
 			</div>
 		</section>
