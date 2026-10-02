@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, Star, CheckCircle2, ChevronDown } from 'lucide-react'
 
 export type TestimoniFormData = {
@@ -154,6 +155,7 @@ function DropdownField({ id, value, placeholder, options, error, onChange }: Dro
 }
 
 export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTestimoniProps) {
+	const { t } = useTranslation()
 	const [form, setForm] = useState<TestimoniFormData>(initialForm)
 	const [errors, setErrors] = useState<FormErrors>({})
 	const [hoverRating, setHoverRating] = useState(0)
@@ -198,11 +200,11 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 
 	const validate = () => {
 		const next: FormErrors = {}
-		if (!form.name.trim()) next.name = 'Nama wajib diisi'
-		if (!form.unit) next.unit = 'Pilih unit OBC yang kamu kunjungi'
-		if (!form.role) next.role = 'Pilih peran kamu'
-		if (form.rating === 0) next.rating = 'Berikan rating bintang'
-		if (form.text.trim().length < MIN_TEXT) next.text = `Ulasan minimal ${MIN_TEXT} karakter`
+		if (!form.name.trim()) next.name = t('modalTestimoni.errors.nameRequired')
+		if (!form.unit) next.unit = t('modalTestimoni.errors.unitRequired')
+		if (!form.role) next.role = t('modalTestimoni.errors.roleRequired')
+		if (form.rating === 0) next.rating = t('modalTestimoni.errors.ratingRequired')
+		if (form.text.trim().length < MIN_TEXT) next.text = t('modalTestimoni.errors.textMin', { min: MIN_TEXT })
 		setErrors(next)
 		return Object.keys(next).length === 0
 	}
@@ -238,7 +240,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 				<button
 					type="button"
 					className="absolute right-4 top-4 grid h-9 w-9 cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5]"
-					aria-label="Tutup"
+					aria-label={t('modalTestimoni.closeBtn')}
 					onClick={onClose}
 				>
 					<X size={18} />
@@ -250,46 +252,46 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							<CheckCircle2 size={34} />
 						</span>
 						<h3 className="mt-5 font-['Montserrat'] text-[22px] font-bold text-[#1F3320]">
-							Terima kasih!
+							{t('modalTestimoni.thankYouTitle')}
 						</h3>
 						<p className="mt-2 max-w-[340px] font-['Montserrat'] text-[14px] leading-[22px] text-[#4b5563]">
-							Ulasan kamu sudah kami terima. Masukan kamu sangat berarti untuk OBC Group.
+							{t('modalTestimoni.thankYouDesc')}
 						</p>
 						<button
 							type="button"
 							className="mt-6 inline-flex h-[44px] cursor-pointer items-center justify-center rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-8 font-['Montserrat'] text-[15px] font-semibold text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a]"
 							onClick={onClose}
 						>
-							Tutup
+							{t('modalTestimoni.closeBtn')}
 						</button>
 					</div>
 				) : (
 					<form onSubmit={handleSubmit} noValidate>
 						<span className="block font-['Montserrat'] text-[13px] font-semibold uppercase tracking-[1.4px] text-[#000000CC]">
-							Testimoni
+							{t('modalTestimoni.badge')}
 						</span>
 						<h3
 							id="modal-testimoni-title"
 							className="mt-1 pr-10 font-['Montserrat'] text-[22px] font-bold leading-[30px] text-[#000000] sm:text-[26px] sm:leading-[34px]"
 						>
-							Tulis Ulasan Pengalaman Kamu
+							{t('modalTestimoni.title')}
 						</h3>
 						<p className="mt-2 font-['Montserrat'] text-[13px] leading-[20px] text-[#4b5563]">
-							Ceritakan pengalaman menginap, berolahraga, atau beraktivitas di OBC Group.
+							{t('modalTestimoni.subtitle')}
 						</p>
 
 						<div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
 							{/* Nama */}
 							<div className="sm:col-span-2">
 								<label htmlFor="testimoni-name" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
-									Nama
+									{t('modalTestimoni.nameLabel')}
 								</label>
 								<input
 									id="testimoni-name"
 									type="text"
 									value={form.name}
 									maxLength={40}
-									placeholder="Nama lengkap kamu"
+									placeholder={t('modalTestimoni.namePlaceholder')}
 									className={`${inputBase} ${errors.name ? 'border-red-500' : 'border-[#e5e5e5]'}`}
 									onChange={(e) => setField('name', e.target.value)}
 								/>
@@ -300,12 +302,12 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							<div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2">
 								<div>
 									<label htmlFor="testimoni-unit" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
-										Unit OBC
+										{t('modalTestimoni.unitLabel')}
 									</label>
 									<DropdownField
 										id="testimoni-unit"
 										value={form.unit}
-										placeholder="Pilih unit"
+										placeholder={t('modalTestimoni.unitPlaceholder')}
 										options={UNIT_OPTIONS}
 										error={errors.unit}
 										onChange={(value) => setField('unit', value)}
@@ -314,12 +316,12 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 
 								<div>
 									<label htmlFor="testimoni-role" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
-										Sebagai
+										{t('modalTestimoni.roleLabel')}
 									</label>
 									<DropdownField
 										id="testimoni-role"
 										value={form.role}
-										placeholder="Pilih peran"
+										placeholder={t('modalTestimoni.rolePlaceholder')}
 										options={ROLE_OPTIONS}
 										error={errors.role}
 										onChange={(value) => setField('role', value)}
@@ -330,7 +332,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							{/* Rating */}
 							<div>
 								<span className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
-									Rating
+										{t('modalTestimoni.ratingLabel')}
 								</span>
 								<div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
 									{[1, 2, 3, 4, 5].map((star) => (
@@ -338,7 +340,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 											key={star}
 											type="button"
 											className="cursor-pointer p-0.5 transition-transform hover:scale-110"
-											aria-label={`Beri ${star} bintang`}
+											aria-label={`${t('modalTestimoni.ratingLabel')} ${star}`}
 											aria-pressed={form.rating === star}
 											onMouseEnter={() => setHoverRating(star)}
 											onClick={() => setField('rating', star)}
@@ -363,14 +365,14 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							{/* Isi ulasan */}
 							<div>
 								<label htmlFor="testimoni-text" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
-									Ulasan
+									{t('modalTestimoni.reviewLabel')}
 								</label>
 								<textarea
 									id="testimoni-text"
 									rows={4}
 									value={form.text}
 									maxLength={MAX_TEXT}
-									placeholder="Ceritakan pengalaman kamu di OBC..."
+									placeholder={t('modalTestimoni.reviewPlaceholder')}
 									className={`${inputBase} resize-none leading-[22px] ${errors.text ? 'border-red-500' : 'border-[#e5e5e5]'}`}
 									onChange={(e) => setField('text', e.target.value)}
 								/>
@@ -388,7 +390,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							disabled={isSubmitting}
 							className="mt-4 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-4 font-['Montserrat'] text-[16px] font-semibold text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
 						>
-							{isSubmitting ? 'Mengirim...' : 'Kirim Ulasan'}
+							{isSubmitting ? t('modalTestimoni.submittingBtn') : t('modalTestimoni.submitBtn')}
 						</button>
 					</form>
 				)}

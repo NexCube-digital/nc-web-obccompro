@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import billiardImage from '../../../assets/layanan/Meja Billiard.png'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
@@ -37,11 +38,25 @@ const heroSlides = [
 		primaryBtn: { text: 'Reservasi Kamar', link: '#kontak' },
 		secondaryBtn: { text: 'Jelajahi Bisnis', link: '#layanan' },
 	},
+
 ]
 
+const heroSlideKeys = ['obc', 'sportCenter', 'eventSpace', 'guestHouse'] as const
+
 export default function Hero() {
+	const { t } = useTranslation()
 	const [heroIndex, setHeroIndex] = useState(0)
-	const activeHeroSlide = heroSlides[heroIndex]
+	const translatedHeroSlides = heroSlides.map((slide, index) => {
+		const key = `hero.slides.${heroSlideKeys[index]}`
+		return {
+			...slide,
+			title: t(`${key}.title`),
+			description: t(`${key}.description`),
+			primaryBtn: { ...slide.primaryBtn, text: t(`${key}.primaryBtn`) },
+			secondaryBtn: { ...slide.secondaryBtn, text: t(`${key}.secondaryBtn`) },
+		}
+	})
+	const activeHeroSlide = translatedHeroSlides[heroIndex]
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -66,10 +81,10 @@ export default function Hero() {
 	return (
 		<section
 			className="relative flex h-[100svh] min-h-[540px] items-end overflow-hidden pb-[140px] text-white md:h-[82vh] md:min-h-[700px] md:pb-[120px] xl:min-h-[640px] xl:pb-[70px]"
-			aria-label="Hero OBC Group"
+				aria-label={t('nav.home')}
 		>
 			{/* Crossfade background images */}
-			{heroSlides.map((slide, index) => (
+			{translatedHeroSlides.map((slide, index) => (
 				<div
 					key={index}
 					className={`absolute inset-0 bg-cover bg-[8%_77%] bg-no-repeat transition-opacity duration-1000 ease-in-out md:bg-[center_72%] ${
@@ -111,7 +126,7 @@ export default function Hero() {
 					<button
 						type="button"
 						onClick={scrollToFooter}
-						aria-label="Scroll ke footer"
+						aria-label={t('common.scrollToFooter')}
 						className="grid h-7 w-[35px] translate-y-1 cursor-pointer place-items-center text-white/85 transition-colors hover:text-white md:w-8"
 					>
 						<svg
@@ -141,8 +156,8 @@ export default function Hero() {
 				- xl      : (>=1280px) di kanan, seperti desain awal
 			*/}
 			<div className="absolute bottom-[104px] left-[18px] right-[23px] z-10 flex items-center justify-between gap-4 rounded-full text-white md:bottom-[44px] md:left-6 md:right-auto md:justify-start md:px-0 md:py-1.5 xl:bottom-[132px] xl:left-auto xl:right-[max(113px,calc((100%-1280px)/2))] xl:px-3">
-				<div className="flex items-center gap-[10px] md:gap-1.5" aria-label="Indikator navigasi">
-					{heroSlides.map((slide, index) => {
+				<div className="flex items-center gap-[10px] md:gap-1.5" aria-label={t('common.slideNavigation')}>
+					{translatedHeroSlides.map((slide, index) => {
 						const isActive = index === heroIndex
 						return (
 							<button
@@ -151,7 +166,7 @@ export default function Hero() {
 								className={`relative h-[7px] w-[60px] cursor-pointer overflow-hidden rounded-full transition-all duration-300 md:h-2 md:w-16 xl:w-19 ${
 									isActive ? 'bg-white/25 backdrop-blur-xs' : 'bg-[#AEAEAE99] hover:bg-white/70'
 								}`}
-								aria-label={`Tampilkan slide ${index + 1}: ${slide.title}`}
+								aria-label={t('common.showSlide', { number: index + 1, title: slide.title })}
 								onClick={() => setHeroIndex(index)}
 							>
 								{isActive && (
@@ -168,7 +183,7 @@ export default function Hero() {
 					<button
 						className="grid h-6 w-5 cursor-pointer place-items-center text-2xl leading-none transition-opacity hover:opacity-70 md:h-10 md:w-7 md:text-3xl"
 						type="button"
-						aria-label="Navigasi sebelumnya"
+						aria-label={t('common.previous')}
 						onClick={goPrev}
 					>
 						&larr;
@@ -176,7 +191,7 @@ export default function Hero() {
 					<button
 						className="grid h-6 w-5 cursor-pointer place-items-center text-2xl leading-none transition-opacity hover:opacity-70 md:h-10 md:w-7 md:text-3xl"
 						type="button"
-						aria-label="Navigasi berikutnya"
+						aria-label={t('common.next')}
 						onClick={goNext}
 					>
 						&rarr;

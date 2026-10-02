@@ -3,6 +3,7 @@ import {
 	X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
 import { UnitBisnis } from '../../../components/common/UnitBisnis'
@@ -182,6 +183,7 @@ function getFacilityIcon(label: string) {
 }
 
 function BlokSection({ blok, index }: { blok: Blok; index: number }) {
+	const { t } = useTranslation()
 	// Tenant dibagi 2 kolom: kolom kiri terisi dulu, lalu kanan (sesuai desain)
 	const half = Math.ceil(blok.tenants.length / 2)
 	const columns = [blok.tenants.slice(0, half), blok.tenants.slice(half)]
@@ -201,12 +203,12 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 
 			{blok.operationalHours && (
 				<p className="mt-1 font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-black sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
-					Waktu Operasional: {blok.operationalHours}
+					{t('common.operationalHours')}: {blok.operationalHours}
 				</p>
 			)}
 
 			<p className="mt-3 font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-[#41493D] sm:mt-4 sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
-				Informasi Area
+				{t('common.areaInformation')}
 			</p>
 
 			{/* Card tenant: 1 kolom (<360px), 2 kolom mulai 360px */}
@@ -235,7 +237,7 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 			{/* Card fasilitas */}
 			<div className="mt-4 rounded-lg border border-[#E2E2E2B2] bg-[#F3F3F3] px-4 py-3.5 sm:p-5">
 				<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15px] tracking-[1px] text-[#363636] sm:text-[11px] sm:leading-[16.5px] sm:tracking-[1.1px]">
-					Fasilitas
+					{t('common.facilities')}
 				</p>
 				<div className="mt-1.5 flex flex-col gap-1 sm:mt-5 sm:gap-2">
 					{blok.facilities.map((facility) => {
@@ -261,6 +263,7 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 }
 
 function FoodCourtPage() {
+	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -292,14 +295,13 @@ function FoodCourtPage() {
 						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">
 								<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#000000]" />
-								Food & Beverage
+								{t('units.foodCourt.category')}
 							</span>
 							<h1 className="mt-5 font-['Montserrat'] text-[40px] font-bold leading-[52px] tracking-[1.5px] text-black lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
-								OBC Food Court
+								{t('units.foodCourt.title')}
 							</h1>
 							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.18px] text-black lg:text-[18px] lg:leading-[29.25px]">
-								Nikmati beragam pilihan makanan dan minuman dalam satu tempat yang nyaman untuk berkumpul, bersantai,
-								dan berbagi cerita.
+								{t('units.foodCourt.desc')}
 							</p>
 						</div>
 					</div>
@@ -321,15 +323,13 @@ function FoodCourtPage() {
 					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-5 pb-10 pt-8 min-[400px]:px-[30px] md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
 						<div className="flex flex-col">
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-								OBC Food Court
+								{t('units.foodCourt.title')}
 							</h1>
 							<h2 className="order-3 mt-8 font-heading text-[18px] font-semibold text-[#000000] md:order-1 md:mt-0 md:text-[25px]">
-								Tentang OBC Food Court
+								{t('units.foodCourt.aboutTitle')}
 							</h2>
 							<p className="order-4 mt-3 max-w-2xl text-justify align-middle font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-								OBC Food Court merupakan salah satu bagian dari kawasan OBC yang menyediakan beragam pilihan makanan
-								dan minuman dari berbagai tenant. Area makan yang tersedia dapat digunakan untuk menikmati hidangan,
-								berkumpul bersama sahabat, maupun beristirahat santai setelah beraktivitas di kawasan OBC.
+								{t('units.foodCourt.aboutText')}
 							</p>
 
 							<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-4 md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:justify-start md:gap-x-12 md:gap-y-4 md:border-t md:border-obc-border md:pt-6">
@@ -337,7 +337,7 @@ function FoodCourtPage() {
 									<img src={foodCourtIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 									<div>
 										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-											Area Food Court
+											{t('common.location')} Food Court
 										</p>
 										<p className="flex flex-wrap justify-start gap-x-2 font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
 											{AREA_LIST.map((area) => (
@@ -350,10 +350,10 @@ function FoodCourtPage() {
 									<img src={clockIcon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" aria-hidden="true" />
 									<div>
 										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-[#41493D]">
-											Senin - Sabtu
+											{t('units.foodCourt.schedule')}
 										</p>
 										<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">
-											08.00 WIB - 20.00 WIB
+											{t('units.foodCourt.workingHours')}
 										</p>
 									</div>
 								</div>
@@ -377,8 +377,8 @@ function FoodCourtPage() {
 						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
 							className="lg:!w-full"
-							title="Sudah Tahu Mau Makan Apa?"
-							description="Jelajahi pilihan tenant di OBC Food Court dan temukan tempat yang paling sesuai untuk menikmati hidangan lezat dan waktu berkualitas bersama."
+							title={t('units.foodCourt.whatsappCardTitle')}
+							description={t('units.foodCourt.whatsappCardDesc')}
 							link={WHATSAPP_LINK}
 						/>
 					</div>
@@ -389,10 +389,10 @@ function FoodCourtPage() {
 			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
-						Galeri
+						{t('gallerySection.badge')}
 					</span>
 					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						Momen dari OBC Food Court
+						{t('gallerySection.momentsFrom', { unit: t('units.foodCourt.title') })}
 					</h2>
 					<div className="mx-auto mt-3 h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D]" />
 				</div>
@@ -430,7 +430,7 @@ function FoodCourtPage() {
 					<button
 						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
 						type="button"
-						aria-label="Tutup gambar"
+										aria-label={t('common.close')}
 						onClick={() => setSelectedGalleryImage(null)}
 					>
 						<X size={22} />
@@ -446,7 +446,7 @@ function FoodCourtPage() {
 				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
 					<div className="order-1 md:order-none">
 						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
-							Lokasi OBC Food Court
+							{t('common.locationOf', { unit: t('units.foodCourt.title') })}
 						</h2>
 						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
 							Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
@@ -459,14 +459,14 @@ function FoodCourtPage() {
 						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
 					>
 						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						Buka di Google Maps
+						{t('common.openGoogleMaps')}
 					</a>
 				</div>
 
 				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Food Court */}
 					<iframe
-						title="Lokasi OBC Food Court"
+						title={t('common.locationOf', { unit: t('units.foodCourt.title') })}
 						src="https://www.google.com/maps?q=Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
@@ -484,8 +484,8 @@ function FoodCourtPage() {
 				<div className="mx-auto w-full max-w-[720px]">
 					<WhatsAppCard
 						variant="bar"
-						title="Sudah Tahu Mau Makan Apa?"
-						description="Jelajahi pilihan tenant di OBC Food Court dan temukan tempat yang paling sesuai untuk menikmati hidangan lezat dan waktu berkualitas bersama."
+						title={t('units.foodCourt.whatsappCardTitle')}
+						description={t('units.foodCourt.whatsappCardDesc')}
 						link={WHATSAPP_LINK}
 					/>
 				</div>

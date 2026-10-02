@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import promoPelajarImage from '../../../assets/OBC Guest House.png'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
@@ -40,6 +41,7 @@ const promoSlides = [
 ]
 
 export default function PromoBanner() {
+	const { t } = useTranslation()
 	const [promoIndex, setPromoIndex] = useState(0)
 	const [isPromoHovered, setIsPromoHovered] = useState(false)
 	const [promoTouchStartX, setPromoTouchStartX] = useState<number | null>(null)
@@ -63,7 +65,7 @@ export default function PromoBanner() {
 			<div className="mx-auto w-[calc(100%-40px)] max-w-[1246px] md:w-[calc(100%-32px)]">
 				{/* Judul (dari screenshot) */}
 				<h2 className="mb-3 font-['Montserrat'] text-[18px] font-bold leading-[26px] tracking-normal text-black md:mb-4 md:px-[6px] md:text-[28px] md:leading-[38px] lg:text-[36px] lg:leading-[44px]">
-					Promo &amp; Penawaran Special dari OBC Group
+					{t('promoBanner.title')}
 				</h2>
 
 				{/* Banner: mobile 2:1, PC rasio awal 1200/450 */}
@@ -115,11 +117,11 @@ export default function PromoBanner() {
 												PROMO
 											</span>
 											<span className="mt-0.5 font-['Montserrat'] text-xl font-extrabold uppercase leading-none tracking-[2px] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] sm:mt-1 sm:text-3xl sm:tracking-[4px] md:text-5xl lg:text-[54px]">
-												{slide.title}
+												{slide.title ? t(`promoBanner.slides.${slide.id}Title`) : null}
 											</span>
 											{slide.subtitle && (
 												<p className="mt-1.5 line-clamp-2 max-w-[90%] text-[9px] font-medium text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] sm:mt-3 sm:max-w-[520px] sm:text-xs md:text-sm">
-													{slide.subtitle}
+													{t(`promoBanner.slides.${slide.id}Subtitle`)}
 												</p>
 											)}
 										</div>

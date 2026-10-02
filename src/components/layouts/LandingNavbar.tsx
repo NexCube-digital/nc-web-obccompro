@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Check, Heart, Menu, X } from 'lucide-react'
 import logo from '../../assets/logo/LOGO-OBC.png'
 import internetIcon from '../../assets/icon/internet.svg'
@@ -8,17 +9,17 @@ import shareIcon from '../../assets/icon/bagikan.svg'
 
 // Daftar menu utama
 const menus = [
-	{ label: 'Beranda', href: '/' },
-	{ label: 'Tentang Kami', href: '/tentang-kami' },
-	{ label: 'Unit Bisnis', href: '/unit-bisnis' },
-	{ label: 'Galeri', href: '/galeri' },
-	{ label: 'Kontak', href: '#kontak' },
+	{ label: 'nav.home', href: '/' },
+	{ label: 'nav.about', href: '/tentang-kami' },
+	{ label: 'nav.businessUnits', href: '/unit-bisnis' },
+	{ label: 'nav.gallery', href: '/galeri' },
+	{ label: 'nav.contact', href: '#kontak' },
 ]
 
 // Daftar pilihan bahasa (dropdown desktop)
 const languages = [
-	{ code: 'ID', label: 'Bahasa Indonesia' },
-	{ code: 'EN', label: 'Bahasa Inggris' },
+	{ code: 'id', label: 'nav.indonesian' },
+	{ code: 'en', label: 'nav.english' },
 ] as const
 
 // Kelas menu desktop: aktif = SemiBold (600) + garis bawah, non-aktif = Regular (400)
@@ -46,13 +47,17 @@ const detailBtnClass =
 
 function LandingNavbar() {
 	const [open, setOpen] = useState(false)
-	const [lang, setLang] = useState<'ID' | 'EN'>('ID')
 	const [langOpen, setLangOpen] = useState(false)
 	const [liked, setLiked] = useState(false)
+	const { t, i18n } = useTranslation()
+	const lang = i18n.resolvedLanguage?.toUpperCase().startsWith('EN') ? 'EN' : 'ID'
 	const langRef = useRef<HTMLDivElement>(null)
 	const navigate = useNavigate()
 	const { pathname } = useLocation()
 	const closeMenu = () => setOpen(false)
+	const changeLanguage = (language: string) => {
+		void i18n.changeLanguage(language)
+	}
 
 	// Halaman detail unit bisnis: /unit-bisnis/guest-house, /unit-bisnis/villa, dst.
 	const isDetailPage = pathname.startsWith('/unit-bisnis/')
@@ -122,18 +127,18 @@ function LandingNavbar() {
 			{/* Navbar khusus halaman detail unit bisnis (hanya mobile) */}
 			{isDetailPage && (
 				<div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 pt-4 md:hidden">
-					<button type="button" className={detailBtnClass} aria-label="Kembali ke Unit Bisnis" onClick={handleBack}>
+					<button type="button" className={detailBtnClass} aria-label={t('nav.backToUnits')} onClick={handleBack}>
 						<ArrowLeft size={20} strokeWidth={1.5} color="#000000" />
 					</button>
 
 					<div className="flex items-center gap-3">
-						<button type="button" className={detailBtnClass} aria-label="Bagikan" onClick={handleShare}>
+						<button type="button" className={detailBtnClass} aria-label={t('common.share')} onClick={handleShare}>
 							<img src={shareIcon} alt="" aria-hidden="true" className="h-[13px] w-[11px] object-contain" />
 						</button>
 						<button
 							type="button"
 							className={detailBtnClass}
-							aria-label={liked ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+							aria-label={liked ? t('common.removeFromFavorite') : t('common.addToFavorite')}
 							aria-pressed={liked}
 							onClick={handleLike}
 						>
@@ -160,7 +165,7 @@ function LandingNavbar() {
 					<NavLink
 						className="shrink-0"
 						to="/"
-						aria-label="OBC beranda"
+						aria-label={t('nav.home')}
 						onClick={() => {
 							closeMenu()
 							scrollToTop()
@@ -184,7 +189,7 @@ function LandingNavbar() {
 										e.stopPropagation()
 									}}
 								>
-									{menu.label}
+									{t(menu.label)}
 								</a>
 							) : (
 								<NavLink
@@ -194,7 +199,7 @@ function LandingNavbar() {
 									end={menu.href === '/'}
 									onClick={scrollToTop}
 								>
-									{menu.label}
+									{t(menu.label)}
 								</NavLink>
 							),
 						)}
@@ -205,9 +210,9 @@ function LandingNavbar() {
 						{/* Desktop: tombol bahasa + dropdown pilihan bahasa */}
 						<div ref={langRef} className="relative hidden md:block">
 							<button
-								className="grid h-[40px] w-[40px] place-items-center rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90"
+								className="flex h-[40px] w-auto items-center justify-center gap-1 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] px-3 text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90"
 								type="button"
-								aria-label="Pilih bahasa"
+								aria-label={t('nav.languageSelect')}
 								aria-haspopup="listbox"
 								aria-expanded={langOpen}
 								onClick={(e) => {
@@ -216,6 +221,9 @@ function LandingNavbar() {
 								}}
 							>
 								<img src={internetIcon} alt="" className="h-[22px] w-[22px]" />
+								<span className="font-['Montserrat'] text-[12px] font-bold leading-4 tracking-[0px] text-black">
+									{lang}
+								</span>
 							</button>
 
 							{langOpen && (
@@ -224,23 +232,23 @@ function LandingNavbar() {
 									onClick={(e) => e.stopPropagation()}
 								>
 									<p className="border-b border-black/[0.06] px-4 py-3 font-['Montserrat'] text-[12px] font-bold leading-4 tracking-[0px] text-black">
-										Pilihan Bahasa
+										{t('nav.languageSelect')}
 									</p>
 									<ul role="listbox" aria-label="Pilihan Bahasa">
 										{languages.map((item) => (
-											<li key={item.code} role="option" aria-selected={lang === item.code}>
+											<li key={item.code} role="option" aria-selected={lang === item.code.toUpperCase()}>
 												<button
 													type="button"
 													onClick={() => {
-														setLang(item.code)
+														changeLanguage(item.code)
 														setLangOpen(false)
 													}}
 													className={`flex w-full items-center justify-between px-4 py-3 text-left font-['Montserrat'] text-[14px] leading-5 tracking-[0px] text-black transition-colors hover:bg-black/[0.05] ${
-														lang === item.code ? 'bg-black/[0.03] font-bold' : 'font-normal'
+														lang === item.code.toUpperCase() ? 'bg-black/[0.03] font-bold' : 'font-normal'
 													}`}
 												>
-													<span>{item.label}</span>
-													{lang === item.code && <Check size={16} />}
+													<span>{t(item.label)}</span>
+													{lang === item.code.toUpperCase() && <Check size={16} />}
 												</button>
 											</li>
 										))}
@@ -253,7 +261,7 @@ function LandingNavbar() {
 						<NavLink
 							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
 							to="/kontak"
-							aria-label="Login"
+							aria-label={t('nav.login')}
 							onClick={scrollToTop}
 						>
 							<img
@@ -261,14 +269,14 @@ function LandingNavbar() {
 								alt=""
 								className="h-[26px] w-[26px] shrink-0 xl:h-[30px] xl:w-[30px]"
 							/>
-							<span className="hidden xl:inline">Login</span>
+							<span className="hidden xl:inline">{t('nav.login')}</span>
 						</NavLink>
 
 						{/* Mobile: ikon login (hanya ikon) */}
 						<NavLink
 							className={`${circleBtnClass} md:hidden`}
 							to="/kontak"
-							aria-label="Login"
+							aria-label={t('nav.login')}
 							onClick={closeMenu}
 						>
 							<img src={userCircleIcon} alt="" className="h-[26px] w-[26px]" />
@@ -278,7 +286,7 @@ function LandingNavbar() {
 						<button
 							type="button"
 							className={`${circleBtnClass} md:hidden`}
-							aria-label={open ? 'Tutup menu' : 'Buka menu'}
+							aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
 							aria-expanded={open}
 							aria-controls="mobile-menu"
 							onClick={() => setOpen((v) => !v)}
@@ -299,7 +307,7 @@ function LandingNavbar() {
 							{menus.map((menu) =>
 								menu.href.startsWith('#') ? (
 									<a key={menu.label} className={mobileItemClass(false)} href={menu.href} onClick={closeMenu}>
-										{menu.label}
+										{t(menu.label)}
 									</a>
 								) : (
 									<NavLink
@@ -309,7 +317,7 @@ function LandingNavbar() {
 										end={menu.href === '/'}
 										onClick={closeMenu}
 									>
-										{menu.label}
+										{t(menu.label)}
 									</NavLink>
 								),
 							)}
@@ -318,17 +326,17 @@ function LandingNavbar() {
 						{/* Pilih bahasa */}
 						<div className="flex items-center justify-between bg-black/[0.03] px-6 py-4">
 							<span className="font-['Montserrat'] text-[12px] font-bold leading-4 tracking-[0px] text-black">
-								Pilih Bahasa / Language
+								{t('nav.chooseLanguage')}
 							</span>
 							<div className="flex items-center gap-2">
 								{(['ID', 'EN'] as const).map((code) => (
 									<button
 										key={code}
 										type="button"
-										onClick={() => setLang(code)}
+										onClick={() => changeLanguage(code.toLowerCase())}
 										aria-pressed={lang === code}
 										className={`h-8 w-[43px] rounded-[4px] border font-['Montserrat'] text-[12px] font-bold leading-4 tracking-[0px] ${
-											lang === code
+												lang === code.toUpperCase()
 												? 'border-black bg-black text-white'
 												: 'border-black/[0.08] bg-white text-black'
 										}`}

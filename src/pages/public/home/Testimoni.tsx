@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Quote, Star, BadgeCheck } from 'lucide-react'
 import laundryLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (4).png'
 import villaLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
@@ -61,6 +62,7 @@ const testimonials = [
 ]
 
 export default function Testimoni() {
+	const { t } = useTranslation()
 	const [activeTestimonial, setActiveTestimonial] = useState(0)
 	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
@@ -94,27 +96,25 @@ export default function Testimoni() {
 					{/* Judul: mobile rata tengah */}
 					<div className="order-1 flex w-full flex-col items-center justify-start pt-[4px] text-center md:order-none md:w-auto md:items-start md:text-left">
 						<span className="mb-2 flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase tracking-[1px] text-[#000000CC] md:text-[13px] md:tracking-[1.4px]">
-							TESTIMONI
+							{t('testimonialsSection.badge')}
 						</span>
 						{/* Di md judul 36px agar muat sebaris dengan deskripsi; 46px mulai lg */}
-						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[36px] md:font-medium md:leading-[42px] lg:text-[46px] lg:leading-[46px]">
-							Apa Kata Mereka
-							<br />
-							Tentang OBC Group
+						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 whitespace-pre-line font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[36px] md:font-medium md:leading-[42px] lg:text-[46px] lg:leading-[46px]">
+							{t('testimonialsSection.title')}
 						</h2>
 					</div>
 
 					<div className="contents md:flex md:flex-col md:items-end md:gap-3 md:text-right">
 						{/* Deskripsi: mobile rata tengah, 13px. Di md lebar dibatasi 320px agar tidak turun ke bawah judul */}
 						<p className="order-2 mt-1 max-w-full text-center font-['Montserrat'] text-[13px] leading-[1.5] text-[#4b5563] md:order-none md:mt-0 md:max-w-[320px] md:text-right md:text-[15px] lg:max-w-[420px]">
-							Pengalaman Menginap, Berolahraga, dan Beraktivitas di OBC Group
+							{t('testimonialsSection.subtitle')}
 						</p>
 						{/* Panah: mobile pindah ke bawah carousel, rata kanan, lebih kecil */}
 						<div className="order-5 mt-3 flex gap-2.5 self-end md:order-none md:mt-0 md:self-auto">
 							<button
 								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[50px] md:w-[50px]"
 								type="button"
-								aria-label="Testimoni sebelumnya"
+								aria-label={t('testimonialsSection.prevAria')}
 								onClick={() => goToTestimonial(-1)}
 							>
 								<ChevronLeft className="h-4 w-4 translate-x-[-1px] md:h-5 md:w-5" />
@@ -122,7 +122,7 @@ export default function Testimoni() {
 							<button
 								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[50px] md:w-[50px]"
 								type="button"
-								aria-label="Testimoni berikutnya"
+								aria-label={t('testimonialsSection.nextAria')}
 								onClick={() => goToTestimonial(1)}
 							>
 								<ChevronRight className="h-4 w-4 translate-x-[1px] md:h-5 md:w-5" />
@@ -205,7 +205,7 @@ export default function Testimoni() {
 						<button
 							key={i}
 							type="button"
-							aria-label={`Pindah ke testimoni ${i + 1}`}
+							aria-label={t('testimonialsSection.goToSlide', { number: i + 1 })}
 							onClick={() => setActiveTestimonial(i)}
 							className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
 								i === activeTestimonial ? 'w-7 bg-[#004000]' : 'w-2 bg-[#00000033] hover:bg-[#00000066]'
@@ -225,7 +225,7 @@ export default function Testimoni() {
 							<img src={reviewIcon} alt="" aria-hidden="true" className="h-[18px] w-[17px]" />
 						</span>
 						<span className="block h-[17px] w-auto whitespace-nowrap text-center text-[12px] leading-[17px] md:w-[332px] md:text-[17px]">
-							Tulis Ulasan Pengalaman Kamu Disini
+							{t('testimonialsSection.writeReview')}
 						</span>
 					</button>
 				</div>

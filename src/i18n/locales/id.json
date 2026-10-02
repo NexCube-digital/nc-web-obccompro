@@ -1,0 +1,429 @@
+{
+  "common": {
+    "loading": "Memuat data...",
+    "error": "Gagal memuat data",
+    "empty": "Belum ada data",
+    "retry": "Coba lagi",
+    "back": "Kembali",
+    "close": "Tutup",
+    "share": "Bagikan",
+    "shareSuccess": "Tautan berhasil disalin",
+    "like": "Suka",
+    "favorite": "Favorit",
+    "addToFavorite": "Tambah ke favorit",
+    "removeFromFavorite": "Hapus dari favorit",
+    "favoriteUnit": "Favoritkan {{name}}",
+    "seeMore": "Lihat Selengkapnya",
+    "learnMore": "Pelajari Lebih Lanjut",
+    "all": "Semua",
+    "explore": "Jelajahi",
+    "bookingNow": "Booking Sekarang",
+    "bookNow": "Pesan Sekarang",
+    "unitDetail": "Detail Unit",
+    "openGoogleMaps": "Buka di Google Maps",
+    "viewLocation": "Lihat Lokasi",
+    "contactUs": "Hubungi Kami",
+    "contactWhatsApp": "Hubungi WhatsApp Kami",
+    "termsAndConditions": "*Syarat dan Ketentuan Berlaku",
+    "everyday": "Setiap hari",
+    "checkIn": "Check-in 14.00",
+    "checkOut": "Check-out 12.00",
+    "operationalHours": "Jam Operasional",
+    "capacity": "Kapasitas",
+    "startingFrom": "Mulai dari",
+    "perHour": "/jam",
+    "locationOf": "Lokasi {{unit}}",
+    "facilities": "Fasilitas",
+    "areaInformation": "Informasi Area",
+    "location": "Lokasi",
+    "landArea": "Luas Area",
+    "scrollToFooter": "Gulir ke footer",
+    "showSlide": "Slide {{number}}: {{title}}",
+    "slideNavigation": "Navigasi slide",
+    "previous": "Sebelumnya",
+    "next": "Berikutnya",
+    "openPage": "Buka halaman {{name}}"
+  },
+  "nav": {
+    "home": "Beranda",
+    "services": "Layanan",
+    "about": "Tentang Kami",
+    "businessUnits": "Unit Bisnis",
+    "sportCenter": "OBC Sport Center",
+    "multipurpose": "OBC Multipurpose Building",
+    "gallery": "Galeri",
+    "testimonials": "Testimoni",
+    "contact": "Kontak",
+    "login": "Masuk",
+    "languageSelect": "Pilih Bahasa",
+    "chooseLanguage": "Select Language / Pilih Bahasa",
+    "indonesian": "Indonesia",
+    "english": "Inggris",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "backToUnits": "Kembali ke Unit Bisnis"
+  },
+  "service": {
+    "title": "Layanan Kami",
+    "loading": "Memuat data...",
+    "error": "Gagal memuat data",
+    "empty": "Belum ada layanan",
+    "retry": "Coba lagi"
+  },
+  "footer": {
+    "company": "Perusahaan",
+    "businessUnits": "Unit Bisnis",
+    "contactUs": "Hubungi Kami",
+    "backToTop": "Kembali ke atas",
+    "copyright": "© {{year}} Onny Barber Center Group. Hak cipta dilindungi.",
+    "developedBy": "Dikembangkan oleh",
+    "currentLanguage": "Indonesia (ID)"
+  },
+  "hero": {
+    "slides": {
+      "obc": {
+        "title": "Onny Barber Center",
+        "description": "OBC Group adalah ekosistem bisnis yang menghadirkan beragam layanan, fasilitas, dan ruang untuk berbagai kebutuhan. Mulai dari perawatan diri, olahraga, penginapan, kuliner, hingga ruang acara.",
+        "primaryBtn": "Booking OBC Sport",
+        "secondaryBtn": "Jelajahi Bisnis Kami"
+      },
+      "sportCenter": {
+        "title": "OBC Sport Center",
+        "description": "Fasilitas lapangan olahraga modern untuk futsal, badminton, voli, pickleball, dan meja billiard. Slot terjamin, booking praktis, dan lebih hemat dengan paket membership.",
+        "primaryBtn": "Booking Lapangan",
+        "secondaryBtn": "Lihat Fasilitas"
+      },
+      "eventSpace": {
+        "title": "OBC Event Space",
+        "description": "Gedung serbaguna yang luas dan representatif di Bandung untuk pernikahan, acara komunitas, turnamen olahraga, dan acara keluarga istimewa.",
+        "primaryBtn": "Pesan Event Space",
+        "secondaryBtn": "Hubungi Kami"
+      },
+      "guestHouse": {
+        "title": "OBC Guest House &\nPenthouse",
+        "description": "Pilihan penginapan yang nyaman dan tenang di kawasan Rancabentang untuk liburan keluarga dan istirahat dengan suasana damai serta fasilitas lengkap.",
+        "primaryBtn": "Pesan Kamar",
+        "secondaryBtn": "Jelajahi Bisnis"
+      }
+    }
+  },
+  "aboutSection": {
+    "badge": "Tentang OBC Group",
+    "title": "Satu Ekosistem, Beragam Layanan, Satu Tujuan",
+    "description": "OBC Group adalah perusahaan yang didirikan pada 7 Mei 1999 di Bandung, Jawa Barat. Berawal dari Onny Barber Center, OBC terus berkembang dan mengelola berbagai unit bisnis untuk menghadirkan layanan yang bermanfaat serta melayani beragam kebutuhan masyarakat. Kini, OBC mencakup berbagai sektor, termasuk perawatan diri, olahraga, penginapan, kuliner, laundry, agribisnis, dan ruang serbaguna.",
+    "visionTitle": "Visi Kami",
+    "visionText": "OBC menjadi wadah untuk mendukung keluarga dan masyarakat sekitar menuju kemandirian finansial dan tumbuh menjadi sumber daya manusia yang berkualitas.",
+    "missionTitle": "Misi Kami",
+    "missionText": "Menghadirkan layanan prima, nyaman, berkualitas, dan terjangkau di setiap unit OBC Group.",
+    "seeMore": "Pelajari Lebih Lanjut Tentang Kami",
+    "est": "SEJAK 7 MEI 1999"
+  },
+  "businessUnitsSection": {
+    "badge": "Bisnis Kami",
+    "title": "Beragam Layanan dalam Satu Ekosistem",
+    "bookingNow": "Booking Sekarang",
+    "unitDetail": "Detail Unit"
+  },
+  "sportCenterSection": {
+    "badge": "OBC SPORT CENTER",
+    "title": "OBC SPORT CENTER",
+    "subtitle": "Dari pertandingan kompetitif hingga permainan santai, temukan ruang olahraga yang sesuai untukmu.",
+    "bookingNow": "Booking Sekarang",
+    "courtF2_1": "Lapang F2 - 1 Olahraga di 1 waktu",
+    "courtF1_1": "Lapang F1 - 1 Olahraga di 1 waktu",
+    "footballCourt": "Lapang Sepak Bola",
+    "tableTennisRoom": "Ruang Tenis Meja",
+    "billiardRoom": "Ruang Billiard",
+    "academy": "OBC Academy",
+    "pickleballClass": "Coaching Class Pickleball",
+    "items": {
+      "futsal1": "Futsal 1",
+      "futsal2": "Futsal 2",
+      "badminton": "Badminton",
+      "voli": "Voli",
+      "pickleball": "Pickleball",
+      "basket": "Basket",
+      "flat2Hours": "Untuk flat 2jam Permainan",
+      "twoTables": "2 meja tenis",
+      "twoBilliardTables": "2 meja billiard",
+      "parallelBooking": "Bisa 2 booking paralel",
+      "academyAge": "L/P Usia 6-16 Tahun",
+      "freeTrial2x": "Free Trial 2X",
+      "pickleballDuration": "Training Program ±3 bulan",
+      "pickleballSchedule": "Setiap Sabtu & Minggu"
+    }
+  },
+  "membershipSection": {
+    "badge": "OBC SPORT CENTER",
+    "title": "Siap Bermain di\nOBC Sport ?",
+    "description": "Temukan fasilitas olahraga yang sesuai dengan kebutuhanmu, lalu nikmati keuntungan membership untuk pengalaman bermain yang lebih praktis dan hemat.",
+    "benefits": [
+      "20% OFF untuk 4x pertemuan",
+      "Harga lebih hemat",
+      "Slot lapangan terjamin",
+      "Jadwal tetap untuk bermain"
+    ],
+    "cardSubtitle": "SPORTS MEMBERSHIP",
+    "tagline": "Play. Move. Connect.",
+    "ctaMobile": "Booking Sports & Gabung Membership Sekarang",
+    "ctaDesktop": "Booking & Daftar Membership",
+    "terms": "*Syarat dan Ketentuan Berlaku"
+  },
+  "multipurposeSection": {
+    "badge": "Multipurpose building",
+    "title": "Ruang Serbaguna untuk Setiap Acara",
+    "description": "Lapang F1 & F2 menyediakan tempat yang fleksibel untuk pernikahan, acara kumpul-kumpul, dan berbagai kebutuhan acara istimewa lainnya.",
+    "categories": {
+      "wedding": "Pernikahan",
+      "gathering": "Gathering",
+      "otherEvents": "Acara Lainnya"
+    },
+    "contactToRent": "Hubungi Kami untuk Menyewa",
+    "courtF1": "Lapang F1",
+    "courtF2": "Lapang F2"
+  },
+  "testimonialsSection": {
+    "badge": "TESTIMONI",
+    "title": "Kata Mereka\nTentang OBC Group",
+    "subtitle": "Pengalaman Menginap, Berolahraga, dan Beraktivitas di OBC Group",
+    "prevAria": "Testimoni sebelumnya",
+    "nextAria": "Testimoni berikutnya",
+    "goToSlide": "Ke testimoni {{number}}",
+    "writeReview": "Tulis Ulasan Pengalamanmu di Sini"
+  },
+  "modalTestimoni": {
+    "badge": "Testimoni",
+    "title": "Tulis Ulasan Pengalamanmu",
+    "subtitle": "Bagikan pengalaman menginap, berolahraga, atau beraktivitas di OBC Group.",
+    "nameLabel": "Nama",
+    "namePlaceholder": "Nama lengkap Anda",
+    "unitLabel": "Unit OBC",
+    "unitPlaceholder": "Pilih unit",
+    "roleLabel": "Sebagai",
+    "rolePlaceholder": "Pilih peran",
+    "ratingLabel": "Penilaian",
+    "reviewLabel": "Ulasan",
+    "reviewPlaceholder": "Ceritakan pengalaman Anda di OBC...",
+    "submitBtn": "Kirim Ulasan",
+    "submittingBtn": "Mengirim...",
+    "thankYouTitle": "Terima Kasih!",
+    "thankYouDesc": "Ulasan Anda sudah kami terima. Masukan Anda sangat berarti bagi OBC Group.",
+    "closeBtn": "Tutup",
+    "roles": {
+      "customer": "Pelanggan",
+      "guest": "Tamu",
+      "member": "Member",
+      "visitor": "Pengunjung"
+    },
+    "errors": {
+      "nameRequired": "Nama wajib diisi",
+      "unitRequired": "Pilih unit OBC yang Anda kunjungi",
+      "roleRequired": "Pilih peran Anda",
+      "ratingRequired": "Berikan penilaian bintang",
+      "textMin": "Ulasan minimal {{min}} karakter"
+    }
+  },
+  "gallerySection": {
+    "badge": "Galeri",
+    "homeTitle": "Momen yang Menjadi Bagian dari OBC",
+    "homeSubtitle": "Jelajahi berbagai momen, fasilitas, dan aktivitas dari seluruh unit bisnis OBC.",
+    "viewAll": "Lihat Semua Galeri",
+    "momentsFrom": "Momen dari {{unit}}",
+    "pageTitle": "Cerita di Setiap Sudut OBC",
+    "pageSubtitle": "Jelajahi beragam momen, fasilitas, aktivitas, dan pengalaman yang membentuk perjalanan OBC.",
+    "categories": {
+      "all": "Semua",
+      "sports": "Olahraga & Event Space",
+      "hospitality": "Hospitality & Penginapan",
+      "laundry": "Laundry",
+      "foodCourt": "Food Court",
+      "coffee": "Coffee",
+      "agribusiness": "Agribisnis"
+    }
+  },
+  "locationSection": {
+    "badge": "LOKASI OBC GROUP",
+    "title": "Temukan OBC di Berbagai Lokasi",
+    "description": "Jelajahi destinasi OBC untuk menginap, berolahraga, bersantai, dan menikmati beragam layanan kami.",
+    "categories": {
+      "all": "Semua",
+      "accommodation": "Penginapan",
+      "sport": "Olahraga",
+      "fnb": "FnB",
+      "lifestyle": "Lifestyle",
+      "education": "Edukasi"
+    },
+    "viewLocation": "Lihat Lokasi",
+    "mapTitle": "PETA LOKASI OBC GROUP"
+  },
+  "promoBanner": {
+    "title": "Promo & Penawaran Spesial dari OBC Group",
+    "slides": {
+      "pelajarAlt": "Promo Pelajar OBC",
+      "membershipTitle": "MEMBERSHIP",
+      "membershipSubtitle": "Hemat 20% untuk 4x pertemuan & prioritas slot lapangan di OBC Sport Center",
+      "guesthouseTitle": "GUEST HOUSE",
+      "guesthouseSubtitle": "Penginapan asri dan tenang di Rancabentang untuk liburan keluarga",
+      "academyTitle": "OBC ACADEMY",
+      "academySubtitle": "Free Trial 2x sesi latihan olahraga untuk anak usia 6-16 tahun"
+    }
+  },
+  "aboutPage": {
+    "heroTitle": "Tentang Kami",
+    "heroSubtitle": "Onny Barber Center Group",
+    "storyBadge": "Cerita Kami",
+    "storyTitle": "Satu Ekosistem, Beragam Layanan, Satu Tujuan",
+    "storyText": "Dikenal luas sebagai destinasi wisata di Indonesia pada era 1990-an, PT Onny Barber Center (OBC) resmi didirikan pada 7 Mei 1999 di Bandung, Jawa Barat. Onny Barber Center (OBC) hadir sebagai perusahaan jasa yang berkomitmen memberikan layanan bernilai bagi masyarakat dan memenuhi kebutuhan publik yang luas. Selain itu, PT OBC mengelola beberapa unit bisnis untuk memperluas cakupan layanan dan jangkauan usahanya.",
+    "visionMissionTitle": "Visi & Misi OBC Group",
+    "visionTitle": "Visi Kami",
+    "visionText": "OBC menjadi wadah untuk memberdayakan keluarga dan masyarakat sekitar menuju kemandirian finansial dan tumbuh menjadi sumber daya manusia yang berkualitas. OBC bercita-cita menjadi platform layanan terpadu terdepan, tepercaya, dan berkelanjutan di Indonesia, yang menghadirkan pengalaman hidup yang lebih nyaman, sehat, dan bermakna melalui beragam unit bisnis di bidang hospitality, rekreasi, olahraga, kuliner, laundry, dan agribisnis, sekaligus mendorong pembangunan ekonomi dengan memberdayakan UMKM, pelaku lokal, dan potensi daerah Bandung.",
+    "missionTitle": "Misi Kami",
+    "missions": [
+      "Menghadirkan layanan prima yang aman, nyaman, berkualitas, dan terjangkau di seluruh unit OBC Group.",
+      "Membangun sinergi antarunit sebagai jaringan bisnis terpadu yang memberikan kemudahan, nilai tambah, dan layanan satu pintu bagi pelanggan.",
+      "Memberdayakan keluarga, masyarakat sekitar, UMKM, petani, pengusaha lokal, dan komunitas melalui akses pasar, kemitraan, dan promosi berkelanjutan.",
+      "Mengembangkan sumber daya manusia yang profesional, berintegritas tinggi, dan melayani dengan sepenuh hati.",
+      "Menjalankan usaha dengan inovasi, etika, keberlanjutan, dan tanggung jawab sosial."
+    ],
+    "ctaTitle": "Beragam Bisnis, Satu OBC Group",
+    "ctaDesc": "Jelajahi unit bisnis kami yang berdedikasi memenuhi beragam kebutuhan dan menciptakan pengalaman bermakna bagi masyarakat.",
+    "ctaBtn": "Jelajahi Bisnis Kami"
+  },
+  "businessUnitPage": {
+    "badge": "UNIT BISNIS",
+    "heroTitle": "Bisnis Kami",
+    "heroSubtitle": "Satu Ekosistem, Beragam Layanan",
+    "heroDesc": "OBC Group menghadirkan berbagai unit bisnis yang saling melengkapi dalam satu ekosistem terpadu. Setiap unit menawarkan layanan dan karakter yang berbeda untuk menghadirkan pengalaman yang sesuai dengan kebutuhan pelanggan.",
+    "featuredUnit": "Unit Unggulan",
+    "featuredCategory": "Olahraga & Event Space",
+    "featuredTitle": "OBC Sport Center",
+    "featuredSlogan": "Ruang untuk Bergerak, Bermain, dan Terhubung",
+    "featuredDesc": "OBC Sport Center menghadirkan fasilitas olahraga dan ruang serbaguna untuk beragam aktivitas, komunitas, dan acara.",
+    "operationalHours": "Jam Operasional: Setiap hari / 07.00 – 24.00",
+    "exploreSportCenter": "Jelajahi OBC Sport Center",
+    "otherUnitsTitle": "7 Unit Bisnis Lainnya"
+  },
+  "units": {
+    "sportCenter": {
+      "title": "OBC Sport Center",
+      "category": "Olahraga & Event Space"
+    },
+    "guestHouse": {
+      "title": "OBC Guest House",
+      "category": "Hospitality & Penginapan",
+      "desc": "Penginapan nyaman untuk melengkapi pengalaman menginap Anda di kawasan Ciumbuleuit, Bandung.",
+      "aboutTitle": "Tentang OBC Guest House",
+      "aboutText": "OBC Guest House berlokasi di kawasan OBC, Ciumbuleuit, Bandung, menyediakan tempat istirahat yang nyaman. Berdampingan dengan berbagai fasilitas OBC, Anda dapat dengan mudah menikmati Food Court, Sport Center, dan fasilitas lainnya selama menginap.",
+      "roomsTitle": "Pilihan Kamar",
+      "roomsDesc": "Unit kamar yang dikelola di OBC Guest House.",
+      "totalRooms": "Total {{count}} Kamar",
+      "roomsCount": "{{count}} Kamar",
+      "roomList": "Daftar nomor unit kamar:",
+      "facilitiesTitle": "Fasilitas yang Ditawarkan",
+      "galleryBadge": "Galeri",
+      "galleryTitle": "Momen dari OBC Guest House",
+      "locationTitle": "Lokasi OBC Guest House",
+      "locationAddress": "Jl. Rancabentang 1 No. 10, Ciumbuleuit, Bandung, Jawa Barat 40142",
+      "whatsappCardTitle": "Tertarik menginap di OBC Guest House?",
+      "whatsappCardDesc": "Hubungi kami untuk mendapatkan informasi lebih lanjut tentang OBC Guest House"
+    },
+    "villa": {
+      "title": "OBC Villa",
+      "category": "Hospitality & Penginapan",
+      "desc": "Penginapan villa yang nyaman untuk menginap dan menikmati suasana Ciumbuleuit, Bandung.",
+      "aboutTitle": "Tentang OBC Villa",
+      "aboutText": "OBC Villa menghadirkan suasana hunian yang tenang, luas, dan privat di Ciumbuleuit, Bandung, cocok untuk liburan keluarga dan gathering.",
+      "facilitiesTitle": "Fasilitas yang Ditawarkan",
+      "galleryTitle": "Momen dari OBC Villa",
+      "locationTitle": "Lokasi OBC Villa",
+      "whatsappCardTitle": "Tertarik menginap di OBC Villa?",
+      "whatsappCardDesc": "Hubungi kami untuk mendapatkan informasi lebih lanjut tentang OBC Villa"
+    },
+    "laundry": {
+      "title": "OBC Laundry",
+      "category": "Layanan Laundry",
+      "desc": "Layanan laundry untuk perawatan pakaian dan kebutuhan cucian sehari-hari.",
+      "aboutTitle": "Tentang OBC Laundry",
+      "aboutText": "OBC Laundry menyediakan layanan cuci dan setrika yang bersih, wangi, higienis, dan cepat dengan beragam pilihan paket.",
+      "quickService": "Layanan Kilat 4 Jam",
+      "workingHours": "07.00 - 20.00",
+      "whatsappCardTitle": "Butuh layanan laundry yang andal?",
+      "whatsappCardDesc": "Hubungi kami untuk detail penjemputan dan daftar harga OBC Laundry"
+    },
+    "foodCourt": {
+      "title": "OBC Food Court",
+      "category": "Makanan & Minuman",
+      "desc": "Area kuliner dalam ekosistem OBC Group yang dirancang untuk bersantap dan berkumpul santai.",
+      "aboutTitle": "Tentang OBC Food Court",
+      "aboutText": "OBC Food Court menyajikan beragam tenant kuliner khas Bandung dan Indonesia yang lezat untuk dinikmati bersama teman dan keluarga.",
+      "schedule": "Senin - Sabtu",
+      "workingHours": "08.00 - 20.00",
+      "whatsappCardTitle": "Mencari reservasi atau kemitraan tenant?",
+      "whatsappCardDesc": "Hubungi kami untuk detail lebih lanjut mengenai OBC Food Court"
+    },
+    "coffee": {
+      "title": "OBC Coffee",
+      "category": "Kopi & Lifestyle",
+      "desc": "Ruang untuk menikmati kopi berkualitas dan bersantai sebagai bagian dari ekosistem OBC Group.",
+      "aboutTitle": "Tentang OBC Coffee",
+      "aboutText": "Tempat nongkrong yang segar dan sejuk di Ciumbuleuit dengan sajian kopi pilihan dan camilan gurih, cocok untuk bekerja maupun mengobrol santai.",
+      "workingHours": "08.00 - 22.00",
+      "whatsappCardTitle": "Kunjungi OBC Coffee",
+      "whatsappCardDesc": "Hubungi kami untuk reservasi meja atau informasi menu di OBC Coffee"
+    },
+    "agribisnis": {
+      "title": "OBC Agribisnis",
+      "category": "Agribisnis",
+      "areaBadge": "Kawasan & Plot Lahan",
+      "areaTitle": "Area OBC Agribisnis",
+      "desc": "Unit bisnis OBC Group di sektor pertanian, berlokasi di kawasan Lembang yang asri.",
+      "aboutTitle": "Tentang OBC Agribisnis",
+      "aboutText": "OBC Agribisnis berfokus pada pertanian modern yang berkelanjutan, penyediaan hasil panen segar, dan wisata edukasi agro.",
+      "location": "Jl. Tugulaksana, Lembang, Kabupaten Bandung Barat",
+      "whatsappCardTitle": "Tertarik dengan hasil panen segar atau kunjungan edukasi?",
+      "whatsappCardDesc": "Hubungi kami untuk kolaborasi atau detail wisata di OBC Agribisnis"
+    },
+    "otherUnitsHeading": "Jelajahi Unit Bisnis OBC Group Lainnya"
+  },
+  "facilities": {
+    "parkingIot": "Parkir IoT",
+    "foodCourt": "Food Court",
+    "sportCenter": "Sport Center",
+    "freeWifi": "WiFi Gratis",
+    "ac": "AC",
+    "tv": "TV",
+    "sittingArea": "Area Santai Bersama"
+  },
+  "errorStates": {
+    "noMessage": {
+      "title": "Belum Ada Pesan!",
+      "description": "Sepertinya belum ada apa-apa di sini. Mulai percakapan atau cek lagi nanti untuk pesan baru.",
+      "button": "Kirim Pesan"
+    },
+    "noInternet": {
+      "title": "Oops! Anda Sedang Offline",
+      "description": "Sepertinya perangkat Anda tidak terhubung ke internet. Periksa Wi-Fi atau data seluler, lalu coba lagi setelah kembali online.",
+      "button": "Coba Hubungkan Lagi"
+    },
+    "failedToLoad": {
+      "title": "Terjadi Kesalahan",
+      "description": "Terjadi kesalahan sistem saat memuat halaman. Silakan coba lagi nanti atau hubungi dukungan jika masalah berlanjut.",
+      "button": "Coba Lagi"
+    },
+    "underMaintenance": {
+      "title": "Sedang Dalam Perawatan",
+      "description": "Kami sedang meningkatkan sistem untuk memberikan pengalaman yang lebih baik. Kami akan segera kembali!",
+      "button": "Muat Ulang Halaman"
+    },
+    "notFound": {
+      "title": "Halaman Tidak Ditemukan",
+      "description": "Halaman yang Anda cari tidak ditemukan atau mungkin sudah dipindahkan.",
+      "button": "Kembali ke Beranda"
+    },
+    "emptyState": {
+      "title": "Belum Ada Konten",
+      "description": "Konten untuk bagian ini belum tersedia saat ini.",
+      "button": "Segarkan"
+    }
+  }
+}

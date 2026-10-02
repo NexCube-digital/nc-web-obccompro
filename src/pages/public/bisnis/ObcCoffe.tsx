@@ -1,5 +1,6 @@
 import { MapPin, ExternalLink, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
 import { UnitBisnis } from '../../../components/common/UnitBisnis'
@@ -83,6 +84,7 @@ const OTHER_UNITS: OtherUnit[] = [
 ]
 
 function CoffeePage() {
+	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -114,14 +116,13 @@ function CoffeePage() {
 						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">
 								<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#000000]" />
-								Coffee & Lifestyle
+								{t('units.coffee.category')}
 							</span>
 							<h1 className="mt-5 font-['Montserrat'] text-[40px] font-bold leading-[52px] tracking-[1.5px] text-black lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
-								OBC Coffee
+								{t('units.coffee.title')}
 							</h1>
 							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.18px] text-black lg:text-[18px] lg:leading-[29.25px]">
-								Nikmati pilihan kopi dan suasana nyaman di Ciumbuleuit. Baik untuk memulai hari, bertemu teman,
-								menyelesaikan pekerjaan, maupun sekadar mengambil jeda, OBC Coffee siap menemani setiap momen Anda.
+								{t('units.coffee.desc')}
 							</p>
 						</div>
 					</div>
@@ -143,7 +144,7 @@ function CoffeePage() {
 					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-5 pb-10 pt-8 min-[400px]:px-[30px] md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
 						<div className="flex flex-col">
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-								OBC Coffee
+								{t('units.coffee.title')}
 							</h1>
 							<div className="order-2 mb-8 mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1.7fr_1fr] md:order-3 md:mb-0 md:mt-8 md:flex md:flex-wrap md:items-center md:gap-x-6 md:gap-y-4 md:border-t md:border-obc-border md:pt-6 lg:gap-x-12">
 								<div className="flex min-w-0 items-center gap-3 rounded-lg bg-white p-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
@@ -156,19 +157,17 @@ function CoffeePage() {
 								<div className="flex min-w-0 items-center gap-3 rounded-lg bg-white p-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
 									<img src={clockIcon} alt="" className="h-5 w-5 shrink-0 object-contain" aria-hidden="true" />
 									<div>
-										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black/70">Buka Setiap Hari</p>
+										<p className="font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black/70">{t('common.everyday')}</p>
 										<p className="font-['Montserrat'] text-[14px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022]">08.00 WIB - 22.00 WIB</p>
 									</div>
 								</div>
 							</div>
 
 							<h2 className="order-3 mt-8 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:mt-0 md:text-[25px]">
-								Tentang OBC Coffee
+								{t('units.coffee.aboutTitle')}
 							</h2>
 							<p className="order-4 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-								OBC Coffee merupakan bagian dari OBC Group yang berada di area OBC Cafe B2-B3. Dengan area duduk,
-								free WiFi, live music, dan nobar, OBC Coffee dilengkapi berbagai fasilitas untuk menunjang aktivitas di
-								dalamnya, mulai dari mesin kopi dan grinder hingga chiller, kulkas, soda maker, dan dispenser.
+								{t('units.coffee.aboutText')}
 							</p>
 						</div>
 					</section>
@@ -179,7 +178,7 @@ function CoffeePage() {
 							{/* Garis pemisah tipis di atas section */}
 							<div className="border-t border-black/[0.06] pt-8">
 								<h2 className="flex h-auto items-center px-2.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:px-0 sm:text-[25px]">
-									Fasilitas OBC Coffee
+									{t('common.facilities')} {t('units.coffee.title')}
 								</h2>
 								{/* 1 kolom (<360px), 2 kolom mulai 360px */}
 								<div className="mt-4 grid max-w-[630px] grid-cols-1 gap-4 min-[360px]:grid-cols-2 sm:mt-6">
@@ -237,8 +236,8 @@ function CoffeePage() {
 						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
 							className="lg:!w-full"
-							title="Temukan Mood yang Tepat untuk Harimu di OBC Coffee"
-							description="Mau ngopi santai, bertemu teman, atau sekadar mencari tempat untuk beristirahat sejenak? OBC Coffee siap menemani."
+							title={t('units.coffee.whatsappCardTitle')}
+							description={t('units.coffee.whatsappCardDesc')}
 							link={WHATSAPP_LINK}
 						/>
 					</div>
@@ -249,10 +248,10 @@ function CoffeePage() {
 			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
-						Galeri
+						{t('gallerySection.badge')}
 					</span>
 					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						Momen dari OBC Coffee
+						{t('gallerySection.momentsFrom', { unit: t('units.coffee.title') })}
 					</h2>
 					<div className="mx-auto mt-3 h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D]" />
 				</div>
@@ -290,7 +289,7 @@ function CoffeePage() {
 					<button
 						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
 						type="button"
-						aria-label="Tutup gambar"
+										aria-label={t('common.close')}
 						onClick={() => setSelectedGalleryImage(null)}
 					>
 						<X size={22} />
@@ -306,7 +305,7 @@ function CoffeePage() {
 				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
 					<div className="order-1 md:order-none">
 						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
-							Lokasi OBC Coffee
+							{t('common.locationOf', { unit: t('units.coffee.title') })}
 						</h2>
 						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
 							Area OBC Cafe B2-B3 - Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat
@@ -320,14 +319,14 @@ function CoffeePage() {
 						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
 					>
 						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						Buka di Google Maps
+						{t('common.openGoogleMaps')}
 					</a>
 				</div>
 
 				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Coffee */}
 					<iframe
-						title="Lokasi OBC Coffee"
+						title={t('common.locationOf', { unit: t('units.coffee.title') })}
 						src="https://www.google.com/maps?q=Area+OBC+Cafe+B2-B3+Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
@@ -345,8 +344,8 @@ function CoffeePage() {
 				<div className="mx-auto w-full max-w-[720px]">
 					<WhatsAppCard
 						variant="bar"
-						title="Temukan Mood yang Tepat untuk Harimu di OBC Coffee"
-						description="Mau ngopi santai, bertemu teman, atau sekadar mencari tempat untuk beristirahat sejenak? OBC Coffee siap menemani."
+						title={t('units.coffee.whatsappCardTitle')}
+						description={t('units.coffee.whatsappCardDesc')}
 						link={WHATSAPP_LINK}
 					/>
 				</div>

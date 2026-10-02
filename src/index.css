@@ -143,10 +143,3 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: all 0.3s ease;
 }
 
-.btn-booking-now:hover {
-  background: linear-gradient(132.33deg, #002400 0.9%, #009D00 49.99%, #004000 99.1%) !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-  box-shadow: 0 4px 14px rgba(0, 100, 0, 0.35);
-  transform: scale(1.05);
-}

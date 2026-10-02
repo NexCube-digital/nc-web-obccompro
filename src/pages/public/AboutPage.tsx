@@ -1,5 +1,6 @@
 import LandingFooter from '../../components/layouts/LandingFooter'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
+import { useTranslation } from 'react-i18next'
 import heroImage from '../../assets/layanan/Lapang F1.png'
 import storyImageOne from '../../assets/layanan/galeri-cones.png'
 import storyImageTwo from '../../assets/layanan/Lapang F2.png'
@@ -17,15 +18,9 @@ const STORY_IMAGES: { src: string; alt: string }[] = [
 	{ src: storyImageFour, alt: 'Fasilitas villa OBC' },
 ]
 
-const MISSIONS: string[] = [
-	'Menghadirkan layanan prima yang aman, nyaman, berkualitas, dan terjangkau di seluruh unit OBC Group.',
-	'Membangun sinergi antarunit sebagai satu jaringan usaha terpadu yang memberi kemudahan, nilai tambah, dan layanan satu pintu bagi pelanggan.',
-	'Memberdayakan saudara dan masyarakat sekitar,UMKM, petani, pelaku lokal, dan komunitas melalui akses pasar, kemitraan, serta promosi berkelanjutan.',
-	'Mengembangkan SDM yang profesional, berintegritas, dan Menjiwai dalam memberikan pelayanan.',
-	'Menjalankan usaha secara inovatif, etis, berkelanjutan, dan bertanggung jawab sosial.',
-]
-
 function AboutPage() {
+	const { t } = useTranslation()
+	const missions = Array.from({ length: 5 }, (_, index) => t(`aboutPage.missions.${index}`))
 	return (
 		<div className="landing-page">
 			<LandingNavbar />
@@ -49,11 +44,11 @@ function AboutPage() {
 				<div className="relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
 					{/* Judul: 36px di mobile */}
 					<h1 className="font-heading text-[36px] font-bold leading-[40px] tracking-[0.5px] text-white drop-shadow-[0_6px_4px_rgba(0,0,0,0.25)] sm:text-[54px] sm:leading-[46px] md:text-[65px] md:leading-[65px]">
-						Tentang Kami
+						{t('aboutPage.heroTitle')}
 					</h1>
 					{/* Subjudul: mobile dibatasi lebarnya supaya turun jadi 2 baris ("Onny Barber / Center Group") */}
 					<p className="mx-auto mt-2 max-w-[280px] font-heading text-[34px] font-bold leading-[38px] tracking-[0.5px] text-white drop-shadow-[0_6px_4px_rgba(0,0,0,0.25)] sm:max-w-none sm:text-[32px] sm:leading-[32px] md:mt-3 md:text-[40px] md:leading-[40px]">
-						Onny Barber Center Group
+						{t('aboutPage.heroSubtitle')}
 					</p>
 					{/* <p className="mt-2 font-body text-[12px] font-medium uppercase leading-[15px] tracking-[1px] text-white md:mt-3 md:text-[13px]">
 						Connecting People | Creating Experiences
@@ -68,20 +63,15 @@ function AboutPage() {
 					<div>
 						{/* Label: mobile title case, desktop tetap kapital */}
 						<p className="font-heading text-[18px] font-semibold normal-case leading-[20px] tracking-normal text-black md:uppercase md:tracking-[1.4px]">
-							Cerita Kami
+							{t('aboutPage.storyBadge')}
 						</p>
 						{/* Judul: 22px di mobile */}
 						<h2 className="mt-4 max-w-[588px] font-heading text-[22px] font-bold leading-[32px] tracking-normal text-black md:mt-6 md:text-[36px] md:leading-[50px] md:tracking-[1.5px]">
-							Satu Ekosistem, Beragam Layanan, Satu Tujuan
+							{t('aboutPage.storyTitle')}
 						</h2>
 						{/* Paragraf: 14px di mobile */}
 						<p className="mt-5 max-w-[530px] text-justify text-[14px] font-normal leading-[25px] tracking-[0.5px] text-black md:mt-10 md:text-[16px] md:leading-[26px]">
-							mulai dikenal luas sebagai destinasi wisata di Indonesia pada era 1990-an, PT.Onny Barber
-							Center (OBC) resmi berdiri pada 7 Mei 1999 di Jawa Barat, tepatnya di kota Bandung. Onny
-							Barber Center (OBC) hadir sebagai perusahaan yang bergerak di bidang jasa, yang berdedikasi
-							untuk memberikan layanan yang bermanfaat bagi masyarakat dan memenuhi kebutuhan publik
-							secara luas. Selain itu PT.OBC juga mengelola sejumlah unit bisnis yang semakin memperluas
-							layanan dan cakupan usaha perusahaan.
+							{t('aboutPage.storyText')}
 						</p>
 					</div>
 
@@ -106,7 +96,7 @@ function AboutPage() {
 			<section className="mx-auto max-w-[1280px] px-[50px] pb-10 md:px-[50px] md:pb-[40px]">
 				{/* Judul: 26px di mobile */}
 				<h2 className="text-center font-heading text-[26px] font-semibold leading-[1.25] text-[#000000] md:text-[34px]">
-					Visi &amp; Misi OBC Group
+					{t('aboutPage.visionMissionTitle')}
 				</h2>
 
 				<div className="mt-4 space-y-5 md:mt-10">
@@ -116,16 +106,10 @@ function AboutPage() {
 							<span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-[#E5E3E3] text-black shadow-[0_1px_1px_rgba(0,0,0,0.25)] md:h-11 md:w-11">
 								<img src={targetArrowIcon} alt="" aria-hidden="true" className="h-[19px] w-[20px] md:h-[23px] md:w-[24px]" />
 							</span>
-							<h3 className="font-heading text-[16px] font-semibold text-black md:text-[22px]">Visi Kami</h3>
+							<h3 className="font-heading text-[16px] font-semibold text-black md:text-[22px]">{t('aboutPage.visionTitle')}</h3>
 						</div>
 						<p className="mt-3 text-justify text-[13px] leading-[22px] text-black md:mt-4 md:text-[15px] md:leading-[1.75]">
-							OBC sebagai wadah untuk membantu keluarga dan juga masyarakat sekitar agar bisa mandiri
-							secara financial dan berkembang menjadi SDM yang berkualitas. OBC Menjadi platform layanan
-							terintegrasi yang terdepan, terpercaya dan berkelanjutan di Indonesia, yang menghadirkan
-							pengalaman hidup lebih nyaman, sehat, dan bermakna melalui beragam unit usaha OBC Group yang
-							mencakup layanan hospitality, rekreasi, olahraga, kuliner, laundry, dan agribisnis,
-							sekaligus menjadi penggerak pertumbuhan ekonomi dengan memberdayakan UMKM, pelaku lokal, dan
-							potensi daerah Bandung.
+							{t('aboutPage.visionText')}
 						</p>
 					</article>
 
@@ -135,10 +119,10 @@ function AboutPage() {
 							<span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-[#E5E3E3] text-black shadow-[0_1px_1px_rgba(0,0,0,0.25)] md:h-11 md:w-11">
 								<img src={rosetteIcon} alt="" aria-hidden="true" className="h-[19px] w-[20px] md:h-[23px] md:w-[24px]" />
 							</span>
-							<h3 className="font-heading text-[16px] font-semibold text-black md:text-[22px]">Misi Kami</h3>
+							<h3 className="font-heading text-[16px] font-semibold text-black md:text-[22px]">{t('aboutPage.missionTitle')}</h3>
 						</div>
 						<ul className="mt-3 space-y-1 md:mt-4 md:space-y-1.5">
-							{MISSIONS.map((misi) => (
+							{missions.map((misi) => (
 								<li key={misi} className="flex gap-2 text-justify text-[13px] leading-[22px] text-black md:gap-3 md:text-[15px] md:leading-[1.75]">
 									<span className="mt-[10px] h-1 w-1 shrink-0 rounded-full bg-black md:mt-[11px]" aria-hidden="true" />
 									<span>{misi}</span>
@@ -154,12 +138,11 @@ function AboutPage() {
 				<div className="mx-auto max-w-[1280px]">
 					{/* Judul: 24px di mobile, otomatis turun jadi 2 baris */}
 					<h2 className="mx-auto max-w-[340px] font-['Montserrat'] text-[24px] font-semibold leading-[32px] tracking-[0.5px] text-[#000000] md:max-w-[655px] md:text-[36px] md:leading-[40px] md:tracking-[1.5px]">
-						Beragam Bisnis, Satu OBC Group
+						{t('aboutPage.ctaTitle')}
 					</h2>
 					{/* Deskripsi: 15px di mobile, rata kiri-kanan */}
 					<p className="mx-auto mt-4 max-w-[848px] text-justify font-['Montserrat'] text-[15px] font-medium leading-[24px] tracking-[0.4px] text-[#000000CC] md:text-center md:text-[18px]">
-						Jelajahi berbagai unit bisnis yang hadir untuk memenuhi beragam kebutuhan dan menciptakan
-						pengalaman bagi masyarakat.
+						{t('aboutPage.ctaDesc')}
 					</p>
 
 					{/* Tombol: mobile lebih kecil */}
@@ -167,7 +150,7 @@ function AboutPage() {
 						className="mt-6 inline-flex h-[44px] w-fit max-w-full items-center justify-between gap-3 rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] shadow-none transition-colors hover:bg-[#c2e86a] md:mt-8 md:h-[67px] md:w-[304px] md:px-4 md:py-2 md:text-[20px]"
 						href="/unit-bisnis"
 					>
-						<span className="flex-1 whitespace-nowrap text-center text-[#1F3320]">Jelajahi Bisnis Kami</span>
+						<span className="flex-1 whitespace-nowrap text-center text-[#1F3320]">{t('aboutPage.ctaBtn')}</span>
 						<span className="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] md:h-[52px] md:w-[52px]">
 							<ArrowUpRight className="h-[16px] w-[16px] md:h-[25px] md:w-[25px]" />
 						</span>

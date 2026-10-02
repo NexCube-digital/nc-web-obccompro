@@ -1,11 +1,13 @@
 import WhatsAppLogo from '../../../assets/icon/whatsapp2.svg'
+import { useTranslation } from 'react-i18next'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
 import eventIcon from '../../../assets/icon/iconstack.io - (Event).svg'
 
-const eventCategories = ['Wedding', 'Gathering', 'Acara Lainnya']
+const eventCategories = ['wedding', 'gathering', 'otherEvents']
 
 export default function GedungMultifungsi() {
+	const { t } = useTranslation()
 	return (
 		// < lg: satu alur (grid 2 kolom hanya untuk baris foto). >= lg: dua kolom berdampingan.
 		<section
@@ -35,7 +37,7 @@ export default function GedungMultifungsi() {
 							key={cat}
 							className="inline-flex min-h-[32px] shrink-0 items-center justify-center whitespace-nowrap rounded-[100px] border border-[#00000080] bg-white px-3 py-[5px] font-['Montserrat'] text-[13px] font-medium leading-[20px] tracking-normal text-[#000000] shadow-[0px_2px_4px_0px_#00000040] min-[400px]:text-[14px] sm:px-[18px] sm:text-[16px] lg:min-h-[40px] lg:flex-1 lg:px-3 lg:text-[15px] lg:leading-none xl:px-4 xl:text-[18px] 2xl:text-[20px]"
 						>
-							{cat}
+							{t(`multipurposeSection.categories.${cat}`)}
 						</span>
 					))}
 				</div>
@@ -47,7 +49,7 @@ export default function GedungMultifungsi() {
 					target="_blank"
 					rel="noreferrer"
 				>
-					<span className="text-center sm:whitespace-nowrap">Hubungi Kami Untuk Sewa</span>
+					<span className="text-center sm:whitespace-nowrap">{t('multipurposeSection.contactToRent')}</span>
 					<span className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-[#004000] sm:h-[52px] sm:w-[52px]">
 						<img src={WhatsAppLogo} alt="" aria-hidden="true" className="h-[26px] w-[26px] shrink-0 sm:h-[30px] sm:w-[30px]" />
 					</span>
@@ -60,16 +62,15 @@ export default function GedungMultifungsi() {
 				<div className="contents lg:block">
 					{/* Badge: lebar mengikuti isi, title case di < lg, kapital di >= lg */}
 					<span className="order-1 col-span-2 inline-flex h-[32px] w-fit items-center justify-center gap-[10px] justify-self-start whitespace-nowrap rounded-[100px] bg-[#ffffff33] px-5 py-0 font-['Montserrat'] text-[16px] font-medium normal-case leading-[100%] tracking-[1%] text-[#000000] shadow-[0px_4px_4px_0px_#00000040,0px_2px_2px_0px_#00000040_inset] md:h-[40px] md:px-7 md:text-[18px] lg:uppercase xl:text-[20px]">
-						Gedung multifungsi
+						{t('multipurposeSection.badge')}
 					</span>
 					{/* Judul: bertahap 22 / 28 / 32 / 40 */}
 					<h2 className="order-2 col-span-2 mb-3 mt-4 w-full max-w-full font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-normal text-[#000000] sm:text-[28px] sm:leading-[36px] md:text-[32px] md:leading-[40px] lg:mb-2 lg:mt-3 lg:text-[28px] lg:leading-[1.2] lg:tracking-[0.5px] xl:text-[40px] xl:leading-[45px] xl:tracking-[1px]">
-						Ruang Serbaguna untuk Berbagai Acara
+						{t('multipurposeSection.title')}
 					</h2>
 					{/* Deskripsi: bertahap 14 / 16 / 17 / 20 */}
 					<p className="order-3 col-span-2 w-full max-w-full font-['Montserrat'] text-[14px] font-normal leading-[22px] tracking-normal text-[#000000] sm:text-[16px] sm:leading-[26px] lg:text-[16px] lg:leading-[1.5] xl:text-[20px] xl:leading-[30px]">
-						Lapang F1 &amp; F2 hadir sebagai ruang fleksibel untuk wedding,
-						gathering, dan berbagai kebutuhan acara lainnya.
+						{t('multipurposeSection.description')}
 					</p>
 				</div>
 

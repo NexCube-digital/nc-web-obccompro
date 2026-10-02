@@ -1,4 +1,5 @@
 import { Check, ArrowUpRight, ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import member from '../../../assets/bfe838718c7f801119930d28d3d286f12b853b5e.jpg'
 
 const membershipBenefits = [
@@ -9,6 +10,7 @@ const membershipBenefits = [
 ]
 
 export default function Membership() {
+	const { t } = useTranslation()
 	return (
 		<section className="relative overflow-hidden bg-white py-10">
 			{/* tekstur lapangan samar dari asset untuk memberi nuansa olahraga */}
@@ -35,28 +37,24 @@ export default function Membership() {
 				{/* Kolom kiri: headline & benefit */}
 				<div className="flex min-w-0 flex-col items-start text-left">
 					<span className="mb-1.5 block font-['Montserrat'] text-[12px] font-bold uppercase tracking-[1px] text-[#222222] md:text-[14px] md:font-medium xl:text-[15px]">
-						OBC SPORT CENTER
+						{t('membershipSection.badge')}
 					</span>
-					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#000000] md:text-[30px] md:font-bold md:leading-[1.25] md:tracking-[1.5px] lg:text-[32px] xl:text-[36px]">
-						Siap Bermain di{' '}
-						<br className="hidden md:block" />
-						OBC Sport ?
+					<h2 className="whitespace-pre-line font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#000000] md:text-[30px] md:font-bold md:leading-[1.25] md:tracking-[1.5px] lg:text-[32px] xl:text-[36px]">
+						{t('membershipSection.title')}
 					</h2>
 					<p className="mt-2 w-full text-justify font-['Montserrat'] text-[13px] font-normal leading-[20px] text-[#444444] md:mt-3 md:max-w-[360px] md:text-left md:text-[13.5px] md:leading-[24px] xl:text-[14.5px]">
-						Temukan fasilitas olahraga yang sesuai dengan kebutuhanmu, lalu nikmati
-						keuntungan membership untuk pengalaman bermain yang lebih praktis dan
-						hemat.
+						{t('membershipSection.description')}
 					</p>
 					<ul className="mt-4 w-full text-left md:mt-3 md:max-w-[360px]">
-						{membershipBenefits.map((b) => (
+						{membershipBenefits.map((_, index) => (
 							<li
 								className="mb-2.5 flex items-center gap-3 font-body text-[14px] text-[#1a1a1a] md:gap-2.5 md:text-[13px]"
-								key={b}
+								key={index}
 							>
 								<span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-[1.5px] border-[#1a1a1a] text-[#1a1a1a] md:h-[18px] md:w-[18px]">
 									<Check className="h-3 w-3 md:h-2.5 md:w-2.5" strokeWidth={3} />
 								</span>
-								{b}
+								{t(`membershipSection.benefits.${index}`)}
 							</li>
 						))}
 					</ul>
@@ -96,10 +94,10 @@ export default function Membership() {
 
 						<div className="-translate-y-8 flex flex-col items-center justify-center text-center md:-translate-y-14">
 							<p className="whitespace-nowrap font-['Montserrat'] text-[16px] font-extrabold leading-tight tracking-[0.5px] text-white md:text-[14px] xl:text-[15px]">
-								SPORTS MEMBERSHIP
+								{t('membershipSection.cardSubtitle')}
 							</p>
 							<p className="mt-1 font-['Montserrat'] text-[7.5px] font-semibold uppercase leading-tight tracking-[2px] text-[#FFFFFFF7] xl:text-[8px]">
-								PLAY. MOVE. CONNECT.
+								{t('membershipSection.tagline')}
 							</p>
 						</div>
 					</div>
@@ -121,27 +119,29 @@ export default function Membership() {
 						Play. Move. Connect.
 					</p>
 
-					{/* Tombol: warna dari dev (hijau limau), ukuran & susunan mengikuti screenshot di mobile */}
+
 					<a
-						className="mt-3 inline-flex h-[56px] w-[302px] max-w-full shrink-0 items-center justify-between gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors hover:bg-[#c2e86a] md:mt-1 md:h-[52px] md:w-full md:max-w-[340px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:max-w-[350px] xl:text-[16px]"
+						className="group mt-3 inline-flex h-[56px] w-[302px] max-w-full shrink-0 items-center justify-between gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-1 md:h-[52px] md:w-full md:max-w-[340px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:max-w-[350px] xl:text-[16px]"
 						href="https://sport.obcgroup.id/"
 						target="_blank"
 						rel="noreferrer"
 					>
-						<span className="w-[212px] text-justify leading-[20px] tracking-[0.02em] md:hidden">
-							Booking Sports &amp; Gabung Membership Sekarang
+						{/* Mobile: tanpa perubahan tracking/weight saat hover agar tidak turun baris */}
+						<span className="min-w-0 flex-1 text-justify leading-[20px] tracking-[0.02em] text-[#1F3320] transition-colors duration-300 group-hover:!text-[#CDF178] md:hidden">
+							{t('membershipSection.ctaMobile')}
 						</span>
-						<span className="hidden text-left leading-[18px] md:inline">
-							Booking &amp; Daftar Membership
+						{/* Desktop/tablet: satu baris, tidak boleh turun */}
+						<span className="hidden whitespace-nowrap text-left leading-[18px] text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178] md:inline">
+							{t('membershipSection.ctaDesktop')}
 						</span>
-						<span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] md:h-[40px] md:w-[40px] xl:h-[46px] xl:w-[46px]">
-							<ArrowRight size={22} className="md:hidden" />
-							<ArrowUpRight size={22} className="hidden md:block" />
+						<span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] transition-colors duration-300 group-hover:bg-[#CDF178] group-hover:text-[#004000] md:h-[40px] md:w-[40px] xl:h-[46px] xl:w-[46px]">
+							<ArrowRight size={22} className="transition-transform duration-300 group-hover:rotate-45 md:hidden" />
+							<ArrowUpRight size={22} className="hidden transition-transform duration-300 group-hover:rotate-45 md:block" />
 						</span>
 					</a>
 
 					<small className="mt-11 text-right font-body text-[13px] italic text-[#6b7280] md:mt-2 md:text-center md:text-[10px] xl:text-right">
-						*Syarat dan Ketentuan Berlaku
+						{t('membershipSection.terms')}
 					</small>
 				</div>
 			</div>

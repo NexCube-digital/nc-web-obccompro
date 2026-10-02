@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowRight } from 'lucide-react'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
@@ -7,6 +8,7 @@ import targetArrowIcon from '../../../assets/icon/iconstack.io - (Target Arrow).
 import rosetteIcon from '../../../assets/icon/iconstack.io - (Rosette Discount Check).svg'
 
 export default function TentangKami() {
+	const { t } = useTranslation()
 	return (
 		<section
 			className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] gap-[28px] py-[55px] md:w-[calc(100%-48px)] md:grid-cols-[1.15fr_1fr] md:items-center md:gap-10 md:py-[90px] lg:gap-[60px]"
@@ -15,15 +17,15 @@ export default function TentangKami() {
 			<div>
 				{/* Label: mobile title case, desktop kapital */}
 				<span className="mb-3 block font-['Montserrat'] text-[16px] font-semibold leading-[20px] tracking-normal text-black opacity-100 md:text-[18px] md:uppercase md:tracking-[1.4px] md:text-[#000000CC] md:opacity-80">
-					Tentang OBC Group
+					{t('aboutSection.badge')}
 				</span>
 				<h2 className="max-w-[580px] font-['Montserrat'] text-[22px] font-semibold leading-[32px] tracking-normal text-[#000000] md:text-[36px] md:font-bold md:leading-[50px] md:tracking-[1.5px]">
-					Satu Ekosistem, Beragam Layanan, Satu Tujuan
+					{t('aboutSection.title')}
 				</h2>
 
 				{/* Paragraf: mobile hitam, justify, line-height 26px */}
 				<p className="my-4 mb-3 max-w-[560px] font-body text-[13px] leading-[26px] text-justify text-black md:my-5 md:mb-3 md:leading-[1.7] md:text-[#6f6b6e]">
-					OBC Group merupakan perusahaan yang berdiri sejak 7 Mei 1999 di Bandung, Jawa Barat. Berawal dari Onny Barber Center, OBC terus berkembang dan mengelola berbagai unit usaha untuk menghadirkan layanan yang bermanfaat serta memenuhi beragam kebutuhan masyarakat. Kini, OBC menaungi berbagai bidang usaha, mulai dari personal care, olahraga, hospitality, makanan & minuman, laundry, agrobisnis, hingga ruang multifungsi.
+					{t('aboutSection.description')}
 				</p>
 				
 
@@ -33,20 +35,18 @@ export default function TentangKami() {
 						<span className="mb-2 grid h-11 w-11 place-items-center rounded-lg bg-[#CDF178] text-[#000000] shadow-[0px_1px_1px_0px_#00000040]">
 							<img src={targetArrowIcon} alt="" aria-hidden="true" className="h-[23px] w-[24px]" />
 						</span>
-						<h4 className="mb-1.5 font-heading text-[13px] font-semibold text-[#000000]">Visi Kami</h4>
+						<h4 className="mb-1.5 font-heading text-[13px] font-semibold text-[#000000]">{t('aboutSection.visionTitle')}</h4>
 						<p className="align-middle font-['Montserrat'] text-[12px] font-normal leading-[26px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
-							OBC sebagai wadah untuk membantu keluarga dan juga masyarakat sekitar agar bisa mandiri
-							secara financial dan berkembang menjadi SDM yang berkualitas.
+							{t('aboutSection.visionText')}
 						</p>
 					</div>
 					<div className="flex flex-col items-start">
 						<span className="mb-2 grid h-11 w-11 place-items-center rounded-lg bg-[#CDF178] text-[#000000] shadow-[0px_1px_1px_0px_#00000040]">
 							<img src={rosetteIcon} alt="" aria-hidden="true" className="h-[23px] w-[24px]" />
 						</span>
-						<h4 className="mb-1.5 font-heading text-[13px] font-semibold text-[#000000]">Misi Kami</h4>
+						<h4 className="mb-1.5 font-heading text-[13px] font-semibold text-[#000000]">{t('aboutSection.missionTitle')}</h4>
 						<p className="align-middle font-['Montserrat'] text-[12px] font-normal leading-[26px] tracking-[0px] text-[#6f6b6e] [text-align:justify]">
-							Menghadirkan layanan prima, nyaman, berkualitas, dan terjangkau di setiap unit OBC
-							Group.
+							{t('aboutSection.missionText')}
 						</p>
 					</div>
 				</div>
@@ -57,7 +57,7 @@ export default function TentangKami() {
 					to="/tentang-kami"
 					className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[16px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 md:w-[min(600px,100%)] lg:text-[19px]"
 				>
-					Lihat Lebih Lanjut tentang Kami <ArrowRight size={20} />
+					{t('aboutSection.seeMore')} <ArrowRight size={20} />
 				</Link>
 			</div>
 
@@ -76,7 +76,7 @@ export default function TentangKami() {
 					<span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#004000] to-[#009D00] text-white lg:h-9 lg:w-9">
 						<img src={medalIcon} alt="" aria-hidden="true" className="h-[20px] w-[20px] md:h-[22px] md:w-[22px]" />
 					</span>
-					<span className="font-body text-[14px] font-bold leading-[1.2] tracking-[0%] text-black md:text-[13px] lg:text-[16px]">EST 7 MEI 1999</span>
+					<span className="font-body text-[14px] font-bold leading-[1.2] tracking-[0%] text-black md:text-[13px] lg:text-[16px]">{t('aboutSection.est')}</span>
 				</div>
 			</div>
 		</section>

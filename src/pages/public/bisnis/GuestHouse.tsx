@@ -5,6 +5,7 @@ import {
 	ExternalLink,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
 import { UnitBisnis } from '../../../components/common/UnitBisnis'
@@ -109,6 +110,7 @@ const OTHER_UNITS: OtherUnit[] = [
 ]
 
 function GuestHousePage() {
+	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -144,27 +146,20 @@ function GuestHousePage() {
 						<div className="w-full max-w-[472px] text-black md:max-w-[340px] lg:max-w-[420px] xl:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">
 								<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#000000]" />
-								Hospitality & Accommodation
+								{t('units.guestHouse.category')}
 							</span>
 							<h1 className="mt-5 font-['Montserrat'] text-[40px] font-bold leading-[52px] tracking-[1.5px] text-black lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
-								OBC Guest House
+								{t('units.guestHouse.title')}
 							</h1>
 							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.18px] text-black lg:text-[18px] lg:leading-[29.25px]">
-								Penginapan yang nyaman untuk melengkapi pengalaman menginap Anda di kawasan Ciumbuleuit, Bandung.
+								{t('units.guestHouse.desc')}
 							</p>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			{/*
-				Wrapper dua kolom (Tentang + Pilihan Kamar + Fasilitas) — dua kolom baru mulai lg (>=1024px).
-				Di bawah lg: satu kolom penuh, WhatsApp card memakai bar fixed di bawah layar.
-				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
-				yaitu tepat sebelum Galeri (lebar penuh).
-				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
-				karena akan mematikan position: sticky.
-			*/}
+
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
 				<div className="min-w-0 lg:w-2/3">
@@ -173,7 +168,7 @@ function GuestHousePage() {
 						<div className="flex flex-col">
 							{/* Judul: hanya mobile */}
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
-								OBC Guest House
+								{t('units.guestHouse.title')}
 							</h1>
 
 							{/* Info singkat */}
@@ -181,32 +176,29 @@ function GuestHousePage() {
 								<div className="flex items-center gap-2 text-left">
 									<img src={roomIcon} alt="" width={20} height={14} aria-hidden="true" />
 									<div>
-										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Kapasitas</p>
-										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">{TOTAL_ROOMS} Rooms</p>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">{t('common.capacity')}</p>
+										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">{t('units.guestHouse.totalRooms', { count: TOTAL_ROOMS })}</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-2 text-left">
 									<LogIn size={18} className="text-[#222022]" />
 									<div>
-										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-in</p>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">{t('common.checkIn')}</p>
 										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">14.00 WIB</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-2 text-left">
 									<LogOut size={18} className="text-[#222022]" />
 									<div>
-										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">Check-out</p>
+										<p className="font-['Montserrat'] text-[10px] font-semibold uppercase leading-[15.4px] tracking-[1px] text-[#41493D] md:text-[11px] md:tracking-[1.65px]">{t('common.checkOut')}</p>
 										<p className="font-['Montserrat'] text-[13px] font-semibold leading-[19.6px] tracking-[0.3px] text-[#222022] md:text-[14px] md:tracking-[0.56px]">12.00 WIB</p>
 									</div>
 								</div>
 							</div>
 
-							<h2 className="order-3 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:text-[25px]">Tentang OBC Guest House</h2>
+							<h2 className="order-3 font-['Montserrat'] text-[18px] font-semibold leading-[100%] tracking-[0%] text-black md:order-1 md:text-[25px]">{t('units.guestHouse.aboutTitle')}</h2>
 							<p className="order-4 mt-3 max-w-[653px] text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-black md:order-2 md:mt-4 md:text-[16px] md:leading-[26px]">
-								OBC Guest House berada di kawasan OBC, Ciumbuleuit, Bandung, dan menjadi salah satu pilihan tempat
-								menginap bagi kamu yang ingin beristirahat dengan nyaman. Lokasinya berada dalam satu kawasan dengan
-								berbagai fasilitas OBC, sehingga kamu bisa dengan mudah menikmati Food Court, Sport Center, maupun
-								fasilitas lainnya selama menginap.
+								{t('units.guestHouse.aboutText')}
 							</p>
 						</div>
 					</section>
@@ -215,12 +207,12 @@ function GuestHousePage() {
 					<section className="px-5 pb-14 md:px-0">
 						<div>
 							<div className="flex flex-wrap items-center justify-between gap-2">
-								<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">Pilihan Kamar</h2>
+								<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">{t('units.guestHouse.roomsTitle')}</h2>
 								<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
-									Total {TOTAL_ROOMS} Ruangan
+									{t('units.guestHouse.totalRooms', { count: TOTAL_ROOMS })}
 								</span>
 							</div>
-							<p className="mt-1 font-['Montserrat'] text-[16px] font-normal leading-[24px] tracking-[0.15px] text-black md:text-[15px]">Unit kamar yang terkelola di OBC Guest House.</p>
+							<p className="mt-1 font-['Montserrat'] text-[16px] font-normal leading-[24px] tracking-[0.15px] text-black md:text-[15px]">{t('units.guestHouse.roomsDesc')}</p>
 
 							<div className="mt-6 flex flex-col gap-8 md:mt-8 md:gap-0 md:divide-y md:divide-obc-border">
 								{ROOM_TYPES.map((type) => {
@@ -235,10 +227,10 @@ function GuestHousePage() {
 													{type.name}
 												</h3>
 												<span className="inline-flex items-center rounded-[4px] bg-[#D7D7D7B2] px-[12px] pb-[4.39px] pt-[3px] font-['Montserrat'] text-[11px] font-semibold uppercase leading-[15.4px] tracking-[1.65px] text-black">
-													{type.rooms.length} Kamar
+													{t('units.guestHouse.roomsCount', { count: type.rooms.length })}
 												</span>
 											</div>
-											<p className="mt-3 hidden font-['Montserrat'] text-[13px] font-normal leading-[19.5px] tracking-[0.26px] text-[#222222] md:block">Daftar unit nomor kamar:</p>
+											<p className="mt-3 hidden font-['Montserrat'] text-[13px] font-normal leading-[19.5px] tracking-[0.26px] text-[#222222] md:block">{t('units.guestHouse.roomList')}</p>
 											<div
 												className={`mt-4 gap-2 md:mt-3 ${
 													isCompact
@@ -265,7 +257,7 @@ function GuestHousePage() {
 					{/* Fasilitas */}
 					<section className="px-5 pb-14 min-[400px]:px-[30px] md:px-0">
 						<div>
-							<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#222022] md:tracking-[1px]">Fasilitas yang Ditawarkan</h2>
+							<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-[#222022] md:tracking-[1px]">{t('units.guestHouse.facilitiesTitle')}</h2>
 							<div className="mt-7 grid grid-cols-1 gap-y-5 sm:grid-cols-2 md:mt-6 md:gap-y-4">
 								{FACILITIES.map((facility) => {
 									return (
@@ -285,8 +277,8 @@ function GuestHousePage() {
 					<div className="sticky top-24">
 						<WhatsAppCard
 							className="lg:!w-full"
-							title="Tertarik menginap di OBC Guest House?"
-							description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Guest House"
+							title={t('units.guestHouse.whatsappCardTitle')}
+							description={t('units.guestHouse.whatsappCardDesc')}
 							link={WHATSAPP_LINK}
 						/>
 					</div>
@@ -297,10 +289,10 @@ function GuestHousePage() {
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-[1.4px] text-black md:uppercase">
-						Galeri
+						{t('units.guestHouse.galleryBadge')}
 					</span>
 					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						Momen dari OBC Guest House
+						{t('units.guestHouse.galleryTitle')}
 					</h2>
 					<div className="mx-auto mt-3 hidden h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D] md:block" />
 				</div>
@@ -338,7 +330,7 @@ function GuestHousePage() {
 					<button
 						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
 						type="button"
-						aria-label="Tutup gambar"
+										aria-label={t('common.close')}
 						onClick={() => setSelectedGalleryImage(null)}
 					>
 						<X size={22} />
@@ -358,10 +350,10 @@ function GuestHousePage() {
 				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
 					<div className="order-1 md:order-none">
 						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
-							Lokasi OBC Guest House
+							{t('units.guestHouse.locationTitle')}
 						</h2>
 						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
-							Jl. Rancabentang 1 No. 10, Ciumbuleuit, Bandung, Jawa Barat 40142
+							{t('units.guestHouse.locationAddress')}
 						</p>
 					</div>
 					<a
@@ -371,7 +363,7 @@ function GuestHousePage() {
 						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
 					>
 						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						Buka di Google Maps
+						{t('common.openGoogleMaps')}
 					</a>
 				</div>
 
@@ -396,8 +388,8 @@ function GuestHousePage() {
 				<div className="mx-auto w-full max-w-[720px]">
 					<WhatsAppCard
 						variant="bar"
-						title="Tertarik menginap di OBC Guest House?"
-						description="Hubungi kami untuk mendapatkan informasi lebih lanjut mengenai OBC Guest House"
+						title={t('units.guestHouse.whatsappCardTitle')}
+						description={t('units.guestHouse.whatsappCardDesc')}
 						link={WHATSAPP_LINK}
 					/>
 				</div>

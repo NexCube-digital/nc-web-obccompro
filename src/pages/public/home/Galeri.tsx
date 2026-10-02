@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, X } from 'lucide-react'
 import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
 import coffeeGalleryImage from '../../../assets/unit-bisnis/213fd83a6a5b24b44a156bf5b8fce2b06410ed48.png'
@@ -36,6 +37,7 @@ const GALLERY_ITEMS = [
 ]
 
 export default function Galeri() {
+	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -59,24 +61,26 @@ export default function Galeri() {
 				<div>
 					{/* Label: mobile title case, desktop kapital */}
 					<span className="block font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-normal text-[#333333] md:uppercase md:tracking-[1.6px]">
-						Galeri
+						{t('gallerySection.badge')}
 					</span>
 					<h2 className="mt-3 font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-normal text-black md:mt-1 md:text-[36px] md:leading-[40px] md:tracking-[1.5px]">
-						Momen yang Menjadi Bagian dari OBC
+						{t('gallerySection.homeTitle')}
 					</h2>
 					<p className="mt-3 font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.5px] text-black md:mt-2 md:text-[20px] md:leading-[32px] md:tracking-[0.72px]">
-						Jelajahi berbagai momen, fasilitas, dan aktivitas dari seluruh unit usaha OBC.
+						{t('gallerySection.homeSubtitle')}
 					</p>
 				</div>
 
 				{/* Tombol: mobile lebih kecil & rata kanan */}
 				<Link
-					className="inline-flex h-[40px] w-fit shrink-0 items-center justify-between gap-3 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1 pl-4 pr-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-colors hover:bg-[#c2e86a] md:h-[67px] md:w-[304px] md:gap-4 md:self-auto md:py-2 md:pl-6 md:pr-2 md:text-[20px]"
+					className="group inline-flex h-[40px] w-fit shrink-0 items-center justify-between gap-3 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1 pl-4 pr-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:h-[67px] md:w-[304px] md:gap-4 md:self-auto md:py-2 md:pl-6 md:pr-2 md:text-[20px]"
 					to="/galeri"
 				>
-					<span className="whitespace-nowrap text-center md:w-[195px]">Lihat Semua Galeri</span>
-					<span className="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] md:h-[52px] md:w-[52px]">
-						<ArrowUpRight className="h-[16px] w-[16px] md:h-[25px] md:w-[25px]" />
+					<span className="whitespace-nowrap text-center text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178] md:w-[195px]">
+						{t('gallerySection.viewAll')}
+					</span>
+					<span className="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] transition-colors duration-300 group-hover:bg-[#CDF178] group-hover:text-[#004000] md:h-[52px] md:w-[52px]">
+						<ArrowUpRight className="h-[16px] w-[16px] transition-transform duration-300 group-hover:rotate-45 md:h-[25px] md:w-[25px]" />
 					</span>
 				</Link>
 			</div>
@@ -112,7 +116,7 @@ export default function Galeri() {
 					<button
 						className="absolute right-5 top-5 grid h-10 w-10 cursor-pointer place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
 						type="button"
-						aria-label="Tutup gambar"
+						aria-label={t('common.close')}
 						onClick={() => setSelectedGalleryImage(null)}
 					>
 						<X size={22} />

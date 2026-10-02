@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Heart, ArrowRight } from 'lucide-react'
 import sportCenterLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER.png'
@@ -34,9 +35,15 @@ type UnitCardProps = {
 }
 
 function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCardProps) {
+	const { t } = useTranslation()
+	const [isHeartHovered, setIsHeartHovered] = useState(false)
 	const stretchedClass = 'absolute inset-0 z-0 rounded-[14px] md:rounded-[20px]'
+	// Hover Booking Now dikendalikan oleh kelas Tailwind pada tombol.
 	const bookingClass =
-		'btn-booking-now inline-flex h-[20px] items-center justify-center rounded-full px-2 font-heading text-[10px] font-semibold md:h-7 md:px-3.5 md:text-[11px]'
+		'btn-booking-now inline-flex h-[20px] items-center justify-center rounded-full px-2 font-heading text-[10px] font-semibold hover:!border-[#004000] hover:!bg-[#004000] hover:!text-white md:h-7 md:px-3.5 md:text-[11px]'
+	// Saat Detail Unit di-hover: pill hijau muda (tinggi sama dengan Booking Now)
+	const detailClass =
+		'relative inline-flex h-[20px] shrink-0 items-center gap-1 rounded-full border border-transparent px-2 font-heading text-[10px] font-semibold text-[#111111] hover:border-[#B9D96A] hover:bg-[#E3F3B5] md:h-7 md:px-3 md:text-[11px]'
 
 	return (
 		<article
@@ -49,25 +56,32 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 					href={unit.link}
 					target="_blank"
 					rel="noreferrer"
-					aria-label={`Buka halaman ${unit.name}`}
+					aria-label={t('common.openPage', { name: unit.name })}
 				/>
 			) : (
-				<Link className={stretchedClass} to={unit.link} aria-label={`Buka halaman ${unit.name}`} />
+				<Link className={stretchedClass} to={unit.link} aria-label={t('common.openPage', { name: unit.name })} />
 			)}
 
 			{/* Tombol favorit: mobile tanpa lingkaran & border, desktop lingkaran */}
 			<button
 				type="button"
-				className="absolute right-2 top-2 z-10 grid h-7 w-7 cursor-pointer place-items-center rounded-full bg-transparent text-[#111111] transition-all hover:text-red-500 md:right-3 md:top-3 md:h-9 md:w-9 md:border md:border-[#e5e5e5] md:bg-white md:hover:bg-[#f5f5f5] md:group-hover:border-[#b8e28a]/60"
+				className="absolute right-2 top-2 z-10 grid h-7 w-7 cursor-pointer place-items-center rounded-full bg-transparent text-[#111111] md:right-3 md:top-3 md:h-9 md:w-9 md:border md:border-[#e5e5e5] md:bg-white md:hover:bg-[#f5f5f5] md:group-hover:border-[#b8e28a]/60"
+				onMouseEnter={() => setIsHeartHovered(true)}
+				onMouseLeave={() => setIsHeartHovered(false)}
 				onClick={(e) => {
 					e.stopPropagation()
 					onToggleFavorite(unit.name)
 				}}
-				aria-label={`Favoritkan ${unit.name}`}
+				aria-label={t(isFavorite ? 'common.removeFromFavorite' : 'common.addToFavorite', { name: unit.name })}
 			>
+				{/* Saat love di-hover: terisi hijau gelap. Kalau sudah difavoritkan tetap merah */}
 				<Heart
 					className={`h-[22px] w-[22px] md:h-[15px] md:w-[15px] ${
-						isFavorite ? 'fill-red-500 text-red-500' : ''
+						isFavorite
+							? 'fill-red-500 text-red-500'
+							: isHeartHovered
+								? 'fill-[#004000] text-[#004000]'
+								: ''
 					}`}
 				/>
 			</button>
@@ -87,16 +101,22 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 				<div className="mt-1.5 flex w-full items-center justify-center gap-1.5 md:mt-2.5 md:justify-between md:gap-2">
 					{unit.isExternal ? (
 						<a className={bookingClass} href={unit.link} target="_blank" rel="noreferrer">
-							Booking Now
+							{t('businessUnitsSection.bookingNow')}
 						</a>
 					) : (
 						<Link className={bookingClass} to={unit.link}>
-							Booking Now
+							{t('businessUnitsSection.bookingNow')}
 						</Link>
 					)}
-					<span className="inline-flex shrink-0 items-center gap-1 font-heading text-[10px] font-semibold text-[#111111] transition-[gap] group-hover:gap-2 md:text-[11px]">
-						Detail Unit <ArrowRight size={11} />
-					</span>
+					{unit.isExternal ? (
+						<a className={detailClass} href={unit.link} target="_blank" rel="noreferrer">
+							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
+						</a>
+					) : (
+						<Link className={detailClass} to={unit.link}>
+							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
+						</Link>
+					)}
 				</div>
 			</div>
 		</article>
@@ -104,6 +124,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 }
 
 export default function UnitBisnis() {
+	const { t } = useTranslation()
 	const [favorites, setFavorites] = useState<string[]>([])
 
 	const toggleFavorite = (name: string) => {
@@ -119,11 +140,11 @@ export default function UnitBisnis() {
 		>
 			{/* Label: mobile title case & lebih tipis, desktop kapital */}
 			<span className="mb-1 block text-center font-['Montserrat'] text-[16px] font-medium normal-case leading-[20px] tracking-normal text-[#000000] md:mb-3 md:text-[18px] md:font-semibold md:uppercase md:tracking-[1.4px] md:text-[#000000CC]">
-				Bisnis Kami
+				{t('businessUnitsSection.badge')}
 			</span>
 			{/* Judul: mobile 22px 2 baris, md 28px 1 baris (tinggi otomatis), lg ke atas 36px tinggi tetap */}
 			<h2 className="mx-auto h-auto w-full max-w-[320px] text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] tracking-normal text-[#000000] opacity-100 md:h-auto md:max-w-[1098px] md:text-[28px] md:font-bold md:leading-[40px] md:tracking-[1px] lg:h-[45px] lg:text-[36px] lg:leading-[45px] lg:tracking-[1.5px]">
-				Beragam Layanan dalam Satu Ekosistem
+				{t('businessUnitsSection.title')}
 			</h2>
 			<div
 				className="mx-auto mt-4 w-full max-w-full border-t border-[#00000080] md:mt-3 md:w-[812px] md:border-t-2"

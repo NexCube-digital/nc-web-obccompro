@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
@@ -19,23 +20,24 @@ interface GalleryPhoto {
 	category: string
 }
 
-const CATEGORIES = ['Semua', 'Sports & Event Space', 'Hospitality & Accommodation', 'Laundry', 'Food Court', 'Coffee', 'Agribisnis']
+const CATEGORIES = ['all', 'sports', 'hospitality', 'laundry', 'foodCourt', 'coffee', 'agribusiness'] as const
 
 const GALLERY_PHOTOS: GalleryPhoto[] = [
-	{ src: guestHouseImage, alt: 'OBC Guest House', category: 'Hospitality & Accommodation' },
-	{ src: villaImage, alt: 'OBC Villa', category: 'Hospitality & Accommodation' },
-	{ src: laundryImage, alt: 'OBC Laundry', category: 'Laundry' },
-	{ src: foodCourtImage, alt: 'OBC Food Court', category: 'Food Court' },
-	{ src: coffeeImage, alt: 'OBC Coffee', category: 'Coffee' },
-	{ src: agribusinessImage, alt: 'OBC Agribisnis', category: 'Agribisnis' },
-	{ src: lapangF2Image, alt: 'Lapangan OBC Sport Center', category: 'Sports & Event Space' },
-	{ src: pickleballImage, alt: 'Fasilitas pickleball OBC Sport Center', category: 'Sports & Event Space' },
-	{ src: tenisMejaImage, alt: 'Fasilitas tenis meja OBC Sport Center', category: 'Sports & Event Space' },
+	{ src: guestHouseImage, alt: 'OBC Guest House', category: 'hospitality' },
+	{ src: villaImage, alt: 'OBC Villa', category: 'hospitality' },
+	{ src: laundryImage, alt: 'OBC Laundry', category: 'laundry' },
+	{ src: foodCourtImage, alt: 'OBC Food Court', category: 'foodCourt' },
+	{ src: coffeeImage, alt: 'OBC Coffee', category: 'coffee' },
+	{ src: agribusinessImage, alt: 'OBC Agribisnis', category: 'agribusiness' },
+	{ src: lapangF2Image, alt: 'Lapangan OBC Sport Center', category: 'sports' },
+	{ src: pickleballImage, alt: 'Fasilitas pickleball OBC Sport Center', category: 'sports' },
+	{ src: tenisMejaImage, alt: 'Fasilitas tenis meja OBC Sport Center', category: 'sports' },
 ]
 
 
 function GalleryPage() {
-	const [activeCategory, setActiveCategory] = useState('Semua')
+	const { t } = useTranslation()
+	const [activeCategory, setActiveCategory] = useState<(typeof CATEGORIES)[number]>('all')
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -54,7 +56,7 @@ function GalleryPage() {
 	}, [selectedGalleryImage])
 
 	const visiblePhotos = useMemo(
-		() => (activeCategory === 'Semua' ? GALLERY_PHOTOS : GALLERY_PHOTOS.filter((photo) => photo.category === activeCategory)),
+		() => (activeCategory === 'all' ? GALLERY_PHOTOS : GALLERY_PHOTOS.filter((photo) => photo.category === activeCategory)),
 		[activeCategory],
 	)
 
@@ -81,10 +83,10 @@ function GalleryPage() {
 						<div className="w-full max-w-[472px] text-black md:max-w-[400px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
 							<h1 className="mt-5 font-['Montserrat'] text-[24px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[40px] md:leading-[52px] lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
-								Cerita di Setiap Sudut OBC
+								{t('gallerySection.pageTitle')}
 							</h1>
 							<p className="mt-4 max-w-[472px] font-['Montserrat'] text-[14px] font-medium leading-[1.625] tracking-[0.18px] text-justify text-black md:text-[16px] md:leading-[26px] lg:text-[18px] lg:leading-[29.25px]">
-								Jelajahi berbagai momen, fasilitas, aktivitas, dan pengalaman yang menjadi bagian dari perjalanan OBC.
+								{t('gallerySection.pageSubtitle')}
 							</p>
 						</div>
 					</div>
@@ -107,7 +109,7 @@ function GalleryPage() {
 										: 'border-black bg-white text-black hover:bg-black hover:text-white'
 								}`}
 							>
-								{category}
+									{t(`gallerySection.categories.${category}`)}
 							</button>
 						)
 					})}
@@ -142,7 +144,7 @@ function GalleryPage() {
 					<button
 						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
 						type="button"
-						aria-label="Tutup gambar"
+						aria-label={t('common.close')}
 						onClick={() => setSelectedGalleryImage(null)}
 					>
 						<X size={22} />

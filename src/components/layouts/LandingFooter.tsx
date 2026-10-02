@@ -1,27 +1,28 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
 import logo from '../../assets/logo/obclogo.png'
 import lapangF1Image from '../../assets/layanan/Lapang F1.png'
 
 const NAVIGASI_LINKS = [
-	{ label: 'Beranda', to: '/' },
-	{ label: 'Tentang Kami', to: '/tentang-kami' },
-	{ label: 'Unit Bisnis', to: '/unit-bisnis' },
-	{ label: 'OBC Sport Center', to: '/unit-bisnis/sport-center' },
-	{ label: 'OBC Gedung Multifungsi', to: '/unit-bisnis/gedung-multifungsi' },
-	{ label: 'Galeri', to: '/galeri' },
-	{ label: 'Testimoni', to: '/testimoni' },
-	{ label: 'Kontak', to: '#kontak' },
+	{ key: 'nav.home', to: '/' },
+	{ key: 'nav.about', to: '/tentang-kami' },
+	{ key: 'nav.businessUnits', to: '/unit-bisnis' },
+	{ key: 'nav.sportCenter', to: '/unit-bisnis/sport-center' },
+	{ key: 'nav.multipurpose', to: '/unit-bisnis/gedung-multifungsi' },
+	{ key: 'nav.gallery', to: '/galeri' },
+	{ key: 'nav.testimonials', to: '/testimoni' },
+	{ key: 'nav.contact', to: '#kontak' },
 ]
 
 const UNIT_LINKS = [
-	{ label: 'OBC Sport Center', to: '/unit-bisnis' },
-	{ label: 'OBC Guest House', to: '/unit-bisnis/guest-house' },
-	{ label: 'OBC Villa', to: '/unit-bisnis/villa' },
-	{ label: 'OBC Laundry', to: '/unit-bisnis/laundry' },
-	{ label: 'OBC Food Court', to: '/unit-bisnis/food-court' },
-	{ label: 'OBC Coffee', to: '/unit-bisnis/coffee' },
-	{ label: 'OBC Agrobisnis', to: '/unit-bisnis/agribisnis' },
+	{ key: 'units.sportCenter.title', to: '/unit-bisnis' },
+	{ key: 'units.guestHouse.title', to: '/unit-bisnis/guest-house' },
+	{ key: 'units.villa.title', to: '/unit-bisnis/villa' },
+	{ key: 'units.laundry.title', to: '/unit-bisnis/laundry' },
+	{ key: 'units.foodCourt.title', to: '/unit-bisnis/food-court' },
+	{ key: 'units.coffee.title', to: '/unit-bisnis/coffee' },
+	{ key: 'units.agribisnis.title', to: '/unit-bisnis/agribisnis' },
 ]
 
 /* Data kontak — ganti dengan data resmi OBC kalau sudah tersedia dari admin/CMS. */
@@ -75,6 +76,7 @@ const socialButtonClass =
 	'grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110 md:h-8 md:w-8'
 
 function LandingFooter() {
+	const { t } = useTranslation()
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	return (
@@ -93,7 +95,7 @@ function LandingFooter() {
 						<div className="order-1 col-span-2 flex w-full flex-col items-center md:order-none md:col-span-1 md:items-start md:gap-3">
 							<Link
 								to="/"
-								aria-label="OBC beranda"
+								aria-label={t('nav.home')}
 								className="inline-flex h-auto w-full max-w-[400px] items-center justify-center px-[10px] md:h-[95px] md:w-auto md:max-w-none md:justify-start md:p-0"
 							>
 								{/* Tinggi otomatis mengikuti lebar logo, jadi tidak ada ruang kosong atas-bawah */}
@@ -136,17 +138,17 @@ function LandingFooter() {
 
 						{/* Perusahaan */}
 						<div className="order-3 px-2 md:order-none md:px-0">
-							<h3 className={headingClass}>Perusahaan</h3>
+							<h3 className={headingClass}>{t('footer.company')}</h3>
 							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px]">
 								{NAVIGASI_LINKS.map((link) => (
-									<li key={link.label}>
+									<li key={link.key}>
 										{link.to.startsWith('#') ? (
 											<a href={link.to} className={linkClass}>
-												{link.label}
+												{t(link.key)}
 											</a>
 										) : (
 											<Link to={link.to} className={linkClass}>
-												{link.label}
+												{t(link.key)}
 											</Link>
 										)}
 									</li>
@@ -156,12 +158,12 @@ function LandingFooter() {
 
 						{/* Unit bisnis */}
 						<div className="order-4 px-2 md:order-none md:px-0">
-							<h3 className={headingClass}>Unit Bisnis</h3>
+							<h3 className={headingClass}>{t('footer.businessUnits')}</h3>
 							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px]">
 								{UNIT_LINKS.map((unit) => (
-									<li key={unit.label}>
-										<Link to={unit.to} className={linkClass}>
-											{unit.label}
+										<li key={unit.key}>
+											<Link to={unit.to} className={linkClass}>
+												{t(unit.key)}
 										</Link>
 									</li>
 								))}
@@ -172,7 +174,7 @@ function LandingFooter() {
 						<div className="order-2 col-span-2 px-2 md:order-none md:col-span-1 md:px-0">
 							<h3 className={`${headingClass} flex items-center gap-2 md:gap-1`}>
 								<Headphones size={14} />
-								Hubungi Kami
+								{t('footer.contactUs')}
 							</h3>
 							<ul className="mt-4 flex flex-col gap-[14px] font-['Montserrat'] text-[13px] font-medium leading-5 tracking-[0px] text-white md:mt-[15px] md:text-[12px] md:leading-4">
 								<li className="flex items-center gap-3 md:gap-2">
@@ -204,7 +206,7 @@ function LandingFooter() {
 					<button
 						type="button"
 						onClick={scrollToTop}
-						aria-label="Kembali ke atas"
+						aria-label={t('footer.backToTop')}
 						className="grid h-11 w-11 place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:h-[44px] md:w-[36px]"
 					>
 						<ArrowUp className="h-5 w-5 md:h-5 md:w-[15px]" />
@@ -228,12 +230,12 @@ function LandingFooter() {
 				{/* ===== Bar bawah ===== */}
 				<div className="md:border-t md:border-white/10">
 					<div className="mx-auto flex w-full max-w-[1246px] flex-col items-center gap-1 px-6 pb-5 pt-1 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-[70px] md:min-h-[70px] md:flex-row md:justify-between md:gap-4 md:px-10 md:py-5 md:text-left lg:px-12">
-						<p>© {new Date().getFullYear()} Onny Barber Center Group. Hak cipta dilindungi undang-undang.</p>
+						<p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
 
 						<p>
-							Dikembangkan oleh{' '}
+							{t('footer.developedBy')}{' '}
 							<a
-								href="https://nexcube.digital"
+								href="https://nexcube-digital.com/"
 								target="_blank"
 								rel="noreferrer"
 								className="underline transition-colors hover:text-[#CDF178]"
@@ -246,7 +248,7 @@ function LandingFooter() {
 						<div className="hidden items-center gap-6 md:flex">
 							<span className="flex items-center gap-2">
 								<Globe width={15.5} height={15.5} className="text-white" />
-								Bahasa Indonesia (ID)
+								{t('footer.currentLanguage')}
 							</span>
 							<div className="flex items-center gap-5">
 								<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">

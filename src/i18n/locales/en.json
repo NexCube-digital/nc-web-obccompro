@@ -1,0 +1,421 @@
+{
+  "common": {
+    "loading": "Loading data...",
+    "error": "Failed to load data",
+    "empty": "No data available",
+    "retry": "Try again",
+    "back": "Back",
+    "close": "Close",
+    "share": "Share",
+    "shareSuccess": "Link copied to clipboard",
+    "like": "Like",
+    "favorite": "Favorite",
+    "addToFavorite": "Add to favorites",
+    "removeFromFavorite": "Remove from favorites",
+    "favoriteUnit": "Favorite {{name}}",
+    "seeMore": "See More",
+    "learnMore": "Learn More",
+    "all": "All",
+    "explore": "Explore",
+    "bookingNow": "Booking Now",
+    "bookNow": "Book Now",
+    "unitDetail": "Unit Details",
+    "openGoogleMaps": "Open in Google Maps",
+    "viewLocation": "View Location",
+    "contactUs": "Contact Us",
+    "contactWhatsApp": "Contact Our WhatsApp",
+    "termsAndConditions": "*Terms and Conditions Apply",
+    "everyday": "Every day",
+    "checkIn": "Check-in 2:00 PM",
+    "checkOut": "Check-out 12:00 PM",
+    "operationalHours": "Operating Hours",
+    "capacity": "Capacity",
+    "startingFrom": "Starting from",
+    "perHour": "/hour",
+    "locationOf": "{{unit}} Location",
+    "facilities": "Facilities",
+    "areaInformation": "Area Information",
+    "location": "Location",
+    "landArea": "Land Area",
+    "scrollToFooter": "Scroll to footer",
+    "showSlide": "Slide {{number}}: {{title}}",
+    "slideNavigation": "Slide navigation",
+    "previous": "Previous",
+    "next": "Next",
+    "openPage": "Open {{name}} page"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "businessUnits": "Business Units",
+    "sportCenter": "OBC Sport Center",
+    "multipurpose": "OBC Multipurpose Building",
+    "gallery": "Gallery",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "login": "Login",
+    "languageSelect": "Select Language",
+    "chooseLanguage": "Select Language / Pilih Bahasa",
+    "indonesian": "Indonesian",
+    "english": "English",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "backToUnits": "Back to Business Units"
+  },
+  "footer": {
+    "company": "Company",
+    "businessUnits": "Business Units",
+    "contactUs": "Contact Us",
+    "backToTop": "Back to top",
+    "copyright": "© {{year}} Onny Barber Center Group. All rights reserved.",
+    "developedBy": "Developed by",
+    "currentLanguage": "English (EN)"
+  },
+  "hero": {
+    "slides": {
+      "obc": {
+        "title": "Onny Barber Center",
+        "description": "OBC Group is a business ecosystem delivering a wide spectrum of services, facilities, and spaces for diverse needs. Ranging from personal care, sports, hospitality, food & beverage, to event space.",
+        "primaryBtn": "Book OBC Sport",
+        "secondaryBtn": "Explore Our Businesses"
+      },
+      "sportCenter": {
+        "title": "OBC Sport Center",
+        "description": "Modern sports court facilities for futsal, badminton, volleyball, pickleball, and billiard tables. Guaranteed slots, practical booking, and savings with membership packages.",
+        "primaryBtn": "Book Court",
+        "secondaryBtn": "View Facilities"
+      },
+      "eventSpace": {
+        "title": "OBC Event Space",
+        "description": "Spacious and representative multipurpose hall in Bandung for weddings, community gatherings, sports tournaments, and special family events.",
+        "primaryBtn": "Book Event Space",
+        "secondaryBtn": "Contact Us"
+      },
+      "guestHouse": {
+        "title": "OBC Guest House &\nPenthouse",
+        "description": "Comfortable and serene accommodation choices in the Rancabentang area for family getaways and restful holidays with peaceful ambiance and complete amenities.",
+        "primaryBtn": "Reserve Room",
+        "secondaryBtn": "Explore Businesses"
+      }
+    }
+  },
+  "aboutSection": {
+    "badge": "About OBC Group",
+    "title": "One Ecosystem, Diverse Services, One Goal",
+    "description": "OBC Group is an enterprise founded on May 7, 1999 in Bandung, West Java. Originating from Onny Barber Center, OBC has consistently expanded and managed various business units to deliver beneficial services and serve diverse community needs. Today, OBC spans multiple sectors, including personal care, sports, hospitality, food & beverage, laundry, agribusiness, and multipurpose spaces.",
+    "visionTitle": "Our Vision",
+    "visionText": "OBC serves as a platform to support families and local communities toward financial independence and growth into high-quality human resources.",
+    "missionTitle": "Our Mission",
+    "missionText": "Delivering prime, comfortable, high-quality, and affordable services across every unit of OBC Group.",
+    "seeMore": "Learn More About Us",
+    "est": "EST MAY 7, 1999"
+  },
+  "businessUnitsSection": {
+    "badge": "Our Businesses",
+    "title": "Diverse Services in One Ecosystem",
+    "bookingNow": "Booking Now",
+    "unitDetail": "Unit Details"
+  },
+  "sportCenterSection": {
+    "badge": "OBC SPORT CENTER",
+    "title": "OBC SPORT CENTER",
+    "subtitle": "From competitive matches to leisurely play, discover the sports space that fits you best.",
+    "bookingNow": "Book Now",
+    "courtF2_1": "Court F2 - 1 Sport at a time",
+    "courtF1_1": "Court F1 - 1 Sport at a time",
+    "footballCourt": "Football Field",
+    "tableTennisRoom": "Table Tennis Room",
+    "billiardRoom": "Billiard Room",
+    "academy": "OBC Academy",
+    "pickleballClass": "Pickleball Coaching Class",
+    "items": {
+      "futsal1": "Futsal 1",
+      "futsal2": "Futsal 2",
+      "badminton": "Badminton",
+      "voli": "Volleyball",
+      "pickleball": "Pickleball",
+      "basket": "Basketball",
+      "flat2Hours": "Flat 2-hour gameplay",
+      "twoTables": "2 tennis tables",
+      "twoBilliardTables": "2 billiard tables",
+      "parallelBooking": "2 parallel bookings available",
+      "academyAge": "Boys/Girls Age 6-16 Years",
+      "freeTrial2x": "2X Free Trial",
+      "pickleballDuration": "Training Program ±3 months",
+      "pickleballSchedule": "Every Saturday & Sunday"
+    }
+  },
+  "membershipSection": {
+    "badge": "OBC SPORT CENTER",
+    "title": "Ready to Play at\nOBC Sport?",
+    "description": "Find sports facilities that meet your needs, then enjoy membership privileges for a more practical and economical sports experience.",
+    "benefits": [
+      "20% OFF for 4 sessions",
+      "More economical rates",
+      "Guaranteed court slots",
+      "Fixed playing schedule"
+    ],
+    "cardSubtitle": "SPORTS MEMBERSHIP",
+    "tagline": "Play. Move. Connect.",
+    "ctaMobile": "Book Sports & Join Membership Now",
+    "ctaDesktop": "Book & Register Membership",
+    "terms": "*Terms and Conditions Apply"
+  },
+  "multipurposeSection": {
+    "badge": "Multipurpose building",
+    "title": "Versatile Space for Every Event",
+    "description": "Courts F1 & F2 provide flexible venues for weddings, gatherings, and various other special occasion needs.",
+    "categories": {
+      "wedding": "Wedding",
+      "gathering": "Gathering",
+      "otherEvents": "Other Events"
+    },
+    "contactToRent": "Contact Us to Rent",
+    "courtF1": "Court F1",
+    "courtF2": "Court F2"
+  },
+  "testimonialsSection": {
+    "badge": "TESTIMONIALS",
+    "title": "What They Say\nAbout OBC Group",
+    "subtitle": "Experiences of Staying, Playing Sports, and Engaging in Activities at OBC Group",
+    "prevAria": "Previous testimonial",
+    "nextAria": "Next testimonial",
+    "goToSlide": "Go to testimonial {{number}}",
+    "writeReview": "Write Your Experience Review Here"
+  },
+  "modalTestimoni": {
+    "badge": "Testimonial",
+    "title": "Write Your Experience Review",
+    "subtitle": "Share your experience staying, sporting, or engaging in activities at OBC Group.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your full name",
+    "unitLabel": "OBC Unit",
+    "unitPlaceholder": "Select unit",
+    "roleLabel": "As",
+    "rolePlaceholder": "Select role",
+    "ratingLabel": "Rating",
+    "reviewLabel": "Review",
+    "reviewPlaceholder": "Tell us about your experience at OBC...",
+    "submitBtn": "Submit Review",
+    "submittingBtn": "Submitting...",
+    "thankYouTitle": "Thank You!",
+    "thankYouDesc": "We have received your review. Your feedback means a lot to OBC Group.",
+    "closeBtn": "Close",
+    "roles": {
+      "customer": "Customer",
+      "guest": "Guest",
+      "member": "Member",
+      "visitor": "Visitor"
+    },
+    "errors": {
+      "nameRequired": "Name is required",
+      "unitRequired": "Please select the OBC unit you visited",
+      "roleRequired": "Please select your role",
+      "ratingRequired": "Please provide a star rating",
+      "textMin": "Review must be at least {{min}} characters"
+    }
+  },
+  "gallerySection": {
+    "badge": "Gallery",
+    "homeTitle": "Moments That Are Part of OBC",
+    "homeSubtitle": "Explore various moments, facilities, and activities from all OBC business units.",
+    "viewAll": "View All Galleries",
+    "momentsFrom": "Moments from {{unit}}",
+    "pageTitle": "Stories in Every Corner of OBC",
+    "pageSubtitle": "Explore the diverse moments, facilities, activities, and experiences that shape OBC's journey.",
+    "categories": {
+      "all": "All",
+      "sports": "Sports & Event Space",
+      "hospitality": "Hospitality & Accommodation",
+      "laundry": "Laundry",
+      "foodCourt": "Food Court",
+      "coffee": "Coffee",
+      "agribusiness": "Agribusiness"
+    }
+  },
+  "locationSection": {
+    "badge": "OBC GROUP LOCATIONS",
+    "title": "Discover OBC Across Various Locations",
+    "description": "Explore OBC destinations to stay, play sports, relax, and enjoy our diverse services.",
+    "categories": {
+      "all": "All",
+      "accommodation": "Accommodation",
+      "sport": "Sport",
+      "fnb": "FnB",
+      "lifestyle": "Lifestyle",
+      "education": "Education"
+    },
+    "viewLocation": "View Location",
+    "mapTitle": "OBC GROUP LOCATION MAP"
+  },
+  "promoBanner": {
+    "title": "Promos & Special Offers from OBC Group",
+    "slides": {
+      "pelajarAlt": "OBC Student Promo",
+      "membershipTitle": "MEMBERSHIP",
+      "membershipSubtitle": "Save 20% on 4 sessions & court slot priority at OBC Sport Center",
+      "guesthouseTitle": "GUEST HOUSE",
+      "guesthouseSubtitle": "Lush and peaceful accommodation in Rancabentang for family holidays",
+      "academyTitle": "OBC ACADEMY",
+      "academySubtitle": "2x Free Trial sports training sessions for children aged 6-16 years"
+    }
+  },
+  "aboutPage": {
+    "heroTitle": "About Us",
+    "heroSubtitle": "Onny Barber Center Group",
+    "storyBadge": "Our Story",
+    "storyTitle": "One Ecosystem, Diverse Services, One Goal",
+    "storyText": "Recognized widely as a tourism destination in Indonesia during the 1990s, PT Onny Barber Center (OBC) was officially established on May 7, 1999 in Bandung, West Java. Onny Barber Center (OBC) emerged as a service enterprise committed to providing valuable services to society and fulfilling broad public needs. Additionally, PT OBC manages multiple business units, expanding its service scope and business reach.",
+    "visionMissionTitle": "Vision & Mission of OBC Group",
+    "visionTitle": "Our Vision",
+    "visionText": "OBC serves as a platform to empower families and surrounding communities toward financial independence and growth into high-quality human resources. OBC aspires to become the foremost, trusted, and sustainable integrated service platform in Indonesia, delivering more comfortable, healthy, and meaningful life experiences through diverse business units across hospitality, recreation, sports, culinary, laundry, and agribusiness, while driving economic development by empowering MSMEs, local actors, and Bandung's regional potential.",
+    "missionTitle": "Our Mission",
+    "missions": [
+      "Delivering prime services that are safe, comfortable, high-quality, and affordable across all OBC Group units.",
+      "Building synergy among units as an integrated business network providing convenience, added value, and one-stop service for customers.",
+      "Empowering families, surrounding communities, MSMEs, farmers, local entrepreneurs, and communities through market access, partnerships, and continuous promotion.",
+      "Developing professional, high-integrity human resources who serve from the heart.",
+      "Conducting business with innovation, ethics, sustainability, and social responsibility."
+    ],
+    "ctaTitle": "Diverse Businesses, One OBC Group",
+    "ctaDesc": "Explore our business units dedicated to meeting various needs and creating meaningful experiences for the community.",
+    "ctaBtn": "Explore Our Businesses"
+  },
+  "businessUnitPage": {
+    "badge": "BUSINESS UNITS",
+    "heroTitle": "Our Businesses",
+    "heroSubtitle": "One Ecosystem, Diverse Services",
+    "heroDesc": "OBC Group presents a range of complementary business units within one unified ecosystem. Each unit offers distinct services and characteristics to deliver tailored experiences fulfilling customer needs.",
+    "featuredUnit": "Featured Unit",
+    "featuredCategory": "Sports & Event Space",
+    "featuredTitle": "OBC Sport Center",
+    "featuredSlogan": "A Space to Move, Play, and Connect",
+    "featuredDesc": "OBC Sport Center delivers sports facilities and multipurpose spaces for diverse activities, communities, and events.",
+    "operationalHours": "Operating Hours: Every day / 07:00 AM – 12:00 AM",
+    "exploreSportCenter": "Explore OBC Sport Center",
+    "otherUnitsTitle": "7 Other Business Units"
+  },
+  "units": {
+    "sportCenter": {
+      "title": "OBC Sport Center",
+      "category": "Sport & Event Space"
+    },
+    "guestHouse": {
+      "title": "OBC Guest House",
+      "category": "Hospitality & Accommodation",
+      "desc": "Comfortable lodging to complete your stay experience in the Ciumbuleuit area, Bandung.",
+      "aboutTitle": "About OBC Guest House",
+      "aboutText": "OBC Guest House is located within the OBC area in Ciumbuleuit, Bandung, providing a cozy place to rest comfortably. Situated alongside various OBC facilities, you can easily enjoy the Food Court, Sport Center, and other amenities during your stay.",
+      "roomsTitle": "Room Options",
+      "roomsDesc": "Managed room units at OBC Guest House.",
+      "totalRooms": "Total {{count}} Rooms",
+      "roomsCount": "{{count}} Rooms",
+      "roomList": "List of room unit numbers:",
+      "facilitiesTitle": "Offered Facilities",
+      "galleryBadge": "Gallery",
+      "galleryTitle": "Moments from OBC Guest House",
+      "locationTitle": "OBC Guest House Location",
+      "locationAddress": "Jl. Rancabentang 1 No. 10, Ciumbuleuit, Bandung, West Java 40142",
+      "whatsappCardTitle": "Interested in staying at OBC Guest House?",
+      "whatsappCardDesc": "Contact us to get more information about OBC Guest House"
+    },
+    "villa": {
+      "title": "OBC Villa",
+      "category": "Hospitality & Accommodation",
+      "desc": "Comfortable villa accommodation for pleasant stays and enjoying the ambiance of Ciumbuleuit, Bandung.",
+      "aboutTitle": "About OBC Villa",
+      "aboutText": "OBC Villa presents a tranquil, spacious, and private residential atmosphere in Ciumbuleuit, Bandung, perfect for family getaways and gatherings.",
+      "facilitiesTitle": "Offered Facilities",
+      "galleryTitle": "Moments from OBC Villa",
+      "locationTitle": "OBC Villa Location",
+      "whatsappCardTitle": "Interested in staying at OBC Villa?",
+      "whatsappCardDesc": "Contact us to get more information about OBC Villa"
+    },
+    "laundry": {
+      "title": "OBC Laundry",
+      "category": "Laundry Services",
+      "desc": "Laundry services catering to garment care and daily laundry needs.",
+      "aboutTitle": "About OBC Laundry",
+      "aboutText": "OBC Laundry provides clean, fragrant, hygienic, and speedy washing and pressing services with diverse package choices.",
+      "quickService": "Quick 4-Hour Turnaround",
+      "workingHours": "07:00 AM - 08:00 PM",
+      "whatsappCardTitle": "Need reliable laundry services?",
+      "whatsappCardDesc": "Contact us for pickup details and price lists for OBC Laundry"
+    },
+    "foodCourt": {
+      "title": "OBC Food Court",
+      "category": "Food & Beverage",
+      "desc": "Culinary area within the OBC Group ecosystem designed for dining and casual gatherings.",
+      "aboutTitle": "About OBC Food Court",
+      "aboutText": "OBC Food Court serves a variety of delicious Bandung and Indonesian culinary tenants to enjoy with friends and family.",
+      "schedule": "Monday - Saturday",
+      "workingHours": "08:00 AM - 08:00 PM",
+      "whatsappCardTitle": "Looking for reservations or tenant partnerships?",
+      "whatsappCardDesc": "Contact us for more details regarding OBC Food Court"
+    },
+    "coffee": {
+      "title": "OBC Coffee",
+      "category": "Coffee & Lifestyle",
+      "desc": "A space to savor quality coffee and unwind as part of the OBC Group ecosystem.",
+      "aboutTitle": "About OBC Coffee",
+      "aboutText": "A refreshing and cool hangout spot in Ciumbuleuit with curated coffee specialties and savory snacks, perfect for both working and relaxed conversation.",
+      "workingHours": "08:00 AM - 10:00 PM",
+      "whatsappCardTitle": "Visit OBC Coffee",
+      "whatsappCardDesc": "Contact us for table reservations or menu information at OBC Coffee"
+    },
+    "agribisnis": {
+      "title": "OBC Agribisnis",
+      "category": "Agribusiness",
+      "areaBadge": "Land Area & Plots",
+      "areaTitle": "OBC Agribusiness Areas",
+      "desc": "OBC Group's business unit in the agricultural sector, situated in the scenic Lembang area.",
+      "aboutTitle": "About OBC Agribisnis",
+      "aboutText": "OBC Agribisnis focuses on sustainable modern farming, providing fresh produce, and agro-tourism education tours.",
+      "location": "Jl. Tugulaksana, Lembang, West Bandung Regency",
+      "whatsappCardTitle": "Interested in fresh produce or educational visits?",
+      "whatsappCardDesc": "Contact us for collaboration or tour details at OBC Agribisnis"
+    },
+    "otherUnitsHeading": "Explore Other OBC Group Business Units"
+  },
+  "facilities": {
+    "parkingIot": "Parking IoT",
+    "foodCourt": "Food Court",
+    "sportCenter": "Sport Center",
+    "freeWifi": "Free WiFi",
+    "ac": "AC",
+    "tv": "TV",
+    "sittingArea": "Shared Lounge Area"
+  },
+  "errorStates": {
+    "noMessage": {
+      "title": "No Messages Yet!",
+      "description": "Looks like there's nothing here yet. Why not start a conversation or check back later for new messages?",
+      "button": "Send a Message"
+    },
+    "noInternet": {
+      "title": "Oops! You're Offline",
+      "description": "It looks like you're not connected to the internet. Check your Wi-Fi or mobile data and try again once you're back online.",
+      "button": "Retry Connection"
+    },
+    "failedToLoad": {
+      "title": "Something Went Wrong",
+      "description": "There was a system error while loading the page. Please try again later or contact support if the issue persists.",
+      "button": "Try Again"
+    },
+    "underMaintenance": {
+      "title": "Under Maintenance",
+      "description": "We are currently improving our system to give you a better experience. We'll be back shortly!",
+      "button": "Reload Page"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for could not be found or may have been moved.",
+      "button": "Back to Home"
+    },
+    "emptyState": {
+      "title": "No Content Yet",
+      "description": "Content for this section is not available at the moment.",
+      "button": "Refresh"
+    }
+  }
+}

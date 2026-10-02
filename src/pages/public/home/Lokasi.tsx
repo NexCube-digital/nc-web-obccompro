@@ -1,26 +1,27 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Plus, Minus } from 'lucide-react'
 import locationIcon from '../../../assets/icon/iconstack.io - (Location 05).svg'
 import locationArrowIcon from '../../../assets/icon/iconstack.io - (Square Rounded Arrow Right).svg'
 
-const locationCategories = ['Semua', 'Akomodasi', 'Sport', 'FnB', 'Lifestyle', 'Edukasi']
+const locationCategories = ['all', 'accommodation', 'sport', 'fnb', 'lifestyle', 'education'] as const
 
 const locations = [
 	{
 		address: 'Jl. Rancabentang, No. 3A',
-		category: 'Akomodasi',
+		category: 'accommodation',
 		units: ['OBC Guest House & Penthouse'],
 		info: ['Check-in 14.00 WIB', 'Check-out 12.00 WIB'],
 	},
 	{
 		address: 'Jl. Rancabentang, No. 10',
-		category: 'Akomodasi',
+		category: 'accommodation',
 		units: ['OBC Villa'],
 		info: ['Check-in 14.00 WIB', 'Check-out 12.00 WIB'],
 	},
 	{
 		address: 'Jl. Rancabentang, No. 3A',
-		category: 'Sport',
+		category: 'sport',
 		units: ['OBC Sports Center', 'OBC Food Court', 'OBC Coffee', 'OBC Laundry'],
 		info: [
 			'Sport | Setiap hari 07.00 WIB - 00.00 WIB',
@@ -29,24 +30,25 @@ const locations = [
 	},
 	{
 		address: 'Jl. Tugulaksana, Wangunsari',
-		category: 'Edukasi',
+		category: 'education',
 		units: ['OBC Agribisnis'],
 		info: ['Kebun & Edukasi Pertanian'],
 	},
 ]
 
 export default function Lokasi() {
-	const [activeCategory, setActiveCategory] = useState('Semua')
+	const { t } = useTranslation()
+	const [activeCategory, setActiveCategory] = useState<(typeof locationCategories)[number]>('all')
 	const [mapZoom, setMapZoom] = useState(16)
 
 	const filteredLocations =
-		activeCategory === 'Semua'
+		activeCategory === 'all'
 			? locations
 			: locations.filter(
 					(l) =>
 						l.category === activeCategory ||
-						(activeCategory === 'FnB' && l.units.some((u) => u.includes('Food Court') || u.includes('Coffee'))) ||
-						(activeCategory === 'Lifestyle' && l.units.some((u) => u.includes('Laundry')))
+						(activeCategory === 'fnb' && l.units.some((u) => u.includes('Food Court') || u.includes('Coffee'))) ||
+						(activeCategory === 'lifestyle' && l.units.some((u) => u.includes('Laundry')))
 			  )
 
 	return (
@@ -60,14 +62,13 @@ export default function Lokasi() {
 			<div className="min-w-0">
 				{/* Label: min-w hanya untuk desktop supaya tidak melebar di mobile */}
 				<span className="mb-3 block h-[20px] w-full min-w-0 max-w-[856px] font-['Montserrat'] text-[13px] font-semibold uppercase leading-[20px] tracking-[2px] text-[#000000CC] md:min-w-[412px] md:text-[18px] md:tracking-[1.4px]">
-					LOKASI OBC GROUP
+					{t('locationSection.badge')}
 				</span>
 				<h2 className="h-auto min-h-[28px] w-full max-w-[527px] font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-normal text-[#000000] md:text-[24px] md:leading-[27.5px] md:tracking-[1.5px]">
-					Temukan OBC di Berbagai Lokasi
+					{t('locationSection.title')}
 				</h2>
 				<p className="my-3 mb-5 h-auto min-h-[43px] w-full max-w-[527px] font-['Montserrat'] text-[14px] font-normal leading-[22px] tracking-normal text-justify text-[#000000] md:text-[13px] md:leading-[21.13px]">
-					Jelajahi berbagai destinasi OBC untuk menginap, berolahraga,
-					bersantai, dan menikmati berbagai layanan kami.
+					{t('locationSection.description')}
 				</p>
 
 				{/* Filter tabs: mobile gap lebih kecil, teks 12px */}
@@ -83,7 +84,7 @@ export default function Lokasi() {
 							}`}
 							onClick={() => setActiveCategory(cat)}
 						>
-							{cat}
+							{t(`locationSection.categories.${cat}`)}
 						</button>
 					))}
 				</div>
@@ -109,7 +110,7 @@ export default function Lokasi() {
 									rel="noreferrer"
 									className="inline-flex items-center gap-1.5 self-end font-heading text-[13px] font-semibold text-[#111111] md:self-auto"
 								>
-									Lihat Lokasi
+									{t('common.viewLocation')}
 									<span className="grid h-6 w-6 place-items-center">
 										<img src={locationArrowIcon} alt="" aria-hidden="true" className="h-[18px] w-[18px] object-contain" />
 									</span>
@@ -156,7 +157,7 @@ export default function Lokasi() {
 					<div className="flex min-w-0 items-center gap-2">
 						<i className="h-2 w-2 shrink-0 rounded-full bg-[#111111]" />
 						<span className="h-[20px] w-[204px] shrink-0 whitespace-nowrap font-['Montserrat'] text-[14px] font-semibold uppercase leading-[20px] tracking-[0.7px] text-[#000000] max-sm:w-[144px] max-sm:text-[10px] max-sm:tracking-[0.2px]">
-							PETA LOKASI OBC GROUP
+							{t('locationSection.mapTitle')}
 						</span>
 					</div>
 					<span className="pointer-events-none box-border flex h-[18px] w-[155px] shrink-0 items-center justify-center rounded-[12px] bg-[#CDF1784D] px-2 py-[2px] font-['Montserrat'] text-[11px] font-medium leading-[14px] tracking-[0.88px] text-[#000000] shadow-[0px_1px_1px_0px_#00000040] max-sm:w-[100px] max-sm:px-1 max-sm:text-[8px] max-sm:tracking-[0.2px]">

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, Play } from 'lucide-react'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
@@ -20,18 +21,21 @@ export type SportCardProps = {
 	items: string[] // list bullet di bawah gambar
 	hasVideo?: boolean // tombol play di tengah gambar
 	imgHeight?: string // tinggi gambar, beda antar baris
+	price?: string // teks harga yang muncul saat hover (opsional)
 }
 
-function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]' }: SportCardProps) {
+function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]', price }: SportCardProps) {
+	const { t } = useTranslation()
 	return (
-		// Hover: kartu naik sedikit, border & latar hijau muda, bayangan menebal, gambar zoom pelan
-		<article className="group relative flex min-w-0 flex-col rounded-2xl border border-[#e5e5e5] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#b8e28a] hover:bg-[#f0f7e6] hover:shadow-[0_12px_28px_rgba(0,64,0,0.12)]">
+		// Hover: kartu membesar tipis (scale 1.025) + bayangan melembut, smooth 500ms.
+		// Gambar diberi scale kebalikan (1.025 -> 1) sehingga ukurannya TIDAK terlihat membesar (tanpa efek zoom).
+		<article className="group relative flex min-w-0 flex-col rounded-2xl border border-[#eeeeee] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transform-gpu transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.025] hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
 			{/* gambar + overlay badge & icon */}
 			<div className={`relative w-full ${imgHeight}`}>
-				{/* Pembungkus overflow-hidden hanya untuk gambar, supaya zoom tidak keluar dari sudut dan lipatan badge tidak terpotong */}
+				{/* Pembungkus overflow-hidden hanya untuk gambar, supaya lipatan badge tidak terpotong */}
 				<div className="h-full w-full overflow-hidden rounded-t-2xl">
 					<img
-						className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+						className="h-full w-full scale-[1.025] object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100"
 						src={image}
 						alt={badge}
 					/>
@@ -54,10 +58,18 @@ function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]
 					{icon}
 				</span>
 
-				{/* Tombol play untuk kartu video */}
+				{/* Tombol play untuk kartu video (tanpa efek zoom saat hover) */}
 				{hasVideo && (
-					<span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-black/70">
+					<span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm">
 						<Play size={18} fill="white" />
+					</span>
+				)}
+
+				{/* Pill harga: hanya muncul saat hover, naik pelan sambil fade-in.
+				    Hanya dirender kalau prop price diisi. */}
+				{price && (
+					<span className="pointer-events-none absolute bottom-3 left-1/2 w-[calc(100%-24px)] -translate-x-1/2 translate-y-2 truncate rounded-full border border-white/70 bg-black/35 px-3 py-1 text-center font-['Montserrat'] text-[10px] font-bold tracking-[0.5px] text-white opacity-0 backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 sm:text-[12px] md:text-[14px] lg:text-[16px]">
+						{t('common.startingFrom')} {price?.replace(/^Mulai dari /, '').replace('/jam', '')} {t('common.perHour')}
 					</span>
 				)}
 			</div>
@@ -70,7 +82,7 @@ function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]
 						className="flex items-center gap-2 font-body text-[12px] font-medium text-[#1a1a1a] md:text-[15px]"
 						key={item}
 					>
-						<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#8a8a6b] transition-colors duration-300 group-hover:bg-[#7FA52B]" />
+						<span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#8a8a6b]" />
 						{item}
 					</li>
 				))}
@@ -85,18 +97,21 @@ const sportRow1: SportCardProps[] = [
 		badge: 'Lapang F2 -  1 Olahraga di 1 waktu',
 		icon: <img src={volleyballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Futsal 1', 'Badminton', 'Voli', 'Pickleball'],
+		price: 'Mulai dari Rp120.000/jam',
 	},
 	{
 		image: lapangF1Image,
 		badge: 'Lapang F2 -  1 Olahraga di 1 waktu',
 		icon: <img src={basketballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Futsal 2', 'Basket'],
+		price: 'Mulai dari Rp100.000/jam',
 	},
 	{
 		image: lapangF2Image,
 		badge: 'Lapang Sepak Bola',
 		icon: <img src={footballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Untuk flat 2jam Permainan'],
+		price: 'Mulai dari Rp250.000/jam',
 		hasVideo: true,
 	},
 ]
@@ -107,6 +122,7 @@ const sportRow2: SportCardProps[] = [
 		badge: 'Ruang Tenis Meja',
 		icon: <img src={tennisRacketIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['2 meja tenis', 'Bisa 2 booking paralel'],
+		price: 'Mulai dari Rp50.000/jam',
 		hasVideo: true,
 	},
 	{
@@ -114,23 +130,38 @@ const sportRow2: SportCardProps[] = [
 		badge: 'Ruang Billiard',
 		icon: <img src={billiardIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['2 meja billiard', 'Bisa 2 booking paralel'],
+		price: 'Mulai dari Rp60.000/jam',
 	},
 	{
 		image: academyRedImage,
 		badge: 'OBC Academy',
 		icon: <img src={baseballCapIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['L/P Usia 6-16 Tahun', 'Free Trial 2X'],
+		price: 'Mulai dari Rp75.000/jam',
 	},
 	{
 		image: lapangF1Image,
 		badge: 'Coaching Class Pickleball',
 		icon: <img src={bowlingBallIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Training Program ±3 bulan', 'Setiap Sabtu & Minggu'],
+		price: 'Mulai dari Rp150.000/jam',
 		hasVideo: true,
 	},
 ]
 
 export default function SportCenter() {
+	const { t } = useTranslation()
+	const row1TranslationKeys = [
+		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'voli', 'pickleball'] },
+		{ badge: 'sportCenterSection.courtF1_1', items: ['futsal2', 'basket'] },
+		{ badge: 'sportCenterSection.footballCourt', items: ['flat2Hours'] },
+	]
+	const row2TranslationKeys = [
+		{ badge: 'sportCenterSection.tableTennisRoom', items: ['twoTables', 'parallelBooking'] },
+		{ badge: 'sportCenterSection.billiardRoom', items: ['twoBilliardTables', 'parallelBooking'] },
+		{ badge: 'sportCenterSection.academy', items: ['academyAge', 'freeTrial2x'] },
+		{ badge: 'sportCenterSection.pickleballClass', items: ['pickleballDuration', 'pickleballSchedule'] },
+	]
 	return (
 		<section className="bg-white px-0 py-[55px] pb-10 md:py-10 md:pb-14" id="fasilitas">
 			<div className="mx-auto w-[calc(100%-40px)] max-w-[1280px] md:w-[calc(100%-48px)]">
@@ -139,22 +170,23 @@ export default function SportCenter() {
 				<div className="mb-6 flex flex-col items-start justify-between gap-4 px-0 sm:px-[15px] md:flex-row md:items-center md:gap-6">
 					<div className="min-w-0">
 						<h2 className="h-auto w-full max-w-[1180px] font-['Montserrat'] text-[24px] font-extrabold leading-[30px] tracking-[-0.6px] text-[#000000] sm:text-[28px] sm:leading-[36px] md:min-h-[40px] md:text-[32px] md:leading-[40px] md:tracking-[-0.9px] lg:text-[36px]">
-							OBC SPORT CENTER
+							{t('sportCenterSection.title')}
 						</h2>
 						<p className="mt-3 h-auto w-full max-w-[834px] align-middle font-['Montserrat'] text-[16px] font-normal leading-[24px] tracking-[0.5px] text-justify text-[#000000] md:mt-2 md:h-auto md:text-[16px] lg:min-h-[48px] lg:text-[20px] lg:tracking-[1px]">
-							Dari pertandingan kompetitif hingga permainan santai, temukan ruang
-							olahraga yang sesuai untukmu.
+							{t('sportCenterSection.subtitle')}
 						</p>
 					</div>
 					<a
-						className="inline-flex w-fit max-w-full shrink-0 items-center justify-center gap-3 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1.5 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-colors hover:bg-[#c2e86a] md:self-auto md:px-4 md:py-2 lg:text-[20px]"
+						className="group inline-flex w-fit max-w-full shrink-0 items-center justify-center gap-3 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1.5 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:self-auto md:px-4 md:py-2 lg:text-[20px]"
 						href="https://sport.obcgroup.id/"
 						target="_blank"
 						rel="noreferrer"
 					>
-						<span className="flex-1 whitespace-nowrap text-center">Booking Sekarang</span>
-						<span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] md:h-[44px] md:w-[44px] lg:h-[52px] lg:w-[52px]">
-							<ArrowUpRight className="h-[18px] w-[18px] md:h-[22px] md:w-[22px] lg:h-[25px] lg:w-[25px]" />
+						<span className="flex-1 whitespace-nowrap text-center text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178]">
+							{t('sportCenterSection.bookingNow')}
+						</span>
+						<span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] transition-colors duration-300 group-hover:bg-[#CDF178] group-hover:text-[#004000] md:h-[44px] md:w-[44px] lg:h-[52px] lg:w-[52px]">
+							<ArrowUpRight className="h-[18px] w-[18px] transition-transform duration-300 group-hover:rotate-45 md:h-[22px] md:w-[22px] lg:h-[25px] lg:w-[25px]" />
 						</span>
 					</a>
 				</div>
@@ -163,14 +195,26 @@ export default function SportCenter() {
 				    sm–lg 3 kolom sama rata (tidak ada kartu yang sendirian); lg ke atas proporsi seperti semula */}
 				<div className="grid grid-cols-2 gap-[22px] sm:grid-cols-3 sm:gap-4 lg:grid-cols-[422fr_420fr_337fr] [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
 					{sportRow1.map((card, i) => (
-						<SportCard key={`r1-${i}`} {...card} imgHeight="h-[120px] sm:h-[181px]" />
+						<SportCard
+							key={`r1-${i}`}
+							{...card}
+							badge={t(row1TranslationKeys[i].badge)}
+							items={row1TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
+							imgHeight="h-[120px] sm:h-[181px]"
+						/>
 					))}
 				</div>
 
 				{/* Baris 2: 2 kolom sampai lg, 4 kolom mulai lg */}
 				<div className="mt-[22px] grid grid-cols-2 gap-[22px] sm:mt-4 sm:gap-4 lg:grid-cols-4">
 					{sportRow2.map((card, i) => (
-						<SportCard key={`r2-${i}`} {...card} imgHeight="h-[120px] sm:h-[162px]" />
+						<SportCard
+							key={`r2-${i}`}
+							{...card}
+							badge={t(row2TranslationKeys[i].badge)}
+							items={row2TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
+							imgHeight="h-[120px] sm:h-[162px]"
+						/>
 					))}
 				</div>
 			</div>
