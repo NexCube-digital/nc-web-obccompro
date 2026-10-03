@@ -109,7 +109,6 @@ function VillaPage() {
 	}, [selectedGalleryImage])
 
 	return (
-		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
 		<div className="min-h-screen bg-obc-ivory pb-[130px] lg:pb-0">
 			<LandingNavbar />
 
@@ -118,9 +117,14 @@ function VillaPage() {
 				<img src={heroImage} alt="OBC Villa" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
 				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
-				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.94)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
+				<div
+					className="absolute left-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%] min-[1280px]:h-[724px] min-[1280px]:max-h-full"
+					style={{
+						background:
+							'linear-gradient(90deg, #FAFAF2 0%, rgba(250, 250, 242, 0.9) 40.87%, rgba(250, 250, 242, 0.592749) 65.38%, rgba(250, 250, 242, 0) 90.87%)',
+					}}
+				/>
 
-				{/* Teks hero: md+, container max-w 1246px, rata kiri */}
 				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto w-full max-w-[1246px] px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
@@ -142,14 +146,6 @@ function VillaPage() {
 				</div>
 			</section>
 
-			{/*
-				Wrapper dua kolom (Tentang + Fasilitas) — dua kolom baru mulai lg (>=1024px).
-				Di bawah lg: satu kolom penuh, WhatsApp card memakai bar fixed di bawah layar.
-				Kolom kanan berisi WhatsApp card yang sticky; card berhenti di ujung wrapper ini,
-				yaitu tepat sebelum Galeri (lebar penuh).
-				CATATAN: jangan beri overflow-hidden/overflow-auto pada elemen induk wrapper ini,
-				karena akan mematikan position: sticky.
-			*/}
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
 				<div className="min-w-0 lg:w-2/3">

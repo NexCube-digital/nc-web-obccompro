@@ -136,9 +136,18 @@ function GuestHousePage() {
 					alt="Fasad OBC Guest House"
 					className="absolute inset-0 h-full w-full object-cover object-top md:object-center"
 				/>
-				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
+
+				{/* Overlay gelap tipis: hanya md+ */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
-				<div className="absolute inset-y-0 right-0 hidden h-full md:block md:w-[72%] lg:w-[65%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(270deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
+
+				<div
+					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%] min-[1280px]:h-[724px] min-[1280px]:max-h-full"
+					style={{
+						opacity: 1,
+						background:
+							'linear-gradient(270deg, #FAFAF2 0%, rgba(250, 250, 242, 0.9) 40.87%, rgba(250, 250, 242, 0.592749) 65.38%, rgba(250, 250, 242, 0) 90.87%)',
+					}}
+				/>
 
 				{/* Teks hero: md+, container rata kanan */}
 				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
@@ -158,7 +167,6 @@ function GuestHousePage() {
 					</div>
 				</div>
 			</section>
-
 
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}

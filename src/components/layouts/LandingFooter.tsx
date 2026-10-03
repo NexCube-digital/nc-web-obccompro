@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
 import logo from '../../assets/logo/obclogo.png'
 import lapangF1Image from '../../assets/layanan/Lapang F1.png'
+import whatsappIcon from '../../assets/icon/whatsapp2.svg'
 
 const NAVIGASI_LINKS = [
 	{ key: 'nav.home', to: '/' },
@@ -111,9 +112,14 @@ function LandingFooter() {
 									target="_blank"
 									rel="noreferrer"
 									aria-label="WhatsApp OBC Group"
-									className={socialButtonClass}
+									className={`${socialButtonClass}`}
 								>
-									<WhatsAppSocialIcon className="h-5 w-5 text-black md:h-4 md:w-4" />
+								<img
+									src={whatsappIcon}
+									alt=""
+									aria-hidden="true"
+									className="h-5 w-5 md:h-4 md:w-4"
+									style={{ filter: "brightness(0)" }} />								
 								</a>
 								<a
 									href={CONTACT.instagram}

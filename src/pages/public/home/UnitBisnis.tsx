@@ -38,12 +38,10 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 	const { t } = useTranslation()
 	const [isHeartHovered, setIsHeartHovered] = useState(false)
 	const stretchedClass = 'absolute inset-0 z-0 rounded-[14px] md:rounded-[20px]'
-	// Hover Booking Now dikendalikan oleh kelas Tailwind pada tombol.
 	const bookingClass =
-		'btn-booking-now inline-flex h-[20px] items-center justify-center rounded-full px-2 font-heading text-[10px] font-semibold hover:!border-[#004000] hover:!bg-[#004000] hover:!text-white md:h-7 md:px-3.5 md:text-[11px]'
-	// Saat Detail Unit di-hover: pill hijau muda (tinggi sama dengan Booking Now)
+	'btn-booking-now inline-flex h-[20px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2 font-heading text-[10px] font-semibold hover:!border-[#004000] hover:!bg-[#004000] hover:!text-white md:h-7 md:px-3 md:text-[11px] lg:px-3.5'
 	const detailClass =
-		'relative inline-flex h-[20px] shrink-0 items-center gap-1 rounded-full border border-transparent px-2 font-heading text-[10px] font-semibold text-[#111111] hover:border-[#B9D96A] hover:bg-[#E3F3B5] md:h-7 md:px-3 md:text-[11px]'
+	'relative inline-flex h-[20px] shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 font-heading text-[10px] font-semibold text-[#111111] hover:border-[#B9D96A] hover:bg-[#E3F3B5] md:h-7 md:px-3 md:text-[11px]'
 
 	return (
 		<article
@@ -163,8 +161,6 @@ export default function UnitBisnis() {
 				))}
 			</div>
 
-			{/* Baris 2: 3 unit. Mobile & md 2 kolom dengan kartu terakhir di tengah, lg 3 kolom.
-			    Di md kartu selebar kolom (tanpa max-w) supaya ukurannya sama dengan baris 1. */}
 			<div className="mx-auto mt-[14px] grid max-w-[calc(3*280px+2*1.5rem)] grid-cols-2 gap-[14px] md:mt-6 md:max-w-none md:gap-6 lg:max-w-[calc(3*280px+2*1.5rem)] lg:grid-cols-3">
 				{units.slice(4).map((unit) => (
 					<UnitCard
