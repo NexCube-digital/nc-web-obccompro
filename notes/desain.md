@@ -1,49 +1,54 @@
-# Design System & Brand Guideline — OBC Sport
-**Onny Barber Center (OBC) Sport Facility & Event Space Booking**
+# Design System & Panduan Warna — Website OBC Group
+**Onny Barber Center (OBC) Company Profile**
 
-Dokumen ini merupakan panduan resmi desain antarmuka (*UI/UX Design Guideline*) dan identitas visual untuk platform **OBC Sport**, disusun berdasarkan **Brand Guideline Resmi OBC** serta kebutuhan sistem pada [PRD OBC Sport](file:///d:/NexCube%20Project/OBC%20PROJECT/sport-obc/notes/prd.md).
+Dokumen ini merangkum identitas visual dan warna yang digunakan oleh website OBC Group. Nilai warna aktual dirujuk dari `src/index.css` dan implementasi komponen di `src/`; warna khusus komponen dicatat terpisah dari token global.
 
 ---
 
 ## 1. Brand Identity & Karakter Visual
 
-- **Nama Brand**: O.B.C (Onny Barber Center / OBC Sport)
+- **Nama Brand**: O.B.C (Onny Barber Center / OBC Group)
 - **Karakter Visual**: 
-  - *Geometric, Rounded & Friendly* — Menghadirkan kesan ramah, mudah diakses oleh komunitas olahraga dan warga.
-  - *Structured, Clean & Professional* — Menjaga keteraturan data jadwal, slot waktu, tarif, dan proses transaksi.
-  - *Earthy, Sporty & Natural* — Palet hijau tua dan zaitun yang mencerminkan suasana lapangan semi-outdoor dan ruang terbuka hijau.
+  - *Geometric, Rounded & Friendly* — Menghadirkan kesan ramah dan mudah diakses oleh komunitas serta pelanggan OBC.
+  - *Structured, Clean & Professional* — Menyajikan informasi perusahaan, fasilitas, dan unit bisnis dengan jelas.
+  - *Earthy, Sporty & Natural* — Hijau dan aksen lime memberi kesan alami, aktif, dan sesuai karakter OBC.
 - **Elemen Identitas Logo**:
-  - **Emblem Bunga Sepatu (Hibiscus Flower)**: Simbol warna merah cerah (*Carmine/Ruby Red*).
-  - **Wordmark O.B.C**: Tipografi tegas dengan lekukan geometris tebal berwarna hijau tua (*Deep Forest Green*), aksen gunting/barber pole di dalam huruf.
+  - **Emblem dan wordmark**: Gunakan artwork logo dari `src/assets/logo/`; jangan mengganti warna artwork berdasarkan token UI.
   - **Sub-label**: Banner kapsul (*pill shape*) bertuliskan *"onny barber center"*.
 - **Variasi Penggunaan Logo**:
-  1. **Primary Full Color**: Emblem bunga merah (`#BF0021`) + teks OBC hijau tua (`#004000`) di atas latar krem / putih (`#FFFFF7` / `#FFFFFF`).
-  2. **Monochrome White**: Logo putih utuh di atas latar hijau tua (`#004000`) atau charcoal (`#343133`).
-  3. **White Outline**: Logo garis luar putih di atas latar hijau zaitun (`#404F14`) atau hijau tua (`#004000`).
-  4. **Emblem Only**: Bunga sepatu merah (`#BF0021`) untuk favicon, avatar, atau app icon ringkas.
+  1. Gunakan variasi logo yang sudah tersedia di folder aset logo.
+  2. Pastikan kontras artwork dengan latar; warna logo merupakan bagian dari aset, bukan token warna halaman.
 
 ---
 
-## 2. Palet Warna Resmi (Color Palette)
+## 2. Palet Warna yang Digunakan
 
-Palet warna utama diambil langsung dari Brand Guideline resmi OBC (5 warna inti) ditambah warna aksen merah dari emblem bunga logo:
+### Token Global (`src/index.css`)
 
-| Swatch | Nama Warna | Kode HEX | RGB | Peran & Penggunaan Utama |
-| :---: | :--- | :---: | :---: | :--- |
-| ![#343133](https://via.placeholder.com/20/343133/000000?text=+) | **Dark Charcoal** | `#343133` | `rgb(52, 49, 51)` | Teks utama (*body text*), heading gelap, footer gelap, border kontras tinggi, elemen netral gelap. |
-| ![#004000](https://via.placeholder.com/20/004000/000000?text=+) | **Deep Forest Green** | `#004000` | `rgb(0, 64, 0)` | **Warna Brand Utama**. Header navbar, tombol utama (Primary CTA), hero background, indikator slot *Tersedia*. |
-| ![#404F14](https://via.placeholder.com/20/404F14/000000?text=+) | **Olive / Moss Green** | `#404F14` | `rgb(64, 79, 20)` | **Warna Brand Sekunder**. Badge cabang olahraga, secondary button, card highlight, status sewa gedung. |
-| ![#FFFFF7](https://via.placeholder.com/20/FFFFF7/000000?text=+) | **Warm Ivory / Cream** | `#FFFFF7` | `rgb(255, 255, 247)` | **Latar Belakang Utama**. Menghilangkan silau cahaya layar, memberi kesan ramah, hangat, dan natural. |
-| ![#FFFFFF](https://via.placeholder.com/20/FFFFFF/000000?text=+) | **Pure White** | `#FFFFFF` | `rgb(255, 255, 255)` | Latar card formulir, container modal/dialog, input form, teks kontras di atas latar gelap. |
-| ![#BF0021](https://via.placeholder.com/20/BF0021/000000?text=+) | **Hibiscus Carmine Red** *(Logo Accent)* | `#BF0021` | `rgb(191, 0, 33)` | **Warna Aksen & Aksi**. Badge promo diskon (*Membership 20%*), status slot *Terisi/Booked*, tag urgensi, notifikasi peringatan. |
+| Peran | Token | Nilai | Pemakaian |
+| :--- | :--- | :---: | :--- |
+| Teks utama | `--color-obc-charcoal` | `#343133` | Warna teks dasar pada layout publik. |
+| Brand utama | `--color-obc-green` | `#004000` | Aksi utama, fokus, ikon, dan aksen brand. |
+| Hover brand utama | `--color-obc-green-hover` | `#002D00` | Hover tombol/latar hijau. |
+| Brand sekunder | `--color-obc-olive` | `#404F14` | Aksen olive dan kontrol sekunder. |
+| Hover brand sekunder | `--color-obc-olive-hover` | `#323E10` | Hover olive. |
+| Latar halaman | `--color-obc-ivory` | `#FFFFF7` | Latar dasar halaman. Beberapa halaman unit memakai ivory sedikit lebih hangat, `#FAFAF2`. |
+| Surface | `--color-obc-white` | `#FFFFFF` | Latar komponen dan konten. |
+| Aksen merah | `--color-obc-red` | `#BF0021` | Token brand tersedia; belum tampak sebagai aksen UI pada halaman saat ini. |
+| Hover merah | `--color-obc-red-hover` | `#9E001B` | Token hover tersedia bersama token merah. |
+| Latar lembut | `--color-obc-cream` | `#F0F0D4` | Latar pembeda lembut. |
+| Teks sekunder | `--color-obc-muted` | `#6F6B6E` | Deskripsi dan teks sekunder. |
+| Border global | `--color-obc-border` | `#E2DFD2` | Garis pembatas. |
+| Surface hover | `--color-obc-hover-surface` | `#F4F4E6` | Latar hover lembut. |
 
-### Warna Tambahan (Supporting & Neutral Tints)
+### Aksen yang Tampak di Komponen
 
-Untuk fleksibilitas antarmuka pengguna:
-- **Warm Muted Cream** (`#F0F0D4`): Digunakan untuk section pembeda (alternating section background) seperti pada banner panduan brand.
-- **Muted Text / Secondary Label** (`#6F6B6E`): Untuk teks subjudul, timestamp, deskripsi sekunder.
-- **Border / Divider Neutral** (`#E2DFD2`): Garis pemisah antar kolom jadwal, border card ringan.
-- **Surface Hover Light** (`#F4F4E6`): State hover untuk list item dan baris kalender slot.
+- **Lime utama UI**: `#CDF178` dipakai berulang untuk CTA, badge, ikon, hover link, dan aksen footer. `#C0E85A` muncul sebagai warna hover terkait.
+- **Hijau gelap pendamping**: `#1F3320` dipakai untuk teks/ikon di atas lime; `#D4FF32`, `#C6F52A`, `#009D00`, `#0A730A`, `#008C00`, `#7FA52B`, `#237D23`, dan `#22C55E` muncul pada elemen atau gradient tertentu. Warna WhatsApp seperti `#22C55E` dan `#166534` bersifat khusus tombol WhatsApp.
+- **Netral halaman dan unit bisnis**: hitam (`#000000`, `#111111`, `#222022`), abu teks (`#41493D`, `#6F6B6E`, `#4B5563`), latar lembut (`#F3F3F3`, `#F5F5F5`, `#FAFAF2`), dan border abu (`#E5E5E5`, `#E1E1E1`, `#E9E9E9`). Nilai lain yang hanya muncul pada satu komponen tetap bersifat lokal, bukan token global.
+- **Warna non-brand**: banner promo menggunakan biru gelap `#0C2937`; jangan menganggapnya warna utama seluruh situs.
+
+Warna di SVG ilustrasi, ikon, logo, dan aset pihak ketiga memiliki palet internal masing-masing. Nilai tersebut tidak menjadi token UI global.
 
 ---
 
@@ -95,37 +100,16 @@ Kombinasi 2 jenis font resmi yang saling melengkapi:
 
 ---
 
-## 4. Sistem Status & Token Interaktif (Booking OBC Sport)
+## 4. Token Status yang Didefinisikan
 
-Berdasarkan aturan bisnis di [PRD OBC Sport](file:///d:/NexCube%20Project/OBC%20PROJECT/sport-obc/notes/prd.md), berikut panduan warna untuk komponen interaktif dan status slot:
+Token status berikut tersedia di `src/index.css`, tetapi tidak berarti alur booking lapangan/event sudah menjadi bagian dari UI website saat ini:
 
-### 4.1. Status Slot Lapangan / Meja
+| Token | Latar | Border | Catatan |
+| :--- | :---: | :---: | :--- |
+| `--color-obc-status-booked-*` | `#FDECEE` | `#F5C2C7` | Token status booked. |
+| `--color-obc-status-locked-*` | `#EBEEDC` | `#C8D1A8` | Token status locked. |
 
-| Status Slot | Latar Belakang (*Bg*) | Border | Warna Teks / Icon | Keterangan & Aksi Pengguna |
-| :--- | :---: | :---: | :---: | :--- |
-| **Tersedia (Available)** | `#FFFFFF` (Hover: `#004000`) | `#004000` | `#004000` (Hover: `#FFFFFF`) | Slot siap dipilih pengguna untuk booking per jam. |
-| **Dipilih (Selected)** | `#004000` | `#004000` | `#FFFFF7` | Slot aktif yang sedang dipilih user dalam sesi ini. |
-| **Terisi / Booked** | `#FDECEE` | `#F5C2C7` | `#BF0021` | Slot sudah dibayar (DP Paid / Lunas), tidak dapat diklik. |
-| **Event Gedung (Locked)** | `#EBEEDC` | `#C8D1A8` | `#404F14` | Lapang F1/F2 terkunci karena disewa untuk Wedding / Gathering. |
-| **Maintenance / Tutup** | `#E9E7E0` | `#D5D1C5` | `#8A8780` | Jadwal perawatan lapangan oleh admin. |
-
-### 4.2. Fitur Khusus OBC Sport
-
-1. **Sports Membership (4x Pertemuan Berulang - Diskon 20%)**:
-   - Card Banner: Background `#004000` dengan aksen border tipis `#404F14`.
-   - Badge Promo: `#BF0021` (Merah Bunga Logo) dengan teks putih tebal *"HEMAT 20%"*.
-   - Nilai Jual: Tampilan perbandingan harga coret (*strikethrough price*) dengan warna `#8A8780` dan harga diskon dengan warna `#FFFFF7` / `#004000`.
-
-2. **Sewa Gedung / Event Space (Lapang F1 & F2)**:
-   - Header Section: `#404F14` (Olive) dengan sentuhan hangat.
-   - Flow Status Tag:
-     - `Pending Nego`: Kuning Mustard (`#D4A017`)
-     - `Invoice Issued`: Biru Slate (`#2A5C8A`)
-     - `DP Paid / Locked`: Hijau Brand (`#004000`)
-
-3. **Skema Pembayaran (Midtrans DP 50%)**:
-   - Kotak Info DP: Latar `#F7F7EE` dengan border kiri tebal 4px berwarna `#004000`.
-   - Rincian: Subtotal, Diskon (jika ada), Biaya Transaksi Midtrans, **Wajib Bayar Sekarang (DP 50%)**, Sisa Pelunasan di Lokasi.
+Status dan warna transaksi lain yang tidak ada di token atau komponen saat ini tidak dicantumkan sebagai warna project.
 
 ---
 
@@ -133,96 +117,64 @@ Berdasarkan aturan bisnis di [PRD OBC Sport](file:///d:/NexCube%20Project/OBC%20
 
 ### 5.1. Tombol (Buttons)
 - **Primary Button**:
-  - Normal: Background `#004000`, Teks `#FFFFF7`, Font Poppins SemiBold, Radius `8px` atau `100px` (pill).
-  - Hover: Background `#002D00`, scale `1.02`.
+  - Normal: Hijau `#004000` atau lime `#CDF178`, mengikuti konteks komponen; teks menggunakan warna kontras.
+  - Hover: Hijau `#002D00` atau lime lebih gelap `#C0E85A` sesuai implementasi.
 - **Secondary / Accent Button**:
-  - Normal: Background `#404F14`, Teks `#FFFFF7`, Font Poppins Medium.
-  - Hover: Background `#323E10`.
-- **High-Alert / Urgent Action**:
-  - Normal: Background `#BF0021`, Teks `#FFFFFF`.
-  - Hover: Background `#9E001B`.
+  - Olive `#404F14` hanya digunakan bila sesuai komponen; `#CDF178` adalah aksen sekunder yang lebih sering muncul.
 - **Outline Button**:
-  - Normal: Background transparan, Border 1.5px `#004000`, Teks `#004000`.
-  - Hover: Background `#004000`, Teks `#FFFFF7`.
+  - Border dan teks mengikuti warna kontrol terkait, umumnya `#004000` atau `#1F3320`.
+  - Hindari menetapkan merah sebagai warna aksi urgent global; token merah tersedia tetapi belum dipakai pada UI halaman.
 
 ### 5.2. Card Fasilitas (Facility Cards)
 - Background: `#FFFFFF`
-- Border: `1px solid #E2DFD2`
+- Border: abu terang seperti `#E5E5E5`, `#E1E1E1`, atau `#E9E9E9` sesuai komponen.
 - Border Radius: `16px`
-- Shadow: `0 4px 16px rgba(52, 49, 51, 0.06)`
+- Shadow: gunakan bayangan ringan yang sudah diterapkan komponen.
 - Padding: `24px`
-- Badge Cabang Olahraga: Background `#EBEEDC`, Teks `#404F14`, Font Poppins Medium (11px, Uppercase).
+- Badge/aksen: Lime `#CDF178` dengan teks `#000000` atau `#1F3320`, mengikuti komponen.
 
 ### 5.3. Formulir & Input
-- Input Field: Background `#FFFFFF`, Border `1px solid #D5D1C5`, Border Radius `8px`, Font Montserrat Regular.
-- Focus State: Border `2px solid #004000`, Box-shadow `0 0 0 3px rgba(0, 64, 0, 0.12)`.
-- Label: Font Montserrat Medium, Warna `#343133`, 13px.
+- Input Field: Background `#FFFFFF`, border abu terang (`#E5E5E5` atau `#ECECEC`), Font Montserrat Regular.
+- Focus State: Border `#004000` dengan ring lime `#CDF178`.
+- Label: Font Montserrat Medium, umumnya warna gelap (`#1F3320` atau `#000000`), 13px.
 
 ---
 
-## 6. Snippet Kode Implementasi (CSS & Tailwind CSS v4)
-
-### 6.1. CSS Variables (`src/index.css`)
-
-```css
-:root {
-  /* Brand Primary Colors */
-  --obc-charcoal: #343133;
-  --obc-green-deep: #004000;
-  --obc-green-outside: #008100;
-  --obc-green-semi-yellow: #C6F52A;
-  --obc-green-olive: #404F14;
-  --obc-ivory: #FFFFF7;
-  --obc-white: #FFFFFF;
-  --obc-red-carmine: #BF0021;
-
-  /* Semantic UI Tokens */
-  --color-bg-base: var(--obc-ivory);
-  --color-bg-surface: var(--obc-white);
-  --color-bg-muted: #F0F0D4;
-  --color-text-main: var(--obc-charcoal);
-  --color-text-muted: #6F6B6E;
-  --color-border: #E2DFD2;
-
-  --color-primary: var(--obc-green-deep);
-  --color-primary-hover: #002D00;
-  --color-secondary: var(--obc-green-olive);
-  --color-accent-red: var(--obc-red-carmine);
-
-  /* Typography */
-  --font-heading: 'Poppins', sans-serif;
-  --font-body: 'Montserrat', sans-serif;
-}
-```
-
-### 6.2. Tailwind CSS v4 Theme Configuration
-
-Jika menggunakan `@theme` di Tailwind CSS v4:
+## 6. Snippet Token Aktif (`src/index.css`)
 
 ```css
 @theme {
   --color-obc-charcoal: #343133;
   --color-obc-green: #004000;
-  --color-obc-olive: #404F14;
-  --obc-green-outside: #008100;
-  --obc-green-semi-yellow: #C6F52A;
-  --color-obc-ivory: #FFFFF7;
-  --color-obc-white: #FFFFFF;
-  --color-obc-red: #BF0021;
-  --color-obc-cream: #F0F0D4;
-
-  --font-heading: 'Poppins', sans-serif;
-  --font-body: 'Montserrat', sans-serif;
+  --color-obc-green-hover: #002d00;
+  --color-obc-olive: #404f14;
+  --color-obc-olive-hover: #323e10;
+  --color-obc-ivory: #fffff7;
+  --color-obc-white: #ffffff;
+  --color-obc-red: #bf0021;
+  --color-obc-red-hover: #9e001b;
+  --color-obc-cream: #f0f0d4;
+  --color-obc-muted: #6f6b6e;
+  --color-obc-border: #e2dfd2;
+  --color-obc-hover-surface: #f4f4e6;
+  --color-obc-status-booked-bg: #fdecee;
+  --color-obc-status-booked-border: #f5c2c7;
+  --color-obc-status-locked-bg: #ebeedc;
+  --color-obc-status-locked-border: #c8d1a8;
+  --font-heading: "Poppins", sans-serif;
+  --font-body: "Montserrat", sans-serif;
 }
 ```
+
+Nilai aksen lokal seperti `#CDF178` belum menjadi token di `@theme`; pertahankan konsistensi saat menggunakannya di komponen.
 
 ---
 
 ## 7. Checklist Penerapan Desain
-- [x] Ekstraksi 5 kode warna resmi dari Brand Guideline: `#343133`, `#004000`, `#404F14`, `#FFFFF7`, `#FFFFFF`.
-- [x] Ekstraksi warna aksen emblem bunga logo: `#BF0021`.
+- [x] Token global disamakan dengan `@theme` aktif di `src/index.css`.
+- [x] Aksen lime `#CDF178` dan hijau gelap `#1F3320` dicatat berdasarkan pemakaian komponen.
+- [x] Warna layout dasar (`#FFFFF7`), surface (`#FFFFFF`), teks, dan border dicatat sesuai source.
 - [x] Pemetaan 2 jenis font: **Poppins** (Headings, buttons, badges) dan **Montserrat** (Body text, UI data, form).
-- [x] Pemetaan status interaktif slot lapangan (Tersedia, Terisi, Event Gedung, Maintenance).
-- [x] Integrasi styling dengan fitur PRD (Booking Lapang F1/F2, Tenis Meja, Biliard, Sepak Bola, Sports Membership 20%, Sewa Gedung, DP 50%).
-- [x] Snippet konfigurasi CSS Variables dan Tailwind CSS v4.
+- [x] Token status yang didefinisikan CSS dipisahkan dari warna UI yang aktif.
+- [x] Warna satu-off komponen dan aset SVG tidak dipromosikan menjadi token global.
 

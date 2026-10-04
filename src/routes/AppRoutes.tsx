@@ -1,17 +1,23 @@
+import { lazy } from 'react'
 import { Route } from 'react-router-dom'
-import HomePage from '../pages/public/HomePage'
-import AboutPage from '../pages/public/AboutPage'
-import BusinessUnitPage from '../pages/public/BusinesUnitPage'
-import GalleryPage from '../pages/public/GalleryPage'
-import GuestHousePage from '../pages/public/bisnis/GuestHouse'
-import ObcAgribisnis from '../pages/public/bisnis/ObcAgribisnis'
-import ObcCoffee from '../pages/public/bisnis/ObcCoffe'
-import ObcFoodcourt from '../pages/public/bisnis/ObcFoodcourt'
-import ObcLaundry from '../pages/public/bisnis/ObcLaundry'
-import ObcVilla from '../pages/public/bisnis/ObcVilla'
+
+const HomePage = lazy(() => import('../pages/public/HomePage'))
+const AboutPage = lazy(() => import('../pages/public/AboutPage'))
+const BusinessUnitPage = lazy(() => import('../pages/public/BusinesUnitPage'))
+const GalleryPage = lazy(() => import('../pages/public/GalleryPage'))
+const GuestHousePage = lazy(() => import('../pages/public/bisnis/GuestHouse'))
+const ObcAgribisnis = lazy(() => import('../pages/public/bisnis/ObcAgribisnis'))
+const ObcCoffee = lazy(() => import('../pages/public/bisnis/ObcCoffe'))
+const ObcFoodcourt = lazy(() => import('../pages/public/bisnis/ObcFoodcourt'))
+const ObcLaundry = lazy(() => import('../pages/public/bisnis/ObcLaundry'))
+const ObcVilla = lazy(() => import('../pages/public/bisnis/ObcVilla'))
+const DashboardPage = lazy(() => import('../pages/dashboard/admin/DashboardPage'))
+
 
 const AppRoutes = (
 	<>
+
+		{/* public */}
 		<Route path="/" element={<HomePage />} />
 		<Route path="/tentang-kami" element={<AboutPage />} />
 		<Route path="/unit-bisnis" element={<BusinessUnitPage />} />
@@ -22,6 +28,9 @@ const AppRoutes = (
 		<Route path="/unit-bisnis/food-court" element={<ObcFoodcourt />} />
 		<Route path="/unit-bisnis/coffee" element={<ObcCoffee />} />
 		<Route path="/unit-bisnis/agribisnis" element={<ObcAgribisnis />} />
+
+		{/* dashboard */}
+		<Route path="/dashboard" element={<DashboardPage />} />
 	</>
 )
 

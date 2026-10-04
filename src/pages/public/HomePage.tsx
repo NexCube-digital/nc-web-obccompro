@@ -1,17 +1,20 @@
+import { Suspense, lazy } from 'react'
+
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
-import {
-	Hero,
-	PromoBanner,
-	TentangKami,
-	UnitBisnis,
-	SportCenter,
-	Membership,
-	GedungMultifungsi,
-	Galeri,
-	Testimoni,
-	Lokasi,
-} from './home'
+
+const Hero = lazy(() => import('./home/Hero'))
+const PromoBanner = lazy(() => import('./home/PromoBanner'))
+const TentangKami = lazy(() => import('./home/TentangKami'))
+const UnitBisnis = lazy(() => import('./home/UnitBisnis'))
+const SportCenter = lazy(() => import('./home/SportCenter'))
+const Membership = lazy(() => import('./home/Membership'))
+const GedungMultifungsi = lazy(() => import('./home/GedungMultifungsi'))
+const Galeri = lazy(() => import('./home/Galeri'))
+const Testimoni = lazy(() => import('./home/Testimoni'))
+const Lokasi = lazy(() => import('./home/Lokasi'))
+
+const SectionFallback = () => <div className="h-[280px] w-full animate-pulse bg-[#f5f0e8]" />
 
 function HomePage() {
 	return (
@@ -19,34 +22,54 @@ function HomePage() {
 			<LandingNavbar />
 			<main id="beranda">
 				{/* 1. Hero Section */}
-				<Hero />
+				<Suspense fallback={<SectionFallback />}>
+					<Hero />
+				</Suspense>
 
 				{/* 2. Promo Banner */}
-				<PromoBanner />
+				<Suspense fallback={<SectionFallback />}>
+					<PromoBanner />
+				</Suspense>
 
 				{/* 3. Tentang OBC Group */}
-				<TentangKami />
+				<Suspense fallback={<SectionFallback />}>
+					<TentangKami />
+				</Suspense>
 
 				{/* 4. Bisnis Kami (Unit Bisnis) */}
-				<UnitBisnis />
+				<Suspense fallback={<SectionFallback />}>
+					<UnitBisnis />
+				</Suspense>
 
 				{/* 5. OBC Sport Center */}
-				<SportCenter />
+				<Suspense fallback={<SectionFallback />}>
+					<SportCenter />
+				</Suspense>
 
 				{/* 6. Membership */}
-				<Membership />
+				<Suspense fallback={<SectionFallback />}>
+					<Membership />
+				</Suspense>
 
 				{/* 7. Gedung Multifungsi / Event Space */}
-				<GedungMultifungsi />
+				<Suspense fallback={<SectionFallback />}>
+					<GedungMultifungsi />
+				</Suspense>
 
 				{/* 8. Galeri */}
-				<Galeri />
+				<Suspense fallback={<SectionFallback />}>
+					<Galeri />
+				</Suspense>
 
 				{/* 9. Testimoni */}
-				<Testimoni />
+				<Suspense fallback={<SectionFallback />}>
+					<Testimoni />
+				</Suspense>
 
 				{/* 10. Lokasi OBC Group */}
-				<Lokasi />
+				<Suspense fallback={<SectionFallback />}>
+					<Lokasi />
+				</Suspense>
 			</main>
 			<LandingFooter />
 		</div>
