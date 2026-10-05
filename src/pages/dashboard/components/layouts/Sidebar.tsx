@@ -5,6 +5,7 @@ import {
   Building2,
   ChevronDown,
   CalendarDays,
+  ClipboardList,
   Dumbbell,
   FileBarChart,
   Globe,
@@ -14,6 +15,7 @@ import {
   MessageSquareQuote,
   PartyPopper,
   Settings,
+  TableProperties,
   Users,
   X,
   type LucideIcon,
@@ -28,6 +30,8 @@ type MenuItem = {
 
 const MENU: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
+  { label: "Form", icon: ClipboardList, to: "/template/form" },
+  { label: "Tabel", icon: TableProperties, to: "/template/tabel" },
   {
     label: "OBC Sport",
     icon: Dumbbell,

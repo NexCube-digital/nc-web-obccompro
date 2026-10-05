@@ -12,6 +12,8 @@ const ObcFoodcourt = lazy(() => import('../pages/public/bisnis/ObcFoodcourt'))
 const ObcLaundry = lazy(() => import('../pages/public/bisnis/ObcLaundry'))
 const ObcVilla = lazy(() => import('../pages/public/bisnis/ObcVilla'))
 const DashboardPage = lazy(() => import('../pages/dashboard/admin/DashboardPage'))
+const FormPage = lazy(() => import('../pages/dashboard/template/Form'))
+const TablePage = lazy(() => import('../pages/dashboard/template/Tabel'))
 
 
 const AppRoutes = (
@@ -31,6 +33,8 @@ const AppRoutes = (
 
 		{/* dashboard */}
 		<Route path="/dashboard" element={<DashboardPage />} />
+		<Route path="/template/form" element={<FormPage />} />
+		<Route path="/template/tabel" element={<TablePage />} />
 	</>
 )
 
