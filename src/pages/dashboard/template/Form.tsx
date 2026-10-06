@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent, type ReactNode } from "react";
 import { Check, Send } from "lucide-react";
+import { toast } from "sonner";
 import DashboardPageLayout from "../components/layouts/DashboardPageLayout";
 
 type FieldName = "firstName" | "lastName" | "email" | "phone" | "category" | "notes" | "agree";
@@ -147,10 +148,23 @@ export default function Form() {
 
 		const firstInvalid = FIELD_ORDER.find((n) => results[n].status === "error");
 		if (firstInvalid) {
+			const isEmptyForm = !values.firstName.trim()
+				&& !values.lastName.trim()
+				&& !values.email.trim()
+				&& !values.phone.trim()
+				&& !values.notes.trim()
+				&& !values.agree;
+
+			if (isEmptyForm) {
+				toast.info("Silakan isi data pelanggan sebelum menyimpan.");
+			} else {
+				toast.error(results[firstInvalid].message);
+			}
 			formRef.current?.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus();
 			return;
 		}
 
+		toast.success("Data pelanggan berhasil disimpan.");
 		setSaved(true);
 		setValues(initialValues);
 		setTouched({});

@@ -51,6 +51,38 @@ h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif; }
 a { color: inherit; text-decoration: none; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
+[data-sonner-toast] {
+  position: relative;
+}
+
+[data-sonner-toast]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: #404f14;
+  transform: scaleX(1);
+  transform-origin: left;
+  animation: sonner-toast-progress 5s linear forwards;
+}
+
+[data-rich-colors="true"][data-sonner-toast][data-type="success"]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="info"]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="warning"]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="error"]::after {
+  background-color: currentColor;
+}
+
+[data-sonner-toast]:hover::after {
+  animation-play-state: paused;
+}
+
+@keyframes sonner-toast-progress {
+  to { transform: scaleX(0); }
+}
+
 @font-face {
   font-family: "Poppins";
   src: url("./assets/font/Poppins/Poppins-Regular.ttf") format("truetype");
