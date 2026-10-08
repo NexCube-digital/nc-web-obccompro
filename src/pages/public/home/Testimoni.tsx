@@ -8,7 +8,7 @@ import guestHouseLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENT
 import coffeeLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (6).png'
 import agribusinessLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (7).png'
 import reviewIcon from '../../../assets/icon/iconstack.io - (Pen New Square).svg'
-import ModalTestimoni, { type TestimoniFormData } from '../../../components/ui/ModalTestimoni'
+import ModalTestimoni, { type TestimoniFormData } from '../../../components/ui/modal/ModalTestimoni'
 
 const testimonials = [
 	{

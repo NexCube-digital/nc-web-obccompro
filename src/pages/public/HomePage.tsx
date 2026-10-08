@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
+import LazySection from '../../components/common/LazySection'
 
 const Hero = lazy(() => import('./home/Hero'))
 const PromoBanner = lazy(() => import('./home/PromoBanner'))
@@ -14,62 +15,64 @@ const Galeri = lazy(() => import('./home/Galeri'))
 const Testimoni = lazy(() => import('./home/Testimoni'))
 const Lokasi = lazy(() => import('./home/Lokasi'))
 
-const SectionFallback = () => <div className="h-[280px] w-full animate-pulse bg-[#f5f0e8]" />
+const HeroFallback = () => (
+	<div className="h-[600px] w-full animate-pulse bg-[#f5f0e8]" />
+)
 
 function HomePage() {
 	return (
 		<div className="min-h-screen overflow-x-hidden bg-[#fffff7] font-body text-[#343133]">
 			<LandingNavbar />
 			<main id="beranda">
-				{/* 1. Hero Section */}
-				<Suspense fallback={<SectionFallback />}>
+				{/* 1. Hero Section: langsung load (above the fold) */}
+				<Suspense fallback={<HeroFallback />}>
 					<Hero />
 				</Suspense>
 
 				{/* 2. Promo Banner */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={200}>
 					<PromoBanner />
-				</Suspense>
+				</LazySection>
 
 				{/* 3. Tentang OBC Group */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<TentangKami />
-				</Suspense>
+				</LazySection>
 
 				{/* 4. Bisnis Kami (Unit Bisnis) */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<UnitBisnis />
-				</Suspense>
+				</LazySection>
 
 				{/* 5. OBC Sport Center */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<SportCenter />
-				</Suspense>
+				</LazySection>
 
 				{/* 6. Membership */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<Membership />
-				</Suspense>
+				</LazySection>
 
 				{/* 7. Gedung Multifungsi / Event Space */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<GedungMultifungsi />
-				</Suspense>
+				</LazySection>
 
 				{/* 8. Galeri */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<Galeri />
-				</Suspense>
+				</LazySection>
 
 				{/* 9. Testimoni */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={400}>
 					<Testimoni />
-				</Suspense>
+				</LazySection>
 
 				{/* 10. Lokasi OBC Group */}
-				<Suspense fallback={<SectionFallback />}>
+				<LazySection minHeight={500}>
 					<Lokasi />
-				</Suspense>
+				</LazySection>
 			</main>
 			<LandingFooter />
 		</div>

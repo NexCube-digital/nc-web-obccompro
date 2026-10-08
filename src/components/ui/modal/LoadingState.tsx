@@ -1,29 +1,25 @@
 import { useEffect, useRef } from 'react'
-import frame1 from '../../assets/loading-state/Frame1.png'
-import frame2 from '../../assets/loading-state/Frame2.png'
-import frame3 from '../../assets/loading-state/Frame3.png'
-import frame4 from '../../assets/loading-state/Frame4.png'
-import frame5 from '../../assets/loading-state/Frame5.png'
-import frame6 from '../../assets/loading-state/Frame6.png'
-import logo from '../../assets/logo/obclogo.png'
+import frame1 from '../../../assets/loading-state/Frame1.png'
+import frame2 from '../../../assets/loading-state/Frame2.png'
+import frame3 from '../../../assets/loading-state/Frame3.png'
+import frame4 from '../../../assets/loading-state/Frame4.png'
+import frame5 from '../../../assets/loading-state/Frame5.png'
+import frame6 from '../../../assets/loading-state/Frame6.png'
+import logo from '../../../assets/logo/obclogo.webp'
 
 const CIRCLE = 300 // width/height lingkaran di Figma
 const RING = 10 // tebal cincin yang terlihat di sekitar disc logo
 const CANVAS_H = 340 // tinggi semua PNG
 const CIRCLE_TOP = 20 // posisi top lingkaran di dalam PNG
-const GLOW_SIZE = 560 // area glow (lebih besar dari lingkaran)
+const GLOW_SIZE = 400 // area glow (lebih besar dari lingkaran)
 
-/**
- * cx  = posisi X pusat lingkaran di dalam file PNG
- * rgb = warna glow di luar lingkaran
- */
 const frames = [
-  { src: frame1, cx: 250, rgb: [212, 220, 40] },
-  { src: frame2, cx: 250, rgb: [44, 200, 60] },
-  { src: frame3, cx: 250, rgb: [50, 150, 200] },
-  { src: frame4, cx: 250, rgb: [70, 45, 195] },
-  { src: frame5, cx: 170, rgb: [170, 35, 195] },
-  { src: frame6, cx: 250, rgb: [215, 45, 45] },
+  { src: frame1, cx: 170, rgb: [150, 4, 187] }, // Frame1 - ungu
+  { src: frame2, cx: 250, rgb: [30, 4, 187] }, // Frame2 - indigo
+  { src: frame3, cx: 250, rgb: [4, 131, 187] }, // Frame3 - biru
+  { src: frame4, cx: 250, rgb: [4, 186, 12] }, // Frame4 - hijau
+  { src: frame5, cx: 250, rgb: [206, 210, 4] }, // Frame5 - kuning
+  { src: frame6, cx: 250, rgb: [207, 7, 7] }, // Frame6 - merah
 ]
 
 const STEP_DURATION = 1000 // animation-duration Figma per frame (linear)
@@ -44,19 +40,27 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
   const layerRefs = useRef<(HTMLDivElement | null)[]>([])
+  const preloadedRef = useRef<HTMLImageElement[]>([]) // cegah GC cache decode
+
+  // Simpan onComplete di ref supaya effect tidak restart saat parent re-render
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   useEffect(() => {
     let rafId = 0
-    let exitTimer = 0
-    let completeTimer = 0
     let cancelled = false
+    let startTime: number | null = null
+    let exiting = false
+    let finished = false
 
-    const apply = (time: number) => {
-      const progress = time / STEP_DURATION
+    const apply = (elapsed: number) => {
+      const progress = Math.max(0, elapsed) / STEP_DURATION
       const whole = Math.floor(progress)
       const base = whole % frames.length
       const top = (base + 1) % frames.length
-      const amount = progress - whole // linear 0 -> 1
+      const amount = Math.min(1, progress - whole) // linear 0 -> 1
 
       // Gambar: frame lama tetap 100% di bawah, frame baru naik di atasnya
       layerRefs.current.forEach((layer, i) => {
@@ -73,7 +77,7 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
         }
       })
 
-      // Glow: satu elemen, warnanya diinterpolasi (tidak ada tumpukan / pop)
+      // Glow: satu elemen, warnanya diinterpolasi
       if (glowRef.current) {
         const a = frames[base].rgb
         const b = frames[top].rgb
@@ -87,38 +91,49 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
 
     apply(0)
 
-    // Tunggu semua gambar ter-decode agar tidak ada kedip di tengah animasi
-    const preload = Promise.all(
-      [...frames.map((f) => f.src), logo].map((src) => {
-        const img = new Image()
-        img.src = src
-        return img.decode().catch(() => undefined)
-      }),
-    )
-
-    preload.then(() => {
-      if (cancelled) return
-      const start = performance.now()
-
-      const tick = (now: number) => {
-        apply(now - start)
-        rafId = requestAnimationFrame(tick)
-      }
-      rafId = requestAnimationFrame(tick)
-
-      exitTimer = window.setTimeout(() => {
-        if (rootRef.current) rootRef.current.style.opacity = '0'
-      }, DISPLAY_DURATION)
-      completeTimer = window.setTimeout(onComplete, DISPLAY_DURATION + FADE_DURATION)
+    // Tunggu semua gambar ter-decode, simpan referensinya agar tidak di-GC
+    const images = [...frames.map((f) => f.src), logo].map((src) => {
+      const img = new Image()
+      img.src = src
+      return img
     })
+    preloadedRef.current = images
+
+    Promise.all(images.map((img) => img.decode().catch(() => undefined))).then(
+      () => {
+        if (cancelled) return
+
+        const tick = (now: number) => {
+          if (cancelled) return
+
+          // Start dari timestamp rAF pertama -> tidak pernah negatif
+          if (startTime === null) startTime = now
+          const elapsed = now - startTime
+
+          apply(elapsed)
+
+          if (!exiting && elapsed >= DISPLAY_DURATION) {
+            exiting = true
+            if (rootRef.current) rootRef.current.style.opacity = '0'
+          }
+          if (!finished && elapsed >= DISPLAY_DURATION + FADE_DURATION) {
+            finished = true
+            onCompleteRef.current()
+            return
+          }
+
+          rafId = requestAnimationFrame(tick)
+        }
+
+        rafId = requestAnimationFrame(tick)
+      },
+    )
 
     return () => {
       cancelled = true
       cancelAnimationFrame(rafId)
-      window.clearTimeout(exitTimer)
-      window.clearTimeout(completeTimer)
     }
-  }, [onComplete])
+  }, [])
 
   return (
     <div
@@ -142,7 +157,9 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
             height: GLOW_SIZE,
             left: (CIRCLE - GLOW_SIZE) / 2,
             top: (CIRCLE - GLOW_SIZE) / 2,
-            background: glowBackground(...(frames[0].rgb as [number, number, number])),
+            background: glowBackground(
+              ...(frames[0].rgb as [number, number, number]),
+            ),
           }}
         />
 

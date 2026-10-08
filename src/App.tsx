@@ -1,8 +1,8 @@
 import { Suspense, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ScrollToTop from './components/common/ScrollToTop'
-import LoadingState from './components/ui/LoadingState'
-import WhatsAppIcon from './components/common/WhatsAppIcon'
+import LoadingState from './components/ui/modal/LoadingState'
+import WhatsAppIcon from './components/ui/WhatsAppIcon'
 import AppRoutes from './routes/AppRoutes'
 import { Toaster } from 'sonner'
 

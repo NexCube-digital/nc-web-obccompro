@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Check, Heart, Menu, X } from 'lucide-react'
-import logo from '../../assets/logo/LOGO-OBC.png'
+import logo from '../../assets/logo/obclogo.webp'
 import internetIcon from '../../assets/icon/internet.svg'
 import userCircleIcon from '../../assets/icon/iconstack.io - (User Circle).svg'
 import shareIcon from '../../assets/icon/bagikan.svg'
@@ -171,7 +171,7 @@ function LandingNavbar() {
 							scrollToTop()
 						}}
 					>
-						<img className="block h-[46px] w-[100px] object-contain" src={logo} alt="OBC" />
+						<img className="block h-[60px] w-[100px] object-contain" src={logo} alt="OBC" />
 					</NavLink>
 
 					{/* Menu tengah (desktop) */}

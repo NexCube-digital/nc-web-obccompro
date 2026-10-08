@@ -18,9 +18,9 @@ export default function GedungMultifungsi() {
 			<div className="contents lg:flex lg:h-full lg:min-w-0 lg:flex-col lg:justify-between">
 				{/* Foto Lapang F1 */}
 				<div
-					className="relative order-4 mt-5 h-[140px] min-w-0 rounded-[24px] bg-cover bg-center sm:h-[200px] md:h-[260px] lg:order-none lg:mt-0 lg:h-auto lg:min-h-[320px] lg:w-full lg:flex-1 lg:overflow-hidden lg:rounded-[32px] xl:min-h-[440px]"
-					style={{ backgroundImage: `url(${lapangF1Image})` }}
+					className="group relative order-4 mt-5 h-[140px] min-w-0 overflow-hidden rounded-[24px] sm:h-[200px] md:h-[260px] lg:order-none lg:mt-0 lg:h-auto lg:min-h-[320px] lg:w-full lg:flex-1 lg:rounded-[32px] xl:min-h-[440px]"
 				>
+					<img src={lapangF1Image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
 					{/* Label: < lg di tengah bawah foto, >= lg di kanan atas */}
 					<span className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md lg:bottom-auto lg:left-auto lg:right-3 lg:top-3 lg:translate-x-0 lg:translate-y-0">
 						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white">
@@ -76,9 +76,9 @@ export default function GedungMultifungsi() {
 
 				{/* Foto Lapang F2 */}
 				<div
-					className="relative order-5 mt-5 h-[140px] min-w-0 rounded-[24px] bg-cover bg-center sm:h-[200px] md:h-[260px] lg:order-none lg:mt-5 lg:h-auto lg:min-h-[280px] lg:w-full lg:flex-1 lg:overflow-hidden lg:rounded-[32px] xl:min-h-[380px]"
-					style={{ backgroundImage: `url(${lapangF2Image})` }}
+					className="group relative order-5 mt-5 h-[140px] min-w-0 overflow-hidden rounded-[24px] sm:h-[200px] md:h-[260px] lg:order-none lg:mt-5 lg:h-auto lg:min-h-[280px] lg:w-full lg:flex-1 lg:rounded-[32px] xl:min-h-[380px]"
 				>
+					<img src={lapangF2Image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
 					<span className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md lg:bottom-auto lg:left-3 lg:top-3 lg:translate-x-0 lg:translate-y-0">
 						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white">
 							<img src={eventIcon} alt="" aria-hidden="true" className="h-[13px] w-[14px]" />
