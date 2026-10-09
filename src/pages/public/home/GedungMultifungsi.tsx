@@ -6,8 +6,15 @@ import eventIcon from '../../../assets/icon/iconstack.io - (Event).svg'
 
 const eventCategories = ['wedding', 'gathering', 'otherEvents']
 
+// Kelas badge foto: kelas asli + override di bawah lg
+// <lg: badge di dalam foto (tengah bawah, tanpa translate-y), warna tetap seperti aslinya
+// ≤460px: ukuran font & jarak lebih kecil
+const photoBadgeBase =
+	'absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md max-lg:bottom-2 max-lg:translate-y-0 sm:max-lg:bottom-3 max-[460px]:gap-1.5 max-[460px]:pr-3 max-[460px]:text-[11px]'
+
 export default function GedungMultifungsi() {
 	const { t } = useTranslation()
+
 	return (
 		// < lg: satu alur (grid 2 kolom hanya untuk baris foto). >= lg: dua kolom berdampingan.
 		<section
@@ -21,17 +28,17 @@ export default function GedungMultifungsi() {
 					className="group relative order-4 mt-5 h-[140px] min-w-0 overflow-hidden rounded-[24px] sm:h-[200px] md:h-[260px] lg:order-none lg:mt-0 lg:h-auto lg:min-h-[320px] lg:w-full lg:flex-1 lg:rounded-[32px] xl:min-h-[440px]"
 				>
 					<img src={lapangF1Image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-					{/* Label: < lg di tengah bawah foto, >= lg di kanan atas */}
-					<span className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md lg:bottom-auto lg:left-auto lg:right-3 lg:top-3 lg:translate-x-0 lg:translate-y-0">
-						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white">
-							<img src={eventIcon} alt="" aria-hidden="true" className="h-[13px] w-[14px]" />
+					{/* Label: < lg di dalam foto (tengah bawah), >= lg di kanan atas */}
+					<span className={`${photoBadgeBase} lg:bottom-auto lg:left-auto lg:right-3 lg:top-3 lg:translate-x-0 lg:translate-y-0`}>
+						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white max-[460px]:h-5 max-[460px]:w-5">
+							<img src={eventIcon} alt="" aria-hidden="true" className="h-[13px] w-[14px] max-[460px]:h-[11px] max-[460px]:w-[12px]" />
 						</span>
 						Lapang F1
 					</span>
 				</div>
 
-				{/* Pill kategori: boleh wrap di layar kecil, tidak pakai tinggi tetap */}
-				<div className="order-6 col-span-2 mb-4 mt-9 flex w-full max-w-full flex-wrap items-center justify-center gap-2 py-2 sm:justify-between sm:gap-3 lg:order-none lg:my-4 lg:py-1">
+				
+				<div className="order-6 col-span-2 mb-4 mt-9 flex w-full max-w-full flex-wrap items-center justify-center gap-2 py-2 max-lg:mt-4 sm:justify-between sm:gap-3 sm:max-lg:justify-center sm:max-lg:gap-2 lg:order-none lg:my-4 lg:py-1">
 					{eventCategories.map((cat) => (
 						<span
 							key={cat}
@@ -79,9 +86,9 @@ export default function GedungMultifungsi() {
 					className="group relative order-5 mt-5 h-[140px] min-w-0 overflow-hidden rounded-[24px] sm:h-[200px] md:h-[260px] lg:order-none lg:mt-5 lg:h-auto lg:min-h-[280px] lg:w-full lg:flex-1 lg:rounded-[32px] xl:min-h-[380px]"
 				>
 					<img src={lapangF2Image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-					<span className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md lg:bottom-auto lg:left-3 lg:top-3 lg:translate-x-0 lg:translate-y-0">
-						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white">
-							<img src={eventIcon} alt="" aria-hidden="true" className="h-[13px] w-[14px]" />
+					<span className={`${photoBadgeBase} lg:bottom-auto lg:left-3 lg:top-3 lg:translate-x-0 lg:translate-y-0`}>
+						<span className="grid h-6 w-6 place-items-center rounded-full bg-[#0a730a] text-white max-[460px]:h-5 max-[460px]:w-5">
+							<img src={eventIcon} alt="" aria-hidden="true" className="h-[13px] w-[14px] max-[460px]:h-[11px] max-[460px]:w-[12px]" />
 						</span>
 						Lapang F2
 					</span>

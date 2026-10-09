@@ -41,16 +41,25 @@ function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]
 					/>
 				</div>
 
-				{/* lipatan badge kiri atas */}
+				{/* Lipatan badge kiri atas (versi asli): disembunyikan di ≤460px,
+				    di sana lipatan dipindah ke dalam badge supaya ikut tinggi badge multi-baris */}
 				<span
 					aria-hidden="true"
-					className="absolute left-[-8px] top-[22px] h-[17px] w-[8px] rounded-bl-[8px] bg-[#7FA52B]"
+					className="absolute left-[-8px] top-[22px] h-[17px] w-[8px] rounded-bl-[8px] bg-[#7FA52B] max-[460px]:hidden"
 				/>
 
-				{/* Label pill: mobile 10px & boleh 2 baris (max 80% lebar gambar).
-				    Mulai sm lebarnya dibatasi calc(100%-28px) agar tidak menabrak ikon bulat di kanan atas. */}
-				<span className="absolute left-[-8px] top-3 max-w-[80%] rounded-full rounded-bl-none bg-[#CDF178] px-[10px] py-[3px] font-['Montserrat'] text-[10px] font-semibold leading-[13px] tracking-[0.3px] text-[#000000] sm:max-w-[calc(100%-28px)] md:text-[11px] md:leading-[14px] md:tracking-[0.5px]">
+				{/* Label pill: kelas asli + override khusus ≤460px:
+				    - sudut 10px (bukan full) supaya rapi saat teks 2-3 baris
+				    - padding & line-height lebih rapat, teks rata kiri
+				    - lebar maks dibatasi agar tidak menabrak ikon bulat di kanan atas
+				    Catatan: pakai "!" agar menimpa rounded-full & rounded-bl-none bawaan */}
+				<span className="absolute left-[-8px] top-3 max-w-[80%] rounded-full rounded-bl-none bg-[#CDF178] px-[10px] py-[3px] font-['Montserrat'] text-[10px] font-semibold leading-[13px] tracking-[0.3px] text-[#000000] max-[460px]:max-w-[calc(100%-28px)] max-[460px]:!rounded-[10px] max-[460px]:!rounded-bl-none max-[460px]:px-2 max-[460px]:py-[3px] max-[460px]:text-left max-[460px]:leading-[12px] max-[460px]:tracking-[0.2px] sm:max-w-[calc(100%-28px)] md:text-[11px] md:leading-[14px] md:tracking-[0.5px]">
 					{badge}
+					{/* Lipatan baru: menempel di bawah kiri badge, hanya tampil ≤460px */}
+					<span
+						aria-hidden="true"
+						className="absolute left-0 top-full hidden h-2 w-2 rounded-bl-[8px] bg-[#7FA52B] max-[460px]:block"
+					/>
 				</span>
 
 				{/* Ikon bulat kanan atas: mobile 24px */}

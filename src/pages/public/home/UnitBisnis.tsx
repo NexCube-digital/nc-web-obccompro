@@ -38,10 +38,15 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 	const { t } = useTranslation()
 	const [isHeartHovered, setIsHeartHovered] = useState(false)
 	const stretchedClass = 'absolute inset-0 z-0 rounded-[14px] md:rounded-[20px]'
+
+	// Tombol booking: kelas asli + override khusus layar ≤460px (lebar penuh, tinggi 32px)
+	// Catatan: pakai "!" agar menimpa tinggi/padding bawaan .btn-booking-now jika ada
 	const bookingClass =
-	'btn-booking-now inline-flex h-[20px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2 font-heading text-[10px] font-semibold hover:!border-[#004000] hover:!bg-[#004000] hover:!text-white md:h-7 md:px-3 md:text-[11px] lg:px-3.5'
+		'btn-booking-now inline-flex h-[20px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2 font-heading text-[10px] font-semibold hover:!border-[#004000] hover:!bg-[#004000] hover:!text-white max-[460px]:!h-8 max-[460px]:w-full max-[460px]:!px-3 max-[460px]:text-[11px] md:h-7 md:px-3 md:text-[11px] lg:px-3.5'
+
+	// Tombol detail: kelas asli + override khusus layar ≤460px (lebar penuh, border tipis agar jelas sebagai tombol)
 	const detailClass =
-	'relative inline-flex h-[20px] shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 font-heading text-[10px] font-semibold text-[#111111] hover:border-[#B9D96A] hover:bg-[#E3F3B5] md:h-7 md:px-3 md:text-[11px]'
+		'relative inline-flex h-[20px] shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 font-heading text-[10px] font-semibold text-[#111111] hover:border-[#B9D96A] hover:bg-[#E3F3B5] max-[460px]:!h-8 max-[460px]:w-full max-[460px]:justify-center max-[460px]:border-[#d9d9d9] max-[460px]:!px-3 max-[460px]:text-[11px] md:h-7 md:px-3 md:text-[11px]'
 
 	return (
 		<article
@@ -93,10 +98,10 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 				/>
 			</div>
 
-			{/* Info & tombol: mobile rata tengah, desktop rata kiri */}
+			{/* Info & tombol: ≤460px tombol bertumpuk, di atasnya sejajar seperti semula */}
 			<div className="relative z-10 mt-2 w-full text-center md:mt-3 md:text-left">
-				<h3 className="font-heading text-[15px] font-bold text-[#111111] md:text-[16px]">{unit.name}</h3>
-				<div className="mt-1.5 flex w-full items-center justify-center gap-1.5 md:mt-2.5 md:justify-between md:gap-2">
+				<h3 className="font-heading text-[15px] font-bold text-[#111111] max-[460px]:text-[14px] max-[460px]:leading-tight md:text-[16px]">{unit.name}</h3>
+				<div className="mt-1.5 flex w-full items-center justify-center gap-1.5 max-[460px]:mt-2 max-[460px]:flex-col max-[460px]:items-stretch md:mt-2.5 md:justify-between md:gap-2">
 					{unit.isExternal ? (
 						<a className={bookingClass} href={unit.link} target="_blank" rel="noreferrer">
 							{t('businessUnitsSection.bookingNow')}

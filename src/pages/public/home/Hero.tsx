@@ -80,17 +80,18 @@ export default function Hero() {
 
 	return (
 		<section
-			className="relative flex h-[100svh] min-h-[540px] items-end overflow-hidden pb-[140px] text-white md:h-[82vh] md:min-h-[700px] md:pb-[120px] xl:min-h-[640px] xl:pb-[70px]"
+			className="relative flex h-screen supports-[height:100svh]:h-svh min-h-[540px] items-end overflow-hidden pb-[140px] text-white md:h-auto md:min-h-screen md:pb-[120px] xl:pb-[70px]"
 				aria-label={t('nav.home')}
 		>
 			{/* Crossfade background images */}
 			{translatedHeroSlides.map((slide, index) => (
-				<div
+				<img
 					key={index}
-					className={`absolute inset-0 bg-cover bg-[8%_77%] bg-no-repeat transition-opacity duration-1000 ease-in-out md:bg-[center_72%] ${
+					src={slide.image}
+					alt=""
+					className={`absolute inset-0 h-full w-full object-cover object-[center_68%] transition-opacity duration-1000 ease-in-out ${
 						index === heroIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
 					}`}
-					style={{ backgroundImage: `url(${slide.image})` }}
 					aria-hidden={index !== heroIndex}
 				/>
 			))}
@@ -98,6 +99,14 @@ export default function Hero() {
 			{/* Overlay gradient */}
 			<div
 				className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/45"
+				aria-hidden="true"
+			/>
+			<div
+				className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/80 via-black/35 to-transparent sm:h-32 md:h-36"
+				aria-hidden="true"
+			/>
+			<div
+				className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/35 to-transparent sm:h-32 md:h-36"
 				aria-hidden="true"
 			/>
 

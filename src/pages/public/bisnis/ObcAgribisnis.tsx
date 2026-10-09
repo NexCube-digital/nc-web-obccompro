@@ -5,7 +5,7 @@ import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import heroImage from '../../../assets/unit-bisnis/guest-house/12d1c85d7f0fe13573efb94223e873dfd22cbee5.png'
+import heroImage from '../../../assets/unit-bisnis/slider/agribisnis.webp'
 import agricultureIcon from '../../../assets/icon/iconstack.io - (Agriculture Analytics).svg'
 import galleryImage1 from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
 import galleryImage2 from '../../../assets/unit-bisnis/guest-house/6a3b9e7c6468ad26c8dd7db04e41a8af085cf07c.png'
@@ -94,7 +94,7 @@ function AgribisnisPage() {
 				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div
-					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%] min-[1280px]:h-[724px] min-[1280px]:max-h-full"
+					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%]"
 					style={{
 						background:
 							'linear-gradient(270deg, #FAFAF2 0%, rgba(250, 250, 242, 0.9) 40.87%, rgba(250, 250, 242, 0.592749) 65.38%, rgba(250, 250, 242, 0) 90.87%)',
@@ -103,13 +103,13 @@ function AgribisnisPage() {
 
 				{/* Teks hero: hanya desktop, container max-w 1246px, rata kanan */}
 				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
-					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
+					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10 lg:pr-1">
 						<div className="w-full max-w-[400px] text-black lg:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black">
 								<span className="h-1.5 w-1.5 rounded-full bg-[#000000]" />
 								{t('units.agribisnis.category')}
 							</span>
-							<h1 className="mt-5 font-['Montserrat'] text-[44px] font-bold leading-[56px] tracking-[1.5px] text-black lg:text-[56px] lg:leading-[70px]">
+							<h1 className="mt-5 whitespace-pre-line font-['Montserrat'] text-[44px] font-bold leading-[56px] tracking-[1.5px] text-black lg:text-[56px] lg:leading-[70px]">
 								{t('units.agribisnis.title')}
 							</h1>
 							<p className="mt-4 max-w-[400px] text-justify font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-[0.18px] text-black lg:text-[18px] lg:leading-[29.25px]">

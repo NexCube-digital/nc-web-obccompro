@@ -10,7 +10,7 @@ import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import heroImage from '../../../assets/unit-bisnis/guest-house/12d1c85d7f0fe13573efb94223e873dfd22cbee5.png'
+import heroImage from '../../../assets/unit-bisnis/slider/guesthouse.webp'
 import roomIcon from '../../../assets/icon/kamar.svg'
 import parkingIcon from '../../../assets/icon/parkir.svg'
 import foodCourtIcon from '../../../assets/icon/sendokgarpu.svg'
@@ -134,14 +134,14 @@ function GuestHousePage() {
 				<img
 					src={heroImage}
 					alt="Fasad OBC Guest House"
-					className="absolute inset-0 h-full w-full object-cover object-top md:object-center"
+					className="absolute inset-0 h-full w-full object-cover object-[center_65%] md:object-[center_-750px]"
 				/>
 
 				{/* Overlay gelap tipis: hanya md+ */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 
 				<div
-					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%] min-[1280px]:h-[724px] min-[1280px]:max-h-full"
+					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%]"
 					style={{
 						opacity: 1,
 						background:

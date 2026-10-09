@@ -230,7 +230,8 @@ function BusinessUnitPage() {
 				<div className="-mx-4 flex flex-col gap-5 md:mx-0 md:gap-16">
 					{BUSINESS_UNITS.map((unit, index) => {
 						const isReversed = index % 2 === 1
-						const translationKey = unit.slug === 'guest-house' ? 'guestHouse' : unit.slug
+						const translationKey =
+							unit.slug === 'guest-house' ? 'guestHouse' : unit.slug === 'food-court' ? 'foodCourt' : unit.slug
 
 						return (
 							// Mobile: tetap 1 baris (gambar & teks berdampingan, selang-seling); desktop sama seperti semula
