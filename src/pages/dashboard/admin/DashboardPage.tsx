@@ -37,7 +37,7 @@ const cardCls =
   "rounded-2xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)]";
 
 /* ───────────── Data contoh (ganti dengan data API) ───────────── */
-const LIME = "#CDF178";
+// const LIME = "#CDF178";
 const FOREST = "#1F3320";
 
 const trend = [
