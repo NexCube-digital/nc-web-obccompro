@@ -43,20 +43,43 @@ const promoSlides = [
 export default function PromoBanner() {
 	const { t } = useTranslation()
 	const [promoIndex, setPromoIndex] = useState(0)
+	const [previousPromoIndex, setPreviousPromoIndex] = useState<number | null>(null)
+	const [preloadPromoIndex, setPreloadPromoIndex] = useState<number | null>(null)
 	const [isPromoHovered, setIsPromoHovered] = useState(false)
 	const [promoTouchStartX, setPromoTouchStartX] = useState<number | null>(null)
+	const nextPromoIndex = (promoIndex + 1) % promoSlides.length
 
-	const goPrev = () => setPromoIndex((prev) => (prev === 0 ? promoSlides.length - 1 : prev - 1))
-	const goNext = () => setPromoIndex((prev) => (prev + 1) % promoSlides.length)
+	const selectPromo = (index: number) => {
+		if (index === promoIndex) return
+		setPreviousPromoIndex(promoIndex)
+		setPromoIndex(index)
+		setPreloadPromoIndex(null)
+	}
+	const goPrev = () => selectPromo((promoIndex - 1 + promoSlides.length) % promoSlides.length)
+	const goNext = () => selectPromo(nextPromoIndex)
 
-	// Auto-scroll untuk promo banner (pause saat hover atau touch)
+	// Preload slide berikutnya menjelang perpindahan; pause saat hover atau touch.
 	useEffect(() => {
 		if (isPromoHovered || promoSlides.length <= 1) return
-		const timer = setInterval(() => {
-			setPromoIndex((prev) => (prev + 1) % promoSlides.length)
+		const nextIndex = (promoIndex + 1) % promoSlides.length
+		const preloadTimer = window.setTimeout(() => setPreloadPromoIndex(nextIndex), 3800)
+		const advanceTimer = window.setTimeout(() => {
+			setPreviousPromoIndex(promoIndex)
+			setPromoIndex(nextIndex)
+			setPreloadPromoIndex(null)
 		}, 4500)
-		return () => clearInterval(timer)
+
+		return () => {
+			window.clearTimeout(preloadTimer)
+			window.clearTimeout(advanceTimer)
+		}
 	}, [isPromoHovered, promoIndex])
+
+	useEffect(() => {
+		if (previousPromoIndex === null) return
+		const timer = window.setTimeout(() => setPreviousPromoIndex(null), 700)
+		return () => window.clearTimeout(timer)
+	}, [promoIndex, previousPromoIndex])
 
 	return (
 		// PC (md+): padding sama seperti file awal (px-6, py-8)
@@ -71,11 +94,15 @@ export default function PromoBanner() {
 				{/* Banner: mobile 2:1, PC rasio awal 1200/450 */}
 				<div
 					className="group relative aspect-[2/1] w-full overflow-hidden rounded-[20px] bg-[#0c2937] shadow-[0_8px_24px_rgba(0,64,0,0.12)] md:aspect-[1200/450] md:rounded-[22px]"
-					onMouseEnter={() => setIsPromoHovered(true)}
+					onMouseEnter={() => {
+						setIsPromoHovered(true)
+						setPreloadPromoIndex(null)
+					}}
 					onMouseLeave={() => setIsPromoHovered(false)}
 					onTouchStart={(e) => {
 						setPromoTouchStartX(e.touches[0].clientX)
 						setIsPromoHovered(true)
+						setPreloadPromoIndex(null)
 					}}
 					onTouchEnd={(e) => {
 						if (promoTouchStartX !== null) {
@@ -94,16 +121,21 @@ export default function PromoBanner() {
 						className="flex h-full w-full transition-transform duration-700 ease-in-out"
 						style={{ transform: `translateX(-${promoIndex * 100}%)` }}
 					>
-						{promoSlides.map((slide, index) => (
+						{promoSlides.map((slide, index) => {
+							const shouldRenderImage =
+								index === promoIndex || index === previousPromoIndex || index === preloadPromoIndex
+							return (
 							<div key={slide.id || index} className="relative h-full w-full shrink-0 overflow-hidden">
-								{slide.isGraphic ? (
-									<img className="h-full w-full object-cover" src={slide.image} alt={slide.alt} />
+								{shouldRenderImage && (slide.isGraphic ? (
+									<img className="h-full w-full object-cover" src={slide.image} alt={slide.alt} loading="eager" decoding="async" />
 								) : (
 									<div className="relative flex h-full w-full select-none flex-col items-center justify-center overflow-hidden">
 										<img
 											className="absolute inset-0 h-full w-full object-cover"
 											src={slide.image}
 											alt={slide.alt}
+											loading="eager"
+											decoding="async"
 										/>
 										<div className="absolute inset-0 bg-gradient-to-b from-[#0c2937]/90 via-[#0c2937]/75 to-[#0c2937]/92" />
 										{/* px-14/px-20 hanya mobile supaya tidak ketutup panah, PC tetap px-4 */}
@@ -111,7 +143,7 @@ export default function PromoBanner() {
 											<img
 												src={obcLogoImage}
 												alt="OBC Logo"
-												className="mb-1 h-6 w-auto drop-shadow-[0_2px_6px_rgba(255,255,255,0.4)] sm:mb-2 sm:h-9 md:h-12"
+													className="mb-1 h-6 w-auto drop-shadow-[0_2px_6px_rgba(255,255,255,0.4)] sm:mb-2 sm:h-9 md:h-12"
 											/>
 											<span className="font-['Montserrat'] text-xl font-extrabold uppercase leading-none tracking-[2px] text-transparent [-webkit-text-stroke:1px_white] sm:text-3xl sm:tracking-[4px] sm:[-webkit-text-stroke:2px_white] md:text-5xl md:[-webkit-text-stroke:3px_white] lg:text-[54px]">
 												PROMO
@@ -126,9 +158,10 @@ export default function PromoBanner() {
 											)}
 										</div>
 									</div>
-								)}
+								))}
 							</div>
-						))}
+							)
+						})}
 					</div>
 
 					{/* Tombol navigasi: ukuran & warna sama seperti awal */}
@@ -160,7 +193,7 @@ export default function PromoBanner() {
 							key={slide.id || index}
 							type="button"
 							aria-label={`Tampilkan promo ${index + 1}`}
-							onClick={() => setPromoIndex(index)}
+							onClick={() => selectPromo(index)}
 						/>
 					))}
 				</div>

@@ -19,7 +19,7 @@ const Skeleton = ({ minHeight }: { minHeight: number }) => (
 function LazySection({
 	children,
 	minHeight = 280,
-	rootMargin = '300px 0px',
+	rootMargin = '200px 0px',
 	id,
 }: LazySectionProps) {
 	const ref = useRef<HTMLDivElement>(null)

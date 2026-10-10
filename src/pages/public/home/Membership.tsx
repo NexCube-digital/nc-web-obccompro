@@ -14,15 +14,14 @@ export default function Membership() {
 	return (
 		<section className="relative overflow-hidden bg-white py-10">
 			{/* tekstur lapangan samar dari asset untuk memberi nuansa olahraga */}
-			<div
-				className="pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-multiply"
-				style={{
-					backgroundImage: `url(${member})`,
-					backgroundSize: 'cover',
-					backgroundPosition: 'center',
-					filter: 'brightness(1.15)',
-				}}
+			<img
+				className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] mix-blend-multiply"
+				src={member}
+				alt=""
 				aria-hidden="true"
+				loading="lazy"
+				decoding="async"
+				style={{ filter: 'brightness(1.15)' }}
 			/>
 			<div
 				className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_60%_20%,rgba(0,157,0,0.08)_0%,transparent_60%)]"

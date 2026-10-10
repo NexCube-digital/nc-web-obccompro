@@ -38,6 +38,8 @@ function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]
 						className="h-full w-full scale-[1.025] object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100"
 						src={image}
 						alt={badge}
+						loading="lazy"
+						decoding="async"
 					/>
 				</div>
 
@@ -172,10 +174,9 @@ export default function SportCenter() {
 		{ badge: 'sportCenterSection.pickleballClass', items: ['pickleballDuration', 'pickleballSchedule'] },
 	]
 	return (
-		<section className="bg-white px-0 py-[55px] pb-10 md:py-10 md:pb-14" id="fasilitas">
+		<section className="flex flex-col justify-center bg-white px-0 py-10 md:py-14" id="fasilitas">
 			<div className="mx-auto w-[calc(100%-40px)] max-w-[1280px] md:w-[calc(100%-48px)]">
-				{/* Header: mobile teks di atas, tombol di bawah rata kanan.
-				    Di md ukuran font & tinggi dibuat fleksibel supaya paragraf tidak menimpa konten di bawahnya; ukuran penuh mulai lg. */}
+				
 				<div className="mb-6 flex flex-col items-start justify-between gap-4 px-0 sm:px-[15px] md:flex-row md:items-center md:gap-6">
 					<div className="min-w-0">
 						<h2 className="h-auto w-full max-w-[1180px] font-['Montserrat'] text-[24px] font-extrabold leading-[30px] tracking-[-0.6px] text-[#000000] sm:text-[28px] sm:leading-[36px] md:min-h-[40px] md:text-[32px] md:leading-[40px] md:tracking-[-0.9px] lg:text-[36px]">
@@ -200,8 +201,7 @@ export default function SportCenter() {
 					</a>
 				</div>
 
-				{/* Baris 1: <640px 2 kolom (kartu pertama full width);
-				    sm–lg 3 kolom sama rata (tidak ada kartu yang sendirian); lg ke atas proporsi seperti semula */}
+				
 				<div className="grid grid-cols-2 gap-[22px] sm:grid-cols-3 sm:gap-4 lg:grid-cols-[422fr_420fr_337fr] [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
 					{sportRow1.map((card, i) => (
 						<SportCard
@@ -209,7 +209,7 @@ export default function SportCenter() {
 							{...card}
 							badge={t(row1TranslationKeys[i].badge)}
 							items={row1TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
-							imgHeight="h-[120px] sm:h-[181px]"
+							imgHeight="h-[120px] sm:h-[clamp(120px,22.6svh,181px)]"
 						/>
 					))}
 				</div>
@@ -222,7 +222,7 @@ export default function SportCenter() {
 							{...card}
 							badge={t(row2TranslationKeys[i].badge)}
 							items={row2TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
-							imgHeight="h-[120px] sm:h-[162px]"
+							imgHeight="h-[120px] sm:h-[clamp(120px,20.25svh,162px)]"
 						/>
 					))}
 				</div>

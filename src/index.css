@@ -174,3 +174,32 @@ button, a { -webkit-tap-highlight-color: transparent; }
   border: 1px solid #e5e5e5;
   transition: all 0.3s ease;
 }
+
+@media (min-width: 768px) {
+  .about-story-content {
+    transform: translateY(-16px);
+  }
+}
+
+@media (width: 1280px) and (height: 800px) {
+  .about-story-content {
+    transform: none;
+  }
+}
+
+.home-section-gap {
+  margin-bottom: 24px;
+}
+
+@media (width: 1280px) and (height: 800px) {
+  .home-section-gap {
+    margin-bottom: 0;
+  }
+}
+
+@media (width: 1280px) and (height: 800px) {
+  .home-unit-business {
+    padding-top: 88px;
+    padding-bottom: 24px;
+  }
+}

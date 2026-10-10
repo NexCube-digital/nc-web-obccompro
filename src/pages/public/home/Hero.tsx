@@ -46,6 +46,7 @@ const heroSlideKeys = ['obc', 'sportCenter', 'eventSpace', 'guestHouse'] as cons
 export default function Hero() {
 	const { t } = useTranslation()
 	const [heroIndex, setHeroIndex] = useState(0)
+	const [previousHeroIndex, setPreviousHeroIndex] = useState<number | null>(null)
 	const translatedHeroSlides = heroSlides.map((slide, index) => {
 		const key = `hero.slides.${heroSlideKeys[index]}`
 		return {
@@ -57,16 +58,30 @@ export default function Hero() {
 		}
 	})
 	const activeHeroSlide = translatedHeroSlides[heroIndex]
+	const nextHeroIndex = (heroIndex + 1) % heroSlides.length
 
 	useEffect(() => {
-		const timer = setInterval(() => {
-			setHeroIndex((prev) => (prev + 1) % heroSlides.length)
+		const advanceTimer = window.setTimeout(() => {
+			setPreviousHeroIndex(heroIndex)
+			setHeroIndex(nextHeroIndex)
 		}, 7000)
-		return () => clearInterval(timer)
-	}, [heroIndex])
 
-	const goPrev = () => setHeroIndex((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))
-	const goNext = () => setHeroIndex((prev) => (prev + 1) % heroSlides.length)
+		return () => window.clearTimeout(advanceTimer)
+	}, [heroIndex, nextHeroIndex])
+
+	useEffect(() => {
+		if (previousHeroIndex === null) return
+		const timer = window.setTimeout(() => setPreviousHeroIndex(null), 1000)
+		return () => window.clearTimeout(timer)
+	}, [heroIndex, previousHeroIndex])
+
+	const selectHero = (index: number) => {
+		if (index === heroIndex) return
+		setPreviousHeroIndex(heroIndex)
+		setHeroIndex(index)
+	}
+	const goPrev = () => selectHero((heroIndex - 1 + heroSlides.length) % heroSlides.length)
+	const goNext = () => selectHero((heroIndex + 1) % heroSlides.length)
 
 	// Scroll halus ke footer (fallback: dasar halaman)
 	const scrollToFooter = () => {
@@ -84,17 +99,25 @@ export default function Hero() {
 				aria-label={t('nav.home')}
 		>
 			{/* Crossfade background images */}
-			{translatedHeroSlides.map((slide, index) => (
-				<img
-					key={index}
-					src={slide.image}
-					alt=""
-					className={`absolute inset-0 h-full w-full object-cover object-[center_68%] transition-opacity duration-1000 ease-in-out ${
-						index === heroIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
-					}`}
-					aria-hidden={index !== heroIndex}
-				/>
-			))}
+			{translatedHeroSlides.map((slide, index) => {
+				const isActive = index === heroIndex
+				const shouldLoad = isActive || index === previousHeroIndex || index === nextHeroIndex
+
+				return (
+					<img
+						key={index}
+						src={shouldLoad ? slide.image : undefined}
+						alt=""
+						loading={shouldLoad ? 'eager' : 'lazy'}
+						decoding="async"
+						fetchPriority={isActive && heroIndex === 0 ? 'high' : 'auto'}
+						className={`absolute inset-0 h-full w-full object-cover object-[center_68%] transition-opacity duration-1000 ease-in-out ${
+							isActive ? 'opacity-100' : 'pointer-events-none opacity-0'
+						}`}
+						aria-hidden={!isActive}
+					/>
+				)
+			})}
 
 			{/* Overlay gradient */}
 			<div
@@ -176,7 +199,7 @@ export default function Hero() {
 									isActive ? 'bg-white/25 backdrop-blur-xs' : 'bg-[#AEAEAE99] hover:bg-white/70'
 								}`}
 								aria-label={t('common.showSlide', { number: index + 1, title: slide.title })}
-								onClick={() => setHeroIndex(index)}
+								onClick={() => selectHero(index)}
 							>
 								{isActive && (
 									<span

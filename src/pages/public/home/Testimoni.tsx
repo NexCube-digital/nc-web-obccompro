@@ -89,7 +89,8 @@ export default function Testimoni() {
 	}, [])
 
 	return (
-		<section className="py-[40px] md:py-[60px]">
+
+		<section className="flex flex-col justify-center overflow-hidden py-6 md:pb-[clamp(8px,calc(100px_+_(100svh_-_800px)_*_0.3),120px)] md:pt-[clamp(44px,calc(72px_+_(100svh_-_800px)_*_0.1),84px)]">
 			<div className="mx-auto flex w-[calc(100%-40px)] max-w-[1280px] flex-col md:block md:w-[calc(100%-48px)]">
 				{/* Header: mobile "contents" supaya anak-anaknya bisa di-order; desktop flex */}
 				<div className="contents md:flex md:flex-wrap md:items-start md:justify-between md:gap-6">
@@ -99,7 +100,7 @@ export default function Testimoni() {
 							{t('testimonialsSection.badge')}
 						</span>
 						{/* Di md judul 36px agar muat sebaris dengan deskripsi; 46px mulai lg */}
-						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 whitespace-pre-line font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[36px] md:font-medium md:leading-[42px] lg:text-[46px] lg:leading-[46px]">
+						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 whitespace-pre-line font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[clamp(26px,4.5svh,36px)] md:font-medium md:leading-[clamp(30px,5.25svh,42px)] lg:text-[clamp(30px,5.75svh,46px)] lg:leading-[clamp(32px,5.75svh,46px)]">
 							{t('testimonialsSection.title')}
 						</h2>
 					</div>
@@ -112,7 +113,7 @@ export default function Testimoni() {
 						{/* Panah: mobile pindah ke bawah carousel, rata kanan, lebih kecil */}
 						<div className="order-5 mt-3 flex gap-2.5 self-end md:order-none md:mt-0 md:self-auto">
 							<button
-								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[50px] md:w-[50px]"
+								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[clamp(40px,6svh,50px)] md:w-[clamp(40px,6svh,50px)]"
 								type="button"
 								aria-label={t('testimonialsSection.prevAria')}
 								onClick={() => goToTestimonial(-1)}
@@ -120,7 +121,7 @@ export default function Testimoni() {
 								<ChevronLeft className="h-4 w-4 translate-x-[-1px] md:h-5 md:w-5" />
 							</button>
 							<button
-								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[50px] md:w-[50px]"
+								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[clamp(40px,6svh,50px)] md:w-[clamp(40px,6svh,50px)]"
 								type="button"
 								aria-label={t('testimonialsSection.nextAria')}
 								onClick={() => goToTestimonial(1)}
@@ -131,9 +132,10 @@ export default function Testimoni() {
 					</div>
 				</div>
 
-				{/* Carousel: mobile melebar sampai tepi layar (-mx-5) supaya kartu kiri/kanan terlihat sebagian */}
-				<div className="relative order-3 -mx-5 mt-6 h-[460px] overflow-hidden md:order-none md:mx-0 md:mt-8 md:h-[470px]">
-					{testimonials.map((t, i) => {
+				{/* Carousel: mobile melebar sampai tepi layar (-mx-5) supaya kartu kiri/kanan terlihat sebagian.
+				    Tinggi mengikuti tinggi layar (svh) di desktop agar seluruh section muat dalam satu layar. */}
+				<div className="relative order-3 -mx-5 mt-6 h-[clamp(430px,58svh,460px)] overflow-hidden md:order-none md:mx-0 md:mt-[clamp(16px,3svh,32px)] md:h-[clamp(320px,calc(400px_+_(100svh_-_800px)_*_1.1),470px)]">
+					{testimonials.map((item, i) => {
 						const offset = (i - activeTestimonial + testimonials.length) % testimonials.length
 						const normalizedOffset = offset > testimonials.length / 2 ? offset - testimonials.length : offset
 						const isVisible = normalizedOffset >= -2 && normalizedOffset <= 2
@@ -146,11 +148,8 @@ export default function Testimoni() {
 
 						return (
 							<article
-								key={t.name + i}
-								// --step controls the partial outer cards on desktop.
-								className={`absolute left-1/2 top-3 w-[300px] -translate-x-1/2 rounded-[25px] border border-[#ececec] bg-[#ffffff] p-[22px] text-left shadow-[0_5px_80px_0_#EEEEE7] transition-[transform,opacity,filter] duration-700 ease-in-out [--step:320px] md:w-[344px] md:[--step:360px] ${
-									isActive ? 'h-[420px] md:h-[451px]' : 'h-[375px]'
-								}`}
+								key={item.name + i}
+								className="absolute left-1/2 top-3 flex h-[calc(100%-12px)] w-[300px] -translate-x-1/2 flex-col rounded-[25px] border border-[#ececec] bg-[#ffffff] p-[22px] text-left shadow-[0_5px_80px_0_#EEEEE7] transition-[transform,opacity,filter] duration-700 ease-in-out [--step:320px] md:w-[344px] md:[--step:360px]"
 								style={{
 									transform: `translateX(calc(${normalizedOffset} * var(--step))) scale(${scale})`,
 									opacity,
@@ -161,14 +160,14 @@ export default function Testimoni() {
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-3">
 										<span className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-[#CDF178] font-['Montserrat'] text-[27px] font-semibold leading-[35px] tracking-[0px] text-[#004000]">
-											{t.avatar}
+											{item.avatar}
 										</span>
 										<div>
 											<strong className="block font-['Montserrat'] text-[20px] font-bold leading-[20px] tracking-[0px] text-[#1F3320]">
-												{t.name}
+												{item.name}
 											</strong>
 											<small className="mt-1 block font-['Montserrat'] text-[14px] font-normal italic leading-[16px] tracking-[0px] text-[#555555]">
-												{t.unit}
+												{item.unit}
 											</small>
 										</div>
 									</div>
@@ -177,14 +176,14 @@ export default function Testimoni() {
 									</span>
 								</div>
 
-								<Quote className="mt-3 rotate-180 text-[#d1d5db]" width={36} height={26} preserveAspectRatio="none" fill="currentColor" strokeWidth={0} />
-								{/* Teks: mobile lebar penuh kartu, desktop 292px */}
-								<p className="mt-3 h-[190px] w-full font-['Montserrat'] text-[16px] font-normal leading-[27px] tracking-[0px] text-[#000000] md:h-[210px] md:w-[292px] md:text-[18px] md:leading-[30px]">
-									{t.text}
+								<Quote className="mt-3 shrink-0 rotate-180 text-[#d1d5db]" width={36} height={26} preserveAspectRatio="none" fill="currentColor" strokeWidth={0} />
+								{/* Teks: mengisi sisa tinggi kartu (flex-1) sehingga logo/bintang selalu menempel di bawah */}
+								<p className="mt-3 min-h-0 w-full flex-1 overflow-hidden font-['Montserrat'] text-[16px] font-normal leading-[27px] tracking-[0px] text-[#000000] md:text-[clamp(14px,2.25svh,18px)] md:leading-[clamp(24px,3.75svh,30px)]">
+									{item.text}
 								</p>
 
-								<div className="mt-6 flex items-center justify-between">
-									<img src={t.logo} alt={t.unit} className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain" />
+								<div className="mt-4 flex shrink-0 items-center justify-between">
+									<img src={item.logo} alt={item.unit} loading="lazy" decoding="async" className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain" />
 									<div className="flex items-center gap-1.5">
 										<div className="flex gap-0.5 text-[#f5a623]">
 											{Array.from({ length: 5 }).map((_, s) => (
@@ -200,7 +199,7 @@ export default function Testimoni() {
 				</div>
 
 				{/* Indikator titik slide testimoni */}
-				<div className="order-4 mt-5 flex items-center justify-center gap-2 md:order-none">
+				<div className="order-4 mt-5 flex items-center justify-center gap-2 md:order-none md:mt-[clamp(12px,2svh,20px)]">
 					{testimonials.map((_, i) => (
 						<button
 							key={i}
@@ -215,10 +214,10 @@ export default function Testimoni() {
 				</div>
 
 				{/* Tombol ulasan: membuka modal */}
-				<div className="order-6 mt-8 flex justify-center md:order-none">
+				<div className="order-6 mt-8 flex justify-center md:order-none md:mt-[clamp(16px,3svh,32px)]">
 					<button
 						type="button"
-						className="flex h-[44px] w-full cursor-pointer items-center justify-center gap-[10px] rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] md:h-[69.33px] md:w-[438px] md:px-4 md:py-[8px] md:text-[17px]"
+						className="flex h-[44px] w-full cursor-pointer items-center justify-center gap-[10px] rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] md:h-[clamp(52px,8svh,69px)] md:w-[438px] md:px-4 md:py-[8px] md:text-[17px]"
 						onClick={() => setIsReviewModalOpen(true)}
 					>
 						<span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#004000] text-[#CDF178] md:h-9 md:w-9">

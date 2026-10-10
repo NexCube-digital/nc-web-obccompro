@@ -2,7 +2,8 @@ import { Suspense, lazy } from 'react'
 
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
-import LazySection from '../../components/common/LazySection'
+import LazySection from '../../components/common/LazySectionHome'
+import ScrollReveal from '../../components/animation/ScrollReveal'
 
 const Hero = lazy(() => import('./home/Hero'))
 const PromoBanner = lazy(() => import('./home/PromoBanner'))
@@ -31,47 +32,47 @@ function HomePage() {
 
 				{/* 2. Promo Banner */}
 				<LazySection minHeight={200}>
-					<PromoBanner />
+					<ScrollReveal><PromoBanner /></ScrollReveal>
 				</LazySection>
 
 				{/* 3. Tentang OBC Group */}
 				<LazySection minHeight={500}>
-					<TentangKami />
+					<ScrollReveal><TentangKami /></ScrollReveal>
 				</LazySection>
 
 				{/* 4. Bisnis Kami (Unit Bisnis) */}
 				<LazySection minHeight={500}>
-					<UnitBisnis />
+					<ScrollReveal><UnitBisnis /></ScrollReveal>
 				</LazySection>
 
 				{/* 5. OBC Sport Center */}
 				<LazySection minHeight={500}>
-					<SportCenter />
+					<ScrollReveal><SportCenter /></ScrollReveal>
 				</LazySection>
 
 				{/* 6. Membership */}
 				<LazySection minHeight={500}>
-					<Membership />
+					<ScrollReveal><Membership /></ScrollReveal>
 				</LazySection>
 
 				{/* 7. Gedung Multifungsi / Event Space */}
 				<LazySection minHeight={500}>
-					<GedungMultifungsi />
+					<ScrollReveal><GedungMultifungsi /></ScrollReveal>
 				</LazySection>
 
 				{/* 8. Galeri */}
 				<LazySection minHeight={500}>
-					<Galeri />
+					<ScrollReveal><Galeri /></ScrollReveal>
 				</LazySection>
 
 				{/* 9. Testimoni */}
 				<LazySection minHeight={400}>
-					<Testimoni />
+					<ScrollReveal><Testimoni /></ScrollReveal>
 				</LazySection>
 
 				{/* 10. Lokasi OBC Group */}
 				<LazySection minHeight={500}>
-					<Lokasi />
+					<ScrollReveal><Lokasi /></ScrollReveal>
 				</LazySection>
 			</main>
 			<LandingFooter />

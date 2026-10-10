@@ -50,7 +50,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 
 	return (
 		<article
-			className={`group relative flex cursor-pointer flex-col items-center rounded-[14px] border border-transparent bg-white p-3 pt-[22px] text-center shadow-[0_4px_10px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b8e28a] hover:bg-[#f0f7e6] hover:shadow-[0_12px_28px_rgba(0,64,0,0.12)] md:rounded-[20px] md:border-[#e5e5e5] md:p-6 md:pt-8 md:shadow-[0_4px_12px_rgba(0,0,0,0.06)] ${className}`}
+			className={`group relative flex cursor-pointer flex-col items-center rounded-[14px] border border-transparent bg-white p-3 pt-[22px] text-center shadow-[0_4px_10px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b8e28a] hover:bg-[#f0f7e6] hover:shadow-[0_12px_28px_rgba(0,64,0,0.12)] md:rounded-[20px] md:border-[#e5e5e5] md:p-5 md:pt-6 md:shadow-[0_4px_12px_rgba(0,0,0,0.06)] ${className}`}
 		>
 			{/* Stretched link ke halaman unit */}
 			{unit.isExternal ? (
@@ -89,12 +89,15 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 				/>
 			</button>
 
-			{/* Logo: mobile 78px, desktop 130px */}
-			<div className="pointer-events-none relative z-10 grid h-[78px] w-[78px] place-items-center md:h-[130px] md:w-[130px]">
+			{/* Logo: mobile 78px, desktop maks 130px (mengecil mengikuti tinggi layar agar section tetap muat 1 layar;
+			    di 1280x800 tetap 130px seperti semula) */}
+			<div className="pointer-events-none relative z-10 grid h-[78px] w-[78px] place-items-center md:h-[clamp(72px,13.5svh,108px)] md:w-[clamp(72px,13.5svh,108px)]">
 				<img
-					className="block max-h-[78px] max-w-[78px] object-contain transition-transform duration-300 group-hover:scale-105 md:max-h-[130px] md:max-w-[130px]"
+					className="block max-h-[78px] max-w-[78px] object-contain transition-transform duration-300 group-hover:scale-105 md:max-h-full md:max-w-full"
 					src={unit.image}
 					alt={`Logo ${unit.name}`}
+					loading="lazy"
+					decoding="async"
 				/>
 			</div>
 
@@ -138,7 +141,7 @@ export default function UnitBisnis() {
 
 	return (
 		<section
-			className="mx-auto w-[calc(100%-44px)] max-w-[1280px] bg-[#fffff7] py-[55px] pb-[50px] md:w-[calc(100%-48px)] md:py-[70px] md:pb-[90px]"
+			className="home-section-gap mx-auto flex w-[calc(100%-44px)] max-w-[1280px] flex-col justify-center bg-[#fffff7] py-10 md:w-[calc(100%-48px)] md:py-14"
 			id="layanan"
 		>
 			{/* Label: mobile title case & lebih tipis, desktop kapital */}
@@ -150,12 +153,12 @@ export default function UnitBisnis() {
 				{t('businessUnitsSection.title')}
 			</h2>
 			<div
-				className="mx-auto mt-4 w-full max-w-full border-t border-[#00000080] md:mt-3 md:w-[812px] md:border-t-2"
+				className="mx-auto mt-4 w-full max-w-full border-t border-[#00000080] md:mt-3 md:w-[812px] md:max-w-full md:border-t-2"
 				aria-hidden="true"
 			/>
 
 			{/* Baris 1: 4 unit. Mobile & md 2 kolom, lg 4 kolom */}
-			<div className="mt-6 grid grid-cols-2 gap-[14px] md:mt-9 md:gap-6 lg:grid-cols-4">
+			<div className="mt-6 grid grid-cols-2 gap-[14px] md:mt-[clamp(16px,3.5svh,28px)] md:gap-5 lg:grid-cols-4">
 				{units.slice(0, 4).map((unit) => (
 					<UnitCard
 						key={unit.name}
@@ -166,14 +169,14 @@ export default function UnitBisnis() {
 				))}
 			</div>
 
-			<div className="mx-auto mt-[14px] grid max-w-[calc(3*280px+2*1.5rem)] grid-cols-2 gap-[14px] md:mt-6 md:max-w-none md:gap-6 lg:max-w-[calc(3*280px+2*1.5rem)] lg:grid-cols-3">
+			<div className="mx-auto mt-[14px] grid w-full max-w-[calc(3*280px+2*1.5rem)] grid-cols-2 gap-[14px] md:mt-5 md:max-w-none md:gap-5 lg:max-w-[calc(3*280px+2*1.5rem)] lg:grid-cols-3">
 				{units.slice(4).map((unit) => (
 					<UnitCard
 						key={unit.name}
 						unit={unit}
 						isFavorite={favorites.includes(unit.name)}
 						onToggleFavorite={toggleFavorite}
-						className="w-full max-w-[280px] justify-self-center last:col-span-2 last:w-[calc(50%-7px)] md:max-w-none md:last:w-[calc(50%-12px)] lg:max-w-[280px] lg:last:col-span-1 lg:last:w-full"
+						className="w-full max-w-[280px] justify-self-center last:col-span-2 last:w-[calc(50%-7px)] md:max-w-none md:last:w-[calc(50%-10px)] lg:max-w-[280px] lg:last:col-span-1 lg:last:w-full"
 					/>
 				))}
 			</div>
