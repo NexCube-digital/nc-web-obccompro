@@ -85,7 +85,7 @@ function AgribisnisPage() {
 
 	return (
 		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
-		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-0">
+		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-[100px] lg:pb-0">
 			<LandingNavbar />
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev */}
@@ -222,11 +222,6 @@ function AgribisnisPage() {
 				</aside>
 			</div>
 
-			{/* Card WhatsApp khusus tablet (md–lg): tampil full width di bawah konten, tidak sticky */}
-			<div className="mx-auto hidden max-w-[1200px] px-8 pb-12 md:block lg:hidden">
-				<WhatsAppCard className="md:!w-full" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
-			</div>
-
 			{/* Galeri */}
 			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
 				<div className="text-center">
@@ -320,9 +315,11 @@ function AgribisnisPage() {
 
 			<LandingFooter />
 
-			{/* Card WhatsApp versi mobile: fixed di bawah layar, selalu di depan; hanya konten yang bergeser saat scroll */}
-			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-6 pt-6 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden">
-				<WhatsAppCard className="!mt-0" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
+			{/* Card WhatsApp fixed di bawah layar pada mobile dan tablet; desktop memakai sidebar sticky */}
+			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
+				<div className="mx-auto w-full max-w-[720px]">
+					<WhatsAppCard variant="bar" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
+				</div>
 			</div>
 		</div>
 	)

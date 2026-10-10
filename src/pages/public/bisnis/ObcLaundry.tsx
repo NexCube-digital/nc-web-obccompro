@@ -238,7 +238,7 @@ function LaundryPage() {
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan) */}
 			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
-				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover object-[center_50%] md:object-center" />
+				<img src={heroImage} alt="OBC Laundry" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
 				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div

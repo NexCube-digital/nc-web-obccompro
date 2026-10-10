@@ -130,11 +130,11 @@ function GuestHousePage() {
 			<LandingNavbar />
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto */}
-			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
+			<section id="guest-house-hero" className="relative h-[360px] overflow-hidden md:h-svh md:min-h-svh">
 				<img
 					src={heroImage}
 					alt="Fasad OBC Guest House"
-					className="absolute inset-0 h-full w-full object-cover object-[center_65%] md:object-[center_-750px]"
+					className="absolute inset-0 h-full w-full object-cover object-top md:object-center"
 				/>
 
 				{/* Overlay gelap tipis: hanya md+ */}

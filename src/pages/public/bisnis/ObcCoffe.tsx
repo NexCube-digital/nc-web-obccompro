@@ -105,7 +105,7 @@ function CoffeePage() {
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan) */}
 			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
-				<img src={heroImage} alt="OBC Coffee" className="absolute inset-0 h-full w-full object-cover object-[center_45%] md:object-center lg:inset-y-0 lg:right-0 lg:w-[calc(100%-24px)] lg:object-[center_55%]" />
+				<img src={heroImage} alt="OBC Coffee" className="absolute inset-0 h-full w-full object-cover object-top md:object-center lg:inset-y-0 lg:right-0 lg:w-[calc(100%-24px)]" />
 				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div

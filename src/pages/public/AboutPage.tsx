@@ -63,7 +63,7 @@ function AboutPage() {
 			</section>
 
 			{/* ===== CERITA KAMI ===== */}
-			<section className="flex w-full items-center px-[50px] py-[62px] pb-[50px] md:min-h-[100svh] md:px-[60px] md:pb-10 md:pt-[clamp(80px,14svh,112px)]">
+			<section id="about-story" className="flex w-full items-center px-[50px] py-[62px] pb-[50px] md:min-h-[100svh] md:px-[60px] md:pb-10 md:pt-[clamp(80px,14svh,112px)]">
 				<div className="mx-auto grid w-full max-w-[1280px] items-start gap-[30px] md:grid-cols-2 md:gap-[104px]">
 					<div>
 						<p className="font-heading text-[18px] font-semibold normal-case leading-[20px] tracking-normal text-black md:text-[clamp(16px,2.25svh,18px)] md:uppercase md:tracking-[1.4px]">
@@ -93,7 +93,7 @@ function AboutPage() {
 			</section>
 
 			{/* ===== VISI & MISI (tidak diubah) ===== */}
-			<section className="flex w-full items-center px-[50px] pb-10 md:min-h-[100svh] md:px-[50px] md:pb-10 md:pt-28">
+			<section id="about-vision-mission" className="flex w-full items-center px-[50px] pb-10 md:min-h-[100svh] md:px-[50px] md:pb-10 md:pt-28">
 				<div className="mx-auto w-full max-w-[1280px]">
 					<h2 className="text-center font-heading text-[26px] font-semibold leading-[1.25] text-[#000000] md:text-[34px]">
 						{t('aboutPage.visionMissionTitle')}

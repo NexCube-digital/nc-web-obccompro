@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { X, Star, CheckCircle2, ChevronDown } from 'lucide-react'
 
@@ -224,16 +225,16 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 
 	const activeRating = hoverRating || form.rating
 
-	return (
+	return createPortal(
 		<div
-			className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+			className="fixed inset-0 z-1001 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="modal-testimoni-title"
 			onClick={onClose}
 		>
 			<div
-				className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-[25px] border border-[#ececec] bg-white p-6 shadow-[0_5px_80px_0_rgba(0,0,0,0.25)] sm:max-h-[calc(100vh-40px)] sm:max-w-[720px] sm:overflow-hidden sm:rounded-[25px] sm:p-6"
+				className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[25px] border border-[#ececec] bg-white p-5 shadow-[0_5px_80px_0_rgba(0,0,0,0.25)] max-[400px]:p-4 sm:max-h-[calc(100dvh-40px)] sm:max-w-[720px] sm:rounded-[25px] sm:p-6"
 				onClick={(event) => event.stopPropagation()}
 			>
 				{/* Tombol tutup */}
@@ -280,10 +281,10 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							{t('modalTestimoni.subtitle')}
 						</p>
 
-						<div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+						<div className="mt-4 grid grid-cols-1 gap-3 max-[400px]:mt-3 max-[400px]:gap-2 sm:grid-cols-2">
 							{/* Nama */}
 							<div className="sm:col-span-2">
-								<label htmlFor="testimoni-name" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
+								<label htmlFor="testimoni-name" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] max-[400px]:mb-1">
 									{t('modalTestimoni.nameLabel')}
 								</label>
 								<input
@@ -299,9 +300,9 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 							</div>
 
 							{/* Unit + peran */}
-							<div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2">
+							<div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 max-[400px]:gap-2 sm:col-span-2 sm:grid-cols-2">
 								<div>
-									<label htmlFor="testimoni-unit" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
+									<label htmlFor="testimoni-unit" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] max-[400px]:mb-1">
 										{t('modalTestimoni.unitLabel')}
 									</label>
 									<DropdownField
@@ -315,7 +316,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 								</div>
 
 								<div>
-									<label htmlFor="testimoni-role" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
+									<label htmlFor="testimoni-role" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] max-[400px]:mb-1">
 										{t('modalTestimoni.roleLabel')}
 									</label>
 									<DropdownField
@@ -331,7 +332,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 
 							{/* Rating */}
 							<div>
-								<span className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
+								<span className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] max-[400px]:mb-1">
 										{t('modalTestimoni.ratingLabel')}
 								</span>
 								<div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
@@ -364,7 +365,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 
 							{/* Isi ulasan */}
 							<div>
-								<label htmlFor="testimoni-text" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320]">
+								<label htmlFor="testimoni-text" className="mb-1.5 block font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] max-[400px]:mb-1">
 									{t('modalTestimoni.reviewLabel')}
 								</label>
 								<textarea
@@ -373,7 +374,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 									value={form.text}
 									maxLength={MAX_TEXT}
 									placeholder={t('modalTestimoni.reviewPlaceholder')}
-									className={`${inputBase} resize-none leading-[22px] ${errors.text ? 'border-red-500' : 'border-[#e5e5e5]'}`}
+									className={`${inputBase} resize-none leading-[22px] max-[400px]:h-[92px] ${errors.text ? 'border-red-500' : 'border-[#e5e5e5]'}`}
 									onChange={(e) => setField('text', e.target.value)}
 								/>
 								<div className="mt-1 flex items-start justify-between gap-2">
@@ -388,13 +389,14 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="mt-4 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-4 font-['Montserrat'] text-[16px] font-semibold text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
+							className="mt-4 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-4 font-['Montserrat'] text-[16px] font-semibold text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] disabled:cursor-not-allowed disabled:opacity-60 max-[400px]:mt-3 sm:col-span-2"
 						>
 							{isSubmitting ? t('modalTestimoni.submittingBtn') : t('modalTestimoni.submitBtn')}
 						</button>
 					</form>
 				)}
 			</div>
-		</div>
+		</div>,
+		document.body,
 	)
 }
