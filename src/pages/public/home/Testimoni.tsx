@@ -217,13 +217,13 @@ export default function Testimoni() {
 				<div className="order-6 mt-8 flex justify-center md:order-none md:mt-[clamp(16px,3svh,32px)]">
 					<button
 						type="button"
-						className="flex h-[44px] w-full cursor-pointer items-center justify-center gap-[10px] rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] md:h-[clamp(52px,8svh,69px)] md:w-[438px] md:px-4 md:py-[8px] md:text-[17px]"
+						className="flex h-[44px] w-fit max-w-full cursor-pointer items-center justify-center gap-[10px] rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[16px] font-semibold leading-[17px] tracking-[0px] text-[#000000] shadow-[0px_3px_5.8px_0px_#0000004D] transition-colors hover:bg-[#c0e85a] md:h-[clamp(52px,8svh,69px)] md:w-fit md:px-4 md:py-[8px] md:text-[17px]"
 						onClick={() => setIsReviewModalOpen(true)}
 					>
 						<span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#004000] text-[#CDF178] md:h-9 md:w-9">
 							<img src={reviewIcon} alt="" aria-hidden="true" className="h-[18px] w-[17px]" />
 						</span>
-						<span className="block h-[17px] w-auto whitespace-nowrap text-center text-[12px] leading-[17px] md:w-[332px] md:text-[17px]">
+						<span className="block h-[17px] w-auto whitespace-nowrap text-center text-[12px] leading-[17px] md:text-[17px]">
 							{t('testimonialsSection.writeReview')}
 						</span>
 					</button>

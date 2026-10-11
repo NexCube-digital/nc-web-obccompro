@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, Play } from 'lucide-react'
+import ModalVideo from '../../../components/ui/modal/ModalVideo'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
 import billiardImage from '../../../assets/layanan/Meja Billiard.png'
@@ -19,12 +20,13 @@ export type SportCardProps = {
 	badge: string // label kiri atas
 	icon: React.ReactNode // ikon kecil kanan atas
 	items: string[] // list bullet di bawah gambar
-	hasVideo?: boolean // tombol play di tengah gambar
+	videoUrl?: string // tautan YouTube untuk video kartu
+	onVideoClick?: () => void
 	imgHeight?: string // tinggi gambar, beda antar baris
 	price?: string // teks harga yang muncul saat hover (opsional)
 }
 
-function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]', price }: SportCardProps) {
+function SportCard({ image, badge, icon, items, videoUrl, onVideoClick, imgHeight = 'h-[230px]', price }: SportCardProps) {
 	const { t } = useTranslation()
 	return (
 		// Hover: kartu membesar tipis (scale 1.025) + bayangan melembut, smooth 500ms.
@@ -70,10 +72,15 @@ function SportCard({ image, badge, icon, items, hasVideo, imgHeight = 'h-[230px]
 				</span>
 
 				{/* Tombol play untuk kartu video (tanpa efek zoom saat hover) */}
-				{hasVideo && (
-					<span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm">
+				{videoUrl && (
+					<button
+						type="button"
+						aria-label={`Putar video ${badge}`}
+						onClick={onVideoClick}
+						className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+					>
 						<Play size={18} fill="white" />
-					</span>
+					</button>
 				)}
 
 				{/* Pill harga: hanya muncul saat hover, naik pelan sambil fade-in.
@@ -123,7 +130,7 @@ const sportRow1: SportCardProps[] = [
 		icon: <img src={footballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Untuk flat 2jam Permainan'],
 		price: 'Mulai dari Rp250.000/jam',
-		hasVideo: true,
+		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
 	},
 ]
 
@@ -134,7 +141,7 @@ const sportRow2: SportCardProps[] = [
 		icon: <img src={tennisRacketIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['2 meja tenis', 'Bisa 2 booking paralel'],
 		price: 'Mulai dari Rp50.000/jam',
-		hasVideo: true,
+		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
 	},
 	{
 		image: billiardImage,
@@ -156,12 +163,13 @@ const sportRow2: SportCardProps[] = [
 		icon: <img src={bowlingBallIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Training Program ±3 bulan', 'Setiap Sabtu & Minggu'],
 		price: 'Mulai dari Rp150.000/jam',
-		hasVideo: true,
+		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
 	},
 ]
 
 export default function SportCenter() {
 	const { t } = useTranslation()
+	const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null)
 	const row1TranslationKeys = [
 		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'voli', 'pickleball'] },
 		{ badge: 'sportCenterSection.courtF1_1', items: ['futsal2', 'basket'] },
@@ -208,6 +216,7 @@ export default function SportCenter() {
 							key={`r1-${i}`}
 							{...card}
 							badge={t(row1TranslationKeys[i].badge)}
+							onVideoClick={() => card.videoUrl && setActiveVideo({ url: card.videoUrl, title: t(row1TranslationKeys[i].badge) })}
 							items={row1TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
 							imgHeight="h-[120px] sm:h-[clamp(120px,22.6svh,181px)]"
 						/>
@@ -221,12 +230,19 @@ export default function SportCenter() {
 							key={`r2-${i}`}
 							{...card}
 							badge={t(row2TranslationKeys[i].badge)}
+							onVideoClick={() => card.videoUrl && setActiveVideo({ url: card.videoUrl, title: t(row2TranslationKeys[i].badge) })}
 							items={row2TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
 							imgHeight="h-[120px] sm:h-[clamp(120px,20.25svh,162px)]"
 						/>
 					))}
 				</div>
 			</div>
+			<ModalVideo
+				isOpen={activeVideo !== null}
+				videoUrl={activeVideo?.url ?? ''}
+				title={activeVideo?.title ?? t('sportCenterSection.title')}
+				onClose={() => setActiveVideo(null)}
+			/>
 		</section>
 	)
 }

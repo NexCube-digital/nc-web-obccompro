@@ -28,10 +28,7 @@ export default function Membership() {
 				aria-hidden="true"
 			/>
 
-			{/* Layout:
-			    - Mobile (<md): 1 kolom, lebar dibatasi 520px agar tidak melebar aneh di layar 480-767px
-			    - md sampai <xl: 2 kolom (teks | kartu), blok brand & tombol di baris bawah selebar penuh dan di tengah
-			    - xl ke atas: 3 kolom (teks | kartu | brand & tombol) */}
+
 			<div className="relative mx-auto grid w-[calc(100%-60px)] max-w-[520px] grid-cols-1 items-center gap-8 md:w-[calc(100%-32px)] md:max-w-[1246px] md:grid-cols-2 md:gap-x-8 md:gap-y-6 md:px-6 xl:grid-cols-[1fr_auto_1fr] xl:gap-8">
 				{/* Kolom kiri: headline & benefit */}
 				<div className="flex min-w-0 flex-col items-start text-left">
@@ -120,13 +117,13 @@ export default function Membership() {
 
 
 					<a
-						className="group mt-3 inline-flex h-[56px] w-[302px] max-w-full shrink-0 items-center justify-between gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-1 md:h-[52px] md:w-full md:max-w-[340px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:max-w-[350px] xl:text-[16px]"
+						className="group mt-3 inline-flex h-[56px] w-fit max-w-full shrink-0 items-center justify-between gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-1 md:h-[52px] md:w-full md:max-w-[340px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:max-w-[350px] xl:text-[16px]"
 						href="https://sport.obcgroup.id/"
 						target="_blank"
 						rel="noreferrer"
 					>
 						{/* Mobile: tanpa perubahan tracking/weight saat hover agar tidak turun baris */}
-						<span className="min-w-0 flex-1 text-justify leading-[20px] tracking-[0.02em] text-[#1F3320] transition-colors duration-300 group-hover:!text-[#CDF178] md:hidden">
+						<span className="min-w-0 text-left leading-[20px] tracking-[0.02em] text-[#1F3320] transition-colors duration-300 group-hover:!text-[#CDF178] md:hidden">
 							{t('membershipSection.ctaMobile')}
 						</span>
 						{/* Desktop/tablet: satu baris, tidak boleh turun */}

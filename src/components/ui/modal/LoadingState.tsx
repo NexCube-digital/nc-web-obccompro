@@ -22,9 +22,9 @@ const frames = [
   { src: frame6, cx: 250, rgb: [207, 7, 7] }, // Frame6 - merah
 ]
 
-const STEP_DURATION = 1000 // animation-duration Figma per frame (linear)
-const DISPLAY_DURATION = 6000 // 6 frame x 1000ms
-const FADE_DURATION = 350
+const STEP_DURATION = 450 // 6 frames x 450ms = 2700ms
+const DISPLAY_DURATION = 2700
+const FADE_DURATION = 300 // total loading time: 3000ms
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
