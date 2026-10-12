@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowUpRight, Play } from 'lucide-react'
+import { ArrowUpRight, Play, X } from 'lucide-react'
 import ModalVideo from '../../../components/ui/modal/ModalVideo'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
@@ -21,17 +22,29 @@ export type SportCardProps = {
 	icon: React.ReactNode // ikon kecil kanan atas
 	items: string[] // list bullet di bawah gambar
 	videoUrl?: string // tautan YouTube untuk video kartu
-	onVideoClick?: () => void
+	onCardClick?: () => void
 	imgHeight?: string // tinggi gambar, beda antar baris
 	price?: string // teks harga yang muncul saat hover (opsional)
 }
 
-function SportCard({ image, badge, icon, items, videoUrl, onVideoClick, imgHeight = 'h-[230px]', price }: SportCardProps) {
+function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight = 'h-[230px]', price }: SportCardProps) {
 	const { t } = useTranslation()
 	return (
 		// Hover: kartu membesar tipis (scale 1.025) + bayangan melembut, smooth 500ms.
 		// Gambar diberi scale kebalikan (1.025 -> 1) sehingga ukurannya TIDAK terlihat membesar (tanpa efek zoom).
-		<article className="group relative flex min-w-0 flex-col rounded-2xl border border-[#eeeeee] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transform-gpu transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.025] hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+		<article
+			role="button"
+			tabIndex={0}
+			aria-label={`Buka ${badge}`}
+			onClick={onCardClick}
+			onKeyDown={(event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault()
+					onCardClick?.()
+				}
+			}}
+			className="group relative flex min-w-0 cursor-pointer flex-col rounded-2xl border border-[#eeeeee] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transform-gpu transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.025] hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#004000]"
+		>
 			{/* gambar + overlay badge & icon */}
 			<div className={`relative w-full ${imgHeight}`}>
 				{/* Pembungkus overflow-hidden hanya untuk gambar, supaya lipatan badge tidak terpotong */}
@@ -71,16 +84,11 @@ function SportCard({ image, badge, icon, items, videoUrl, onVideoClick, imgHeigh
 					{icon}
 				</span>
 
-				{/* Tombol play untuk kartu video (tanpa efek zoom saat hover) */}
+				{/* Penanda play untuk kartu video */}
 				{videoUrl && (
-					<button
-						type="button"
-						aria-label={`Putar video ${badge}`}
-						onClick={onVideoClick}
-						className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-					>
+					<span aria-hidden="true" className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-transform group-hover:scale-110">
 						<Play size={18} fill="white" />
-					</button>
+					</span>
 				)}
 
 				{/* Pill harga: hanya muncul saat hover, naik pelan sambil fade-in.
@@ -130,7 +138,7 @@ const sportRow1: SportCardProps[] = [
 		icon: <img src={footballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Untuk flat 2jam Permainan'],
 		price: 'Mulai dari Rp250.000/jam',
-		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
+		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
 	},
 ]
 
@@ -141,7 +149,7 @@ const sportRow2: SportCardProps[] = [
 		icon: <img src={tennisRacketIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['2 meja tenis', 'Bisa 2 booking paralel'],
 		price: 'Mulai dari Rp50.000/jam',
-		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
+		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
 	},
 	{
 		image: billiardImage,
@@ -163,13 +171,15 @@ const sportRow2: SportCardProps[] = [
 		icon: <img src={bowlingBallIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Training Program ±3 bulan', 'Setiap Sabtu & Minggu'],
 		price: 'Mulai dari Rp150.000/jam',
-		videoUrl: 'https://youtu.be/aBpYk9vuneE?si=ixHFjWAk-QqKEf84',
+		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
 	},
 ]
 
 export default function SportCenter() {
 	const { t } = useTranslation()
 	const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null)
+	const [activeImage, setActiveImage] = useState<{ src: string; title: string } | null>(null)
+	const imageCloseButtonRef = useRef<HTMLButtonElement>(null)
 	const row1TranslationKeys = [
 		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'voli', 'pickleball'] },
 		{ badge: 'sportCenterSection.courtF1_1', items: ['futsal2', 'basket'] },
@@ -181,6 +191,36 @@ export default function SportCenter() {
 		{ badge: 'sportCenterSection.academy', items: ['academyAge', 'freeTrial2x'] },
 		{ badge: 'sportCenterSection.pickleballClass', items: ['pickleballDuration', 'pickleballSchedule'] },
 	]
+
+	useEffect(() => {
+		if (!activeImage) return
+
+		const previousOverflow = document.body.style.overflow
+		const previouslyFocused = document.activeElement as HTMLElement | null
+		const handleEscape = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') setActiveImage(null)
+		}
+
+		document.body.style.overflow = 'hidden'
+		document.addEventListener('keydown', handleEscape)
+		imageCloseButtonRef.current?.focus()
+
+		return () => {
+			document.body.style.overflow = previousOverflow
+			document.removeEventListener('keydown', handleEscape)
+			previouslyFocused?.focus?.()
+		}
+	}, [activeImage])
+
+	const openCardMedia = (card: SportCardProps, title: string) => {
+		if (card.videoUrl) {
+			setActiveVideo({ url: card.videoUrl, title })
+			return
+		}
+
+		setActiveImage({ src: card.image, title })
+	}
+
 	return (
 		<section className="flex flex-col justify-center bg-white px-0 py-10 md:py-14" id="fasilitas">
 			<div className="mx-auto w-[calc(100%-40px)] max-w-[1280px] md:w-[calc(100%-48px)]">
@@ -216,7 +256,7 @@ export default function SportCenter() {
 							key={`r1-${i}`}
 							{...card}
 							badge={t(row1TranslationKeys[i].badge)}
-							onVideoClick={() => card.videoUrl && setActiveVideo({ url: card.videoUrl, title: t(row1TranslationKeys[i].badge) })}
+							onCardClick={() => openCardMedia(card, t(row1TranslationKeys[i].badge))}
 							items={row1TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
 							imgHeight="h-[120px] sm:h-[clamp(120px,22.6svh,181px)]"
 						/>
@@ -230,7 +270,7 @@ export default function SportCenter() {
 							key={`r2-${i}`}
 							{...card}
 							badge={t(row2TranslationKeys[i].badge)}
-							onVideoClick={() => card.videoUrl && setActiveVideo({ url: card.videoUrl, title: t(row2TranslationKeys[i].badge) })}
+							onCardClick={() => openCardMedia(card, t(row2TranslationKeys[i].badge))}
 							items={row2TranslationKeys[i].items.map((item) => t(`sportCenterSection.items.${item}`))}
 							imgHeight="h-[120px] sm:h-[clamp(120px,20.25svh,162px)]"
 						/>
@@ -243,6 +283,37 @@ export default function SportCenter() {
 				title={activeVideo?.title ?? t('sportCenterSection.title')}
 				onClose={() => setActiveVideo(null)}
 			/>
+			{activeImage &&
+				createPortal(
+					<div
+						className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm sm:p-8"
+						onClick={() => setActiveImage(null)}
+					>
+						<div
+							role="dialog"
+							aria-modal="true"
+							aria-label={activeImage.title}
+							className="relative grid max-h-[94svh] max-w-[96vw] place-items-center"
+							onClick={(event) => event.stopPropagation()}
+						>
+							<button
+								ref={imageCloseButtonRef}
+								type="button"
+								aria-label="Tutup gambar"
+								onClick={() => setActiveImage(null)}
+								className="absolute -right-2 -top-2 z-10 grid h-10 w-10 place-items-center rounded-full bg-white text-black shadow-lg transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:-right-4 sm:-top-4"
+							>
+								<X size={22} />
+							</button>
+							<img
+								className="max-h-[92svh] max-w-[96vw] rounded-xl object-contain shadow-2xl"
+								src={activeImage.src}
+								alt={activeImage.title}
+							/>
+						</div>
+					</div>,
+					document.body,
+				)}
 		</section>
 	)
 }

@@ -12,7 +12,7 @@ const membershipBenefits = [
 export default function Membership() {
 	const { t } = useTranslation()
 	return (
-		<section className="relative overflow-hidden bg-white py-10">
+		<section id="membership" className="relative overflow-hidden bg-white py-10">
 			{/* tekstur lapangan samar dari asset untuk memberi nuansa olahraga */}
 			<img
 				className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] mix-blend-multiply"
@@ -117,7 +117,7 @@ export default function Membership() {
 
 
 					<a
-						className="group mt-3 inline-flex h-[56px] w-fit max-w-full shrink-0 items-center justify-between gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-1 md:h-[52px] md:w-full md:max-w-[340px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:max-w-[350px] xl:text-[16px]"
+						className="group mt-3 inline-flex h-[56px] w-fit max-w-full shrink-0 items-center justify-start gap-3 self-start rounded-full border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1.5 pl-[15px] pr-[6px] font-['Montserrat'] text-[13px] font-semibold text-[#1F3320] transition-colors duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-1 md:h-[52px] md:gap-3 md:self-auto md:py-2 md:pl-5 md:pr-2 md:text-[15px] xl:h-[58px] xl:text-[16px]"
 						href="https://sport.obcgroup.id/"
 						target="_blank"
 						rel="noreferrer"

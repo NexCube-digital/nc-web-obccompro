@@ -65,7 +65,7 @@ function GalleryPage() {
 			<LandingNavbar />
 
 			{/* Hero slider image */}
-			<section className="relative h-[100svh] min-h-[560px] max-h-none overflow-hidden md:max-h-[820px]">
+			<section className="relative min-h-[100svh] overflow-hidden">
 				<img
 					src={sliderGalleryImage}
 					alt="Kolase fasilitas dan aktivitas OBC"
@@ -78,7 +78,7 @@ function GalleryPage() {
 				{/* Overlay DESKTOP: gradient horizontal, lebar mengikuti breakpoint dev (md dipersempit agar gambar lebih terlihat) */}
 				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[60%] lg:w-[62%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
-				<div className="relative z-10 flex h-full w-full items-end pb-[68px] pt-12 md:items-center md:pb-12 md:pt-24">
+				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[68px] pt-12 md:items-center md:pb-12 md:pt-24">
 					<div className="mx-auto w-full max-w-[1246px] px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[400px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
