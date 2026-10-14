@@ -31,7 +31,7 @@ function App() {
           <WhatsAppIcon />
         </>
       )}
-      <Toaster position="top-right" richColors duration={5000} closeButton />
+      <Toaster position="top-right" richColors duration={3000} closeButton />
     </>
   )
 }

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
+import LazySection from '../../components/common/LazySectionHome'
+import ScrollReveal from '../../components/animation/ScrollReveal'
 import lapangF2Image from '../../assets/layanan/Lapang F2.png'
 import pickleballImage from '../../assets/layanan/pickleball-mockup.png'
 import tenisMejaImage from '../../assets/layanan/tenis-meja-mockup.png'
@@ -94,6 +96,8 @@ function GalleryPage() {
 			</section>
 
 			{/* Filter kategori: wrap & rata tengah sampai xl, satu baris mulai xl (>=1280px) */}
+			<LazySection minHeight={100} rootMargin="0px">
+			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-5 pt-10 md:px-8">
 				<div className="flex flex-wrap justify-center gap-x-2 gap-y-3 xl:flex-nowrap xl:gap-y-0">
 					{CATEGORIES.map((category) => {
@@ -115,8 +119,12 @@ function GalleryPage() {
 					})}
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{/* Grid galeri: 2 kolom (mobile), 3 kolom (md), 4 kolom (lg+) */}
+			<LazySection minHeight={900} rootMargin="0px">
+			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
 				<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
 					{visiblePhotos.map((photo) => (
@@ -127,11 +135,13 @@ function GalleryPage() {
 							className="group aspect-square overflow-hidden rounded-[24px] md:rounded-xl"
 							aria-label={`Buka gambar ${photo.alt}`}
 						>
-							<img src={photo.src} alt={photo.alt} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
+							<img src={photo.src} alt={photo.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
 						</button>
 					))}
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{selectedGalleryImage && (
 				<div

@@ -51,7 +51,11 @@ Untuk melihat hasil build produksi, jalankan `npm run build`, lalu `npm run prev
 
 ## Environment
 
-Aplikasi saat ini memerlukan variabel environment untuk dijalankan. 
+Salin `.env-example` menjadi `.env` bila ingin mengubah konfigurasi API. Saat
+development, frontend mengakses backend langsung di
+`http://localhost:3000/api/v1`; jalankan backend OBC dan izinkan origin frontend
+di `CORS_ORIGINS`. Untuk deployment, set `VITE_API_BASE_URL` ke URL API yang
+dapat dijangkau browser, termasuk prefix `/api/v1`.
 
 ## Teknologi
 

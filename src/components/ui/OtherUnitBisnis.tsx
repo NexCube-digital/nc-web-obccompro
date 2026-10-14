@@ -43,6 +43,8 @@ export function UnitBisnis({ items, title = 'Jelajahi Unit Bisnis OBC Group Lain
 							<img
 								src={unit.image}
 								alt={unit.title}
+								loading="lazy"
+								decoding="async"
 								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 							/>
 						</div>

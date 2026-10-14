@@ -12,6 +12,9 @@ const ObcFoodcourt = lazy(() => import('../pages/public/bisnis/ObcFoodcourt'))
 const ObcLaundry = lazy(() => import('../pages/public/bisnis/ObcLaundry'))
 const ObcVilla = lazy(() => import('../pages/public/bisnis/ObcVilla'))
 const DashboardPage = lazy(() => import('../pages/dashboard/admin/DashboardPage'))
+const LoginPage = lazy(() => import('../pages/dashboard/auth/Login'))
+const ForgetPasswordPage = lazy(() => import('../pages/dashboard/auth/ForgetPassword'))
+const SettingAccountPage = lazy(() => import('../pages/dashboard/auth/SettingAccount'))
 const FormPage = lazy(() => import('../pages/dashboard/template/Form'))
 const TablePage = lazy(() => import('../pages/dashboard/template/Tabel'))
 
@@ -33,6 +36,9 @@ const AppRoutes = (
 
 		{/* dashboard */}
 		<Route path="/dashboard" element={<DashboardPage />} />
+		<Route path="/login" element={<LoginPage />} />
+		<Route path="/lupa-password" element={<ForgetPasswordPage />} />
+		<Route path="/settingaccount" element={<SettingAccountPage />} />
 		<Route path="/template/form" element={<FormPage />} />
 		<Route path="/template/tabel" element={<TablePage />} />
 	</>

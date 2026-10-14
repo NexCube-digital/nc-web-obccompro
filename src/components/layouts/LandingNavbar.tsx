@@ -260,7 +260,7 @@ function LandingNavbar() {
 						{/* Desktop: Login. Antara md–xl hanya ikon (agar tidak menabrak menu tengah), mulai xl ikon + teks */}
 						<NavLink
 							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
-							to="/kontak"
+							to="/login"
 							aria-label={t('nav.login')}
 							onClick={scrollToTop}
 						>
@@ -275,7 +275,7 @@ function LandingNavbar() {
 						{/* Mobile: ikon login (hanya ikon) */}
 						<NavLink
 							className={`${circleBtnClass} md:hidden`}
-							to="/kontak"
+							to="/login"
 							aria-label={t('nav.login')}
 							onClick={closeMenu}
 						>

@@ -55,7 +55,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: relative;
 }
 
-[data-sonner-toast]::after {
+[data-sonner-toast] [data-content]::after {
   content: "";
   position: absolute;
   right: 0;
@@ -64,19 +64,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 3px;
   background-color: #404f14;
   transform: scaleX(1);
-  transform-origin: left;
-  animation: sonner-toast-progress 5s linear forwards;
+  transform-origin: right;
+  animation: sonner-toast-progress 3s linear forwards;
+  transition: opacity 120ms ease;
 }
 
-[data-rich-colors="true"][data-sonner-toast][data-type="success"]::after,
-[data-rich-colors="true"][data-sonner-toast][data-type="info"]::after,
-[data-rich-colors="true"][data-sonner-toast][data-type="warning"]::after,
-[data-rich-colors="true"][data-sonner-toast][data-type="error"]::after {
+[data-rich-colors="true"][data-sonner-toast][data-type="success"] [data-content]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="info"] [data-content]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="warning"] [data-content]::after,
+[data-rich-colors="true"][data-sonner-toast][data-type="error"] [data-content]::after {
   background-color: currentColor;
 }
 
-[data-sonner-toast]:hover::after {
-  animation-play-state: paused;
+@media (hover: hover) {
+  [data-sonner-toast]:hover [data-content]::after {
+    opacity: 0;
+  }
 }
 
 @keyframes sonner-toast-progress {

@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
+import LazySection from '../../../components/common/LazySectionHome'
+import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
 import heroImage from '../../../assets/unit-bisnis/slider/villa.webp'
@@ -146,6 +148,8 @@ function VillaPage() {
 				</div>
 			</section>
 
+			<LazySection minHeight={900}>
+			<ScrollReveal>
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
 				<div className="min-w-0 lg:w-2/3">
@@ -230,8 +234,12 @@ function VillaPage() {
 					</div>
 				</aside>
 			</div>
+			</ScrollReveal>
+			</LazySection>
 
 			{/* Galeri */}
+			<LazySection minHeight={600}>
+			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-[1.4px] text-black md:uppercase">
@@ -258,12 +266,16 @@ function VillaPage() {
 							<img
 								src={image}
 								alt={`Momen OBC Villa ${index + 1}`}
+								loading="lazy"
+								decoding="async"
 								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 							/>
 						</button>
 					))}
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{selectedGalleryImage && (
 				<div
@@ -292,6 +304,8 @@ function VillaPage() {
 			)}
 
 			{/* Lokasi */}
+			<LazySection minHeight={500}>
+			<ScrollReveal>
 			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
 				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
 					<div className="order-1 md:order-none">
@@ -323,8 +337,14 @@ function VillaPage() {
 					/>
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
+			<LazySection minHeight={600}>
+			<ScrollReveal>
 			<UnitBisnis items={OTHER_UNITS} />
+			</ScrollReveal>
+			</LazySection>
 
 			<LandingFooter />
 

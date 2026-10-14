@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, Play, X } from 'lucide-react'
 import ModalVideo from '../../../components/ui/modal/ModalVideo'
-import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
-import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
+import lapangF2Image from '../../../assets/layanan/Lapang F1.png'
+import lapangF1Image from '../../../assets/layanan/Lapang F2.png'
 import billiardImage from '../../../assets/layanan/Meja Billiard.png'
 import academyTeamImage from '../../../assets/layanan/OBC ACADEMY/sae-375.JPEG'
 import academyRedImage from '../../../assets/layanan/OBC ACADEMY/sae-371.JPEG'
@@ -122,7 +122,7 @@ const sportRow1: SportCardProps[] = [
 		image: lapangF2Image,
 		badge: 'Lapang F2 -  1 Olahraga di 1 waktu',
 		icon: <img src={volleyballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
-		items: ['Futsal 1', 'Badminton', 'Voli', 'Pickleball'],
+		items: ['Futsal 1', 'Badminton', 'Pickleball'],
 		price: 'Mulai dari Rp120.000/jam',
 	},
 	{
@@ -181,7 +181,7 @@ export default function SportCenter() {
 	const [activeImage, setActiveImage] = useState<{ src: string; title: string } | null>(null)
 	const imageCloseButtonRef = useRef<HTMLButtonElement>(null)
 	const row1TranslationKeys = [
-		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'voli', 'pickleball'] },
+		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'pickleball'] },
 		{ badge: 'sportCenterSection.courtF1_1', items: ['futsal2', 'basket'] },
 		{ badge: 'sportCenterSection.footballCourt', items: ['flat2Hours'] },
 	]

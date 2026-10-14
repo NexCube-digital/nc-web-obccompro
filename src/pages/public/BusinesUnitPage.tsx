@@ -7,10 +7,12 @@ import {
 } from 'lucide-react'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
+import LazySection from '../../components/common/LazySectionHome'
+import ScrollReveal from '../../components/animation/ScrollReveal'
 import heroSignpostImage from '../../assets/unit-bisnis/slider/a8068cd70eafb7bacbeca863ef32256ede57a5d0.png'
 import lapangF2Image from '../../assets/layanan/Lapang F2.png'
 import guestHouseLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
-import villaLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
+import villaLogo from '../../assets/logo/villa.png'
 import laundryLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (4).png'
 import foodCourtLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (5).png'
 import coffeeLogo from '../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (6).png'
@@ -168,6 +170,8 @@ function BusinessUnitPage() {
 			</section>
 
 			{/* Unit unggulan */}
+			<LazySection minHeight={850}>
+			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-10 py-14 md:px-8">
 				<div className="mb-6 flex items-center gap-4">
 					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[20px] text-black">{t('businessUnitPage.featuredUnit')}</h2>
@@ -218,8 +222,12 @@ function BusinessUnitPage() {
 					</div>
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{/* 7 unit bisnis lainnya */}
+			<LazySection minHeight={1900}>
+			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-10 pb-[50px] md:px-8 md:pb-16">
 				<div className="mb-6 flex items-center gap-4">
 					<h2 className="font-['Montserrat'] text-[20px] font-semibold leading-[20px] text-black">{t('businessUnitPage.otherUnitsTitle')}</h2>
@@ -340,6 +348,8 @@ function BusinessUnitPage() {
 					})}
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			<LandingFooter />
 		</div>

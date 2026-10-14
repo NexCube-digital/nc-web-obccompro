@@ -1,5 +1,7 @@
 import LandingFooter from '../../components/layouts/LandingFooter'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
+import LazySection from '../../components/common/LazySectionHome'
+import ScrollReveal from '../../components/animation/ScrollReveal'
 import { useTranslation } from 'react-i18next'
 import heroImage from '../../assets/layanan/Lapang F1.png'
 import storyImageOne from '../../assets/layanan/galeri-cones.png'
@@ -63,6 +65,8 @@ function AboutPage() {
 			</section>
 
 			{/* ===== CERITA KAMI ===== */}
+			<LazySection minHeight={700}>
+			<ScrollReveal>
 			<section id="about-story" className="flex w-full items-center px-[50px] py-[62px] pb-[50px] md:min-h-[100svh] md:px-[60px] md:pb-10 md:pt-[clamp(80px,14svh,112px)]">
 				<div className="mx-auto grid w-full max-w-[1280px] items-start gap-[30px] md:grid-cols-2 md:gap-[104px]">
 					<div>
@@ -91,8 +95,12 @@ function AboutPage() {
 					</div>
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{/* ===== VISI & MISI (tidak diubah) ===== */}
+			<LazySection minHeight={500}>
+			<ScrollReveal>
 			<section id="about-vision-mission" className="flex w-full items-center px-[50px] pb-10 md:min-h-[100svh] md:px-[50px] md:pb-10 md:pt-28">
 				<div className="mx-auto w-full max-w-[1280px]">
 					<h2 className="text-center font-heading text-[26px] font-semibold leading-[1.25] text-[#000000] md:text-[34px]">
@@ -133,8 +141,12 @@ function AboutPage() {
 					</div>
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 
 			{/* ===== CTA: BERAGAM BISNIS ===== */}
+			<LazySection minHeight={360}>
+			<ScrollReveal>
 			<section className="mt-10 w-full bg-[linear-gradient(135deg,#FFFFF7_0%,#FFFFFF_100%)] px-6 py-[50px] text-center text-[#000000] md:mt-[40px] md:py-[80px]">
 				<div className="mx-auto max-w-[1280px]">
 					{/* Judul: 24px di mobile, otomatis turun jadi 2 baris */}
@@ -158,6 +170,8 @@ function AboutPage() {
 					</a>
 				</div>
 			</section>
+			</ScrollReveal>
+			</LazySection>
 			</main>
 			<LandingFooter />
 		</div>
