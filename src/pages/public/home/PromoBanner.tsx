@@ -127,14 +127,14 @@ export default function PromoBanner() {
 							return (
 							<div key={slide.id || index} className="relative h-full w-full shrink-0 overflow-hidden">
 								{shouldRenderImage && (slide.isGraphic ? (
-									<img className="h-full w-full object-cover" src={slide.image} alt={slide.alt} loading="eager" decoding="async" />
+									<img className="h-full w-full object-cover" src={slide.image} alt={slide.alt} loading={index === promoIndex || index === preloadPromoIndex ? 'eager' : 'lazy'} decoding="async" />
 								) : (
 									<div className="relative flex h-full w-full select-none flex-col items-center justify-center overflow-hidden">
 										<img
 											className="absolute inset-0 h-full w-full object-cover"
 											src={slide.image}
 											alt={slide.alt}
-											loading="eager"
+											loading={index === promoIndex || index === preloadPromoIndex ? 'eager' : 'lazy'}
 											decoding="async"
 										/>
 										<div className="absolute inset-0 bg-gradient-to-b from-[#0c2937]/90 via-[#0c2937]/75 to-[#0c2937]/92" />

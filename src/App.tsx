@@ -11,26 +11,21 @@ function App() {
 
   return (
     <>
-      {isLoading ? (
-        <LoadingState onComplete={() => setIsLoading(false)} />
-      ) : (
-        <>
-          <ScrollToTop />
-          <Suspense
-            fallback={
-              <div className="grid min-h-screen place-items-center bg-obc-ivory font-body text-sm text-obc-muted" role="status" aria-live="polite">
-                Memuat halaman...
-              </div>
-            }
-          >
-            <Routes>
-              {AppRoutes}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-          <WhatsAppIcon />
-        </>
-      )}
+      <ScrollToTop />
+      <Suspense
+        fallback={
+          <div className="grid min-h-screen place-items-center bg-obc-ivory font-body text-sm text-obc-muted" role="status" aria-live="polite">
+            Memuat halaman...
+          </div>
+        }
+      >
+        <Routes>
+          {AppRoutes}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+      <WhatsAppIcon />
+      {isLoading && <LoadingState onComplete={() => setIsLoading(false)} />}
       <Toaster position="top-right" richColors duration={3000} closeButton />
     </>
   )

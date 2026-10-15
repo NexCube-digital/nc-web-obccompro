@@ -68,6 +68,7 @@
     "contactUs": "Contact Us",
     "backToTop": "Back to top",
     "copyright": "© {{year}} Onny Barber Center Group. All rights reserved.",
+    "mobileCopyright": "© {{year}} OBC Group. All rights reserved.",
     "developedBy": "Developed by",
     "currentLanguage": "English (EN)"
   },

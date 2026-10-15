@@ -1,29 +1,29 @@
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import logo from '../../assets/logo/obclogo.webp'
 import lapangF1Image from '../../assets/layanan/Lapang F1.webp'
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
 
 const NAVIGASI_LINKS = [
-	{ key: 'nav.home', to: '/' },
-	{ key: 'nav.about', to: '/tentang-kami' },
-	{ key: 'nav.businessUnits', to: '/unit-bisnis' },
-	{ key: 'nav.sportCenter', to: '/unit-bisnis/sport-center' },
-	{ key: 'nav.multipurpose', to: '/unit-bisnis/gedung-multifungsi' },
-	{ key: 'nav.gallery', to: '/galeri' },
-	{ key: 'nav.testimonials', to: '/testimoni' },
-	{ key: 'nav.contact', to: '#kontak' },
+	{ label: 'nav.home', to: '/' },
+	{ label: 'nav.about', to: '/tentang-kami' },
+	{ label: 'nav.businessUnits', to: '/unit-bisnis' },
+	{ label: 'nav.sportCenter', to: '/unit-bisnis/sport-center' },
+	{ label: 'nav.multipurpose', to: '/unit-bisnis/gedung-multifungsi' },
+	{ label: 'nav.gallery', to: '/galeri' },
+	{ label: 'nav.testimonials', to: '/testimoni' },
+	{ label: 'nav.contact', to: '#kontak' },
 ]
 
 const UNIT_LINKS = [
-	{ key: 'units.sportCenter.title', to: '/unit-bisnis' },
-	{ key: 'units.guestHouse.title', to: '/unit-bisnis/guest-house' },
-	{ key: 'units.villa.title', to: '/unit-bisnis/villa' },
-	{ key: 'units.laundry.title', to: '/unit-bisnis/laundry' },
-	{ key: 'units.foodCourt.title', to: '/unit-bisnis/food-court' },
-	{ key: 'units.coffee.title', to: '/unit-bisnis/coffee' },
-	{ key: 'units.agribisnis.title', to: '/unit-bisnis/agribisnis' },
+	{ label: 'units.sportCenter.title', to: '/unit-bisnis' },
+	{ label: 'units.guestHouse.title', to: '/unit-bisnis/guest-house' },
+	{ label: 'units.villa.title', to: '/unit-bisnis/villa' },
+	{ label: 'units.laundry.title', to: '/unit-bisnis/laundry' },
+	{ label: 'units.foodCourt.title', to: '/unit-bisnis/food-court' },
+	{ label: 'units.coffee.title', to: '/unit-bisnis/coffee' },
+	{ label: 'units.agribisnis.title', to: '/unit-bisnis/agribisnis' },
 ]
 
 /* Data kontak — ganti dengan data resmi OBC kalau sudah tersedia dari admin/CMS. */
@@ -66,51 +66,75 @@ function WhatsAppSocialIcon({ className = 'h-[16px] w-[16px]' }: { className?: s
 	)
 }
 
+/* Tautan pengembang, dipakai di versi mobile dan desktop */
+function NexcubeLink() {
+	return (
+		<a
+			href="https://nexcube-digital.com/"
+			target="_blank"
+			rel="noreferrer"
+			className="underline transition-colors hover:text-[#CDF178]"
+		>
+			Nexcube Digital
+		</a>
+	)
+}
+
 /* Kelas bersama */
-/* PERUBAHAN: lebar tetap heading (169px) hanya dipakai di lg ke atas; di md (tablet) pakai md:w-auto */
 const headingClass =
-	"font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white md:h-4 md:w-auto lg:w-[169px]"
+	"font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white md:h-4 md:w-[169px]"
 const linkClass =
-	"font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white! transition-colors hover:text-[#CDF178]! md:text-[12px]"
+	"font-['Montserrat'] text-[clamp(11px,1.7svh,13px)] font-medium leading-[clamp(14px,2.2svh,16px)] tracking-[0px] text-white! transition-colors hover:text-[#CDF178]! md:text-[12px] md:leading-4"
+
+/*
+ * Jarak antar daftar tautan di mobile dibuat fleksibel mengikuti tinggi layar (svh),
+ * jadi di HP pendek jaraknya rapat dan di HP tinggi lebih lega. Mulai md kembali ke nilai tetap.
+ */
 const listClass =
-	"mt-[clamp(8px,1.8svh,16px)] flex flex-col gap-[clamp(8px,1.9svh,14px)] font-['Montserrat'] text-[13px] font-medium leading-4 tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px]"
+	"mt-[clamp(4px,calc(1.4svh_-_1px),16px)] flex flex-col gap-[clamp(3px,calc(1.6svh_-_4px),14px)] font-['Montserrat'] text-[clamp(11px,1.7svh,13px)] font-medium leading-[clamp(14px,2.2svh,16px)] tracking-[0px] text-white md:mt-[15px] md:gap-[15px] md:text-[12px] md:leading-4"
 
-/* Tombol sosmed bulat di bagian atas (mobile lebih besar supaya mudah di-tap) */
+/* Kelas tombol sosmed bulat di bagian atas (ukuran mengikuti tinggi layar di mobile) */
 const socialButtonClass =
-	'grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#FFFFF7] text-black shadow-[0px_1px_1px_0px_#00000040] transition-transform hover:scale-110 md:h-8 md:w-8'
+	'relative isolate grid h-[clamp(28px,4.5svh,36px)] w-[clamp(28px,4.5svh,36px)] shrink-0 place-items-center rounded-full bg-transparent text-black transition-transform before:absolute before:inset-0 before:-z-10 before:rounded-full before:bg-[#FFFFF7] before:scale-[0.82] before:shadow-[0px_1px_1px_0px_#00000040] hover:scale-110 md:h-8 md:w-8 md:before:scale-100'
 
-function LandingFooter() {
+/* Kelas dasar tombol kembali ke atas */
+const backTopClass =
+	'place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1'
+
+function Footer() {
 	const { t } = useTranslation()
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	return (
-		/* Mobile (< md): tanpa padding, tinggi persis 1 layar. Tablet (md-lg): 3 kolom. Desktop (>= lg): 4 kolom */
-		<footer id="kontak" className="bg-white p-0 md:px-[34px] md:py-[20px]">
+		<footer
+			id="kontak"
+			className="flex min-h-[100svh] flex-col bg-white p-0 sm:px-[34px] sm:py-[20px] sm:pb-[calc(var(--bottom-nav-height,64px)+20px)] lg:block lg:min-h-0 lg:pb-[20px]"
+		>
 			<div
-				className="relative mx-auto flex max-md:min-h-screen max-md:supports-[height:100svh]:min-h-svh w-full flex-col overflow-x-clip rounded-none bg-cover bg-center bg-no-repeat md:block md:min-h-[550px] md:rounded-[25px]"
+				className="relative mx-auto flex min-h-[100svh] w-full flex-1 flex-col overflow-hidden rounded-none bg-cover bg-center bg-no-repeat sm:rounded-[20px] md:rounded-[25px] lg:block lg:min-h-[550px]"
 				style={{
 					backgroundColor: 'rgba(1, 38, 3, 0.84)',
 					backgroundImage: `linear-gradient(180deg, rgba(1, 38, 3, 0.84) 0%, rgba(1, 38, 3, 0.84) 100%), url(${lapangF1Image})`,
 				}}
 			>
-				{/* ===== Konten utama (di atas) ===== */}
-				<div className="mx-auto w-full max-w-[1246px] shrink px-4 pt-[clamp(16px,4svh,60px)] md:px-10 md:pt-[60px] lg:px-12">
-					{/* PERUBAHAN: md = 3 kolom (md:grid-cols-3), lg = 4 kolom (lg:grid-cols-[1.3fr_0.9fr_1fr_1.1fr]) */}
-					<div className="grid grid-cols-2 gap-x-4 gap-y-[clamp(12px,2.6svh,32px)] md:grid-cols-3 md:gap-x-6 md:gap-y-8 lg:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] lg:gap-8 xl:gap-12">
-						
-						<div className="order-1 col-span-2 flex w-full min-w-0 flex-col items-center gap-[clamp(6px,1.5svh,12px)] md:order-none md:col-span-3 md:flex-row md:items-center md:gap-8 lg:col-span-1 lg:flex-col lg:items-start lg:gap-3">
+				{/* Perubahan mobile: padding bawah diperbesar (pb) agar ada jarak antara daftar tautan dan bagian bawahnya */}
+				<div className="mx-auto flex w-full max-w-[1246px] flex-1 flex-col justify-center px-4 pb-[clamp(10px,2.4svh,28px)] pt-[clamp(10px,2.8svh,26px)] md:px-10 md:pt-[60px] lg:block lg:flex-none lg:px-12 lg:pb-0">
+					{/* Perubahan mobile: gap-y diperbesar agar jarak Hubungi Kami ↔ Perusahaan / Unit Bisnis lebih lega */}
+					<div className="grid grid-cols-2 gap-x-4 gap-y-[clamp(16px,3.2svh,36px)] lg:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] lg:gap-8 xl:gap-12">
+						{/* Logo + sosmed */}
+						<div className="relative order-1 col-span-2 flex w-full flex-col items-center lg:order-none lg:col-span-1 lg:items-start lg:gap-3 [@media(max-width:1023px)_and_(max-height:640px)]:flex-row [@media(max-width:1023px)_and_(max-height:640px)]:justify-between [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
 							<Link
 								to="/"
 								aria-label={t('nav.home')}
-								className="inline-flex w-full max-w-[92vw] items-center justify-center px-0 md:h-[95px] md:w-auto md:max-w-none md:justify-start md:p-0"
+								className="inline-flex items-center justify-center md:h-[95px] md:justify-start"
 							>
 								<img
 									src={logo}
 									alt="OBC"
-									className="h-[clamp(110px,26svh,230px)] w-full object-contain object-center md:h-full md:w-auto md:object-left"
+									className="h-[clamp(56px,12.5svh,140px)] w-auto max-w-full origin-center scale-[1.8] object-contain object-center md:h-full md:w-auto md:origin-left md:scale-[1.25] md:object-left lg:-translate-x-9 [@media(max-width:1023px)_and_(max-height:640px)]:h-[clamp(80px,15svh,110px)] [@media(max-width:1023px)_and_(max-height:640px)]:scale-[1.3]"
 								/>
 							</Link>
-							<div className="flex items-center justify-center gap-5 md:justify-start md:gap-4 lg:pt-1">
+							<div className="mt-[clamp(10px,2svh,20px)] flex items-center justify-center gap-3 md:mt-0 md:justify-start md:gap-4 md:pt-1 [@media(max-width:1023px)_and_(max-height:640px)]:mt-0 [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
 								<a
 									href={CONTACT.whatsapp}
 									target="_blank"
@@ -122,7 +146,7 @@ function LandingFooter() {
 										src={whatsappIcon}
 										alt=""
 										aria-hidden="true"
-										className="h-5 w-5 md:h-4 md:w-4"
+										className="h-4 w-4 md:h-4 md:w-4"
 										style={{ filter: 'brightness(0)' }}
 									/>
 								</a>
@@ -133,7 +157,7 @@ function LandingFooter() {
 									aria-label="Instagram OBC Group"
 									className={socialButtonClass}
 								>
-									<InstagramLogo className="h-5 w-5 md:h-4 md:w-4" />
+									<InstagramLogo className="h-4 w-4 md:h-4 md:w-4" />
 								</a>
 								<a
 									href={CONTACT.tiktok}
@@ -142,25 +166,34 @@ function LandingFooter() {
 									aria-label="TikTok OBC Group"
 									className={socialButtonClass}
 								>
-									<TikTokLogo className="h-[18px] w-[18px] md:h-4 md:w-4" />
+									<TikTokLogo className="h-4 w-4 md:h-4 md:w-4" />
 								</a>
 							</div>
+
+							{/* Tombol kembali ke atas khusus layar pendek */}
+							<button
+								type="button"
+								onClick={scrollToTop}
+								aria-label={t('footer.backToTop')}
+								className={`${backTopClass} hidden h-[clamp(32px,5svh,40px)] w-[clamp(32px,5svh,40px)] [@media(max-width:1023px)_and_(max-height:640px)]:grid`}
+							>
+								<ArrowUp className="h-4 w-4" />
+							</button>
 						</div>
 
 						{/* Perusahaan */}
-						{/* PERUBAHAN: tambah min-w-0 agar kolom boleh menyusut dan teks tidak meluber */}
-						<div className="order-3 min-w-0 px-2 md:order-none md:px-0">
+						<div className="order-3 px-2 lg:order-none lg:px-0">
 							<h3 className={headingClass}>{t('footer.company')}</h3>
 							<ul className={listClass}>
 								{NAVIGASI_LINKS.map((link) => (
-									<li key={link.key}>
+									<li key={link.to}>
 										{link.to.startsWith('#') ? (
 											<a href={link.to} className={linkClass}>
-												{t(link.key)}
+												{t(link.label)}
 											</a>
 										) : (
 											<Link to={link.to} className={linkClass}>
-												{t(link.key)}
+												{t(link.label)}
 											</Link>
 										)}
 									</li>
@@ -169,13 +202,13 @@ function LandingFooter() {
 						</div>
 
 						{/* Unit bisnis */}
-						<div className="order-4 min-w-0 px-2 md:order-none md:px-0">
+						<div className="order-4 px-2 lg:order-none lg:px-0">
 							<h3 className={headingClass}>{t('footer.businessUnits')}</h3>
 							<ul className={listClass}>
 								{UNIT_LINKS.map((unit) => (
-									<li key={unit.key}>
+									<li key={unit.to}>
 										<Link to={unit.to} className={linkClass}>
-											{t(unit.key)}
+											{t(unit.label)}
 										</Link>
 									</li>
 								))}
@@ -183,15 +216,14 @@ function LandingFooter() {
 						</div>
 
 						{/* Hubungi kami */}
-						{/* PERUBAHAN: min-w-0 + teks alamat rata kiri di md (justify hanya di lg ke atas) */}
-						<div className="order-2 col-span-2 min-w-0 px-2 md:order-none md:col-span-1 md:px-0">
+						<div className="order-2 col-span-2 px-2 lg:order-none lg:col-span-1 lg:px-0">
 							<h3 className={`${headingClass} flex items-center gap-2 md:gap-1`}>
-								<Headphones size={14} className="shrink-0" />
+								<Headphones size={14} />
 								{t('footer.contactUs')}
 							</h3>
-							<ul className="mt-[clamp(8px,1.8svh,16px)] flex flex-col gap-[clamp(8px,1.9svh,14px)] font-['Montserrat'] text-[13px] font-medium leading-5 tracking-[0px] text-white md:mt-[15px] md:gap-[14px] md:text-[12px] md:leading-4">
-								<li className="flex items-start gap-3 md:gap-2">
-									<Mail size={15} className="mt-[1px] shrink-0" />
+							<ul className="mt-[clamp(4px,calc(1.4svh_-_1px),16px)] flex flex-col gap-[clamp(3px,calc(1.6svh_-_4px),14px)] font-['Montserrat'] text-[clamp(11px,1.7svh,13px)] font-medium leading-[clamp(14px,2.3svh,20px)] tracking-[0px] text-white md:mt-[15px] md:text-[12px] md:leading-4">
+								<li className="flex items-center gap-3 md:gap-2">
+									<Mail size={15} className="shrink-0" />
 									<a
 										href={`mailto:${CONTACT.email}`}
 										className="min-w-0 break-all transition-colors hover:text-[#CDF178]"
@@ -200,12 +232,12 @@ function LandingFooter() {
 									</a>
 								</li>
 								<li className="flex items-start gap-3 md:gap-2">
-									<MapPin size={15} className="mt-[1px] shrink-0" />
+									<MapPin size={15} className="mt-[3px] shrink-0" />
 									<a
 										href={CONTACT.maps}
 										target="_blank"
 										rel="noreferrer"
-										className="min-w-0 text-left transition-colors hover:text-[#CDF178] md:text-left lg:text-justify"
+										className="text-left transition-colors hover:text-[#CDF178] md:text-justify"
 									>
 										{CONTACT.address}
 									</a>
@@ -215,27 +247,44 @@ function LandingFooter() {
 					</div>
 				</div>
 
-				{/* Tombol back to top */}
-				<div className="mt-3 flex justify-end px-6 md:absolute md:bottom-[105px] md:right-12 md:mt-0 md:px-0">
+				{/* Tombol kembali ke atas versi desktop (posisi asli, tidak diubah) */}
+				<div className="hidden lg:absolute lg:bottom-[105px] lg:right-12 lg:block">
 					<button
 						type="button"
 						onClick={scrollToTop}
 						aria-label={t('footer.backToTop')}
-						className="grid h-11 w-11 place-items-center rounded-full border-[0.5px] border-[#008C00] bg-[#004000] text-[#CDF178] shadow-lg transition-transform hover:-translate-y-1 md:h-[44px] md:w-[36px]"
+						className={`${backTopClass} grid h-[44px] w-[36px]`}
 					>
-						<ArrowUp className="h-5 w-5 md:h-5 md:w-[15px]" />
+						<ArrowUp className="h-5 w-[15px]" />
+					</button>
+				</div>
+
+				{/* Tombol kembali ke atas versi mobile/tablet: tepat di atas teks "OBC GROUP", rata kanan */}
+				<div className="flex shrink-0 justify-end px-4 md:px-10 lg:hidden [@media(max-width:1023px)_and_(max-height:640px)]:hidden">
+					<button
+						type="button"
+						onClick={scrollToTop}
+						aria-label="Kembali ke atas"
+						className={`${backTopClass} grid h-[clamp(32px,5svh,40px)] w-[clamp(32px,5svh,40px)]`}
+					>
+						<ArrowUp className="h-4 w-4" />
 					</button>
 				</div>
 
 				{/* ===== Teks besar "OBC GROUP" (memudar ke bawah) ===== */}
-				{/* PERUBAHAN: font md diturunkan 90px -> 80px supaya tidak terpotong di 768px; lg tetap 105px */}
-				<div className="mx-auto mt-[clamp(8px,1.5svh,14px)] flex h-[64px] w-full max-w-[1246px] shrink-0 justify-center overflow-hidden md:mt-[36px] md:h-[110px]">
+				{/* Disembunyikan di layar sangat pendek (tinggi ≤ 640px) karena hanya dekorasi */}
+				{/*
+				 * Perubahan mobile: efek memudar disamakan dengan versi PC.
+				 * Proporsi PC (font 90px, kotak teks 83px, wadah 110px) dipakai ulang dalam satuan em,
+				 * jadi gradien memudar ke bawah dengan rasio yang sama dan ukurannya ikut mengecil di HP.
+				 * Desktop (lg) tidak berubah.
+				 */}
+				<div className="mx-auto mb-[clamp(6px,1.6svh,18px)] mt-1 flex h-[1.22em] w-full max-w-[1246px] shrink-0 justify-center overflow-hidden text-[clamp(28px,min(9.5vw,6svh),44px)] lg:mb-0 lg:mt-[36px] lg:h-[110px] [@media(max-width:1023px)_and_(max-height:640px)]:hidden">
 					<span
 						aria-hidden="true"
-						className="mt-[4px] w-auto max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] text-[clamp(40px,12vw,56px)] font-black leading-[60px] text-transparent md:mt-[10px] md:h-[83px] md:text-[80px] md:leading-[83px] lg:text-[90px] xl:text-[105px]"
+						className="mt-[0.11em] h-[0.92em] w-auto max-w-full select-none whitespace-nowrap bg-clip-text text-center font-['Montserrat'] font-black leading-[0.92em] text-transparent lg:mt-[10px] lg:h-[83px] lg:text-[90px] lg:leading-[83px] xl:text-[105px]"
 						style={{
-							backgroundImage:
-								'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
+							backgroundImage: 'linear-gradient(180deg, #FFFFFF 0.24%, rgba(31, 51, 32, 0) 90%)',
 						}}
 					>
 						OBC GROUP
@@ -243,25 +292,23 @@ function LandingFooter() {
 				</div>
 
 				{/* ===== Bar bawah ===== */}
-				{/* PERUBAHAN: md:flex-wrap + md:h-auto agar copyright/ikon tidak terpotong di tablet; lg kembali 1 baris */}
-				<div className="shrink-0 md:border-t md:border-white/10">
-					<div className="mx-auto flex w-full max-w-[1246px] flex-col items-center gap-1 px-6 pb-0 pt-1 text-center font-['Montserrat'] text-[12px] font-normal leading-4 tracking-[0px] text-white md:h-auto md:min-h-[70px] md:flex-row md:flex-wrap md:justify-between md:gap-x-4 md:gap-y-2 md:px-10 md:py-5 md:text-left lg:h-[70px] lg:flex-nowrap lg:px-12">
-						<p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
-
-						<p>
-							{t('footer.developedBy')}{' '}
-							<a
-								href="https://nexcube-digital.com/"
-								target="_blank"
-								rel="noreferrer"
-								className="underline transition-colors hover:text-[#CDF178]"
-							>
-								Nexcube Digital
-							</a>
+				<div className="shrink-0 lg:border-t lg:border-white/10">
+					<div className="mx-auto flex w-full max-w-[1246px] flex-col items-center gap-1 px-4 pb-[clamp(6px,1.8svh,20px)] pt-1 text-center font-['Montserrat'] text-[11px] font-normal leading-4 tracking-[0px] text-white md:px-6 md:text-[12px] lg:h-[70px] lg:min-h-[70px] lg:flex-row lg:justify-between lg:gap-4 lg:px-10 lg:py-5 lg:text-left xl:px-12">
+						{/* Mobile/tablet: teks hak cipta diringkas jadi satu baris, tanpa pilihan bahasa */}
+						<p className="lg:hidden">{t('footer.mobileCopyright', { year: new Date().getFullYear() })}</p>
+						<p className="lg:hidden">
+							{t('footer.developedBy')} <NexcubeLink />
 						</p>
 
-						{/* Bahasa + ikon sosial hanya di desktop/tablet; di mobile sudah ada di bagian atas */}
-						<div className="hidden items-center gap-6 md:flex">
+						{/* Desktop: teks asli */}
+						<p className="hidden lg:block">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+
+						<p className="hidden lg:block">
+							{t('footer.developedBy')} <NexcubeLink />
+						</p>
+
+						{/* Bahasa + ikon sosial versi desktop; di mobile ikon sosial sudah ada di bagian atas */}
+						<div className="hidden items-center gap-6 lg:flex">
 							<span className="flex items-center gap-2">
 								<Globe width={15.5} height={15.5} className="text-white" />
 								{t('footer.currentLanguage')}
@@ -285,4 +332,4 @@ function LandingFooter() {
 	)
 }
 
-export default LandingFooter
+export default Footer

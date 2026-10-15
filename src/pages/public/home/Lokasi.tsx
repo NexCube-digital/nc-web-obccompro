@@ -38,10 +38,22 @@ const locations = [
 
 type Location = (typeof locations)[number]
 
+const MAP_MIN_ZOOM = 12
+const MAP_MAX_ZOOM = 19
+
 export default function Lokasi() {
 	const { t } = useTranslation()
 	const [activeCategory, setActiveCategory] = useState<(typeof locationCategories)[number]>('all')
 	const [mapZoom, setMapZoom] = useState(16)
+	// Peta di-fade-in setelah iframe selesai dimuat (juga saat zoom, karena iframe dimuat ulang)
+	const [mapLoaded, setMapLoaded] = useState(false)
+
+	const changeZoom = (delta: number) => {
+		const next = Math.min(Math.max(mapZoom + delta, MAP_MIN_ZOOM), MAP_MAX_ZOOM)
+		if (next === mapZoom) return
+		setMapLoaded(false)
+		setMapZoom(next)
+	}
 
 	const filteredLocations =
 		activeCategory === 'all'
@@ -191,12 +203,19 @@ export default function Lokasi() {
 
 					{/* Area peta: mobile 260px, md+ mengisi sisa tinggi panel */}
 					<div className="relative mt-3 h-[260px] w-full overflow-hidden bg-[#f2f4f8] md:h-auto md:min-h-0 md:flex-1">
+						{/* Placeholder berdenyut selama peta belum selesai dimuat, memudar saat peta siap */}
+						<div
+							aria-hidden="true"
+							className={`pointer-events-none absolute inset-0 animate-pulse bg-[#e6e9f0] transition-opacity duration-700 ease-out ${mapLoaded ? 'opacity-0' : 'opacity-100'}`}
+						/>
+
 						<iframe
-							className="absolute inset-0 h-full w-full border-0"
+							className={`absolute inset-0 h-full w-full border-0 transition-opacity duration-700 ease-out ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}
 							title="Peta Lokasi OBC Group di Rancabentang"
 							src={`https://www.google.com/maps?q=Jl.+Rancabentang+No.+3A,+Bandung&output=embed&z=${mapZoom}`}
 							loading="lazy"
 							referrerPolicy="no-referrer-when-downgrade"
+							onLoad={() => setMapLoaded(true)}
 						/>
 
 						{/* Kontrol zoom */}
@@ -205,7 +224,7 @@ export default function Lokasi() {
 								className="grid h-9 w-9 cursor-pointer place-items-center rounded-lg bg-white text-[#111111] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-colors hover:bg-[#f5f5f5]"
 								type="button"
 								aria-label="Zoom in"
-								onClick={() => setMapZoom((z) => Math.min(z + 1, 19))}
+								onClick={() => changeZoom(1)}
 							>
 								<Plus size={16} />
 							</button>
@@ -213,7 +232,7 @@ export default function Lokasi() {
 								className="grid h-9 w-9 cursor-pointer place-items-center rounded-lg bg-white text-[#111111] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-colors hover:bg-[#f5f5f5]"
 								type="button"
 								aria-label="Zoom out"
-								onClick={() => setMapZoom((z) => Math.max(z - 1, 12))}
+								onClick={() => changeZoom(-1)}
 							>
 								<Minus size={16} />
 							</button>

@@ -50,7 +50,11 @@ function LazySection({
 	}, [visible, rootMargin])
 
 	return (
-		<div ref={ref} id={id}>
+		<div
+			ref={ref}
+			id={id}
+			style={visible ? { contentVisibility: 'auto', containIntrinsicSize: `0 ${minHeight}px` } : undefined}
+		>
 			{visible ? (
 				<Suspense fallback={<Skeleton minHeight={minHeight} />}>
 					{children}

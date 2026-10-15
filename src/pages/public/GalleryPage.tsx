@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ImgHTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
@@ -36,6 +36,58 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
 	{ src: tenisMejaImage, alt: 'Fasilitas tenis meja OBC Sport Center', category: 'sports' },
 ]
 
+const FADE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'
+
+function FadeImage({ className, style, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
+	const ref = useRef<HTMLImageElement>(null)
+	const [loaded, setLoaded] = useState(false)
+
+	useEffect(() => {
+		const img = ref.current
+		if (!img) return
+
+		let cancelled = false
+		const show = () => {
+			if (!cancelled) setLoaded(true)
+		}
+		const reveal = () => {
+			if (typeof img.decode === 'function') img.decode().then(show, show)
+			else show()
+		}
+
+		// Gambar dari cache sudah complete, tetap lewat reveal agar fade-in-nya terlihat
+		if (img.complete && img.naturalWidth > 0) {
+			reveal()
+		} else {
+			img.addEventListener('load', reveal, { once: true })
+			img.addEventListener('error', show, { once: true })
+		}
+
+		return () => {
+			cancelled = true
+			img.removeEventListener('load', reveal)
+			img.removeEventListener('error', show)
+		}
+	}, [])
+
+	const prefersReduced =
+		typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+	return (
+		<img
+			ref={ref}
+			className={className}
+			style={{
+				...style,
+				opacity: loaded ? 1 : 0,
+				transition: prefersReduced
+					? 'none'
+					: `opacity 700ms ${FADE_EASING}, transform 450ms ${FADE_EASING}`,
+			}}
+			{...props}
+		/>
+	)
+}
 
 function GalleryPage() {
 	const { t } = useTranslation()
@@ -68,9 +120,10 @@ function GalleryPage() {
 
 			{/* Hero slider image */}
 			<section className="relative min-h-[100svh] overflow-hidden">
-				<img
+				<FadeImage
 					src={sliderGalleryImage}
 					alt="Kolase fasilitas dan aktivitas OBC"
+					decoding="async"
 					className="absolute inset-0 h-full w-full origin-top scale-[1.15] object-cover object-top md:origin-center md:scale-100 md:object-center"
 				/>
 
@@ -113,7 +166,7 @@ function GalleryPage() {
 										: 'border-black bg-white text-black hover:bg-black hover:text-white'
 								}`}
 							>
-									{t(`gallerySection.categories.${category}`)}
+								{t(`gallerySection.categories.${category}`)}
 							</button>
 						)
 					})}
@@ -132,10 +185,11 @@ function GalleryPage() {
 							key={photo.src}
 							type="button"
 							onClick={() => setSelectedGalleryImage(photo.src)}
-							className="group aspect-square overflow-hidden rounded-[24px] md:rounded-xl"
+							className="group aspect-square overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
 							aria-label={`Buka gambar ${photo.alt}`}
 						>
-							<img src={photo.src} alt={photo.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
+							{/* Eager karena section ini sudah dirender malas oleh LazySection; fade-in ditangani FadeImage */}
+							<FadeImage src={photo.src} alt={photo.alt} loading="eager" decoding="async" className="h-full w-full object-cover hover:scale-105" />
 						</button>
 					))}
 				</div>
@@ -160,7 +214,7 @@ function GalleryPage() {
 						<X size={22} />
 					</button>
 					<div className="relative max-h-[90vh] max-w-[92vw]" onClick={(event) => event.stopPropagation()}>
-						<img className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl" src={selectedGalleryImage} alt="Pratinjau galeri OBC" />
+						<FadeImage key={selectedGalleryImage} className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl" src={selectedGalleryImage} alt="Pratinjau galeri OBC" />
 					</div>
 				</div>
 			)}
