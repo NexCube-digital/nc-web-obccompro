@@ -82,7 +82,7 @@ function FadeImage({ className, style, ...props }: ImgHTMLAttributes<HTMLImageEl
 				opacity: loaded ? 1 : 0,
 				transition: prefersReduced
 					? 'none'
-					: `opacity 700ms ${FADE_EASING}, transform 450ms ${FADE_EASING}`,
+					: `opacity 700ms ${FADE_EASING}, transform 500ms ${FADE_EASING}`,
 			}}
 			{...props}
 		/>
@@ -189,7 +189,7 @@ function GalleryPage() {
 							aria-label={`Buka gambar ${photo.alt}`}
 						>
 							{/* Eager karena section ini sudah dirender malas oleh LazySection; fade-in ditangani FadeImage */}
-							<FadeImage src={photo.src} alt={photo.alt} loading="eager" decoding="async" className="h-full w-full object-cover hover:scale-105" />
+							<FadeImage src={photo.src} alt={photo.alt} loading="eager" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
 						</button>
 					))}
 				</div>

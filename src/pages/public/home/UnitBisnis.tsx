@@ -62,7 +62,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 					aria-label={t('common.openPage', { name: unit.name })}
 				/>
 			) : (
-				<Link className={stretchedClass} to={unit.link} aria-label={t('common.openPage', { name: unit.name })} />
+				<Link className={stretchedClass} to={unit.link} viewTransition aria-label={t('common.openPage', { name: unit.name })} />
 			)}
 
 			{/* Tombol favorit: mobile tanpa lingkaran & border, desktop lingkaran */}
@@ -93,7 +93,11 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 			    di 1280x800 tetap 130px seperti semula) */}
 			<div className="pointer-events-none relative z-10 grid h-[78px] w-[78px] place-items-center md:h-[clamp(72px,13.5svh,108px)] md:w-[clamp(72px,13.5svh,108px)]">
 				<img
-					className="block max-h-[78px] max-w-[78px] object-contain transition-transform duration-300 group-hover:scale-105 md:max-h-full md:max-w-full"
+					className={`block max-h-[78px] max-w-[78px] object-contain transition-transform duration-300 md:max-h-full md:max-w-full ${
+						unit.name === 'OBC Villa'
+							? 'scale-[0.83] group-hover:scale-[0.86]'
+							: 'group-hover:scale-105'
+					}`}
 					src={unit.image}
 					alt={`Logo ${unit.name}`}
 					loading="lazy"
@@ -110,7 +114,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 							{t('businessUnitsSection.bookingNow')}
 						</a>
 					) : (
-						<Link className={bookingClass} to={unit.link}>
+						<Link className={bookingClass} to={unit.link} viewTransition>
 							{t('businessUnitsSection.bookingNow')}
 						</Link>
 					)}
@@ -119,7 +123,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
 						</a>
 					) : (
-						<Link className={detailClass} to={unit.link}>
+						<Link className={detailClass} to={unit.link} viewTransition>
 							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
 						</Link>
 					)}

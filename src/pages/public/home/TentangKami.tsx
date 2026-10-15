@@ -55,6 +55,7 @@ export default function TentangKami() {
 					    Lebar dibatasi min(600px, 100%) supaya tidak melewati kolomnya dan menimpa gambar di layar sedang. */}
 					<Link
 						to="/tentang-kami"
+						viewTransition
 						className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[16px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 md:w-[min(600px,100%)] lg:text-[19px]"
 					>
 						{t('aboutSection.seeMore')} <ArrowRight size={20} />

@@ -183,6 +183,7 @@ export default function Sidebar({
                   <li key={item.label}>
                     <NavLink
                       to={item.to!}
+                      viewTransition
                       title={tip}
                       onClick={onCloseMobile}
                       className={({ isActive }) =>
@@ -224,6 +225,7 @@ export default function Sidebar({
                         <li key={c.to}>
                           <NavLink
                             to={c.to}
+                            viewTransition
                             onClick={onCloseMobile}
                             className={({ isActive }) =>
                               `block rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${

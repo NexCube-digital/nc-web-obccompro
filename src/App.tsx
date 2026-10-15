@@ -8,7 +8,6 @@ import { Toaster } from 'sonner'
 
 function App() {
   const [isLoading, setIsLoading] = useState(true)
-
   return (
     <>
       <ScrollToTop />

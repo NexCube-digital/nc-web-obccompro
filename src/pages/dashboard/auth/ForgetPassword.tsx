@@ -128,6 +128,7 @@ export default function ForgetPasswordPage() {
 
 					<Link
 						to="/login"
+						viewTransition
 						className="mt-6 inline-flex items-center gap-2 font-heading text-[13px] font-semibold text-obc-green hover:underline [@media(max-height:760px)]:mt-4 [@media(max-height:640px)]:mt-3"
 					>
 						<ArrowLeft size={16} />

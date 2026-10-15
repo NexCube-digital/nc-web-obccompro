@@ -37,6 +37,7 @@ export function UnitBisnis({ items, title = 'Jelajahi Unit Bisnis OBC Group Lain
 					<Link
 						key={unit.slug}
 						to={`/unit-bisnis/${unit.slug}`}
+						viewTransition
 						className="group w-full overflow-hidden rounded-[15px] border border-[#0040004D] bg-[#FFFFF7]"
 					>
 						<div className="h-[120px] w-full overflow-hidden md:h-[187px]">

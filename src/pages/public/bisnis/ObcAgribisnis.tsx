@@ -91,10 +91,11 @@ function AgribisnisPage() {
 			<LandingNavbar />
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev */}
-			<section className="relative h-[360px] overflow-hidden md:h-auto md:min-h-[100svh]">
-				<img src={heroImage} alt="OBC Agribisnis" className="absolute inset-0 h-full w-full object-cover object-top md:object-center" />
+			<section className="relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
+				<img src={heroImage} alt="OBC Agribisnis" className="absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center" />
 				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-7 rounded-t-[28px] bg-obc-ivory md:hidden" />
 				<div
 					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%]"
 					style={{
@@ -219,7 +220,7 @@ function AgribisnisPage() {
 
 				{/* Kolom kanan (lg ke atas): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
-					<div className="sticky top-24">
+					<div className="sticky top-24 mb-12">
 						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard className="md:!w-full" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
 					</div>
@@ -230,8 +231,8 @@ function AgribisnisPage() {
 
 			{/* Galeri */}
 			<LazySection minHeight={600}>
-			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+				<ScrollReveal>
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
 						{t('gallerySection.badge')}
@@ -241,31 +242,39 @@ function AgribisnisPage() {
 					</h2>
 					<div className="mx-auto mt-3 h-[2px] w-full max-w-[396px] rounded-[2px] bg-[#0000004D]" />
 				</div>
+				</ScrollReveal>
 
 				{/* Ukuran item mengikuti grid (bukan lebar tetap) supaya tidak saling menimpa di lebar tablet */}
 				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
 					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<button
-							key={index}
-							type="button"
-							onClick={() => setSelectedGalleryImage(image)}
-							className={`group aspect-[4/3] w-full min-w-0 overflow-hidden rounded-[20px] md:aspect-[280/296] md:rounded-xl ${
+						<ScrollReveal
+							key={`${image}-${index}`}
+							className={`aspect-[4/3] w-full min-w-0 md:aspect-[280/296] ${
 								index >= 4 ? 'hidden md:block' : ''
 							}`}
-							aria-label={`Buka gambar Momen OBC Agribisnis ${index + 1}`}
+							delay={index * 90}
+							duration={700}
+							distance={16}
+							scale={0.98}
 						>
-							<img
-								src={image}
-								alt={`Momen OBC Agribisnis ${index + 1}`}
-								loading="lazy"
-								decoding="async"
-								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-							/>
-						</button>
+							<button
+								type="button"
+								onClick={() => setSelectedGalleryImage(image)}
+								className="group h-full w-full min-w-0 overflow-hidden rounded-[20px] md:rounded-xl"
+								aria-label={`Buka gambar Momen OBC Agribisnis ${index + 1}`}
+							>
+								<img
+									src={image}
+									alt={`Momen OBC Agribisnis ${index + 1}`}
+									loading="lazy"
+									decoding="async"
+									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+								/>
+							</button>
+						</ScrollReveal>
 					))}
 				</div>
 			</section>
-			</ScrollReveal>
 			</LazySection>
 
 			{selectedGalleryImage && (

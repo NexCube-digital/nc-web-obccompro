@@ -22,7 +22,7 @@ export default function LoginPage() {
     try {
       await authService.login({ email, password }, ingat);
       toast.success("Berhasil masuk.");
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true, viewTransition: true });
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {

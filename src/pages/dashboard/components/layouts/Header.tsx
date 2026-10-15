@@ -40,7 +40,7 @@ export default function Header({ onToggleSidebar }: Props) {
       // Clear the local session and leave the dashboard even if the API is unavailable.
     }
     setUser(null);
-    navigate("/login", { replace: true });
+    navigate("/login", { replace: true, viewTransition: true });
   };
 
   useEffect(() => {
@@ -182,6 +182,7 @@ export default function Header({ onToggleSidebar }: Props) {
               <Link
                 role="menuitem"
                 to="/settingaccount"
+                viewTransition
                 onClick={() => setProfileMenuOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2.5 font-body text-[13px] text-obc-charcoal transition-colors hover:bg-obc-hover-surface"
               >

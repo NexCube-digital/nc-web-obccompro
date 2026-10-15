@@ -102,7 +102,7 @@ function LandingNavbar() {
 
 	// Tombol kembali: selalu ke halaman Unit Bisnis
 	const handleBack = () => {
-		navigate('/unit-bisnis')
+		navigate('/unit-bisnis', { viewTransition: true })
 	}
 
 	// Tombol bagikan: pakai Web Share API, fallback salin link
@@ -165,6 +165,7 @@ function LandingNavbar() {
 					<NavLink
 						className="shrink-0"
 						to="/"
+						viewTransition
 						aria-label={t('nav.home')}
 						onClick={() => {
 							closeMenu()
@@ -196,6 +197,7 @@ function LandingNavbar() {
 									key={menu.label}
 									className={({ isActive }) => menuClass(isActive)}
 									to={menu.href}
+									viewTransition
 									end={menu.href === '/'}
 									onClick={scrollToTop}
 								>
@@ -261,6 +263,7 @@ function LandingNavbar() {
 						<NavLink
 							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
 							to="/login"
+							viewTransition
 							aria-label={t('nav.login')}
 							onClick={scrollToTop}
 						>
@@ -276,6 +279,7 @@ function LandingNavbar() {
 						<NavLink
 							className={`${circleBtnClass} md:hidden`}
 							to="/login"
+							viewTransition
 							aria-label={t('nav.login')}
 							onClick={closeMenu}
 						>
@@ -314,6 +318,7 @@ function LandingNavbar() {
 										key={menu.label}
 										className={({ isActive }) => mobileItemClass(isActive)}
 										to={menu.href}
+										viewTransition
 										end={menu.href === '/'}
 										onClick={closeMenu}
 									>

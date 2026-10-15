@@ -131,16 +131,24 @@ function GuestHousePage() {
 		<div className="min-h-screen bg-obc-ivory pb-[150px] lg:pb-0">
 			<LandingNavbar />
 
-			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto */}
-			<section id="guest-house-hero" className="relative h-[360px] overflow-hidden md:h-svh md:min-h-svh">
+			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto.
+			    Mobile 412px–767px: tinggi hero ditambah & posisi gambar digeser ke atas karena foto berukuran besar. */}
+			<section
+				id="guest-house-hero"
+				className="relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-svh md:min-h-svh"
+			>
 				<img
 					src={heroImage}
 					alt="Fasad OBC Guest House"
-					className="absolute inset-0 h-full w-full object-cover object-top md:object-center"
+					className="absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center"
 				/>
 
 				{/* Overlay gelap tipis: hanya md+ */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
+
+				{/* Lengkungan kartu (mobile saja): strip ivory berradius di dasar foto.
+				    Dibuat di dalam hero supaya tidak terpotong wrapper LazySection/ScrollReveal. */}
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-7 rounded-t-[28px] bg-obc-ivory md:hidden" />
 
 				<div
 					className="absolute right-0 top-0 hidden h-full w-[72%] max-w-[763.59px] md:block lg:w-[65%] xl:w-[58%] 2xl:w-[52%]"
@@ -175,8 +183,10 @@ function GuestHousePage() {
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
 				<div className="min-w-0 lg:w-2/3">
-					{/* Tentang */}
-					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-5 pb-10 pt-8 min-[400px]:px-[30px] md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+					{/* Tentang
+					    Mobile: lengkungan sudah dibuat di hero (strip 28px), jadi di sini tanpa -mt & radius.
+					    pt-4 + strip 28px = jarak atas yang sama seperti sebelumnya (32px). */}
+					<section className="relative z-10 bg-obc-ivory px-5 pb-10 pt-4 min-[400px]:px-[30px] md:bg-transparent md:px-0 md:py-14">
 						<div className="flex flex-col">
 							{/* Judul: hanya mobile */}
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
@@ -286,7 +296,7 @@ function GuestHousePage() {
 
 				{/* Kolom kanan (lg+): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
-					<div className="sticky top-24">
+					<div className="sticky top-24 mb-12">
 						<WhatsAppCard
 							className="lg:!w-full"
 							title={t('units.guestHouse.whatsappCardTitle')}
@@ -301,8 +311,8 @@ function GuestHousePage() {
 
 			{/* Galeri */}
 			<LazySection minHeight={600}>
-			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
+				<ScrollReveal>
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-[1.4px] text-black md:uppercase">
 						{t('units.guestHouse.galleryBadge')}
@@ -312,31 +322,39 @@ function GuestHousePage() {
 					</h2>
 					<div className="mx-auto mt-3 hidden h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D] md:block" />
 				</div>
+				</ScrollReveal>
 
 				{/* Foto fleksibel mengikuti lebar kolom (tidak lagi ukuran tetap 280px) */}
 				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
 					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<button
-							key={index}
-							type="button"
-							onClick={() => setSelectedGalleryImage(image)}
-							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-[280/296] md:rounded-xl ${
+						<ScrollReveal
+							key={image}
+							className={`aspect-[4/3] w-full md:aspect-[280/296] ${
 								index >= 4 ? 'hidden md:block' : ''
 							}`}
-							aria-label={`Buka gambar Momen OBC Guest House ${index + 1}`}
+							delay={index * 90}
+							duration={700}
+							distance={16}
+							scale={0.98}
 						>
-							<img
-								src={image}
-								alt={`Momen OBC Guest House ${index + 1}`}
-								loading="lazy"
-								decoding="async"
-								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-							/>
-						</button>
+							<button
+								type="button"
+								onClick={() => setSelectedGalleryImage(image)}
+								className="group h-full w-full overflow-hidden rounded-[20px] md:rounded-xl"
+								aria-label={`Buka gambar Momen OBC Guest House ${index + 1}`}
+							>
+								<img
+									src={image}
+									alt={`Momen OBC Guest House ${index + 1}`}
+									loading="lazy"
+									decoding="async"
+									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+								/>
+							</button>
+						</ScrollReveal>
 					))}
 				</div>
 			</section>
-			</ScrollReveal>
 			</LazySection>
 
 			{selectedGalleryImage && (

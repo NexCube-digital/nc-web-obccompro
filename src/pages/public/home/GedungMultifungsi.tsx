@@ -19,9 +19,9 @@ export default function GedungMultifungsi() {
 		// Section full layar: min-h-svh + konten di-center vertikal.
 		// Di desktop (lg+) padding vertikal dan tinggi foto mengikuti tinggi layar (clamp berbasis svh),
 		// supaya seluruh konten (termasuk tombol WhatsApp di bawah) muat di satu layar, mis. 1280x800.
-		<section className="flex items-center md:min-h-[100svh] lg:h-[max(100svh,640px)]" id="event-space">
+		<section className="flex items-center lg:h-[max(100svh,640px)]" id="event-space">
 			{/* < lg: satu alur (grid 2 kolom hanya untuk baris foto). >= lg: dua kolom berdampingan. */}
-			<div className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] grid-cols-2 gap-x-[10px] py-6 sm:w-[calc(100%-48px)] sm:gap-x-4 md:gap-x-5 md:py-16 lg:gap-x-10 lg:h-full lg:grid-rows-1 lg:pb-[clamp(16px,4svh,40px)] lg:pt-[clamp(80px,11svh,104px)]">
+			<div className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] grid-cols-2 gap-x-[10px] py-6 sm:w-[calc(100%-48px)] sm:gap-x-4 md:gap-x-5 md:py-8 lg:gap-x-10 lg:h-full lg:grid-rows-1 lg:pb-[clamp(16px,4svh,40px)] lg:pt-[clamp(80px,11svh,104px)]">
 				{/* Kolom kiri: < lg "contents" (anak ikut grid & di-order), >= lg flex-col */}
 				<div className="contents lg:flex lg:h-full lg:min-w-0 lg:flex-col lg:justify-between">
 					{/* Foto Lapang F1 */}

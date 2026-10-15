@@ -90,7 +90,7 @@
       },
       "sportCenter": {
         "title": "OBC Sport Center",
-        "description": "Fasilitas lapangan olahraga modern untuk futsal, badminton, voli, pickleball, dan meja billiard. Slot terjamin, booking praktis, dan lebih hemat dengan paket membership.",
+        "description": "Fasilitas lapangan olahraga modern untuk futsal, badminton, pickleball, dan meja billiard. Slot terjamin, booking praktis, dan lebih hemat dengan paket membership.",
         "primaryBtn": "Booking Lapangan",
         "secondaryBtn": "Lihat Fasilitas"
       },
@@ -141,7 +141,6 @@
       "futsal1": "Futsal 1",
       "futsal2": "Futsal 2",
       "badminton": "Badminton",
-      "voli": "Voli",
       "pickleball": "Pickleball",
       "basket": "Basket",
       "flat2Hours": "Untuk flat 2jam Permainan",

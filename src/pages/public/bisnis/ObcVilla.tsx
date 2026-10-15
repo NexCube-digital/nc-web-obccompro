@@ -148,13 +148,17 @@ function VillaPage() {
 				</div>
 			</section>
 
+			{/* Card utama: di mobile menimpa foto hero dengan radius atas khusus (28px).
+			    Radius dipasang di wrapper LUAR LazySection/ScrollReveal supaya tidak terpotong
+			    oleh overflow/transform milik komponen animasi. Di md+ tampil seperti semula */}
+			<div className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory md:mt-0 md:rounded-none md:bg-transparent">
 			<LazySection minHeight={900}>
 			<ScrollReveal>
 			<div className="mx-auto max-w-[1200px] md:px-8 lg:flex lg:items-stretch lg:gap-10">
 				{/* Kolom kiri */}
 				<div className="min-w-0 lg:w-2/3">
 					{/* Tentang */}
-					<section className="relative z-10 -mt-7 rounded-t-[28px] bg-obc-ivory px-5 pb-10 pt-8 min-[400px]:px-[30px] md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:py-14">
+					<section className="px-5 pb-10 pt-8 min-[400px]:px-[30px] md:px-0 md:py-14">
 						<div className="flex flex-col">
 							<h1 className="order-1 text-center font-['Montserrat'] text-[22px] font-semibold leading-[30px] text-black md:hidden">
 								{t('units.villa.title')}
@@ -223,7 +227,7 @@ function VillaPage() {
 
 				{/* Kolom kanan (lg+): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
-					<div className="sticky top-24">
+					<div className="sticky top-24 mb-12">
 						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
 							className="lg:!w-full"
@@ -236,11 +240,12 @@ function VillaPage() {
 			</div>
 			</ScrollReveal>
 			</LazySection>
+			</div>
 
 			{/* Galeri */}
 			<LazySection minHeight={600}>
-			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-6 pb-10 md:px-8 md:pb-16">
+				<ScrollReveal>
 				<div className="text-center">
 					<span className="font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-[1.4px] text-black md:uppercase">
 						Galeri
@@ -250,31 +255,39 @@ function VillaPage() {
 					</h2>
 					<div className="mx-auto mt-3 hidden h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D] md:block" />
 				</div>
+				</ScrollReveal>
 
 				{/* Foto fleksibel mengikuti lebar kolom (tidak lagi ukuran tetap 280px) */}
 				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
 					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<button
-							key={index}
-							type="button"
-							onClick={() => setSelectedGalleryImage(image)}
-							className={`group aspect-[4/3] w-full overflow-hidden rounded-[20px] md:aspect-[280/296] md:rounded-xl ${
+						<ScrollReveal
+							key={`${image}-${index}`}
+							className={`aspect-[4/3] w-full md:aspect-[280/296] ${
 								index >= 4 ? 'hidden md:block' : ''
 							}`}
-							aria-label={`Buka gambar Momen OBC Villa ${index + 1}`}
+							delay={index * 90}
+							duration={700}
+							distance={16}
+							scale={0.98}
 						>
-							<img
-								src={image}
-								alt={`Momen OBC Villa ${index + 1}`}
-								loading="lazy"
-								decoding="async"
-								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-							/>
-						</button>
+							<button
+								type="button"
+								onClick={() => setSelectedGalleryImage(image)}
+								className="group h-full w-full overflow-hidden rounded-[20px] md:rounded-xl"
+								aria-label={`Buka gambar Momen OBC Villa ${index + 1}`}
+							>
+								<img
+									src={image}
+									alt={`Momen OBC Villa ${index + 1}`}
+									loading="lazy"
+									decoding="async"
+									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+								/>
+							</button>
+						</ScrollReveal>
 					))}
 				</div>
 			</section>
-			</ScrollReveal>
 			</LazySection>
 
 			{selectedGalleryImage && (

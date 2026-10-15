@@ -62,7 +62,7 @@ export default function Galeri() {
 	return (
 		
 		<section
-			className="mx-auto flex w-[calc(100%-60px)] max-w-[1280px] flex-col justify-center py-6 md:min-h-[100svh] md:w-[calc(100%-48px)] md:pb-[clamp(16px,3svh,40px)] md:pt-[clamp(52px,7svh,80px)]"
+			className="mx-auto flex w-[calc(100%-60px)] max-w-[1280px] flex-col justify-center py-6 md:w-[calc(100%-48px)] md:pb-6 md:pt-8 lg:min-h-[100svh] lg:pb-[clamp(16px,3svh,40px)] lg:pt-[clamp(52px,7svh,80px)]"
 			id="galeri"
 		>
 			{/* Header: mobile teks di atas, tombol di bawah rata kanan */}
@@ -84,6 +84,7 @@ export default function Galeri() {
 				<Link
 					className="group inline-flex h-[48px] w-fit shrink-0 items-center justify-center gap-2 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1 pl-5 pr-1.5 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mr-8 md:h-[clamp(60px,9svh,78px)] md:w-fit md:gap-3 md:self-auto md:py-2 md:pl-7 md:pr-2 md:text-[20px]"
 					to="/galeri"
+					viewTransition
 				>
 					<span className="whitespace-nowrap text-center text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178]">
 						{t('gallerySection.viewAll')}

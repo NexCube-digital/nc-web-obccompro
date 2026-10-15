@@ -82,7 +82,7 @@
       },
       "sportCenter": {
         "title": "OBC Sport Center",
-        "description": "Modern sports court facilities for futsal, badminton, volleyball, pickleball, and billiard tables. Guaranteed slots, practical booking, and savings with membership packages.",
+        "description": "Modern sports court facilities for futsal, badminton, pickleball, and billiard tables. Guaranteed slots, practical booking, and savings with membership packages.",
         "primaryBtn": "Book Court",
         "secondaryBtn": "View Facilities"
       },
@@ -133,7 +133,6 @@
       "futsal1": "Futsal 1",
       "futsal2": "Futsal 2",
       "badminton": "Badminton",
-      "voli": "Volleyball",
       "pickleball": "Pickleball",
       "basket": "Basketball",
       "flat2Hours": "Flat 2-hour gameplay",

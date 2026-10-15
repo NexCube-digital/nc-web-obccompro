@@ -214,6 +214,7 @@ function BusinessUnitPage() {
 							{/* Tombol: disembunyikan di mobile (tidak ada di desain), tampil di md ke atas */}
 							<Link
 								to="/unit-bisnis/sport-center"
+								viewTransition
 								className="hidden h-[30px] items-center justify-center gap-2 rounded-full bg-white/15 px-[10px] py-[5px] font-['Montserrat'] text-[18px] font-medium leading-[20px] text-white shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)] backdrop-blur-[2px] md:inline-flex"
 							>
 								<span className="text-white">{t('businessUnitPage.exploreSportCenter')}</span>
@@ -333,6 +334,7 @@ function BusinessUnitPage() {
 											</a>
 											<Link
 												to={`/unit-bisnis/${unit.slug}`}
+												viewTransition
 												className="group flex items-center gap-1.5 font-['Montserrat'] text-[16px] font-semibold leading-6 tracking-normal text-black transition-colors duration-500 hover:text-obc-green-hover"
 											>
 												<span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat pb-[2px] transition-[background-size] duration-500 ease-in-out group-hover:bg-[length:100%_1.5px]">
