@@ -152,7 +152,7 @@ function HomePage() {
 
 		const run = () => SECTION_LOADERS.forEach((load) => load().catch(() => undefined))
 
-		if ('requestIdleCallback' in window) {
+		if (typeof window.requestIdleCallback === 'function' && typeof window.cancelIdleCallback === 'function') {
 			const id = window.requestIdleCallback(run, { timeout: 3000 })
 			return () => window.cancelIdleCallback(id)
 		}
