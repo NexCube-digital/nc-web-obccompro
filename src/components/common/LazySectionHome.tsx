@@ -1,69 +1,52 @@
-import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type LazySectionProps = {
-	children: ReactNode
-	/** Tinggi placeholder sebelum section tampil (cegah layout loncat) */
 	minHeight?: number
-	/** Mulai load sebelum section benar-benar terlihat */
+	// Jarak sebelum masuk layar saat section mulai di-render
 	rootMargin?: string
-	id?: string
+	children: ReactNode
 }
 
-const Skeleton = ({ minHeight }: { minHeight: number }) => (
-	<div
-		style={{ minHeight }}
-		className="w-full animate-pulse bg-[#f5f0e8]"
-	/>
-)
-
-function LazySection({
+/*
+ * Section baru di-render ketika sudah dekat dengan layar (default 700px lebih awal),
+ * jadi saat user tiba di sana kontennya sudah siap dan tinggal fade-in.
+ * Setelah ter-render, tidak pernah di-unmount lagi (sekali saja).
+ */
+export default function LazySection({
+	minHeight = 400,
+	rootMargin = '700px 0px',
 	children,
-	minHeight = 280,
-	rootMargin = '200px 0px',
-	id,
 }: LazySectionProps) {
 	const ref = useRef<HTMLDivElement>(null)
-	const [visible, setVisible] = useState(false)
+	const [shouldRender, setShouldRender] = useState(false)
 
 	useEffect(() => {
-		const el = ref.current
-		if (!el || visible) return
+		const element = ref.current
+		if (!element) return
 
-		// Fallback untuk browser lama tanpa IntersectionObserver
+		// Browser lama tanpa IntersectionObserver: langsung render
 		if (!('IntersectionObserver' in window)) {
-			setVisible(true)
+			setShouldRender(true)
 			return
 		}
 
 		const observer = new IntersectionObserver(
-			([entry]) => {
-				if (entry.isIntersecting) {
-					setVisible(true)
-					observer.disconnect() // sekali saja, tidak perlu mengamati lagi
+			(entries) => {
+				if (entries.some((entry) => entry.isIntersecting)) {
+					setShouldRender(true)
+					observer.disconnect()
 				}
 			},
 			{ rootMargin },
 		)
 
-		observer.observe(el)
+		observer.observe(element)
 		return () => observer.disconnect()
-	}, [visible, rootMargin])
+	}, [rootMargin])
 
 	return (
-		<div
-			ref={ref}
-			id={id}
-			style={visible ? { contentVisibility: 'auto', containIntrinsicSize: `0 ${minHeight}px` } : undefined}
-		>
-			{visible ? (
-				<Suspense fallback={<Skeleton minHeight={minHeight} />}>
-					{children}
-				</Suspense>
-			) : (
-				<Skeleton minHeight={minHeight} />
-			)}
+		<div ref={ref} style={shouldRender ? undefined : { minHeight }}>
+			{shouldRender ? children : null}
 		</div>
 	)
 }
-
-export default LazySection

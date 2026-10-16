@@ -135,12 +135,12 @@ function GuestHousePage() {
 			    Mobile 412px–767px: tinggi hero ditambah & posisi gambar digeser ke atas karena foto berukuran besar. */}
 			<section
 				id="guest-house-hero"
-				className="relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-svh md:min-h-svh"
+				className="hero-enter relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-svh md:min-h-svh"
 			>
 				<img
 					src={heroImage}
 					alt="Fasad OBC Guest House"
-					className="absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center"
+					className="hero-background-enter absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center"
 				/>
 
 				{/* Overlay gelap tipis: hanya md+ */}
@@ -160,7 +160,7 @@ function GuestHousePage() {
 				/>
 
 				{/* Teks hero: md+, container rata kanan */}
-				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
+				<div className="hero-content-enter relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[340px] lg:max-w-[420px] xl:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">

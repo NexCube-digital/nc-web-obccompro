@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import TransitionLink from "../../../components/common/TransitionLink";
 import obcLogoLight from "../../../assets/logo/obclogo.webp";
 import obcLogo from "../../../assets/logo/LOGO-OBC.png";
 
@@ -126,14 +126,13 @@ export default function ForgetPasswordPage() {
 						</form>
 					)}
 
-					<Link
+					<TransitionLink
 						to="/login"
-						viewTransition
 						className="mt-6 inline-flex items-center gap-2 font-heading text-[13px] font-semibold text-obc-green hover:underline [@media(max-height:760px)]:mt-4 [@media(max-height:640px)]:mt-3"
 					>
 						<ArrowLeft size={16} />
 						Kembali ke halaman masuk
-					</Link>
+					</TransitionLink>
 				</div>
 			</main>
 		</div>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import TransitionLink from '../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 import {
 	ArrowRight, Home,
@@ -137,15 +137,15 @@ function BusinessUnitPage() {
 			<LandingNavbar />
 
 			{/* Hero slider */}
-			<section className="relative min-h-[100svh] overflow-hidden">
+			<section className="hero-enter relative min-h-[100svh] overflow-hidden">
 				<img
 					src={heroSignpostImage}
 					alt="Papan penunjuk unit bisnis OBC Group"
-					className="absolute inset-0 h-full w-full object-cover object-[25%_52%] md:object-[center_54%] md:translate-x-20 lg:translate-x-28 xl:translate-x-36 min-[700px]:max-[767px]:!object-[0%_52%] min-[700px]:max-[767px]:!translate-x-0 min-[768px]:max-[1000px]:!object-[left_54%] min-[768px]:max-[900px]:!translate-x-48 min-[901px]:max-[1000px]:!translate-x-36"
+					className="hero-background-enter absolute inset-0 h-full w-full object-cover object-[25%_52%] md:object-[center_54%] md:translate-x-20 lg:translate-x-28 xl:translate-x-36 min-[700px]:max-[767px]:!object-[0%_52%] min-[700px]:max-[767px]:!translate-x-0 min-[768px]:max-[1000px]:!object-[left_54%] min-[768px]:max-[900px]:!translate-x-48 min-[901px]:max-[1000px]:!translate-x-36"
 				/>
 				{/* Overlay: mobile vertikal (pekat di bawah), desktop horizontal (pekat di kiri, lebar mengikuti breakpoint dev) */}
 					<div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_45%,rgba(250,250,242,0.592749)_70%,rgba(250,250,242,0)_100%)] md:inset-y-0 md:left-0 md:right-auto md:h-full md:w-[68%] md:bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)] lg:w-[62%] xl:w-[58%] 2xl:w-[55%]" />				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[70px] pt-24 md:items-center md:pb-12">
-					<div className="mx-auto w-full max-w-[1246px] px-[30px] md:px-10">
+					<div className="hero-content-enter mx-auto w-full max-w-[1246px] px-[30px] md:px-10">
 						<div className="w-full max-w-[440px] text-black">
 							<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
 								<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
@@ -212,13 +212,12 @@ function BusinessUnitPage() {
 								</p>
 							</div>
 							{/* Tombol: disembunyikan di mobile (tidak ada di desain), tampil di md ke atas */}
-							<Link
+							<TransitionLink
 								to="/unit-bisnis/sport-center"
-								viewTransition
 								className="hidden h-[30px] items-center justify-center gap-2 rounded-full bg-white/15 px-[10px] py-[5px] font-['Montserrat'] text-[18px] font-medium leading-[20px] text-white shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)] backdrop-blur-[2px] md:inline-flex"
 							>
 								<span className="text-white">{t('businessUnitPage.exploreSportCenter')}</span>
-							</Link>
+							</TransitionLink>
 						</div>
 					</div>
 				</div>
@@ -309,9 +308,9 @@ function BusinessUnitPage() {
 																? t('common.checkOut')
 																: tag.label === 'Setiap Hari'
 																	? t('common.everyday')
-																	: tag.label === 'Quick 4 Jam Selesai'
-																		? t('units.laundry.quickService')
-																		: tag.label}
+																		: tag.label === 'Quick 4 Jam Selesai'
+																			? t('units.laundry.quickService')
+																			: tag.label}
 													</span>
 												)
 											})}
@@ -332,16 +331,15 @@ function BusinessUnitPage() {
 													{t('common.contactWhatsApp')}
 												</span>
 											</a>
-											<Link
+											<TransitionLink
 												to={`/unit-bisnis/${unit.slug}`}
-												viewTransition
 												className="group flex items-center gap-1.5 font-['Montserrat'] text-[16px] font-semibold leading-6 tracking-normal text-black transition-colors duration-500 hover:text-obc-green-hover"
 											>
 												<span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat pb-[2px] transition-[background-size] duration-500 ease-in-out group-hover:bg-[length:100%_1.5px]">
 													{t('common.unitDetail')}
 												</span>
 												<ArrowRight size={14} />
-											</Link>
+														</TransitionLink>
 										</div>
 									</div>
 								</div>

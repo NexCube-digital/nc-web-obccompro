@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import TransitionLink from '../../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight } from 'lucide-react'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
@@ -53,13 +53,12 @@ export default function TentangKami() {
 
 					{/* Link: mobile lebar penuh & rata kanan, desktop maksimal 600px.
 					    Lebar dibatasi min(600px, 100%) supaya tidak melewati kolomnya dan menimpa gambar di layar sedang. */}
-					<Link
+					<TransitionLink
 						to="/tentang-kami"
-						viewTransition
 						className="inline-flex h-[25px] w-full items-center justify-end gap-2 font-['Montserrat'] text-right text-[16px] font-semibold leading-[25px] tracking-[0px] text-[#000000] opacity-100 transition-[gap] hover:gap-3 md:w-[min(600px,100%)] lg:text-[19px]"
 					>
 						{t('aboutSection.seeMore')} <ArrowRight size={20} />
-					</Link>
+					</TransitionLink>
 				</div>
 
 				{/* Gambar: mobile di atas (order-first) tinggi 175px; md lebih pendek; lg ke atas ukuran penuh */}

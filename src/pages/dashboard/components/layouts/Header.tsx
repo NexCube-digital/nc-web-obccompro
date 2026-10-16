@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, Sun } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
 
 type Props = { onToggleSidebar: () => void };
@@ -40,7 +41,7 @@ export default function Header({ onToggleSidebar }: Props) {
       // Clear the local session and leave the dashboard even if the API is unavailable.
     }
     setUser(null);
-    navigate("/login", { replace: true, viewTransition: true });
+    await navigateWithTransition("/login", navigate, { replace: true });
   };
 
   useEffect(() => {
@@ -179,16 +180,15 @@ export default function Header({ onToggleSidebar }: Props) {
               aria-label="Menu akun"
               className="absolute right-0 top-full z-30 mt-2 w-[190px] overflow-hidden rounded-lg border border-obc-border bg-white py-1 shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
             >
-              <Link
+              <TransitionLink
                 role="menuitem"
                 to="/settingaccount"
-                viewTransition
                 onClick={() => setProfileMenuOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2.5 font-body text-[13px] text-obc-charcoal transition-colors hover:bg-obc-hover-surface"
               >
                 <Settings size={16} className="text-obc-muted" />
                 Pengaturan
-              </Link>
+              </TransitionLink>
               <div className="mx-3 border-t border-obc-border" />
               <button
                 role="menuitem"

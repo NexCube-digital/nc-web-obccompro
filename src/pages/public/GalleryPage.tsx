@@ -119,7 +119,7 @@ function GalleryPage() {
 			<LandingNavbar />
 
 			{/* Hero slider image */}
-			<section className="relative min-h-[100svh] overflow-hidden">
+			<section className="hero-enter relative min-h-[100svh] overflow-hidden">
 				<FadeImage
 					src={sliderGalleryImage}
 					alt="Kolase fasilitas dan aktivitas OBC"
@@ -134,7 +134,7 @@ function GalleryPage() {
 				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[60%] lg:w-[62%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
 				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[68px] pt-12 md:items-center md:pb-12 md:pt-24">
-					<div className="mx-auto w-full max-w-[1246px] px-8 md:px-10">
+					<div className="hero-content-enter mx-auto w-full max-w-[1246px] px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[400px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-black" />
 							<h1 className="mt-5 font-['Montserrat'] text-[24px] font-bold leading-[1.2] tracking-[1.5px] text-black md:text-[40px] md:leading-[52px] lg:text-[48px] lg:leading-[60px] xl:text-[56px] xl:leading-[70px]">
@@ -188,8 +188,8 @@ function GalleryPage() {
 							className="group aspect-square overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
 							aria-label={`Buka gambar ${photo.alt}`}
 						>
-							{/* Eager karena section ini sudah dirender malas oleh LazySection; fade-in ditangani FadeImage */}
-							<FadeImage src={photo.src} alt={photo.alt} loading="eager" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+							{/* Section dirender dekat viewport; gambar tetap dimuat secara malas. */}
+							<FadeImage src={photo.src} alt={photo.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
 						</button>
 					))}
 				</div>

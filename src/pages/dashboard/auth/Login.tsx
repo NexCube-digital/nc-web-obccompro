@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { navigateWithTransition } from "../../../components/common/TransitionLink";
 import obcLogoLight from "../../../assets/logo/obclogo.webp";
 import obcLogo from "../../../assets/logo/LOGO-OBC.png";
 import { getApiErrorMessage } from "../../../services/api";
@@ -22,7 +23,7 @@ export default function LoginPage() {
     try {
       await authService.login({ email, password }, ingat);
       toast.success("Berhasil masuk.");
-      navigate("/dashboard", { replace: true, viewTransition: true });
+      await navigateWithTransition("/dashboard", navigate, { replace: true });
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {

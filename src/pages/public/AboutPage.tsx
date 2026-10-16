@@ -20,9 +20,6 @@ const STORY_IMAGES: { src: string; alt: string }[] = [
 	{ src: storyImageFour, alt: 'Fasilitas villa OBC' },
 ]
 
-// Posisi tiap foto galeri.
-// Mobile: kolom kanan (index 1 & 3) sama-sama turun 25px -> tidak tabrakan.
-// Desktop: baris kedua naik 16px, kolom kanan turun lewat mt-6.
 const STORY_IMAGE_POSITION = [
 	'',
 	'translate-y-[25px] md:mt-6 md:translate-y-0',
@@ -38,12 +35,11 @@ function AboutPage() {
 			<LandingNavbar />
 			<main className="bg-obc-ivory font-body text-obc-green">
 			{/* ===== HERO ===== */}
-			{/* Nilai maksimum clamp = ukuran di 1280x800; di layar lebih pendek hanya mengecil tipis */}
-			<section className="relative flex h-[100svh] min-h-[540px] w-full items-end justify-center overflow-hidden pb-[100px] md:h-auto md:min-h-[100svh] md:items-center md:pb-8 md:pt-[clamp(112px,20svh,160px)]">
+			<section className="hero-enter relative flex h-[100svh] min-h-[540px] w-full items-end justify-center overflow-hidden pb-[100px] md:h-auto md:min-h-[100svh] md:items-center md:pb-8 md:pt-[clamp(112px,20svh,160px)]">
 				<img
 					src={heroImage}
 					alt="Lapangan futsal OBC"
-					className="absolute inset-0 h-full w-full object-cover"
+					className="hero-background-enter absolute inset-0 h-full w-full object-cover"
 				/>
 				{/* Base overlay lembut agar foto tetap jernih & teks kontras */}
 				<div className="absolute inset-0 bg-black/25" />
@@ -54,7 +50,7 @@ function AboutPage() {
 				{/* Shadow ujung bawah */}
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
 
-				<div className="relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
+				<div className="hero-content-enter relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
 					<h1 className="font-heading text-[36px] font-bold leading-[40px] tracking-[0.5px] text-white drop-shadow-[0_6px_4px_rgba(0,0,0,0.25)] sm:text-[54px] sm:leading-[46px] md:text-[clamp(54px,8.125svh,65px)] md:leading-[clamp(54px,8.125svh,65px)]">
 						{t('aboutPage.heroTitle')}
 					</h1>

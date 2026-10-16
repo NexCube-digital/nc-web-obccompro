@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import TransitionLink from "../../../../components/common/TransitionLink";
 import {
   Building2,
   ChevronDown,
@@ -181,9 +181,8 @@ export default function Sidebar({
               if (!item.children) {
                 return (
                   <li key={item.label}>
-                    <NavLink
+                    <TransitionLink
                       to={item.to!}
-                      viewTransition
                       title={tip}
                       onClick={onCloseMobile}
                       className={({ isActive }) =>
@@ -192,7 +191,7 @@ export default function Sidebar({
                     >
                       <Icon size={18} strokeWidth={1.8} className="shrink-0" />
                       <span className={`truncate ${hide}`}>{item.label}</span>
-                    </NavLink>
+                    </TransitionLink>
                   </li>
                 );
               }
@@ -223,9 +222,8 @@ export default function Sidebar({
                     >
                       {item.children.map((c) => (
                         <li key={c.to}>
-                          <NavLink
+                          <TransitionLink
                             to={c.to}
-                            viewTransition
                             onClick={onCloseMobile}
                             className={({ isActive }) =>
                               `block rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
@@ -236,7 +234,7 @@ export default function Sidebar({
                             }
                           >
                             {c.label}
-                          </NavLink>
+                          </TransitionLink>
                         </li>
                       ))}
                     </ul>

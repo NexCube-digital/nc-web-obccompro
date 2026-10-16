@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import TransitionLink from '../../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, X } from 'lucide-react'
 import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
@@ -81,10 +81,9 @@ export default function Galeri() {
 				</div>
 
 				{/* Tombol: mobile lebih kecil & rata kanan */}
-				<Link
+				<TransitionLink
 					className="group inline-flex h-[48px] w-fit shrink-0 items-center justify-center gap-2 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1 pl-5 pr-1.5 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mr-8 md:h-[clamp(60px,9svh,78px)] md:w-fit md:gap-3 md:self-auto md:py-2 md:pl-7 md:pr-2 md:text-[20px]"
 					to="/galeri"
-					viewTransition
 				>
 					<span className="whitespace-nowrap text-center text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178]">
 						{t('gallerySection.viewAll')}
@@ -92,7 +91,7 @@ export default function Galeri() {
 					<span className="grid h-[36px] w-[36px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] transition-colors duration-300 group-hover:bg-[#CDF178] group-hover:text-[#004000] md:h-[clamp(44px,7svh,58px)] md:w-[clamp(44px,7svh,58px)]">
 						<ArrowUpRight className="h-[16px] w-[16px] transition-transform duration-300 group-hover:rotate-45 md:h-[25px] md:w-[25px]" />
 					</span>
-				</Link>
+				</TransitionLink>
 			</div>
 
 			{/* Grid: mobile 2x2 (hanya 4 gambar pertama), desktop 4 kolom dengan rasio baris 11 : 4 : 11 (asli 275 / 100 / 275) */}

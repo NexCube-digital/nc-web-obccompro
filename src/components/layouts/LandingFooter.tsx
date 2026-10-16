@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import TransitionLink from '../common/TransitionLink'
+import { scrollToContact } from '../common/scrollToContact'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import logo from '../../assets/logo/obclogo.webp'
@@ -130,9 +131,8 @@ function Footer() {
 					<div className="grid grid-cols-2 gap-x-4 gap-y-[clamp(16px,3.2svh,36px)] md:grid-cols-[1fr_1fr_1.3fr] md:gap-x-6 md:gap-y-9 lg:grid-cols-[1.3fr_0.9fr_1fr_1.1fr] lg:gap-8 xl:gap-12">
 						{/* Logo + sosmed: tablet = satu baris (logo kiri, sosmed kanan) */}
 						<div className="relative order-1 col-span-2 flex w-full flex-col items-center md:order-none md:col-span-3 md:flex-row md:items-center md:justify-between lg:col-span-1 lg:flex-col lg:items-start lg:justify-start lg:gap-3 [@media(max-width:1023px)_and_(max-height:640px)]:flex-row [@media(max-width:1023px)_and_(max-height:640px)]:justify-between [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
-							<Link
+							<TransitionLink
 								to="/"
-								viewTransition
 								aria-label={t('nav.home')}
 								className="inline-flex items-center justify-center md:h-[100px] md:justify-start lg:h-[95px]"
 							>
@@ -141,7 +141,7 @@ function Footer() {
 									alt="OBC"
 									className="h-[clamp(56px,12.5svh,140px)] w-auto max-w-full origin-center scale-[1.8] object-contain object-center md:h-full md:w-auto md:origin-left md:scale-[1.2] md:object-left lg:scale-[1.25] lg:-translate-x-9 [@media(max-width:1023px)_and_(max-height:640px)]:h-[clamp(80px,15svh,110px)] [@media(max-width:1023px)_and_(max-height:640px)]:scale-[1.3]"
 								/>
-							</Link>
+							</TransitionLink>
 							<div className="mt-[clamp(10px,2svh,20px)] flex items-center justify-center gap-3 md:mt-0 md:justify-end md:gap-4 lg:justify-start lg:pt-1 [@media(max-width:1023px)_and_(max-height:640px)]:mt-0 [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
 								<a
 									href={CONTACT.whatsapp}
@@ -196,13 +196,20 @@ function Footer() {
 								{NAVIGASI_LINKS.map((link) => (
 									<li key={link.to}>
 										{link.to.startsWith('#') ? (
-											<a href={link.to} className={linkClass}>
+											<a
+												href={link.to}
+												className={linkClass}
+												onClick={(event) => {
+													event.preventDefault()
+													scrollToContact()
+												}}
+											>
 												{t(link.label)}
 											</a>
 										) : (
-											<Link to={link.to} viewTransition className={linkClass}>
+											<TransitionLink to={link.to} className={linkClass}>
 												{t(link.label)}
-											</Link>
+											</TransitionLink>
 										)}
 									</li>
 								))}
@@ -215,9 +222,9 @@ function Footer() {
 							<ul className={listClass}>
 								{UNIT_LINKS.map((unit) => (
 									<li key={unit.to}>
-										<Link to={unit.to} viewTransition className={linkClass}>
+										<TransitionLink to={unit.to} className={linkClass}>
 											{t(unit.label)}
-										</Link>
+										</TransitionLink>
 									</li>
 								))}
 							</ul>

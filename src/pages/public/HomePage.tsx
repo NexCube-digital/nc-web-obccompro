@@ -5,10 +5,6 @@ import LandingFooter from '../../components/layouts/LandingFooter'
 import LazySection from '../../components/common/LazySectionHome'
 import ScrollReveal from '../../components/animation/ScrollReveal'
 
-/*
- * Loader dipisah dari lazy() supaya chunk bisa di-prefetch saat browser idle.
- * Dengan begitu chunk section tidak baru diunduh ketika animasi reveal sedang berjalan.
- */
 const loadHero = () => import('./home/Hero')
 const loadPromoBanner = () => import('./home/PromoBanner')
 const loadTentangKami = () => import('./home/TentangKami')
@@ -31,7 +27,8 @@ const Galeri = lazy(loadGaleri)
 const Testimoni = lazy(loadTestimoni)
 const Lokasi = lazy(loadLokasi)
 
-const SECTION_LOADERS = [
+// Urutan preload sesuai urutan section di halaman
+const sectionLoaders = [
 	loadPromoBanner,
 	loadTentangKami,
 	loadUnitBisnis,
@@ -43,21 +40,53 @@ const SECTION_LOADERS = [
 	loadLokasi,
 ]
 
-const IMAGE_FADE_MS = 700
-const IMAGE_FADE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'
+const IMAGE_FADE_MS = 500
+const IMAGE_FADE_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'
 
 const HeroFallback = () => (
 	<div className="h-[600px] w-full animate-pulse bg-[#f5f0e8]" />
 )
 
 /*
+ * Memuat chunk section satu per satu saat browser idle (setelah hero tampil),
+ * supaya saat user scroll, chunk sudah siap dan tidak ada jeda loading.
+ */
+function usePreloadSections() {
+	useEffect(() => {
+		let cancelled = false
+		let handle = 0
+
+		const schedule = (fn: () => void) => {
+			if (typeof window.requestIdleCallback === 'function') {
+				handle = window.requestIdleCallback(fn, { timeout: 2000 })
+			} else {
+				handle = window.setTimeout(fn, 300)
+			}
+		}
+
+		const run = async () => {
+			// Tunggu hero selesai dimuat dulu supaya tidak berebut bandwidth
+			await loadHero().catch(() => {})
+			for (const load of sectionLoaders) {
+				if (cancelled) return
+				await new Promise<void>((resolve) => schedule(resolve))
+				await load().catch(() => {})
+			}
+		}
+
+		run()
+
+		return () => {
+			cancelled = true
+			if (typeof window.cancelIdleCallback === 'function') window.cancelIdleCallback(handle)
+			else window.clearTimeout(handle)
+		}
+	}, [])
+}
+
+/*
  * Membuat gambar di dalam section muncul dengan halus.
- * Masalah sebelumnya: gambar (terutama yang loading="lazy") baru selesai diunduh setelah animasi
- * reveal berjalan, jadi gambar "muncul tiba-tiba" di tengah animasi dan terlihat patah-patah.
- * Solusinya:
- *  1. Gambar langsung diunduh (eager) begitu section dirender, karena section sendiri
- *     sudah dirender malas oleh LazySection.
- *  2. Gambar yang belum siap disembunyikan, lalu di-fade-in setelah selesai di-decode.
+ * Gambar yang belum siap disembunyikan, lalu di-fade-in setelah selesai di-decode.
  */
 function SmoothImages({ children }: { children: ReactNode }) {
 	const ref = useRef<HTMLDivElement>(null)
@@ -74,7 +103,6 @@ function SmoothImages({ children }: { children: ReactNode }) {
 			if (handled.has(img)) return
 			handled.add(img)
 
-			img.loading = 'eager'
 			img.decoding = 'async'
 
 			// Gambar yang sudah siap tidak perlu diapa-apakan
@@ -133,40 +161,37 @@ function SmoothImages({ children }: { children: ReactNode }) {
 	)
 }
 
-/* Satu pembungkus untuk semua section: lazy render + reveal + gambar halus */
+/*
+ * Satu pembungkus untuk semua section:
+ * LazySection (render saat mendekati layar)
+ *  -> Suspense (loading chunk tidak menyembunyikan halaman lain)
+ *  -> ScrollReveal (fade + naik halus saat masuk layar)
+ *  -> SmoothImages (gambar fade-in setelah di-decode)
+ */
 function Section({ minHeight, children }: { minHeight: number; children: ReactNode }) {
 	return (
 		<LazySection minHeight={minHeight}>
-			<ScrollReveal>
-				<SmoothImages>{children}</SmoothImages>
-			</ScrollReveal>
+			<Suspense fallback={<div aria-hidden="true" style={{ minHeight }} />}>
+				<ScrollReveal>
+					<SmoothImages>{children}</SmoothImages>
+				</ScrollReveal>
+			</Suspense>
 		</LazySection>
 	)
 }
 
 function HomePage() {
-	// Prefetch chunk semua section saat browser idle, kecuali pengguna menghemat data
-	useEffect(() => {
-		const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
-		if (connection?.saveData) return
-
-		const run = () => SECTION_LOADERS.forEach((load) => load().catch(() => undefined))
-
-		if (typeof window.requestIdleCallback === 'function' && typeof window.cancelIdleCallback === 'function') {
-			const id = window.requestIdleCallback(run, { timeout: 3000 })
-			return () => window.cancelIdleCallback(id)
-		}
-		const timer = window.setTimeout(run, 1500)
-		return () => window.clearTimeout(timer)
-	}, [])
+	usePreloadSections()
 
 	return (
 		<div className="min-h-screen overflow-x-hidden bg-[#fffff7] font-body text-[#343133]">
 			<LandingNavbar />
 			<main id="beranda">
-				{/* 1. Hero Section: langsung load (above the fold) */}
+				{/* 1. Hero Section: langsung load (above the fold), muncul dengan fade-in */}
 				<Suspense fallback={<HeroFallback />}>
-					<Hero />
+					<div className="hero-enter">
+						<Hero />
+					</div>
 				</Suspense>
 
 				{/* 2. Promo Banner */}

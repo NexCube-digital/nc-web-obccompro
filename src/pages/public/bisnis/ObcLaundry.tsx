@@ -240,11 +240,11 @@ function LaundryPage() {
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan).
 			    Mobile 412px–767px: tinggi hero ditambah & posisi gambar digeser ke atas karena foto berukuran besar. */}
-			<section className="relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
+			<section className="hero-enter relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
 				<img
 					src={heroImage}
 					alt="OBC Laundry"
-					className="absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center"
+					className="hero-background-enter absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center"
 				/>
 				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
@@ -262,7 +262,7 @@ function LaundryPage() {
 				/>
 
 				{/* Teks hero: md+, container max-w 1246px, rata kanan */}
-				<div className="relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
+				<div className="hero-content-enter relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
 							<span className="inline-flex items-center gap-2 font-['Montserrat'] text-[12px] font-semibold uppercase leading-[16px] tracking-[1.4px] text-black lg:text-[14px]">

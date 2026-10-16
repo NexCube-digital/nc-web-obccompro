@@ -137,7 +137,6 @@ export default function Lokasi() {
 		// Rata tengah vertikal. Karena tinggi daftar dikunci (lihat bagian daftar lokasi),
 		// posisi section tidak bergeser saat pindah kategori.
 		<section
-			id="kontak"
 			className="flex flex-col justify-center overflow-hidden py-10 md:py-12"
 		>
 			<div className="mx-auto grid w-[calc(100%-40px)] max-w-[1280px] gap-7 md:w-[calc(100%-48px)] md:gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-stretch lg:gap-[clamp(32px,4vw,64px)]">

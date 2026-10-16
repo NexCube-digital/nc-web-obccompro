@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import TransitionLink from '../common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 
 export interface UnitBisnisItem {
@@ -34,10 +34,9 @@ export function UnitBisnis({ items, title = 'Jelajahi Unit Bisnis OBC Group Lain
 				{items.map((unit) => {
 					const key = translationKeys[unit.slug] ?? unit.slug
 					return (
-					<Link
+					<TransitionLink
 						key={unit.slug}
 						to={`/unit-bisnis/${unit.slug}`}
-						viewTransition
 						className="group w-full overflow-hidden rounded-[15px] border border-[#0040004D] bg-[#FFFFF7]"
 					>
 						<div className="h-[120px] w-full overflow-hidden md:h-[187px]">
@@ -61,7 +60,7 @@ export function UnitBisnis({ items, title = 'Jelajahi Unit Bisnis OBC Group Lain
 								{t(`units.${key}.title`, { defaultValue: unit.title })}
 							</span>
 						</div>
-					</Link>
+					</TransitionLink>
 					)
 				})}
 			</div>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import TransitionLink from '../../../components/common/TransitionLink'
 import { Heart, ArrowRight } from 'lucide-react'
 import sportCenterLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER.png'
 import guestHouseLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
@@ -62,7 +62,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 					aria-label={t('common.openPage', { name: unit.name })}
 				/>
 			) : (
-				<Link className={stretchedClass} to={unit.link} viewTransition aria-label={t('common.openPage', { name: unit.name })} />
+				<TransitionLink className={stretchedClass} to={unit.link} aria-label={t('common.openPage', { name: unit.name })} />
 			)}
 
 			{/* Tombol favorit: mobile tanpa lingkaran & border, desktop lingkaran */}
@@ -114,18 +114,18 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 							{t('businessUnitsSection.bookingNow')}
 						</a>
 					) : (
-						<Link className={bookingClass} to={unit.link} viewTransition>
+						<TransitionLink className={bookingClass} to={unit.link}>
 							{t('businessUnitsSection.bookingNow')}
-						</Link>
+						</TransitionLink>
 					)}
 					{unit.isExternal ? (
 						<a className={detailClass} href={unit.link} target="_blank" rel="noreferrer">
 							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
 						</a>
 					) : (
-						<Link className={detailClass} to={unit.link} viewTransition>
+						<TransitionLink className={detailClass} to={unit.link}>
 							{t('businessUnitsSection.unitDetail')} <ArrowRight size={11} />
-						</Link>
+						</TransitionLink>
 					)}
 				</div>
 			</div>

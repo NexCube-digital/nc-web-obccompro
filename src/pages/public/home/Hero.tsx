@@ -4,6 +4,7 @@ import billiardImage from '../../../assets/layanan/Meja Billiard.png'
 import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
 import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
 import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
+import { scrollToContact } from '../../../components/common/scrollToContact'
 
 const heroSlides = [
 	{
@@ -112,6 +113,8 @@ export default function Hero() {
 						decoding="async"
 						fetchPriority={isActive && heroIndex === 0 ? 'high' : 'auto'}
 						className={`absolute inset-0 h-full w-full object-cover object-[center_68%] transition-opacity duration-1000 ease-in-out ${
+							index === 0 ? 'hero-background-enter' : ''
+						} ${
 							isActive ? 'opacity-100' : 'pointer-events-none opacity-0'
 						}`}
 						aria-hidden={!isActive}
@@ -134,7 +137,7 @@ export default function Hero() {
 			/>
 
 			{/* Konten: mobile rata kiri 18px, tablet & desktop di tengah */}
-			<div className="relative z-10 ml-[18px] w-[calc(100%-56px)] max-w-[1280px] md:mx-auto md:w-[calc(100%-48px)]">
+			<div className="hero-content-enter relative z-10 ml-[18px] w-[calc(100%-56px)] max-w-[1280px] md:mx-auto md:w-[calc(100%-48px)]">
 				{/*
 					Trik "grid stacking": semua judul ditumpuk di 1 sel grid yang sama.
 					Tinggi sel otomatis = judul TERTINGGI, jadi tinggi blok selalu tetap
@@ -173,6 +176,12 @@ export default function Hero() {
 						href={activeHeroSlide.primaryBtn.link}
 						target={activeHeroSlide.primaryBtn.link.startsWith('http') ? '_blank' : '_self'}
 						rel="noreferrer"
+						onClick={(event) => {
+							if (activeHeroSlide.primaryBtn.link === '#kontak') {
+								event.preventDefault()
+								scrollToContact()
+							}
+						}}
 					>
 						{activeHeroSlide.primaryBtn.text}
 					</a>
@@ -198,19 +207,20 @@ export default function Hero() {
 					<a
 						className="inline-flex flex-1 items-center justify-center rounded-full border border-white/90 bg-[#27282540] px-4 py-[4px] text-center font-heading text-[13px] font-semibold text-white shadow-[0px_4px_12px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all hover:scale-[1.02] hover:bg-white/30 md:px-6 md:py-[11px]"
 						href={activeHeroSlide.secondaryBtn.link}
+						onClick={(event) => {
+							if (activeHeroSlide.secondaryBtn.link === '#kontak') {
+								event.preventDefault()
+								scrollToContact()
+							}
+						}}
 					>
 						{activeHeroSlide.secondaryBtn.text}
 					</a>
 				</div>
 			</div>
 
-			{/*
-				Indikator + panah:
-				- mobile  : kiri bawah (bottom 104px)
-				- md-lg   : (768-1279px) kiri bawah, sejajar dengan konten -> tidak menabrak
-				- xl      : (>=1280px) di kanan, seperti desain awal
-			*/}
-			<div className="absolute bottom-[104px] left-[18px] right-[23px] z-10 flex items-center justify-between gap-4 rounded-full text-white md:bottom-[44px] md:left-6 md:right-auto md:justify-start md:px-0 md:py-1.5 xl:bottom-[132px] xl:left-auto xl:right-[max(113px,calc((100%-1280px)/2))] xl:px-3">
+			
+			<div className="hero-controls-enter absolute bottom-[104px] left-[18px] right-[23px] z-10 flex items-center justify-between gap-4 rounded-full text-white md:bottom-[44px] md:left-6 md:right-auto md:justify-start md:px-0 md:py-1.5 xl:bottom-[132px] xl:left-auto xl:right-[max(113px,calc((100%-1280px)/2))] xl:px-3">
 				<div className="flex items-center gap-[10px] md:gap-1.5" aria-label={t('common.slideNavigation')}>
 					{translatedHeroSlides.map((slide, index) => {
 						const isActive = index === heroIndex

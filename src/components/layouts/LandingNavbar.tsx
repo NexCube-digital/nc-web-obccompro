@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Check, Heart, Menu, X } from 'lucide-react'
+import TransitionLink, { navigateWithTransition } from '../common/TransitionLink'
+import { scrollToContact } from '../common/scrollToContact'
 import logo from '../../assets/logo/obclogo.webp'
 import internetIcon from '../../assets/icon/internet.svg'
 import userCircleIcon from '../../assets/icon/iconstack.io - (User Circle).svg'
@@ -87,14 +89,14 @@ function LandingNavbar() {
 		window.scrollTo({
 			top: 0,
 			left: 0,
-			behavior: 'smooth',
+			behavior: 'instant',
 		})
 	}
 
 	const handleHeaderClick = (e: React.MouseEvent<HTMLElement>) => {
 		const target = e.target as HTMLElement | null
 		// Jangan scroll ke atas jika klik pada hash link (misal #kontak) atau button bahasa
-		if (target?.closest('a[href^="#"]') || target?.closest('button')) {
+		if (target?.closest('a') || target?.closest('button')) {
 			return
 		}
 		scrollToTop()
@@ -102,7 +104,7 @@ function LandingNavbar() {
 
 	// Tombol kembali: selalu ke halaman Unit Bisnis
 	const handleBack = () => {
-		navigate('/unit-bisnis', { viewTransition: true })
+		void navigateWithTransition('/unit-bisnis', navigate)
 	}
 
 	// Tombol bagikan: pakai Web Share API, fallback salin link
@@ -162,18 +164,16 @@ function LandingNavbar() {
 			>
 				<div className="relative flex h-full items-center justify-between gap-6 px-4 md:px-6">
 					{/* Logo */}
-					<NavLink
+					<TransitionLink
 						className="shrink-0"
 						to="/"
-						viewTransition
 						aria-label={t('nav.home')}
 						onClick={() => {
 							closeMenu()
-							scrollToTop()
 						}}
 					>
 						<img className="block h-[60px] w-[100px] object-contain" src={logo} alt="OBC" />
-					</NavLink>
+					</TransitionLink>
 
 					{/* Menu tengah (desktop) */}
 					<nav
@@ -188,21 +188,21 @@ function LandingNavbar() {
 									href={menu.href}
 									onClick={(e) => {
 										e.stopPropagation()
+										e.preventDefault()
+										scrollToContact()
 									}}
 								>
 									{t(menu.label)}
 								</a>
 							) : (
-								<NavLink
+								<TransitionLink
 									key={menu.label}
 									className={({ isActive }) => menuClass(isActive)}
 									to={menu.href}
-									viewTransition
 									end={menu.href === '/'}
-									onClick={scrollToTop}
 								>
 									{t(menu.label)}
-								</NavLink>
+								</TransitionLink>
 							),
 						)}
 					</nav>
@@ -260,12 +260,10 @@ function LandingNavbar() {
 						</div>
 
 						{/* Desktop: Login. Antara md–xl hanya ikon (agar tidak menabrak menu tengah), mulai xl ikon + teks */}
-						<NavLink
+						<TransitionLink
 							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
 							to="/login"
-							viewTransition
 							aria-label={t('nav.login')}
-							onClick={scrollToTop}
 						>
 							<img
 								src={userCircleIcon}
@@ -273,18 +271,17 @@ function LandingNavbar() {
 								className="h-[26px] w-[26px] shrink-0 xl:h-[30px] xl:w-[30px]"
 							/>
 							<span className="hidden xl:inline">{t('nav.login')}</span>
-						</NavLink>
+						</TransitionLink>
 
 						{/* Mobile: ikon login (hanya ikon) */}
-						<NavLink
+						<TransitionLink
 							className={`${circleBtnClass} md:hidden`}
 							to="/login"
-							viewTransition
 							aria-label={t('nav.login')}
 							onClick={closeMenu}
 						>
 							<img src={userCircleIcon} alt="" className="h-[26px] w-[26px]" />
-						</NavLink>
+						</TransitionLink>
 
 						{/* Mobile: tombol hamburger */}
 						<button
@@ -310,20 +307,28 @@ function LandingNavbar() {
 						<nav aria-label="Navigasi mobile">
 							{menus.map((menu) =>
 								menu.href.startsWith('#') ? (
-									<a key={menu.label} className={mobileItemClass(false)} href={menu.href} onClick={closeMenu}>
+									<a
+										key={menu.label}
+										className={mobileItemClass(false)}
+										href={menu.href}
+										onClick={(event) => {
+											event.preventDefault()
+											closeMenu()
+											scrollToContact()
+										}}
+									>
 										{t(menu.label)}
 									</a>
 								) : (
-									<NavLink
+									<TransitionLink
 										key={menu.label}
 										className={({ isActive }) => mobileItemClass(isActive)}
 										to={menu.href}
-										viewTransition
 										end={menu.href === '/'}
 										onClick={closeMenu}
 									>
 										{t(menu.label)}
-									</NavLink>
+									</TransitionLink>
 								),
 							)}
 						</nav>
