@@ -1,5 +1,6 @@
 import { useState } from "react";
 import TransitionLink from "../../../../components/common/TransitionLink";
+import obcLogo from "../../../../assets/logo/obclogo.webp";
 import {
   Building2,
   ChevronDown,
@@ -140,15 +141,20 @@ export default function Sidebar({
             collapsed ? "lg:justify-center lg:px-0" : ""
           }`}
         >
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-obc-green font-heading text-[13px] font-bold text-[#CDF178]">
-              OBC
-            </div>
+          <div className="flex items-center gap-2">
+            <img
+              src={obcLogo}
+              alt="Logo OBC Onny Barber Center"
+              className={`h-10 shrink-0 object-contain ${collapsed ? "lg:w-12" : "w-14"}`}
+            />
+            
             <div className={`leading-tight ${hide}`}>
               <p className="font-heading text-[18px] font-bold text-obc-charcoal">
-                OBC Group
+                Panel Admin
               </p>
-              <p className="font-body text-[11px] text-obc-muted">Panel Admin</p>
+              <p className="font-body text-[11px] text-obc-muted">
+                Compro & Sport
+              </p>
             </div>
           </div>
           <button

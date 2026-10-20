@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Check, Heart, Menu, X } from 'lucide-react'
+import { ArrowLeft, Check, Heart, LayoutDashboard, LogIn, Menu, X } from 'lucide-react'
 import TransitionLink, { navigateWithTransition } from '../common/TransitionLink'
 import { scrollToContact } from '../common/scrollToContact'
 import logo from '../../assets/logo/obclogo.webp'
 import internetIcon from '../../assets/icon/internet.svg'
-import userCircleIcon from '../../assets/icon/iconstack.io - (User Circle).svg'
 import shareIcon from '../../assets/icon/bagikan.svg'
+import { authService } from '../../services/auth'
 
 // Daftar menu utama
 const menus = [
@@ -56,6 +56,7 @@ function LandingNavbar() {
 	const langRef = useRef<HTMLDivElement>(null)
 	const navigate = useNavigate()
 	const { pathname } = useLocation()
+	const isLoggedIn = Boolean(authService.getCurrentSession())
 	const closeMenu = () => setOpen(false)
 	const changeLanguage = (language: string) => {
 		void i18n.changeLanguage(language)
@@ -259,28 +260,24 @@ function LandingNavbar() {
 							)}
 						</div>
 
-						{/* Desktop: Login. Antara md–xl hanya ikon (agar tidak menabrak menu tengah), mulai xl ikon + teks */}
+						{/* Desktop: CTA autentikasi. Antara md–xl hanya ikon, mulai xl ikon + teks */}
 						<TransitionLink
-							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[1px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-[135px] xl:gap-2 xl:px-5 xl:py-[10px]"
-							to="/login"
-							aria-label={t('nav.login')}
+							className="hidden h-[40px] w-[40px] items-center justify-center gap-0 rounded-[999px] border border-white/70 bg-[linear-gradient(180deg,#EDEDED_0%,#D9D9D9_100%)] p-0 font-['Montserrat'] text-[20px] font-semibold leading-[20px] tracking-[0px] !text-[#000000] shadow-[0px_3px_4px_0px_#00000040] transition-opacity hover:opacity-90 md:inline-flex xl:w-auto xl:gap-2 xl:px-5 xl:py-[10px]"
+							to={isLoggedIn ? '/dashboard' : '/login'}
+							aria-label={t(isLoggedIn ? 'nav.dashboard' : 'nav.login')}
 						>
-							<img
-								src={userCircleIcon}
-								alt=""
-								className="h-[26px] w-[26px] shrink-0 xl:h-[30px] xl:w-[30px]"
-							/>
-							<span className="hidden xl:inline">{t('nav.login')}</span>
+							{isLoggedIn ? <LayoutDashboard size={24} aria-hidden="true" /> : <LogIn size={24} aria-hidden="true" />}
+							<span className="hidden xl:inline">{t(isLoggedIn ? 'nav.dashboard' : 'nav.login')}</span>
 						</TransitionLink>
 
-						{/* Mobile: ikon login (hanya ikon) */}
+						{/* Mobile: ikon CTA autentikasi */}
 						<TransitionLink
 							className={`${circleBtnClass} md:hidden`}
-							to="/login"
-							aria-label={t('nav.login')}
+							to={isLoggedIn ? '/dashboard' : '/login'}
+							aria-label={t(isLoggedIn ? 'nav.dashboard' : 'nav.login')}
 							onClick={closeMenu}
 						>
-							<img src={userCircleIcon} alt="" className="h-[26px] w-[26px]" />
+							{isLoggedIn ? <LayoutDashboard size={22} aria-hidden="true" /> : <LogIn size={22} aria-hidden="true" />}
 						</TransitionLink>
 
 						{/* Mobile: tombol hamburger */}

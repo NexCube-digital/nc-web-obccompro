@@ -1,5 +1,6 @@
-import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
-import { Route } from 'react-router-dom'
+import { lazy, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
+import { Navigate, Route } from 'react-router-dom'
+import { authService } from '../services/auth'
 
 type PreloadablePage<T extends ComponentType> = LazyExoticComponent<T> & {
 	preload: () => Promise<{ default: T }>
@@ -21,6 +22,10 @@ export function lazyPreload<T extends ComponentType>(factory: () => Promise<{ de
 	const Component = lazy(load) as PreloadablePage<T>
 	Component.preload = load
 	return Component
+}
+
+function RequireAuth({ children }: { children: ReactNode }) {
+	return authService.getCurrentSession() ? <>{children}</> : <Navigate to="/login" replace />
 }
 
 const HomePage = lazyPreload(() => import('../pages/public/HomePage'))
@@ -83,12 +88,12 @@ const AppRoutes = (
 		<Route path="/unit-bisnis/agribisnis" element={<ObcAgribisnis />} />
 
 		{/* dashboard */}
-		<Route path="/dashboard" element={<DashboardPage />} />
+		<Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
 		<Route path="/login" element={<LoginPage />} />
 		<Route path="/lupa-password" element={<ForgetPasswordPage />} />
-		<Route path="/settingaccount" element={<SettingAccountPage />} />
-		<Route path="/template/form" element={<FormPage />} />
-		<Route path="/template/tabel" element={<TablePage />} />
+		<Route path="/settingaccount" element={<RequireAuth><SettingAccountPage /></RequireAuth>} />
+		<Route path="/template/form" element={<RequireAuth><FormPage /></RequireAuth>} />
+		<Route path="/template/tabel" element={<RequireAuth><TablePage /></RequireAuth>} />
 	</>
 )
 
