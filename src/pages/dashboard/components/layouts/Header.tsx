@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
+import { getProfilePhotoUrl } from "../../../../services/accountService";
+import { createAdminNotification, type AdminNotificationType } from "../../../../services/notificationService";
 
 type Props = { onToggleSidebar: () => void };
 
@@ -11,13 +14,23 @@ export default function Header({ onToggleSidebar }: Props) {
   const [user, setUser] = useState(() => authService.getCurrentSession()?.user ?? null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationTitle, setNotificationTitle] = useState("");
+  const [notificationBody, setNotificationBody] = useState("");
+  const [notificationType, setNotificationType] = useState<AdminNotificationType>("info");
+  const [notificationCustomerId, setNotificationCustomerId] = useState("");
+  const [notificationActionUrl, setNotificationActionUrl] = useState("");
+  const [sendingNotification, setSendingNotification] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const syncUser = () => setUser(authService.getCurrentSession()?.user ?? null);
     window.addEventListener("storage", syncUser);
-    return () => window.removeEventListener("storage", syncUser);
+    window.addEventListener("obc:auth-session-updated", syncUser);
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("obc:auth-session-updated", syncUser);
+    };
   }, []);
 
   const accountName = user?.name || "Pengguna OBC";
@@ -42,6 +55,32 @@ export default function Header({ onToggleSidebar }: Props) {
     }
     setUser(null);
     await navigateWithTransition("/login", navigate, { replace: true });
+  };
+
+  const handleSendNotification = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!notificationCustomerId.trim() && !window.confirm("Kirim notifikasi ini ke semua pelanggan?")) return;
+
+    setSendingNotification(true);
+    try {
+      await createAdminNotification({
+        customerId: notificationCustomerId.trim() || null,
+        title: notificationTitle.trim(),
+        body: notificationBody.trim(),
+        type: notificationType,
+        actionUrl: notificationActionUrl.trim() || null,
+      });
+      setNotificationTitle("");
+      setNotificationBody("");
+      setNotificationCustomerId("");
+      setNotificationActionUrl("");
+      setNotificationType("info");
+      toast.success("Notifikasi berhasil dikirim.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal mengirim notifikasi.");
+    } finally {
+      setSendingNotification(false);
+    }
   };
 
   useEffect(() => {
@@ -132,20 +171,33 @@ export default function Header({ onToggleSidebar }: Props) {
             >
               <div className="border-b border-obc-border px-4 py-3">
                 <h2 className="font-heading text-[14px] font-semibold text-obc-charcoal">
-                  Notifikasi
+                  Kirim notifikasi
                 </h2>
               </div>
-              <div className="flex flex-col items-center px-5 py-8 text-center">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-obc-ivory text-obc-muted">
-                  <Bell size={18} />
-                </span>
-                <p className="mt-3 font-heading text-[13px] font-semibold text-obc-charcoal">
-                  Belum ada notifikasi
-                </p>
-                <p className="mt-1 font-body text-[12px] text-obc-muted">
-                  Notifikasi terbaru akan muncul di sini.
-                </p>
-              </div>
+              <form onSubmit={handleSendNotification} className="space-y-3 p-4">
+                <label className="block text-[12px] font-medium text-obc-charcoal">Judul
+                  <input required maxLength={255} value={notificationTitle} onChange={(event) => setNotificationTitle(event.target.value)} className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-3 text-[12px] outline-none focus:border-obc-green" />
+                </label>
+                <label className="block text-[12px] font-medium text-obc-charcoal">Isi notifikasi
+                  <textarea required maxLength={2000} rows={3} value={notificationBody} onChange={(event) => setNotificationBody(event.target.value)} className="mt-1 w-full resize-y rounded-lg border border-obc-border bg-obc-ivory px-3 py-2 text-[12px] outline-none focus:border-obc-green" />
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="block text-[12px] font-medium text-obc-charcoal">Jenis
+                    <select value={notificationType} onChange={(event) => setNotificationType(event.target.value as AdminNotificationType)} className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-2 text-[12px] outline-none focus:border-obc-green">
+                      <option value="info">Info</option><option value="promo">Promo</option><option value="booking">Booking</option><option value="payment">Pembayaran</option><option value="membership">Membership</option><option value="system">Sistem</option>
+                    </select>
+                  </label>
+                  <label className="block text-[12px] font-medium text-obc-charcoal">ID pelanggan <span className="font-normal text-obc-muted">(opsional)</span>
+                    <input value={notificationCustomerId} onChange={(event) => setNotificationCustomerId(event.target.value)} pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" title="Masukkan UUID pelanggan yang valid, atau kosongkan untuk broadcast." placeholder="Kosong = semua pelanggan" className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-2 text-[11px] outline-none focus:border-obc-green" />
+                  </label>
+                </div>
+                <label className="block text-[12px] font-medium text-obc-charcoal">URL aksi <span className="font-normal text-obc-muted">(opsional)</span>
+                  <input maxLength={500} value={notificationActionUrl} onChange={(event) => setNotificationActionUrl(event.target.value)} placeholder="/booking atau https://..." className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-3 text-[12px] outline-none focus:border-obc-green" />
+                </label>
+                <button type="submit" disabled={sendingNotification} className="h-9 w-full rounded-lg bg-obc-green px-3 text-[12px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:opacity-60">
+                  {sendingNotification ? "Mengirim..." : "Kirim notifikasi"}
+                </button>
+              </form>
             </section>
           )}
         </div>
@@ -162,8 +214,10 @@ export default function Header({ onToggleSidebar }: Props) {
             }}
             className="flex items-center gap-2.5 rounded-lg p-1 text-left transition-colors hover:bg-obc-hover-surface"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-obc-green font-heading text-[12px] font-semibold text-[#CDF178]">
-              {accountInitials || "U"}
+            <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-obc-green font-heading text-[12px] font-semibold text-[#CDF178]">
+              {user?.avatarUrl ? (
+                <img src={getProfilePhotoUrl(user.avatarUrl)} alt="" className="h-full w-full object-cover" />
+              ) : accountInitials || "U"}
             </span>
             <span className="hidden leading-tight sm:block">
               <span className="block font-heading text-[13px] font-semibold text-obc-charcoal">

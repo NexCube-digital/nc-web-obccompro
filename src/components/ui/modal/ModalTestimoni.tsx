@@ -159,20 +159,10 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 	const { t } = useTranslation()
 	const [form, setForm] = useState<TestimoniFormData>(initialForm)
 	const [errors, setErrors] = useState<FormErrors>({})
+	const [submitError, setSubmitError] = useState("")
 	const [hoverRating, setHoverRating] = useState(0)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isSuccess, setIsSuccess] = useState(false)
-
-	// Reset form setiap modal ditutup
-	useEffect(() => {
-		if (!isOpen) {
-			setForm(initialForm)
-			setErrors({})
-			setHoverRating(0)
-			setIsSubmitting(false)
-			setIsSuccess(false)
-		}
-	}, [isOpen])
 
 	// Tutup dengan tombol Escape + kunci scroll halaman
 	useEffect(() => {
@@ -197,6 +187,7 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 	const setField = <K extends keyof TestimoniFormData>(key: K, value: TestimoniFormData[K]) => {
 		setForm((prev) => ({ ...prev, [key]: value }))
 		setErrors((prev) => ({ ...prev, [key]: undefined }))
+		setSubmitError("")
 	}
 
 	const validate = () => {
@@ -218,6 +209,8 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 		try {
 			await onSubmit?.({ ...form, name: form.name.trim(), text: form.text.trim() })
 			setIsSuccess(true)
+		} catch (error) {
+			setSubmitError(error instanceof Error ? error.message : "Gagal mengirim testimoni. Silakan coba lagi.")
 		} finally {
 			setIsSubmitting(false)
 		}
@@ -385,6 +378,8 @@ export default function ModalTestimoni({ isOpen, onClose, onSubmit }: ModalTesti
 								</div>
 							</div>
 						</div>
+
+						{submitError && <p role="alert" className="mt-3 font-['Montserrat'] text-[13px] text-red-600">{submitError}</p>}
 
 						<button
 							type="submit"

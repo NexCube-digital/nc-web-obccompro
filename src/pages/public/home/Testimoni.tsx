@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, Quote, Star, BadgeCheck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react'
 import laundryLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (4).png'
 import villaLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
 import sportCenterLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER.png'
@@ -9,84 +9,66 @@ import coffeeLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (
 import agribusinessLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (7).png'
 import reviewIcon from '../../../assets/icon/iconstack.io - (Pen New Square).svg'
 import ModalTestimoni, { type TestimoniFormData } from '../../../components/ui/modal/ModalTestimoni'
+import { getApiErrorMessage } from '../../../services/api'
+import { getTestimonialAvatarUrl, publicTestimonialService, type PublicTestimonial } from '../../../services/Public/Testimonial'
 
-const testimonials = [
-	{
-		name: 'Hyena Ktlyn',
-		unit: 'Customer OBC Laundry',
-		avatar: 'H',
-		stars: 5,
-		logo: laundryLogo,
-		text: 'Hasil laundry-nya rapi dan prosesnya cukup cepat. Saya coba laundry kiloan dan pakaian sudah selesai sesuai waktu yang diinformasikan. Pelayanannya juga ramah.',
-	},
-	{
-		name: 'Rayna Lynz',
-		unit: 'Guest OBC Villa',
-		avatar: 'R',
-		stars: 5,
-		logo: villaLogo,
-		text: 'Enak untuk kumpul keluarga karena ada ruang keluarga dan area yang cukup luas. Fasilitas seperti kitchen juga membantu kalau mau menyiapkan makanan sendiri. Overall nyaman untuk short getaway.',
-	},
-	{
-		name: 'Laurnz Raihana',
-		unit: 'Sport Center Member',
-		avatar: 'L',
-		stars: 5,
-		logo: sportCenterLogo,
-		text: 'Fasilitas olahraganya cukup lengkap dan areanya nyaman. Saya biasanya main futsal dan badminton di sini, booking-nya juga cukup praktis. Cocok kalau mau olahraga bareng teman.',
-	},
-	{
-		name: 'Nadia Citra',
-		unit: 'Guest House Customer',
-		avatar: 'N',
-		stars: 5,
-		logo: guestHouseLogo,
-		text: 'Tempatnya sangat santai dan nyaman untuk istirahat. Suasana tenang, kebersihannya terjaga, dan proses check-in juga mudah.',
-	},
-	{
-		name: 'Bima Putra',
-		unit: 'OBC Coffee Member',
-		avatar: 'B',
-		stars: 5,
-		logo: coffeeLogo,
-		text: 'Kopinya enak, tempatnya nyaman, dan cocok untuk nongkrong sambil kerja ringan. Pelayanannya cepat dan ramah.',
-	},
-	{
-		name: 'Salsabila',
-		unit: 'OBC Agribisnis Visitor',
-		avatar: 'S',
-		stars: 5,
-		logo: agribusinessLogo,
-		text: 'Pengalaman di OBC sangat menyenangkan. Lingkungannya asri, edukasinya menarik, dan cocok untuk keluarga belajar sambil bersantai.',
-	},
-]
+function getCompanyLogo(company: string | null) {
+	const normalizedCompany = company?.toLowerCase() ?? ''
+	if (normalizedCompany.includes('laundry')) return laundryLogo
+	if (normalizedCompany.includes('villa')) return villaLogo
+	if (normalizedCompany.includes('sport')) return sportCenterLogo
+	if (normalizedCompany.includes('guest house')) return guestHouseLogo
+	if (normalizedCompany.includes('coffee')) return coffeeLogo
+	if (normalizedCompany.includes('agribisnis')) return agribusinessLogo
+	return null
+}
 
 export default function Testimoni() {
 	const { t } = useTranslation()
+	const [testimonials, setTestimonials] = useState<PublicTestimonial[]>([])
+	const [isLoading, setIsLoading] = useState(true)
+	const [loadError, setLoadError] = useState('')
 	const [activeTestimonial, setActiveTestimonial] = useState(0)
 	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
+	useEffect(() => {
+		let isMounted = true
+		publicTestimonialService.getPublished()
+			.then((data) => {
+				if (isMounted) setTestimonials(data)
+			})
+			.catch((error: unknown) => {
+				if (isMounted) setLoadError(getApiErrorMessage(error))
+			})
+			.finally(() => {
+				if (isMounted) setIsLoading(false)
+			})
+		return () => {
+			isMounted = false
+		}
+	}, [])
+
 	const goToTestimonial = (direction: number) => {
+		if (!testimonials.length) return
 		setActiveTestimonial((current) => (current + direction + testimonials.length) % testimonials.length)
 	}
 
 	const handleSubmitReview = async (data: TestimoniFormData) => {
-		// TODO: kirim ke backend, contoh:
-		// await fetch('/api/testimoni', {
-		// 	method: 'POST',
-		// 	headers: { 'Content-Type': 'application/json' },
-		// 	body: JSON.stringify(data),
-		// })
-		console.log('Testimoni baru:', data)
+		await publicTestimonialService.submit({
+			name: data.name,
+			company: `${data.unit} · ${data.role}`,
+			text: data.text,
+			rating: data.rating,
+		})
 	}
 
-	// Auto-scroll untuk card testimoni setiap 10 detik
 	useEffect(() => {
+		if (testimonials.length < 2) return
 		const timer = setInterval(() => {
 			setActiveTestimonial((current) => (current + 1) % testimonials.length)
 		}, 10000)
 		return () => clearInterval(timer)
-	}, [])
+	}, [testimonials.length])
 
 	return (
 
@@ -113,6 +95,7 @@ export default function Testimoni() {
 						{/* Panah: mobile pindah ke bawah carousel, rata kanan, lebih kecil */}
 						<div className="order-5 mt-3 flex gap-2.5 self-end md:order-none md:mt-0 md:self-auto">
 							<button
+								disabled={testimonials.length < 2}
 								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[clamp(40px,6svh,50px)] md:w-[clamp(40px,6svh,50px)]"
 								type="button"
 								aria-label={t('testimonialsSection.prevAria')}
@@ -121,6 +104,7 @@ export default function Testimoni() {
 								<ChevronLeft className="h-4 w-4 translate-x-[-1px] md:h-5 md:w-5" />
 							</button>
 							<button
+								disabled={testimonials.length < 2}
 								className="grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[0.67px] border-[#1F3320] bg-white text-[#1F3320] transition-colors hover:bg-[#f5f5f5] md:h-[clamp(40px,6svh,50px)] md:w-[clamp(40px,6svh,50px)]"
 								type="button"
 								aria-label={t('testimonialsSection.nextAria')}
@@ -135,7 +119,13 @@ export default function Testimoni() {
 				{/* Carousel: mobile melebar sampai tepi layar (-mx-5) supaya kartu kiri/kanan terlihat sebagian.
 				    Tinggi mengikuti tinggi layar (svh) di desktop agar seluruh section muat dalam satu layar. */}
 				<div className="relative order-3 -mx-5 mt-6 h-[clamp(430px,58svh,460px)] overflow-hidden md:order-none md:mx-0 md:mt-[clamp(16px,3svh,32px)] md:h-[clamp(320px,calc(400px_+_(100svh_-_800px)_*_1.1),470px)]">
-					{testimonials.map((item, i) => {
+					{isLoading ? (
+						<div className="absolute inset-0 grid place-items-center font-['Montserrat'] text-[14px] text-[#555555]">Memuat testimoni...</div>
+					) : loadError ? (
+						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">Testimoni belum dapat dimuat. {loadError}</div>
+					) : testimonials.length === 0 ? (
+						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">Belum ada testimoni yang dipublikasikan.</div>
+					) : testimonials.map((item, i) => {
 						const offset = (i - activeTestimonial + testimonials.length) % testimonials.length
 						const normalizedOffset = offset > testimonials.length / 2 ? offset - testimonials.length : offset
 						const isVisible = normalizedOffset >= -2 && normalizedOffset <= 2
@@ -145,10 +135,13 @@ export default function Testimoni() {
 						const scale = isActive ? 1 : 0.9
 						const opacity = isActive ? 1 : 0.55
 						const blur = isActive ? 0 : 0.2
+						const avatarUrl = getTestimonialAvatarUrl(item.avatar)
+						const companyLogo = getCompanyLogo(item.company)
+						const initials = item.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
 
 						return (
 							<article
-								key={item.name + i}
+								key={item.id}
 								className="absolute left-1/2 top-3 flex h-[calc(100%-12px)] w-[300px] -translate-x-1/2 flex-col rounded-[25px] border border-[#ececec] bg-[#ffffff] p-[22px] text-left shadow-[0_5px_80px_0_#EEEEE7] transition-[transform,opacity,filter] duration-700 ease-in-out [--step:320px] md:w-[344px] md:[--step:360px]"
 								style={{
 									transform: `translateX(calc(${normalizedOffset} * var(--step))) scale(${scale})`,
@@ -159,20 +152,22 @@ export default function Testimoni() {
 							>
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-3">
-										<span className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-[#CDF178] font-['Montserrat'] text-[27px] font-semibold leading-[35px] tracking-[0px] text-[#004000]">
-											{item.avatar}
-										</span>
+										{avatarUrl ? (
+											<img src={avatarUrl} alt="" className="h-[44px] w-[44px] shrink-0 rounded-full object-cover" />
+										) : (
+											<span className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-[#CDF178] font-['Montserrat'] text-[27px] font-semibold leading-[35px] tracking-[0px] text-[#004000]">{initials || '?'}</span>
+										)}
 										<div>
 											<strong className="block font-['Montserrat'] text-[20px] font-bold leading-[20px] tracking-[0px] text-[#1F3320]">
 												{item.name}
 											</strong>
 											<small className="mt-1 block font-['Montserrat'] text-[14px] font-normal italic leading-[16px] tracking-[0px] text-[#555555]">
-												{item.unit}
+												{item.company || 'Pelanggan OBC'}
 											</small>
 										</div>
 									</div>
 									<span className="font-['Montserrat'] text-[42px] font-normal leading-[42px] tracking-[-1px] text-[#1F3320]">
-										5.0
+										{item.rating.toFixed(1)}
 									</span>
 								</div>
 
@@ -183,14 +178,13 @@ export default function Testimoni() {
 								</p>
 
 								<div className="mt-4 flex shrink-0 items-center justify-between">
-									<img src={item.logo} alt={item.unit} loading="lazy" decoding="async" className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain" />
+									{companyLogo && <img src={companyLogo} alt={item.company ?? ''} loading="lazy" decoding="async" className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain" />}
 									<div className="flex items-center gap-1.5">
 										<div className="flex gap-0.5 text-[#f5a623]">
 											{Array.from({ length: 5 }).map((_, s) => (
-												<Star key={s} size={15} fill="currentColor" strokeWidth={0} />
+												<Star key={s} size={15} fill={s < item.rating ? 'currentColor' : 'none'} strokeWidth={s < item.rating ? 0 : 1.5} />
 											))}
 										</div>
-										<BadgeCheck className="text-white" size={17} fill="#3b82f6" stroke="white" />
 									</div>
 								</div>
 							</article>
@@ -200,10 +194,11 @@ export default function Testimoni() {
 
 				{/* Indikator titik slide testimoni */}
 				<div className="order-4 mt-5 flex items-center justify-center gap-2 md:order-none md:mt-[clamp(12px,2svh,20px)]">
-					{testimonials.map((_, i) => (
+					{testimonials.map((item, i) => (
 						<button
-							key={i}
+								key={item.id}
 							type="button"
+								disabled={testimonials.length < 2}
 							aria-label={t('testimonialsSection.goToSlide', { number: i + 1 })}
 							onClick={() => setActiveTestimonial(i)}
 							className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
@@ -230,11 +225,13 @@ export default function Testimoni() {
 				</div>
 			</div>
 
-			<ModalTestimoni
-				isOpen={isReviewModalOpen}
-				onClose={() => setIsReviewModalOpen(false)}
-				onSubmit={handleSubmitReview}
-			/>
+			{isReviewModalOpen && (
+				<ModalTestimoni
+					isOpen
+					onClose={() => setIsReviewModalOpen(false)}
+					onSubmit={handleSubmitReview}
+				/>
+			)}
 		</section>
 	)
 }

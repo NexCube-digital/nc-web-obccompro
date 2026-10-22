@@ -1,20 +1,18 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   Camera,
-  Check,
-  Globe,
   KeyRound,
-  Laptop,
   Mail,
   Phone,
-  ShieldCheck,
-  Smartphone,
   User,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import Sidebar from "../components/layouts/Sidebar";
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
+import { changePassword, getProfile, getProfilePhotoUrl, updateProfile, uploadProfilePhoto, type AccountProfile } from "../../../services/accountService";
+import { getApiErrorMessage } from "../../../services/api";
 
 /* ───────────── Helper ───────────── */
 const cardCls =
@@ -29,24 +27,8 @@ const btnPrimary =
 const btnOutline =
   "flex h-10 items-center justify-center gap-2 rounded-xl border border-obc-border bg-white px-4 font-heading text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-hover-surface";
 
-/* ───────────── Data contoh (ganti dengan data API) ───────────── */
 const tabs = ["Profil", "Keamanan"] as const;
 type Tab = (typeof tabs)[number];
-
-type Sesi = {
-  id: number;
-  perangkat: string;
-  lokasi: string;
-  waktu: string;
-  aktif?: boolean;
-  icon: LucideIcon;
-};
-
-const sesiAwal: Sesi[] = [
-  { id: 1, perangkat: "MacBook Pro · Chrome", lokasi: "Bandung, ID", waktu: "Aktif sekarang", aktif: true, icon: Laptop },
-  { id: 2, perangkat: "iPhone 15 · Safari", lokasi: "Bandung, ID", waktu: "2 jam lalu", icon: Smartphone },
-  { id: 3, perangkat: "Windows PC · Edge", lokasi: "Jakarta, ID", waktu: "3 hari lalu", icon: Globe },
-];
 
 /* ───────────── Komponen kecil ───────────── */
 function CardTitle({
@@ -101,30 +83,81 @@ function Pill({ children, tone = "green" }: { children: ReactNode; tone?: "green
 }
 
 /* ───────────── Tab: Profil ───────────── */
-function ProfilTab() {
+function ProfilTab({
+  firstName,
+  lastName,
+  email,
+  phone,
+  bio,
+  role,
+  avatarUrl,
+  loading,
+  saving,
+  uploadingPhoto,
+  onFirstNameChange,
+  onLastNameChange,
+  onPhoneChange,
+  onBioChange,
+  onPhotoSelect,
+  onReset,
+  onSave,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  bio: string;
+  role: string;
+  avatarUrl: string | null;
+  loading: boolean;
+  saving: boolean;
+  uploadingPhoto: boolean;
+  onFirstNameChange: (value: string) => void;
+  onLastNameChange: (value: string) => void;
+  onPhoneChange: (value: string) => void;
+  onBioChange: (value: string) => void;
+  onPhotoSelect: (file: File) => void;
+  onReset: () => void;
+  onSave: () => void;
+}) {
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) onPhotoSelect(file);
+  };
+
   return (
     <section className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
       {/* Kartu avatar */}
       <div className={`${cardCls} h-fit p-5 text-center sm:p-6`}>
         <div className="relative mx-auto h-[88px] w-[88px]">
-          <div className="grid h-full w-full place-items-center rounded-2xl bg-[#1F3320] font-heading text-[30px] font-bold text-[#CDF178]">
-            EP
-          </div>
+          {avatarUrl ? (
+            <img src={getProfilePhotoUrl(avatarUrl)} alt={`Foto profil ${firstName} ${lastName}`} className="h-full w-full rounded-2xl object-cover" />
+          ) : (
+            <div className="grid h-full w-full place-items-center rounded-2xl bg-[#1F3320] font-heading text-[30px] font-bold text-[#CDF178]">
+              {`${firstName} ${lastName}`.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "?"}
+            </div>
+          )}
           <button
             type="button"
             aria-label="Ganti foto profil"
+            onClick={() => photoInputRef.current?.click()}
+            disabled={loading || uploadingPhoto}
             className="absolute -bottom-1.5 -right-1.5 grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-obc-green text-white transition-colors hover:bg-obc-green-hover"
           >
-            <Camera size={14} />
+            {uploadingPhoto ? <span className="text-[10px]">...</span> : <Camera size={14} />}
           </button>
+          <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} className="sr-only" />
         </div>
-        <p className="mt-4 font-heading text-[18px] font-semibold text-obc-charcoal">Elena Park</p>
-        <p className="font-body text-[13px] text-obc-muted">Manajer Operasional</p>
+        <p className="mt-4 font-heading text-[18px] font-semibold text-obc-charcoal">{`${firstName} ${lastName}`.trim() || "Memuat profil..."}</p>
+        <p className="font-body text-[13px] text-obc-muted">Staf OBC Sport</p>
         <div className="mt-3">
-          <Pill tone="lime">Admin</Pill>
+          <Pill tone="lime">{role || "Akun"}</Pill>
         </div>
         <p className="mt-4 border-t border-obc-border pt-4 font-body text-[12px] text-obc-muted">
-          Format JPG atau PNG, maksimal 2 MB.
+          JPG, PNG, atau WebP, maksimal 2 MB.
         </p>
       </div>
 
@@ -133,28 +166,32 @@ function ProfilTab() {
         <CardTitle title="Informasi pribadi" sub="Data ini tampil di akun admin OBC Sport." />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Nama depan" icon={User}>
-            <input className={inputCls} defaultValue="Elena" />
+            <input className={inputCls} value={firstName} onChange={(event) => onFirstNameChange(event.target.value)} disabled={loading} />
           </Field>
           <Field label="Nama belakang">
-            <input className={inputCls} defaultValue="Park" />
+            <input className={inputCls} value={lastName} onChange={(event) => onLastNameChange(event.target.value)} disabled={loading} />
           </Field>
           <Field label="Email" icon={Mail}>
-            <input type="email" className={inputCls} defaultValue="elena@obc.id" />
+            <input type="email" className={`${inputCls} cursor-not-allowed opacity-70`} value={email} readOnly />
           </Field>
           <Field label="No. telepon" icon={Phone}>
-            <input type="tel" className={inputCls} defaultValue="+62 812 3456 7890" />
+            <input type="tel" className={inputCls} value={phone} onChange={(event) => onPhoneChange(event.target.value)} disabled={loading} />
           </Field>
           <Field label="Bio" className="sm:col-span-2">
             <textarea
               rows={4}
               className={`${inputCls} h-auto resize-none py-3`}
-              defaultValue="Mengelola booking lapangan, pengajuan sewa gedung, dan jadwal operasional OBC Sport."
+              value={bio}
+              onChange={(event) => onBioChange(event.target.value)}
+              disabled={loading}
             />
           </Field>
         </div>
         <div className="mt-6 flex justify-end gap-2">
-          <button className={btnOutline}>Batal</button>
-          <button className={btnPrimary}>Simpan perubahan</button>
+          <button type="button" className={btnOutline} onClick={onReset} disabled={saving || loading}>Batal</button>
+          <button type="button" className={btnPrimary} onClick={onSave} disabled={saving || loading}>
+            {saving ? "Menyimpan..." : "Simpan perubahan"}
+          </button>
         </div>
       </div>
     </section>
@@ -163,8 +200,38 @@ function ProfilTab() {
 
 /* ───────────── Tab: Keamanan ───────────── */
 function KeamananTab() {
-  const [sesi, setSesi] = useState<Sesi[]>(sesiAwal);
-  const [dua, setDua] = useState(true);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  const handlePasswordUpdate = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Semua kolom kata sandi wajib diisi.");
+      return;
+    }
+    if (newPassword.length < 12 || !/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      toast.error("Kata sandi baru harus minimal 12 karakter dan mengandung huruf kecil, huruf besar, serta angka.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Konfirmasi kata sandi baru tidak sama.");
+      return;
+    }
+
+    setUpdatingPassword(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Kata sandi berhasil diperbarui.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    } finally {
+      setUpdatingPassword(false);
+    }
+  };
 
   return (
     <section className="grid max-w-[760px] gap-4">
@@ -173,85 +240,24 @@ function KeamananTab() {
         <CardTitle title="Ubah kata sandi" sub="Gunakan minimal 8 karakter dengan kombinasi huruf dan angka." />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Kata sandi saat ini" icon={KeyRound} className="sm:col-span-2">
-            <input type="password" className={inputCls} defaultValue="password123" />
+            <input type="password" className={inputCls} value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
           </Field>
           <Field label="Kata sandi baru">
-            <input type="password" className={inputCls} placeholder="Minimal 8 karakter" />
+            <input type="password" className={inputCls} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} placeholder="Minimal 12 karakter" autoComplete="new-password" />
           </Field>
           <Field label="Konfirmasi kata sandi">
-            <input type="password" className={inputCls} placeholder="Ulangi kata sandi baru" />
+            <input type="password" className={inputCls} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Ulangi kata sandi baru" autoComplete="new-password" />
           </Field>
         </div>
         <div className="mt-6">
-          <button className={btnPrimary}>Perbarui kata sandi</button>
+          <button type="button" className={btnPrimary} onClick={handlePasswordUpdate} disabled={updatingPassword}>
+            {updatingPassword ? "Memperbarui..." : "Perbarui kata sandi"}
+          </button>
         </div>
       </div>
 
-      {/* 2FA */}
-      <div className={`${cardCls} p-4 sm:p-6`}>
-        <div className="flex items-start gap-4">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#E7F5D0] text-[#0A730A]">
-            <ShieldCheck size={20} strokeWidth={1.9} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-heading text-[16px] font-semibold text-obc-charcoal">
-                Autentikasi dua langkah
-              </h2>
-              <Pill>{dua ? "Aktif" : "Nonaktif"}</Pill>
-            </div>
-            <p className="mt-1 font-body text-[13px] text-obc-muted">
-              Tambahkan lapisan keamanan dengan kode dari aplikasi autentikator saat masuk.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button className={btnOutline}>Kelola 2FA</button>
-              <button
-                className={btnOutline}
-                onClick={() => setDua((v) => !v)}
-              >
-                {dua ? "Nonaktifkan" : "Aktifkan"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Sesi aktif */}
-      <div className={`${cardCls} p-4 sm:p-6`}>
-        <CardTitle title="Sesi aktif" sub="Keluarkan perangkat yang tidak kamu kenali." />
-        <ul className="divide-y divide-obc-border">
-          {sesi.map((s) => (
-            <li key={s.id} className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
-              <div
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl"
-                style={{ background: "#EBEEDC", color: "#404F14" }}
-              >
-                <s.icon size={18} strokeWidth={1.9} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-body text-[14px] font-semibold text-obc-charcoal">
-                  {s.perangkat}
-                </p>
-                <p className="truncate font-body text-[12px] text-obc-muted">
-                  {s.lokasi} · {s.waktu}
-                </p>
-              </div>
-              {s.aktif ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F5D0] px-2.5 py-1 font-heading text-[11px] font-semibold text-[#0A730A]">
-                  <Check size={12} /> Perangkat ini
-                </span>
-              ) : (
-                <button
-                  className="h-8 rounded-lg border border-obc-border bg-white px-3 font-heading text-[12px] font-medium text-obc-red transition-colors hover:bg-obc-status-booked-bg"
-                  onClick={() => setSesi((list) => list.filter((x) => x.id !== s.id))}
-                >
-                  Keluarkan
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+      
     </section>
   );
 }
@@ -261,6 +267,86 @@ export default function SettingAccount() {
   const [collapsed, setCollapsed] = useState(false); // PC: rail ikon
   const [mobileOpen, setMobileOpen] = useState(false); // mobile: drawer
   const [tab, setTab] = useState<Tab>("Profil");
+  const [profile, setProfile] = useState<AccountProfile | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getProfile()
+      .then((data) => {
+        if (!active) return;
+        setProfile(data);
+        const [first, ...rest] = data.name.trim().split(/\s+/);
+        setFirstName(first ?? "");
+        setLastName(rest.join(" "));
+        setPhone(data.phone ?? "");
+        setBio(data.bio ?? "");
+      })
+      .catch((error: unknown) => toast.error(getApiErrorMessage(error)))
+      .finally(() => {
+        if (active) setLoadingProfile(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleProfileSave = async () => {
+    const name = `${firstName} ${lastName}`.trim();
+    if (name.length < 2) {
+      toast.error("Nama minimal 2 karakter.");
+      return;
+    }
+
+    setSavingProfile(true);
+    try {
+      const updated = await updateProfile({ name, phone: phone || null, bio: bio || null });
+      setProfile(updated);
+      toast.success("Perubahan profil berhasil disimpan.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleProfileReset = () => {
+    if (!profile) return;
+    const [first, ...rest] = profile.name.trim().split(/\s+/);
+    setFirstName(first ?? "");
+    setLastName(rest.join(" "));
+    setPhone(profile.phone ?? "");
+    setBio(profile.bio ?? "");
+  };
+
+  const handlePhotoSelect = async (file: File) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Format foto harus JPG, PNG, atau WebP.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Ukuran foto maksimal 2 MB.");
+      return;
+    }
+
+    setUploadingPhoto(true);
+    try {
+      const updated = await uploadProfilePhoto(file);
+      setProfile(updated);
+      toast.success("Foto profil berhasil diperbarui.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const toggleSidebar = () => {
     if (window.innerWidth >= 1024) setCollapsed((v) => !v);
@@ -323,7 +409,27 @@ export default function SettingAccount() {
             })}
           </div>
 
-          {tab === "Profil" ? <ProfilTab /> : <KeamananTab />}
+          {tab === "Profil" ? (
+            <ProfilTab
+              firstName={firstName}
+              lastName={lastName}
+              email={profile?.email ?? ""}
+              phone={phone}
+              bio={bio}
+              role={profile?.role ?? ""}
+              avatarUrl={profile?.avatarUrl ?? null}
+              loading={loadingProfile}
+              saving={savingProfile}
+              uploadingPhoto={uploadingPhoto}
+              onFirstNameChange={setFirstName}
+              onLastNameChange={setLastName}
+              onPhoneChange={setPhone}
+              onBioChange={setBio}
+              onPhotoSelect={handlePhotoSelect}
+              onReset={handleProfileReset}
+              onSave={handleProfileSave}
+            />
+          ) : <KeamananTab />}
         </main>
 
         <Footer />

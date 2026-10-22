@@ -1,21 +1,16 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import { useLocation } from "react-router-dom";
 import TransitionLink from "../../../../components/common/TransitionLink";
 import obcLogo from "../../../../assets/logo/obclogo.webp";
 import {
   Building2,
   ChevronDown,
-  CalendarDays,
   ClipboardList,
   Dumbbell,
   FileBarChart,
   Globe,
-  Image,
   LayoutGrid,
-  MapPin,
-  MessageSquareQuote,
-  PartyPopper,
-  Settings,
-  TableProperties,
+  Receipt,
   Users,
   X,
   type LucideIcon,
@@ -25,60 +20,86 @@ type MenuItem = {
   label: string;
   icon: LucideIcon;
   to?: string;
+  category?: string;
   children?: { label: string; to: string }[];
 };
 
 const MENU: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
-  { label: "Form", icon: ClipboardList, to: "/template/form" },
-  { label: "Tabel", icon: TableProperties, to: "/template/tabel" },
   {
-    label: "OBC Sport",
+    label: "Operasional",
+    category: "OPERASIONAL",
     icon: Dumbbell,
     children: [
       { label: "Booking", to: "/sport/booking" },
       { label: "Resource & Lapangan", to: "/sport/resource" },
       { label: "Harga & Tarif", to: "/sport/harga" },
       { label: "Membership", to: "/sport/membership" },
+      { label: "Kalender Master", to: "/kalender" },
+      { label: "Pengajuan Event", to: "/event/pengajuan" },
+      { label: "Invoice & DP Event", to: "/event/invoice" },
     ],
   },
-  { label: "Kalender Master", icon: CalendarDays, to: "/kalender" },
   {
-    label: "Sewa Gedung / Event",
-    icon: PartyPopper,
+    label: "Transaksi & Pelanggan",
+    category: "TRANSAKSI",
+    icon: Receipt,
     children: [
-      { label: "Pengajuan Masuk", to: "/event/pengajuan" },
-      { label: "Invoice & DP", to: "/event/invoice" },
+      { label: "Invoice Management", to: "/admin/invoices" },
+      { label: "Keuangan", to: "/admin/finance" },
+      { label: "Pelanggan", to: "/admin/customers" },
+      { label: "Permintaan Kontak", to: "/admin/contacts" },
+    ],
+  },
+  {
+    label: "Konten Website",
+    category: "CONTENT",
+    icon: Globe,
+    children: [
+      { label: "Manajemen Halaman", to: "/admin/cms/pages" },
+      { label: "Manajemen Section", to: "/admin/cms/sections" },
+      { label: "Portfolio", to: "/admin/portfolio" },
+      { label: "Paket Layanan", to: "/admin/packages" },
+      { label: "Pustaka Media", to: "/admin/media" },
+      { label: "Galeri", to: "/galeri" },
+      { label: "Testimoni", to: "/testimoni" },
+      { label: "Kontak & Lokasi", to: "/kontak" },
     ],
   },
   {
     label: "Unit Bisnis",
     icon: Building2,
     children: [
-      { label: "OBC Guest House", to: "/unit/guest-house" },
-      { label: "OBC Villa", to: "/unit/villa" },
-      { label: "OBC Penthouse", to: "/unit/penthouse" },
-      { label: "OBC Laundry", to: "/unit/laundry" },
-      { label: "OBC Food Court", to: "/unit/food-court" },
-      { label: "OBC Coffee", to: "/unit/coffee" },
-      { label: "OBC Agrobisnis", to: "/unit/agrobisnis" },
+      { label: "OBC Guest House", to: "/unit-bisnis/guest-house" },
+      { label: "OBC Villa", to: "/unit-bisnis/villa" },
+      { label: "OBC Laundry", to: "/unit-bisnis/laundry" },
+      { label: "OBC Food Court", to: "/unit-bisnis/food-court" },
+      { label: "OBC Coffee", to: "/unit-bisnis/coffee" },
+      { label: "OBC Agribisnis", to: "/unit-bisnis/agribisnis" },
     ],
   },
   {
-    label: "Konten Website",
-    icon: Globe,
+    label: "Tim & Administrasi",
+    category: "ADMINISTRASI",
+    icon: Users,
     children: [
-      { label: "Beranda", to: "/konten/beranda" },
-      { label: "Tentang Kami", to: "/konten/tentang" },
-      { label: "Layanan OBC", to: "/konten/layanan" },
+      { label: "Staff", to: "/staff" },
+      { label: "Tim", to: "/admin/teams" },
+      { label: "Role & Permission", to: "/admin/role-permissions" },
+      { label: "Audit Log", to: "/admin/activities" },
+      { label: "Pengaturan", to: "/pengaturan" },
     ],
   },
-  { label: "Galeri", icon: Image, to: "/galeri" },
-  { label: "Testimoni", icon: MessageSquareQuote, to: "/testimoni" },
-  { label: "Kontak & Lokasi", icon: MapPin, to: "/kontak" },
-  { label: "Pelanggan", icon: Users, to: "/pelanggan" },
-  { label: "Laporan", icon: FileBarChart, to: "/laporan" },
-  { label: "Pengaturan", icon: Settings, to: "/pengaturan" },
+  { label: "Laporan", category: "LAPORAN", icon: FileBarChart, to: "/laporan" },
+  {
+    label: "Utilitas",
+    category: "UTILITAS",
+    icon: ClipboardList,
+    children: [
+      { label: "Form", to: "/template/form" },
+      { label: "Tabel", to: "/template/tabel" },
+    ],
+  },
 ];
 
 type Props = {
@@ -100,7 +121,11 @@ export default function Sidebar({
   onCloseMobile,
   onExpand,
 }: Props) {
-  const [expanded, setExpanded] = useState<string | null>("OBC Sport");
+  const location = useLocation();
+  const activeGroup = MENU.find((item) => item.children?.some((child) =>
+    location.pathname === child.to || location.pathname.startsWith(`${child.to}/`),
+  ))?.label ?? null;
+  const [expanded, setExpanded] = useState<string | null>(() => activeGroup);
 
   // Semua kelas "ciut" hanya berlaku di layar PC (lg ke atas).
   // Di mobile drawer selalu tampil penuh.
@@ -180,72 +205,69 @@ export default function Sidebar({
           {collapsed && <div className="mb-2 hidden border-t border-obc-border lg:block" />}
 
           <ul className="space-y-0.5">
-            {MENU.map((item) => {
+            {MENU.map((item, index) => {
               const Icon = item.icon;
               const tip = collapsed ? item.label : undefined;
+              const previousCategory = MENU[index - 1]?.category;
+              const showCategory = item.category && item.category !== previousCategory;
 
               if (!item.children) {
                 return (
-                  <li key={item.label}>
-                    <TransitionLink
-                      to={item.to!}
-                      title={tip}
-                      onClick={onCloseMobile}
-                      className={({ isActive }) =>
-                        `${itemCls} ${isActive ? active : idle}`
-                      }
-                    >
-                      <Icon size={18} strokeWidth={1.8} className="shrink-0" />
-                      <span className={`truncate ${hide}`}>{item.label}</span>
-                    </TransitionLink>
-                  </li>
+                  <Fragment key={item.label}>
+                    {showCategory && <li className={`px-3 pb-1 pt-4 font-heading text-[10px] font-semibold tracking-[0.1em] text-obc-muted ${hide}`}>{item.category}</li>}
+                    <li>
+                      <TransitionLink
+                        to={item.to!}
+                        title={tip}
+                        onClick={onCloseMobile}
+                        className={({ isActive }) => `${itemCls} ${isActive ? active : idle}`}
+                      >
+                        <Icon size={18} strokeWidth={1.8} className="shrink-0" />
+                        <span className={`truncate ${hide}`}>{item.label}</span>
+                      </TransitionLink>
+                    </li>
+                  </Fragment>
                 );
               }
 
               const isOpen = expanded === item.label;
+              const hasActiveChild = item.children.some((child) =>
+                location.pathname === child.to || location.pathname.startsWith(`${child.to}/`),
+              );
+              const groupLabelId = `sidebar-group-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
               return (
-                <li key={item.label}>
-                  <button
-                    onClick={() => handleGroup(item.label)}
-                    aria-expanded={isOpen}
-                    title={tip}
-                    className={`${itemCls} ${idle} w-full`}
-                  >
-                    <Icon size={18} strokeWidth={1.8} className="shrink-0" />
-                    <span className={`flex-1 truncate text-left ${hide}`}>
-                      {item.label}
-                    </span>
-                    <ChevronDown
-                      size={16}
-                      className={`shrink-0 text-obc-muted transition-transform ${hide} ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <ul
-                      className={`ml-[21px] mt-0.5 space-y-0.5 border-l border-obc-border pl-3 ${hide}`}
+                <Fragment key={item.label}>
+                  {showCategory && <li className={`px-3 pb-1 pt-4 font-heading text-[10px] font-semibold tracking-[0.1em] text-obc-muted ${hide}`}>{item.category}</li>}
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => handleGroup(item.label)}
+                      aria-expanded={isOpen}
+                      aria-controls={groupLabelId}
+                      title={tip}
+                      className={`${itemCls} w-full ${isOpen || hasActiveChild ? "bg-[#F6F9E9] text-[#1F3320]" : idle}`}
                     >
-                      {item.children.map((c) => (
-                        <li key={c.to}>
-                          <TransitionLink
-                            to={c.to}
-                            onClick={onCloseMobile}
-                            className={({ isActive }) =>
-                              `block rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
-                                isActive
-                                  ? active
-                                  : "text-obc-muted hover:bg-obc-hover-surface hover:text-obc-charcoal"
-                              }`
-                            }
-                          >
-                            {c.label}
-                          </TransitionLink>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
+                      <Icon size={18} strokeWidth={1.8} className="shrink-0" />
+                      <span className={`flex-1 truncate text-left ${hide}`}>{item.label}</span>
+                      <ChevronDown size={16} className={`shrink-0 text-obc-muted transition-transform ${hide} ${isOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {isOpen && (
+                      <ul id={groupLabelId} aria-label={item.label} className={`ml-[21px] mt-0.5 space-y-0.5 border-l border-obc-border pl-3 ${hide}`}>
+                        {item.children.map((child) => (
+                          <li key={child.to}>
+                            <TransitionLink
+                              to={child.to}
+                              onClick={onCloseMobile}
+                              className={({ isActive }) => `block rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${isActive ? active : "text-obc-muted hover:bg-obc-hover-surface hover:text-obc-charcoal"}`}
+                            >
+                              {child.label}
+                            </TransitionLink>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                </Fragment>
               );
             })}
           </ul>

@@ -11,6 +11,7 @@ export interface StaffProfile {
 	role: string;
 	tenantId: string | null;
 	lastLoginAt: string;
+	avatarUrl?: string | null;
 }
 
 export interface AuthSession {

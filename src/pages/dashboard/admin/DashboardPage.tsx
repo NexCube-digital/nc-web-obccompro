@@ -1,8 +1,9 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Area,
   AreaChart,
   Cell,
+  CartesianGrid,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -10,24 +11,26 @@ import {
   XAxis,
 } from "recharts";
 import {
-  AlertTriangle,
-  ArrowDownRight,
-  ArrowUpRight,
-  BadgeCheck,
-  CalendarCheck,
-  CalendarRange,
-  Download,
-  MessageCircle,
-  PartyPopper,
-  Plus,
-  Repeat,
-  TrendingUp,
+  BriefcaseBusiness,
+  FileImage,
+  FileText,
+  Image,
+  LayoutDashboard,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
 import Sidebar from "../components/layouts/Sidebar";
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
+import {
+  dashboardService,
+  type CmsPage,
+  type CmsSection,
+  type ComproDashboardSummary,
+  type CustomerList,
+  type DashboardSummary,
+} from "./DashboardService";
+import { toast } from "sonner";
 
 /* ───────────── Helper ───────────── */
 const rupiah = (n: number) =>
@@ -36,80 +39,36 @@ const rupiah = (n: number) =>
 const cardCls =
   "rounded-2xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)]";
 
-/* ───────────── Data contoh (ganti dengan data API) ───────────── */
-// const LIME = "#CDF178";
-const FOREST = "#1F3320";
+const chartColors = ["#004000", "#7FA52B", "#E0A526", "#BF0021", "#404F14"];
 
-const trend = [
-  { bulan: "Jan", olahraga: 18.2, event: 6.0 },
-  { bulan: "Feb", olahraga: 20.5, event: 8.5 },
-  { bulan: "Mar", olahraga: 22.1, event: 5.5 },
-  { bulan: "Apr", olahraga: 25.4, event: 12.0 },
-  { bulan: "Mei", olahraga: 24.0, event: 9.0 },
-  { bulan: "Jun", olahraga: 27.8, event: 14.5 },
-  { bulan: "Jul", olahraga: 30.2, event: 11.0 },
-  { bulan: "Agu", olahraga: 29.5, event: 16.0 },
-  { bulan: "Sep", olahraga: 33.1, event: 18.5 },
-];
+const compactRupiah = (value?: number) => value === undefined
+  ? "—"
+  : new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(value);
 
-const cabang = [
-  { nama: "Futsal", persen: 38, nilai: 52_400_000, warna: "#004000" },
-  { nama: "Badminton", persen: 22, nilai: 30_300_000, warna: "#7FA52B" },
-  { nama: "Pickleball", persen: 17, nilai: 23_400_000, warna: "#404F14" },
-  { nama: "Biliard", persen: 12, nilai: 16_500_000, warna: "#E0A526" },
-  { nama: "Tenis Meja & lainnya", persen: 11, nilai: 15_200_000, warna: "#BF0021" },
-];
+const dateLabel = (value: string) => new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+}).format(new Date(value));
 
-const okupansi = [
-  { nama: "Lapang F1", info: "Futsal, Badminton, Voli, Pickleball", pakai: 92, jam: "414 / 450 jam", warna: "#E0A526" },
-  { nama: "Lapang F2", info: "Basket, Sepak Bola", pakai: 84, jam: "378 / 450 jam", warna: "#E0A526" },
-  { nama: "Ruang Biliard", info: "2 meja", pakai: 61, jam: "549 / 900 jam", warna: "#009D00" },
-  { nama: "Ruang Tenis Meja", info: "2 meja", pakai: 47, jam: "423 / 900 jam", warna: "#404F14" },
-];
+const statusLabel = (value: string) => value
+  .split("_")
+  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+  .join(" ");
 
-type Status = "DP Dibayar" | "Lunas" | "Menunggu Nego" | "Aktif" | "Refund";
-
-const transaksi: {
-  nama: string;
-  kategori: string;
-  tanggal: string;
-  jumlah: number;
-  status: Status;
-  icon: LucideIcon;
-}[] = [
-  { nama: "Rizky Pratama", kategori: "Futsal · Lapang F1", tanggal: "4 Okt 2026", jumlah: 175000, status: "Lunas", icon: CalendarCheck },
-  { nama: "Wedding Sari & Dimas", kategori: "Sewa Gedung · F1", tanggal: "3 Okt 2026", jumlah: 12500000, status: "DP Dibayar", icon: PartyPopper },
-  { nama: "Komunitas Pickle Bdg", kategori: "Membership · Pickleball", tanggal: "3 Okt 2026", jumlah: 240000, status: "Aktif", icon: Repeat },
-  { nama: "PT Mitra Sejahtera", kategori: "Gathering · F2", tanggal: "2 Okt 2026", jumlah: 0, status: "Menunggu Nego", icon: PartyPopper },
-  { nama: "Dewi Anggraini", kategori: "Badminton · Lapang F1", tanggal: "1 Okt 2026", jumlah: 80000, status: "Refund", icon: CalendarCheck },
-  { nama: "Budi Santoso", kategori: "Biliard · Meja 2", tanggal: "30 Sep 2026", jumlah: 50000, status: "Lunas", icon: CalendarCheck },
-];
-
-const statusStyle: Record<Status, string> = {
-  Lunas: "bg-[#E7F5D0] text-[#1F3320]",
-  "DP Dibayar": "bg-[#EBEEDC] text-[#404F14]",
-  Aktif: "bg-[#CDF178] text-[#1F3320]",
-  "Menunggu Nego": "bg-[#FBF0D3] text-[#8A6100]",
-  Refund: "bg-obc-status-booked-bg text-obc-red",
+const statusClass = (value: string) => {
+  if (["fully_paid", "completed", "active"].includes(value)) return "bg-[#E7F5D0] text-[#1F3320]";
+  if (["dp_paid", "pending"].includes(value)) return "bg-[#FBF0D3] text-[#8A6100]";
+  if (["cancelled", "refunded", "suspended"].includes(value)) return "bg-obc-status-booked-bg text-obc-red";
+  return "bg-[#EBEEDC] text-[#404F14]";
 };
 
 /* ───────────── Komponen kecil ───────────── */
-function Trend({ value }: { value: number }) {
-  const up = value >= 0;
-  const Icon = up ? ArrowUpRight : ArrowDownRight;
-  return (
-    <span
-      className={`inline-flex items-center gap-0.5 rounded-full px-2 py-1 font-heading text-[11px] font-semibold ${
-        up ? "bg-[#E7F5D0] text-[#0A730A]" : "bg-obc-status-booked-bg text-obc-red"
-      }`}
-    >
-      <Icon size={12} />
-      {up ? "+" : ""}
-      {value}%
-    </span>
-  );
-}
-
 function IconTile({
   icon: Icon,
   bg,
@@ -138,14 +97,10 @@ function StatCard(p: {
   label: string;
   value: string;
   note: string;
-  change: number;
 }) {
   return (
     <div className={`${cardCls} p-4 sm:p-5`}>
-      <div className="flex items-start justify-between">
-        <IconTile icon={p.icon} bg={p.bg} fg={p.fg} />
-        <Trend value={p.change} />
-      </div>
+      <IconTile icon={p.icon} bg={p.bg} fg={p.fg} />
       <p className="mt-4 font-heading text-[12px] font-semibold uppercase tracking-wide text-obc-charcoal">
         {p.label}
       </p>
@@ -203,16 +158,62 @@ function CardTitle({
 
 /* ───────────── Halaman ───────────── */
 export default function DashboardPage() {
-  const [collapsed, setCollapsed] = useState(false); // PC: rail ikon
-  const [mobileOpen, setMobileOpen] = useState(false); // mobile: drawer
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [comproSummary, setComproSummary] = useState<ComproDashboardSummary | null>(null);
+  const [cmsPages, setCmsPages] = useState<CmsPage[] | null>(null);
+  const [cmsSections, setCmsSections] = useState<CmsSection[] | null>(null);
+  const [mediaCount, setMediaCount] = useState<number | null>(null);
+  const [customerList, setCustomerList] = useState<CustomerList | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Tombol hamburger: di PC ciut/lebarkan, di mobile buka/tutup drawer
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      const results = await Promise.allSettled([
+        dashboardService.getSummary(),
+        dashboardService.getComproSummary(),
+        dashboardService.getCmsPages(),
+        dashboardService.getCmsSections(),
+        dashboardService.getMedia(),
+        dashboardService.getCustomers(),
+      ]);
+      if (cancelled) return;
+
+      const [sport, compro, pages, sections, media, customers] = results;
+      if (sport.status === "fulfilled") setSummary(sport.value);
+      if (compro.status === "fulfilled") setComproSummary(compro.value);
+      if (pages.status === "fulfilled") setCmsPages(pages.value);
+      if (sections.status === "fulfilled") setCmsSections(sections.value);
+      if (media.status === "fulfilled") setMediaCount(media.value.length);
+      if (customers.status === "fulfilled") setCustomerList(customers.value);
+      if (results.some((result) => result.status === "rejected")) {
+        toast.error("Sebagian data dashboard gagal dimuat");
+      }
+      setLoading(false);
+    }
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const toggleSidebar = () => {
     if (window.innerWidth >= 1024) setCollapsed((v) => !v);
     else setMobileOpen((v) => !v);
   };
-  const totalOlahraga = trend.reduce((a, b) => a + b.olahraga, 0);
-  const totalEvent = trend.reduce((a, b) => a + b.event, 0);
+  const sportDistribution = summary?.sportDistribution ?? [];
+  const recentBookings = summary?.recentBookings ?? [];
+  const recentContacts = comproSummary?.recentContacts ?? [];
+  const revenueMonths = summary?.kpi.revenueTrend ?? comproSummary?.kpi.invoiceRevenueTrend ?? [];
+  const revenueChartData = revenueMonths.map(({ month }) => ({
+    month,
+    sportRevenue: summary?.kpi.revenueTrend.find((item) => item.month === month)?.revenue,
+    invoiceRevenue: comproSummary?.kpi.invoiceRevenueTrend.find((item) => item.month === month)?.revenue,
+  }));
 
   return (
     <div className="min-h-screen bg-obc-ivory font-body text-obc-charcoal">
@@ -232,7 +233,7 @@ export default function DashboardPage() {
 
         <main className="min-w-0 flex-1 px-3 py-5 sm:px-6 sm:py-6">
           {/* Judul halaman */}
-          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mb-6">
             <div>
               <p className="font-body text-[13px] text-obc-muted">
                 Dashboard <span className="mx-1">/</span>
@@ -242,245 +243,198 @@ export default function DashboardPage() {
                 Ringkasan operasional
               </h1>
               <p className="mt-1 font-body text-[14px] text-obc-muted">
-                Booking OBC Sport, pengajuan sewa gedung, dan aktivitas website, periode Jan – Sep 2026.
+                Data operasional terbaru dari OBC Sport dan website perusahaan.
               </p>
-            </div>
-            <div className="grid w-full grid-cols-2 gap-2 sm:w-[320px]">
-              <button className="flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-obc-border bg-white px-2 font-heading text-[13px] font-medium transition-colors hover:bg-obc-hover-surface sm:px-3">
-                <CalendarRange size={15} /> Jan – Sep 2026
-              </button>
-              <button className="flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-obc-border bg-white px-2 font-heading text-[13px] font-medium transition-colors hover:bg-obc-hover-surface sm:px-3">
-                <Download size={15} /> Ekspor
-              </button>
-              <button className="col-span-2 flex h-10 items-center justify-center gap-2 rounded-xl bg-obc-green px-4 font-heading text-[13px] font-medium text-white transition-colors hover:bg-obc-green-hover">
-                <Plus size={15} /> Booking Baru
-              </button>
             </div>
           </div>
 
-          {/* Baris 1: 4 kartu statistik */}
+          {/* Ringkasan olahraga */}
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={Wallet} bg="#E7F5D0" fg="#0A730A" label="Total pendapatan" value="Rp138 jt" note="Olahraga + sewa gedung" change={18.2} />
-            <StatCard icon={CalendarCheck} bg="#EBEEDC" fg="#404F14" label="Total booking" value="1.284" note="Booking olahraga tahun ini" change={12.4} />
-            <StatCard icon={PartyPopper} bg="#FBF0D3" fg="#8A6100" label="Pengajuan event" value="37" note="9 menunggu follow-up admin" change={24.6} />
-            <StatCard icon={Repeat} bg="#F0F0D4" fg={FOREST} label="Membership aktif" value="58" note="Paket 4x sesi, diskon 20%" change={6.8} />
+            <StatCard icon={Wallet} bg="#E7F5D0" fg="#0A730A" label="Pendapatan olahraga" value={compactRupiah(summary?.kpi.totalRevenue)} note="Akumulasi booking terbayar" />
+            <StatCard icon={LayoutDashboard} bg="#EBEEDC" fg="#404F14" label="Total booking" value={summary?.kpi.totalBookings.toLocaleString("id-ID") ?? "—"} note="Seluruh booking tercatat" />
+            <StatCard icon={BriefcaseBusiness} bg="#FBF0D3" fg="#8A6100" label="Customer aktif" value={summary?.kpi.activeCustomers.toLocaleString("id-ID") ?? "—"} note="Status aktif" />
+            <StatCard icon={FileImage} bg="#F0F0D4" fg="#1F3320" label="Resource aktif" value={summary?.kpi.totalResources.toLocaleString("id-ID") ?? "—"} note="Resource tersedia" />
           </section>
 
-          {/* Baris 2: 3 kartu ringkas */}
+          {/* Ringkasan website dan periode berjalan */}
           <section className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <MiniCard icon={TrendingUp} bg="#E7F5D0" fg="#0A730A" label="Pendapatan olahraga" value={`Rp${totalOlahraga.toFixed(1)} jt`} note="1.284 booking" />
-            <MiniCard icon={PartyPopper} bg="#FBF0D3" fg="#8A6100" label="Pendapatan sewa gedung" value={`Rp${totalEvent.toFixed(1)} jt`} note="22 acara terkonfirmasi" />
-            <MiniCard icon={MessageCircle} bg="#EBEEDC" fg="#404F14" label="Klik WhatsApp (website)" value="3.416" note="vs 2.980 bulan lalu" valueClass="text-obc-green" className="sm:col-span-2 xl:col-span-1" />
+            <MiniCard icon={LayoutDashboard} bg="#E7F5D0" fg="#0A730A" label="Booking bulan ini" value={summary?.kpi.monthBookings.toLocaleString("id-ID") ?? "—"} note="Berdasarkan waktu pembuatan" />
+            <MiniCard icon={FileText} bg="#FBF0D3" fg="#8A6100" label="Invoice terbayar" value={compactRupiah(comproSummary?.kpi.paidInvoiceAmount)} note={`${comproSummary?.kpi.totalInvoices.toLocaleString("id-ID") ?? "—"} invoice tercatat`} />
+            <MiniCard icon={BriefcaseBusiness} bg="#EBEEDC" fg="#404F14" label="Kas bersih website" value={compactRupiah(comproSummary?.kpi.netCash)} note={`${comproSummary?.kpi.totalContacts.toLocaleString("id-ID") ?? "—"} kontak tercatat`} valueClass="text-obc-green" />
           </section>
 
-          {/* Baris 3: grafik */}
-          <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <section className="mt-4">
             <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
               <CardTitle
-                title="Pendapatan olahraga vs sewa gedung"
-                aside={
-                  <span className="rounded-full bg-[#E7F5D0] px-2.5 py-1 font-heading text-[11px] font-semibold text-[#0A730A]">
-                    +18% dari periode lalu
-                  </span>
-                }
+                title="Tren pendapatan bulanan"
+                sub={`Tahun ${new Date().getFullYear()} · berdasarkan tanggal pembayaran`}
               />
               <div className="mb-3 flex flex-wrap gap-x-6 gap-y-2">
-                {[
-                  { l: "Olahraga", v: `Rp${totalOlahraga.toFixed(1)} jt`, c: "#004000" },
-                  { l: "Sewa gedung", v: `Rp${totalEvent.toFixed(1)} jt`, c: "#E0A526" },
-                ].map((s) => (
-                  <div key={s.l}>
-                    <p className="flex items-center gap-1.5 font-body text-[12px] text-obc-muted">
-                      <span className="h-2.5 w-2.5 rounded-sm" style={{ background: s.c }} />
-                      {s.l}
-                    </p>
-                    <p className="font-heading text-[18px] font-semibold">{s.v}</p>
+                {summary && (
+                  <p className="flex items-center gap-2 font-body text-[12px] text-obc-muted">
+                    <span className="h-2.5 w-2.5 rounded-sm bg-[#004000]" /> Booking olahraga
+                  </p>
+                )}
+                {comproSummary && (
+                  <p className="flex items-center gap-2 font-body text-[12px] text-obc-muted">
+                    <span className="h-2.5 w-2.5 rounded-sm bg-[#E0A526]" /> Invoice perusahaan
+                  </p>
+                )}
+              </div>
+              {revenueChartData.length ? (
+                <div className="h-[240px] sm:h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={revenueChartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="sportRevenueFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#004000" stopOpacity={0.24} />
+                          <stop offset="100%" stopColor="#004000" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="invoiceRevenueFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#E0A526" stopOpacity={0.24} />
+                          <stop offset="100%" stopColor="#E0A526" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} stroke="#E2DFD2" strokeDasharray="3 3" />
+                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6F6B6E" }} />
+                      <Tooltip
+                        formatter={(value, name) => [rupiah(Number(value)), name === "sportRevenue" ? "Booking olahraga" : "Invoice perusahaan"]}
+                        contentStyle={{ borderRadius: 12, border: "1px solid #E2DFD2", fontSize: 12 }}
+                      />
+                      {summary && (
+                        <Area type="monotone" dataKey="sportRevenue" name="Booking olahraga" stroke="#004000" strokeWidth={2.5} fill="url(#sportRevenueFill)" connectNulls />
+                      )}
+                      {comproSummary && (
+                        <Area type="monotone" dataKey="invoiceRevenue" name="Invoice perusahaan" stroke="#E0A526" strokeWidth={2.5} fill="url(#invoiceRevenueFill)" connectNulls />
+                      )}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="py-16 text-center font-body text-[13px] text-obc-muted">
+                  {loading ? "Memuat data..." : "Belum ada data pendapatan untuk tahun ini."}
+                </p>
+              )}
+            </div>
+          </section>
+
+          {/* Distribusi booking dan inventaris CMS */}
+          <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
+              <CardTitle title="Booking per cabang olahraga" sub="Jumlah booking berdasarkan jenis olahraga" />
+              {sportDistribution.length ? (
+                <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+                  <div className="relative h-[190px] w-[190px] shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={sportDistribution} dataKey="count" nameKey="sport" innerRadius={58} outerRadius={88} paddingAngle={2} stroke="none">
+                          {sportDistribution.map((item, index) => (
+                            <Cell key={item.sport} fill={chartColors[index % chartColors.length]} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
+                      <div>
+                        <p className="font-heading text-[20px] font-bold">{summary?.kpi.totalBookings.toLocaleString("id-ID") ?? "—"}</p>
+                        <p className="font-body text-[11px] text-obc-muted">Booking</p>
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="h-[220px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trend} margin={{ top: 8, right: 4, left: 4, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="gOlahraga" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#004000" stopOpacity={0.28} />
-                        <stop offset="100%" stopColor="#CDF178" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="bulan" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6F6B6E" }} />
-                    <Tooltip
-                      formatter={(v) => [`Rp${v} jt`]}
-                      contentStyle={{ borderRadius: 12, border: "1px solid #E2DFD2", fontSize: 12 }}
-                    />
-                    <Area type="monotone" dataKey="olahraga" name="Olahraga" stroke="#004000" strokeWidth={2.5} fill="url(#gOlahraga)" />
-                    <Area type="monotone" dataKey="event" name="Sewa gedung" stroke="#E0A526" strokeWidth={2.5} fill="transparent" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+                  <ul className="space-y-3 font-body text-[13px]">
+                    {sportDistribution.map((item, index) => (
+                      <li key={item.sport} className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-sm" style={{ background: chartColors[index % chartColors.length] }} />
+                        <span className="text-obc-muted">{item.sport}</span>
+                        <span className="font-semibold">{item.count.toLocaleString("id-ID")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="py-16 text-center font-body text-[13px] text-obc-muted">
+                  {loading ? "Memuat data..." : "Belum ada data booking olahraga."}
+                </p>
+              )}
             </div>
 
             <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
-              <CardTitle title="Pendapatan per cabang" aside={<span className="font-body text-[12px] text-obc-muted">Sep 2026</span>} sub="Kontribusi tiap cabang olahraga" />
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-                <div className="relative h-[160px] w-[160px] shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={cabang} dataKey="persen" innerRadius={52} outerRadius={78} paddingAngle={2} stroke="none">
-                        {cabang.map((c) => (
-                          <Cell key={c.nama} fill={c.warna} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
-                    <div>
-                      <p className="font-heading text-[18px] font-bold">Rp138jt</p>
-                      <p className="font-body text-[11px] text-obc-muted">Total</p>
-                    </div>
-                  </div>
-                </div>
-                <ul className="space-y-2 font-body text-[12px]">
-                  {cabang.slice(0, 5).map((c) => (
-                    <li key={c.nama} className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full" style={{ background: c.warna }} />
-                      <span className="text-obc-muted">{c.nama.split(" ")[0]}</span>
-                      <span className="font-semibold">{c.persen}%</span>
+              <CardTitle title="Konten website" sub="Jumlah data yang tersedia di backend" />
+              <ul className="divide-y divide-obc-border">
+                {[
+                  { label: "Halaman CMS", value: cmsPages?.length, icon: FileText },
+                  { label: "Section CMS", value: cmsSections?.length, icon: LayoutDashboard },
+                  { label: "Media", value: mediaCount ?? undefined, icon: Image },
+                  { label: "Customer terdaftar", value: customerList?.pagination.total, icon: BriefcaseBusiness },
+                  { label: "Portfolio", value: comproSummary?.kpi.totalPortfolios, icon: FileImage },
+                ].map((item) => (
+                  <li key={item.label} className="flex items-center gap-3 py-3">
+                    <item.icon size={17} className="text-obc-green" />
+                    <span className="flex-1 font-body text-[13px] text-obc-muted">{item.label}</span>
+                    <span className="font-heading text-[15px] font-semibold">
+                      {loading && item.value === undefined ? "..." : item.value?.toLocaleString("id-ID") ?? "—"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* Aktivitas terbaru dari backend */}
+          <section className="mt-4 grid gap-4 xl:grid-cols-2">
+            <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
+              <CardTitle title="Booking terbaru" sub="10 booking terakhir dari OBC Sport" />
+              {recentBookings.length ? (
+                <ul className="divide-y divide-obc-border">
+                  {recentBookings.map((booking) => (
+                    <li key={booking.id} className="flex items-center gap-3 py-3">
+                      <IconTile icon={LayoutDashboard} bg="#EBEEDC" fg="#404F14" size={38} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-body text-[13px] font-semibold">{booking.customer.name}</p>
+                        <p className="truncate font-body text-[11px] text-obc-muted">
+                          {booking.sportType} · {booking.resource.name} · {dateLabel(booking.createdAt)}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="font-body text-[12px] font-semibold">{rupiah(booking.totalPrice)}</p>
+                        <span className={`mt-1 inline-block rounded-full px-2 py-0.5 font-heading text-[10px] font-semibold ${statusClass(booking.status)}`}>
+                          {statusLabel(booking.status)}
+                        </span>
+                      </div>
                     </li>
                   ))}
                 </ul>
-              </div>
-              <ul className="mt-5 space-y-3 font-body text-[13px]">
-                {cabang.map((c) => (
-                  <li key={c.nama} className="flex items-center gap-3">
-                    <span className="h-2.5 w-2.5 rounded-sm" style={{ background: c.warna }} />
-                    <span className="flex-1">{c.nama}</span>
-                    <span className="font-semibold">{rupiah(c.nilai)}</span>
-                    <span className="w-9 text-right text-[12px] text-obc-muted">{c.persen}%</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          {/* Baris 4: okupansi + transaksi */}
-          <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)]">
-            <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
-              <CardTitle
-                title="Okupansi resource"
-                aside={
-                  <span className="rounded-full bg-[#FBF0D3] px-2.5 py-1 font-heading text-[11px] font-semibold text-[#8A6100]">
-                    2 di atas 80%
-                  </span>
-                }
-              />
-              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
-                {okupansi.map((o) => (
-                  <div key={o.nama}>
-                    <div className="mb-1.5 flex items-center justify-between font-body text-[14px]">
-                      <span className="font-medium">{o.nama}</span>
-                      <span className="flex items-center gap-1.5 font-semibold">
-                        {o.pakai > 80 && <AlertTriangle size={14} className="text-[#E0A526]" />}
-                        {o.pakai}%
-                      </span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-obc-hover-surface">
-                      <div className="h-full rounded-full" style={{ width: `${o.pakai}%`, background: o.warna }} />
-                    </div>
-                    <p className="mt-1.5 font-body text-[11px] text-obc-muted">
-                      {o.jam} · {o.info}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              ) : (
+                <p className="py-10 text-center font-body text-[13px] text-obc-muted">
+                  {loading ? "Memuat data..." : "Belum ada booking."}
+                </p>
+              )}
             </div>
 
             <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
-              <CardTitle
-                title="Booking & pengajuan terbaru"
-                aside={
-                  <a href="/sport/booking" className="font-heading text-[13px] font-medium text-obc-green hover:underline">
-                    Lihat semua
-                  </a>
-                }
-              />
-              <div className="hidden overflow-x-auto rounded-xl border border-obc-border md:block">
-                <table className="w-full min-w-[620px] text-left">
-                  <thead>
-                    <tr className="bg-obc-ivory font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
-                      <th className="px-4 py-3">Pelanggan</th>
-                      <th className="px-4 py-3">Kategori</th>
-                      <th className="px-4 py-3">Tanggal</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3 text-right">Jumlah</th>
-                    </tr>
-                  </thead>
-                  <tbody className="font-body text-[13px]">
-                    {transaksi.map((t) => (
-                      <tr key={t.nama} className="border-t border-obc-border">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <IconTile
-                              icon={t.status === "Refund" ? BadgeCheck : t.icon}
-                              bg={t.status === "Refund" ? "#FDECEE" : "#EBEEDC"}
-                              fg={t.status === "Refund" ? "#BF0021" : "#404F14"}
-                              size={36}
-                            />
-                            <span className="font-semibold">{t.nama}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-obc-muted">{t.kategori}</td>
-                        <td className="px-4 py-3 text-obc-muted">{t.tanggal}</td>
-                        <td className="px-4 py-3">
-                          <span className={`rounded-full px-2.5 py-1 font-heading text-[11px] font-semibold ${statusStyle[t.status]}`}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td
-                          className={`px-4 py-3 text-right font-semibold ${
-                            t.status === "Refund" ? "text-obc-red" : t.jumlah ? "text-[#0A730A]" : "text-obc-muted"
-                          }`}
-                        >
-                          {t.status === "Refund" ? "-" : t.jumlah ? "+" : ""}
-                          {t.jumlah ? rupiah(t.jumlah) : "Belum ada harga"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Tampilan mobile: daftar ringkas */}
-              <ul className="divide-y divide-obc-border rounded-xl border border-obc-border md:hidden">
-                {transaksi.map((t) => (
-                  <li key={t.nama} className="flex items-center gap-3 p-3">
-                    <IconTile
-                      icon={t.icon}
-                      bg={t.status === "Refund" ? "#FDECEE" : "#EBEEDC"}
-                      fg={t.status === "Refund" ? "#BF0021" : "#404F14"}
-                      size={38}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-body text-[13px] font-semibold">{t.nama}</p>
-                      <p className="truncate font-body text-[11px] text-obc-muted">
-                        {t.kategori} · {t.tanggal}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p
-                        className={`font-body text-[12px] font-semibold ${
-                          t.status === "Refund" ? "text-obc-red" : t.jumlah ? "text-[#0A730A]" : "text-obc-muted"
-                        }`}
-                      >
-                        {t.status === "Refund" ? "-" : t.jumlah ? "+" : ""}
-                        {t.jumlah ? rupiah(t.jumlah) : "Nego"}
-                      </p>
-                      <span className={`mt-1 inline-block rounded-full px-2 py-0.5 font-heading text-[10px] font-semibold ${statusStyle[t.status]}`}>
-                        {t.status}
+              <CardTitle title="Kontak terbaru" sub="5 kontak terbaru dari website perusahaan" />
+              {recentContacts.length ? (
+                <ul className="divide-y divide-obc-border">
+                  {recentContacts.map((contact) => (
+                    <li key={contact.id} className="flex items-center gap-3 py-3">
+                      <IconTile icon={BriefcaseBusiness} bg="#FBF0D3" fg="#8A6100" size={38} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-body text-[13px] font-semibold">{contact.name}</p>
+                        <p className="truncate font-body text-[11px] text-obc-muted">
+                          {contact.company || contact.email} · {dateLabel(contact.createdAt)}
+                        </p>
+                      </div>
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 font-heading text-[10px] font-semibold ${statusClass(contact.status)}`}>
+                        {statusLabel(contact.status)}
                       </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="py-10 text-center font-body text-[13px] text-obc-muted">
+                  {loading ? "Memuat data..." : "Belum ada kontak terbaru."}
+                </p>
+              )}
             </div>
           </section>
         </main>

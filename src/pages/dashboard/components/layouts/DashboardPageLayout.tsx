@@ -34,7 +34,7 @@ export default function DashboardPageLayout({
       />
       <div
         className={`flex min-h-screen min-w-0 flex-col transition-[margin] duration-200 ${
-          collapsed ? "lg:ml-19" : "lg:ml-64.5"
+          collapsed ? "lg:ml-[76px]" : "lg:ml-[258px]"
         }`}
       >
         <Header onToggleSidebar={toggleSidebar} />
