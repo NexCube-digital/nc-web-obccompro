@@ -18,6 +18,17 @@ interface ApiSuccess<T> {
 	data: T;
 }
 
+function testimonialFormData(payload: Partial<TestimonialPayload>, avatar?: File, avatarRemoved = false): FormData {
+	const formData = new FormData();
+	Object.entries(payload).forEach(([key, value]) => {
+		if (key !== "avatar" && value !== undefined && value !== null) formData.append(key, String(value));
+	});
+	if (payload.avatar) formData.append("avatar", payload.avatar);
+	if (avatar) formData.append("avatar", avatar);
+	if (avatarRemoved) formData.append("avatarRemoved", "true");
+	return formData;
+}
+
 export const testimonialService = {
 	async getTestimonials(params?: { status?: "all" | Testimonial["status"]; rating?: number }): Promise<Testimonial[]> {
 		const response = await apiClient.get<ApiSuccess<Testimonial[]>>("/admin/testimonials", {
@@ -34,13 +45,15 @@ export const testimonialService = {
 		return response.data.data;
 	},
 
-	async createTestimonial(payload: TestimonialPayload): Promise<Testimonial> {
-		const response = await apiClient.post<ApiSuccess<Testimonial>>("/admin/testimonials", payload);
+	async createTestimonial(payload: TestimonialPayload, avatar?: File): Promise<Testimonial> {
+		const formData = testimonialFormData(payload, avatar);
+		const response = await apiClient.post<ApiSuccess<Testimonial>>("/admin/testimonials", formData, { headers: { "Content-Type": "multipart/form-data" } });
 		return response.data.data;
 	},
 
-	async updateTestimonial(id: string, payload: Partial<TestimonialPayload>): Promise<Testimonial> {
-		const response = await apiClient.put<ApiSuccess<Testimonial>>(`/admin/testimonials/${id}`, payload);
+	async updateTestimonial(id: string, payload: Partial<TestimonialPayload>, avatar?: File, avatarRemoved = false): Promise<Testimonial> {
+		const formData = testimonialFormData(payload, avatar, avatarRemoved);
+		const response = await apiClient.put<ApiSuccess<Testimonial>>(`/admin/testimonials/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
 		return response.data.data;
 	},
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../../../../services/api";
@@ -12,25 +12,16 @@ type Props = {
 
 const inputClass = "mt-1 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] text-obc-charcoal outline-none focus:border-obc-olive focus:ring-2 focus:ring-[#CDF178]";
 const labelClass = "block text-[12px] font-medium text-obc-charcoal";
+const PORTFOLIO_CATEGORIES = ["sports", "hospitality", "laundry", "foodCourt", "coffee", "agribusiness"] as const;
 
 export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
 	const [title, setTitle] = useState(portfolio?.title ?? "");
 	const [category, setCategory] = useState(portfolio?.category ?? "");
-	const [description, setDescription] = useState(portfolio?.description ?? "");
-	const [client, setClient] = useState(portfolio?.client ?? "");
-	const [technologies, setTechnologies] = useState(portfolio?.technologies ?? "");
-	const [link, setLink] = useState(portfolio?.link ?? "");
-	const [featured, setFeatured] = useState(portfolio?.featured ?? false);
+
 	const [image, setImage] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | null>(getPortfolioImageUrl(portfolio?.imageUrl ?? null));
 	const [saving, setSaving] = useState(false);
 
-	useEffect(() => {
-		if (!image) return;
-		const objectUrl = URL.createObjectURL(image);
-		setPreview(objectUrl);
-		return () => URL.revokeObjectURL(objectUrl);
-	}, [image]);
 
 	const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0] ?? null;
@@ -43,7 +34,9 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
 			toast.error("Ukuran gambar maksimal 10 MB.");
 			return;
 		}
+		if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
 		setImage(file);
+		setPreview(URL.createObjectURL(file));
 	};
 
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -51,11 +44,6 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
 		const payload: PortfolioInput = {
 			title: title.trim(),
 			category: category.trim(),
-			description: description.trim() || null,
-			client: client.trim() || null,
-			technologies: technologies.trim() || null,
-			link: link.trim() || null,
-			featured,
 		};
 		setSaving(true);
 		try {
@@ -83,12 +71,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
 
 			<div className="grid gap-4 sm:grid-cols-2">
 				<label className={labelClass}>Judul<input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={255} required /></label>
-				<label className={labelClass}>Kategori<input className={inputClass} value={category} onChange={(event) => setCategory(event.target.value)} maxLength={100} required placeholder="Contoh: Website" /></label>
-				<label className={labelClass}>Klien<input className={inputClass} value={client} onChange={(event) => setClient(event.target.value)} maxLength={255} /></label>
-				<label className={labelClass}>Teknologi<input className={inputClass} value={technologies} onChange={(event) => setTechnologies(event.target.value)} maxLength={1000} placeholder="Contoh: React, Node.js" /></label>
-				<label className={labelClass}>Link proyek<input className={inputClass} value={link} onChange={(event) => setLink(event.target.value)} maxLength={500} placeholder="https://..." /></label>
-				<label className="flex items-center gap-2 self-end pb-2 text-[13px] font-medium text-obc-charcoal"><input type="checkbox" checked={featured} onChange={(event) => setFeatured(event.target.checked)} className="size-4 accent-[#404F14]" />Tampilkan sebagai unggulan</label>
-				<label className={`${labelClass} sm:col-span-2`}>Deskripsi<textarea className={`${inputClass} h-24 resize-y py-2`} value={description} onChange={(event) => setDescription(event.target.value)} maxLength={5000} /></label>
+				<label className={labelClass}>Kategori<select className={inputClass} value={category} onChange={(event) => setCategory(event.target.value)} required><option value="" disabled>Pilih kategori</option>{category && !PORTFOLIO_CATEGORIES.includes(category as (typeof PORTFOLIO_CATEGORIES)[number]) && <option value={category}>{category}</option>}{PORTFOLIO_CATEGORIES.map((item) => <option key={item} value={item}>{item === "foodCourt" ? "Food Court" : item === "agribusiness" ? "Agribusiness" : item.charAt(0).toUpperCase() + item.slice(1)}</option>)}</select></label>
 				<div className="sm:col-span-2">
 					<span className={labelClass}>Gambar</span>
 					<div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start">

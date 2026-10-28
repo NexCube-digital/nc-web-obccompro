@@ -1,31 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import TransitionLink from '../../../components/common/TransitionLink'
 import { Heart, ArrowRight } from 'lucide-react'
-import sportCenterLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER.png'
-import guestHouseLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
-import villaLogo from '../../../assets/logo/villa.png'
-import laundryLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (4).png'
-import foodCourtLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (5).png'
-import coffeeLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (6).png'
-import agribusinessLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (7).png'
+import { getPublicBusinessUnits } from '../../../services/businessUnitPublicService'
+import { getMediaUrl } from '../../dashboard/cms/media/mediaService'
 
 type Unit = {
+	slug: string
 	name: string
 	image: string
 	link: string
 	isExternal: boolean
 }
 
-const units: Unit[] = [
-	{ name: 'OBC Sport Center', image: sportCenterLogo, link: 'https://sport.obcgroup.id/', isExternal: true },
-	{ name: 'OBC Guest House', image: guestHouseLogo, link: '/unit-bisnis/guest-house', isExternal: false },
-	{ name: 'OBC Villa', image: villaLogo, link: '/unit-bisnis/villa', isExternal: false },
-	{ name: 'OBC Laundry', image: laundryLogo, link: '/unit-bisnis/laundry', isExternal: false },
-	{ name: 'OBC Food Court', image: foodCourtLogo, link: '/unit-bisnis/food-court', isExternal: false },
-	{ name: 'OBC Coffee', image: coffeeLogo, link: '/unit-bisnis/coffee', isExternal: false },
-	{ name: 'OBC Agribisnis', image: agribusinessLogo, link: '/unit-bisnis/agribisnis', isExternal: false },
-]
+const unitNavigation: Record<string, { link: string; isExternal: boolean }> = {
+	'obc-sport': { link: 'https://sport.obcgroup.id/', isExternal: true },
+	'guest-house': { link: '/unit-bisnis/guest-house', isExternal: false },
+	villa: { link: '/unit-bisnis/villa', isExternal: false },
+	laundry: { link: '/unit-bisnis/laundry', isExternal: false },
+	'food-court': { link: '/unit-bisnis/food-court', isExternal: false },
+	coffee: { link: '/unit-bisnis/coffee', isExternal: false },
+	agribisnis: { link: '/unit-bisnis/agribisnis', isExternal: false },
+}
 
 type UnitCardProps = {
 	unit: Unit
@@ -135,7 +131,24 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 
 export default function UnitBisnis() {
 	const { t } = useTranslation()
+	const [units, setUnits] = useState<Unit[]>([])
 	const [favorites, setFavorites] = useState<string[]>([])
+
+	useEffect(() => {
+		let active = true
+		getPublicBusinessUnits().then((businessUnits) => {
+			if (!active) return
+			setUnits(businessUnits.flatMap((unit) => {
+				const imageUrl = unit.config.imageUrl
+				if (typeof imageUrl !== 'string' || !imageUrl.trim()) return []
+				const navigation = unitNavigation[unit.slug] ?? { link: '/unit-bisnis', isExternal: false }
+				return [{ slug: unit.slug, name: unit.name, image: getMediaUrl(imageUrl), ...navigation }]
+			}))
+		}).catch(() => {
+			if (active) setUnits([])
+		})
+		return () => { active = false }
+	}, [])
 
 	const toggleFavorite = (name: string) => {
 		setFavorites((prev) =>

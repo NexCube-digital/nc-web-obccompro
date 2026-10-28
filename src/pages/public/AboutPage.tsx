@@ -152,12 +152,12 @@ function AboutPage() {
 						{t('aboutPage.ctaDesc')}
 					</p>
 
-					{/* Tombol: mobile lebih kecil */}
+					{/* Tombol: lebar mengikuti panjang teks agar aman di ID maupun EN */}
 					<a
-						className="group mt-6 inline-flex h-[44px] w-fit max-w-full items-center justify-between gap-3 rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] shadow-none transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-8 md:h-[67px] md:w-[304px] md:px-4 md:py-2 md:text-[20px]"
+						className="group mt-6 inline-flex min-h-[44px] w-fit max-w-full items-center justify-between gap-3 rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] shadow-none transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-8 md:min-h-[67px] md:min-w-[304px] md:gap-4 md:px-4 md:py-2 md:text-[20px]"
 						href="/unit-bisnis"
 					>
-						<span className="flex-1 whitespace-nowrap text-center text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178]">{t('aboutPage.ctaBtn')}</span>
+						<span className="min-w-0 flex-1 text-center text-[#1F3320] transition-colors duration-300 group-hover:font-medium group-hover:!text-[#CDF178] md:whitespace-nowrap">{t('aboutPage.ctaBtn')}</span>
 						<span className="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full bg-[#1F3320] text-[#CDF178] transition-colors duration-300 group-hover:bg-[#CDF178] group-hover:text-[#004000] md:h-[52px] md:w-[52px]">
 							<ArrowUpRight className="h-[16px] w-[16px] transition-transform duration-300 group-hover:rotate-45 md:h-[25px] md:w-[25px]" />
 						</span>

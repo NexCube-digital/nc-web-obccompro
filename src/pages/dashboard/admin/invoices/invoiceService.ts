@@ -1,5 +1,12 @@
 import apiClient from "../../../../services/api";
 
+export type PriceBreakdownItem = {
+	name: string;
+	price: number;
+	quantity: number;
+	subtotal: number;
+};
+
 export type Invoice = {
 	id: string;
 	invoiceNumber: string;
@@ -11,6 +18,7 @@ export type Invoice = {
 	status: InvoiceStatus;
 	service: string | null;
 	description: string | null;
+	priceBreakdown: PriceBreakdownItem[] | null;
 	issueDate: string | null;
 	dueDate: string | null;
 	paidAt: string | null;
@@ -24,6 +32,39 @@ export type InvoiceStatusResult = {
 	id: string;
 	status: InvoiceStatus;
 	paidAt: string | null;
+};
+
+export interface AvailabilitySlot {
+	startTime: string;
+	endTime: string;
+	available: boolean;
+	price: number | null;
+	priceFormatted: string | null;
+}
+
+export interface FacilityAvailability {
+	resourceId: string;
+	resourceName: string;
+	date: string;
+	slotMinutes: number;
+	operatingHours: { openTime: string; closeTime: string } | null;
+	slots: AvailabilitySlot[];
+}
+
+export interface BookingPricePreview {
+	basePrice: number;
+	discountAmount: number;
+	adminFee: number;
+	totalPrice: number;
+	durationMinutes: number;
+	breakdown: Array<{ tierName: string; minutes: number; subtotal: number }>;
+}
+
+export type PaymentLink = {
+	token: string;
+	redirectUrl: string;
+	invoiceNumber: string;
+	amount: number;
 };
 
 export type PaymentTerm = {
@@ -42,6 +83,24 @@ interface ApiSuccess<T> {
 }
 
 export const invoiceService = {
+	async getFacilityAvailability(resourceId: string, date: string, sportType?: string): Promise<FacilityAvailability> {
+		const response = await apiClient.get<ApiSuccess<FacilityAvailability>>("/sports/availability", {
+			params: { resourceId, date, ...(sportType ? { sportType } : {}) },
+		});
+		return response.data.data;
+	},
+
+	async previewBookingPrice(payload: {
+		resourceId: string;
+		bookingDate: string;
+		startTime: string;
+		endTime: string;
+		sportType: string;
+	}): Promise<BookingPricePreview> {
+		const response = await apiClient.post<ApiSuccess<BookingPricePreview>>("/sports/pricing/calculate", payload);
+		return response.data.data;
+	},
+
 	async getInvoiceList(): Promise<Invoice[]> {
 		const response = await apiClient.get<ApiSuccess<Invoice[]>>("/admin/compro-invoices");
 		return response.data.data;
@@ -72,6 +131,7 @@ export const invoiceService = {
 		status?: InvoiceStatus;
 		service?: string | null;
 		description?: string | null;
+		priceBreakdown?: PriceBreakdownItem[] | null;
 		issueDate?: string | null;
 		dueDate?: string | null;
 	}): Promise<Invoice> {
@@ -79,8 +139,13 @@ export const invoiceService = {
 		return response.data.data;
 	},
 
-	async updateInvoice(id: string, payload: Partial<Pick<Invoice, "clientName" | "clientEmail" | "phone" | "amount" | "status" | "service" | "description" | "issueDate" | "dueDate" | "paidAt">>): Promise<Invoice> {
+	async updateInvoice(id: string, payload: Partial<Pick<Invoice, "clientName" | "clientEmail" | "phone" | "amount" | "status" | "service" | "description" | "priceBreakdown" | "issueDate" | "dueDate" | "paidAt">>): Promise<Invoice> {
 		const response = await apiClient.put<ApiSuccess<Invoice>>(`/admin/compro-invoices/${id}`, payload);
+		return response.data.data;
+	},
+
+	async createPaymentLink(id: string): Promise<PaymentLink> {
+		const response = await apiClient.post<ApiSuccess<PaymentLink>>(`/admin/compro-invoices/${id}/payment-link`);
 		return response.data.data;
 	},
 

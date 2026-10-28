@@ -44,24 +44,28 @@ const ForgetPasswordPage = lazyPreload(() => import('../pages/dashboard/auth/For
 const SettingAccountPage = lazyPreload(() => import('../pages/dashboard/auth/SettingAccount'))
 const FormPage = lazyPreload(() => import('../pages/dashboard/template/Form'))
 const TablePage = lazyPreload(() => import('../pages/dashboard/template/Tabel'))
-const SportBookingPage = lazyPreload(() => import('../pages/dashboard/sport/SportBooking'))
-const SportResourcePage = lazyPreload(() => import('../pages/dashboard/sport/SportResource'))
-const SportHargaPage = lazyPreload(() => import('../pages/dashboard/sport/SportHarga'))
-const SportMembershipPage = lazyPreload(() => import('../pages/dashboard/sport/SportMembership'))
+const SportBookingPage = lazyPreload(() => import('../pages/dashboard/sport/booking/SportBooking'))
+const SportResourcePage = lazyPreload(() => import('../pages/dashboard/sport/lapang/SportResource'))
+const SportCourtPage = lazyPreload(() => import('../pages/dashboard/sport/court/Management'))
+const SportReviewPage = lazyPreload(() => import('../pages/dashboard/sport/review/Management'))
+const SportHargaPage = lazyPreload(() => import('../pages/dashboard/sport/harga/SportHarga'))
+const SportMembershipPage = lazyPreload(() => import('../pages/dashboard/sport/membership/SportMembership'))
 const KalenderMasterPage = lazyPreload(() => import('../pages/dashboard/master/KalenderMaster'))
 const EventPengajuanPage = lazyPreload(() => import('../pages/dashboard/event/EventPengajuan'))
 const EventInvoicePage = lazyPreload(() => import('../pages/dashboard/event/EventInvoice'))
 const GaleriPage = lazyPreload(() => import('../pages/dashboard/master/Galeri'))
 const TestimoniPage = lazyPreload(() => import('../pages/dashboard/admin/testimonial/Testimoni'))
 const KontakPage = lazyPreload(() => import('../pages/dashboard/master/Kontak'))
+const KontakLokasiPage = lazyPreload(() => import('../pages/dashboard/cms/contact/SiteContactManagement'))
+const SosialMediaPage = lazyPreload(() => import('../pages/dashboard/cms/sosmed/Management'))
 const PelangganPage = lazyPreload(() => import('../pages/dashboard/cms/customer/Management'))
 const LaporanPage = lazyPreload(() => import('../pages/dashboard/admin/reports/Management'))
 const InvoiceManagementPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/InvoiceManagement'))
 const SettingsPage = lazyPreload(() => import('../pages/dashboard/admin/Settings'))
 const StaffPage = lazyPreload(() => import('../pages/dashboard/admin/staff/Management'))
-const ContactsPage = lazyPreload(() => import('../pages/dashboard/admin/contact/Management'))
+const ContactsPage = lazyPreload(() => import('../pages/dashboard/cms/contact/Management'))
 const FinancePage = lazyPreload(() => import('../pages/dashboard/admin/finance/Management'))
-const PortfolioPage = lazyPreload(() => import('../pages/dashboard/admin/portfolio/Management'))
+const PortfolioPage = lazyPreload(() => import('../pages/dashboard/cms/portfolio/Management'))
 const PackageManagementPage = lazyPreload(() => import('../pages/dashboard/admin/package/Management'))
 const RolePermissionsPage = lazyPreload(() => import('../pages/dashboard/admin/role/Management'))
 const ReportsPage = LaporanPage
@@ -71,6 +75,9 @@ const CustomersManagementPage = PelangganPage
 const MediaManagementPage = lazyPreload(() => import('../pages/dashboard/cms/media/Management'))
 const CmsPagesManagementPage = lazyPreload(() => import('../pages/dashboard/cms/pages/Management'))
 const CmsSectionsManagementPage = lazyPreload(() => import('../pages/dashboard/cms/sections/Management'))
+const CmsSliderManagementPage = lazyPreload(() => import('../pages/dashboard/cms/slider/Management'))
+const CmsSportCenterManagementPage = lazyPreload(() => import('../pages/dashboard/cms/sport-center/Management'))
+const CmsBusinessUnitsPage = lazyPreload(() => import('../pages/dashboard/cms/unit-bisnis/Management'))
 
 const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/': HomePage,
@@ -91,6 +98,8 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/template/tabel': TablePage,
 	'/sport/booking': SportBookingPage,
 	'/sport/resource': SportResourcePage,
+	'/sport/court': SportCourtPage,
+	'/sport/review': SportReviewPage,
 	'/sport/harga': SportHargaPage,
 	'/sport/membership': SportMembershipPage,
 	'/kalender': KalenderMasterPage,
@@ -99,11 +108,16 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/dashboard/galeri': GaleriPage,
 	'/testimoni': TestimoniPage,
 	'/kontak': KontakPage,
+	'/kontak-lokasi': KontakLokasiPage,
+	'/sosial-media': SosialMediaPage,
 	'/pelanggan': PelangganPage,
 	'/admin/customers': CustomersManagementPage,
 	'/admin/media': MediaManagementPage,
 	'/admin/cms/pages': CmsPagesManagementPage,
 	'/admin/cms/sections': CmsSectionsManagementPage,
+	'/admin/cms/slider': CmsSliderManagementPage,
+	'/admin/cms/sport-center': CmsSportCenterManagementPage,
+	'/admin/cms/unit-bisnis': CmsBusinessUnitsPage,
 	'/laporan': LaporanPage,
 	'/admin/reports': ReportsPage,
 	'/admin/activities': ActivitiesPage,
@@ -151,6 +165,8 @@ const AppRoutes = (
 		{/* sport */}
 		<Route path="/sport/booking" element={<RequireAuth><SportBookingPage /></RequireAuth>} />
 		<Route path="/sport/resource" element={<RequireAuth><SportResourcePage /></RequireAuth>} />
+		<Route path="/sport/court" element={<RequireAuth><SportCourtPage /></RequireAuth>} />
+		<Route path="/sport/review" element={<RequireAuth><SportReviewPage /></RequireAuth>} />
 		<Route path="/sport/harga" element={<RequireAuth><SportHargaPage /></RequireAuth>} />
 		<Route path="/sport/membership" element={<RequireAuth><SportMembershipPage /></RequireAuth>} />
 		
@@ -159,11 +175,16 @@ const AppRoutes = (
 		<Route path="/galeri" element={<RequireAuth><GaleriPage /></RequireAuth>} />
 		<Route path="/testimoni" element={<RequireAuth><TestimoniPage /></RequireAuth>} />
 		<Route path="/kontak" element={<RequireAuth><KontakPage /></RequireAuth>} />
+		<Route path="/kontak-lokasi" element={<RequireAuth><KontakLokasiPage /></RequireAuth>} />
+		<Route path="/sosial-media" element={<RequireAuth><SosialMediaPage /></RequireAuth>} />
 		<Route path="/pelanggan" element={<RequireAuth><PelangganPage /></RequireAuth>} />
 		<Route path="/admin/customers" element={<RequireAuth><CustomersManagementPage /></RequireAuth>} />
 		<Route path="/admin/media" element={<RequireAuth><MediaManagementPage /></RequireAuth>} />
 		<Route path="/admin/cms/pages" element={<RequireAuth><CmsPagesManagementPage /></RequireAuth>} />
 		<Route path="/admin/cms/sections" element={<RequireAuth><CmsSectionsManagementPage /></RequireAuth>} />
+		<Route path="/admin/cms/slider" element={<RequireAuth><CmsSliderManagementPage /></RequireAuth>} />
+		<Route path="/admin/cms/sport-center" element={<RequireAuth><CmsSportCenterManagementPage /></RequireAuth>} />
+		<Route path="/admin/cms/unit-bisnis" element={<RequireAuth><CmsBusinessUnitsPage /></RequireAuth>} />
 		<Route path="/laporan" element={<RequireAuth><LaporanPage /></RequireAuth>} />
 		<Route path="/admin/reports" element={<RequireAuth><ReportsPage /></RequireAuth>} />
 		<Route path="/admin/activities" element={<RequireAuth><ActivitiesPage /></RequireAuth>} />

@@ -17,11 +17,6 @@ export interface Portfolio {
 export interface PortfolioInput {
 	title: string;
 	category: string;
-	description: string | null;
-	client: string | null;
-	technologies: string | null;
-	link: string | null;
-	featured: boolean;
 }
 
 interface ApiSuccess<T> {

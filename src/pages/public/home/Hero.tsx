@@ -1,74 +1,64 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import billiardImage from '../../../assets/layanan/Meja Billiard.png'
-import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
-import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
-import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
+import apiClient from '../../../services/api'
 import { scrollToContact } from '../../../components/common/scrollToContact'
+import { getMediaUrl } from '../../dashboard/cms/media/mediaService'
 
-const heroSlides = [
-	{
-		title: 'Onny Barber Center',
-		description:
-			'OBC Group adalah ekosistem usaha yang menghadirkan beragam layanan, fasilitas, dan ruang untuk berbagai kebutuhan. Mulai dari personal care, olahraga, hospitality, makanan & minuman, hingga event space.',
-		image: billiardImage,
-		primaryBtn: { text: 'Booking OBC Sport', link: 'https://sport.obcgroup.id/' },
-		secondaryBtn: { text: 'Jelajahi Bisnis Kami', link: '#layanan' },
-	},
-	{
-		title: 'OBC Sport Center',
-		description:
-			'Fasilitas lapangan olahraga modern untuk futsal, badminton, voli, pickleball, dan meja billiard. Slot terjamin, booking praktis, dan hemat dengan paket membership.',
-		image: lapangF1Image,
-		primaryBtn: { text: 'Booking Lapangan', link: 'https://sport.obcgroup.id/' },
-		secondaryBtn: { text: 'Lihat Fasilitas', link: '#fasilitas' },
-	},
-	{
-		title: 'OBC Event Space',
-		description:
-			'Ruang serbaguna luas dan representatif di Bandung untuk kebutuhan wedding, gathering komunitas, turnamen olahraga, dan acara spesial keluarga.',
-		image: lapangF2Image,
-		primaryBtn: { text: 'Booking Event Space', link: '#event-space' },
-		secondaryBtn: { text: 'Hubungi Kami', link: '#kontak' },
-	},
-	{
-		title: 'OBC Guest House &\nPenthouse',
-		description:
-			'Pilihan akomodasi nyaman dan asri di kawasan Rancabentang untuk istirahat keluarga dan liburan dengan suasana tenang dan fasilitas lengkap.',
-		image: guestHouseGalleryImage,
-		primaryBtn: { text: 'Reservasi Kamar', link: '#kontak' },
-		secondaryBtn: { text: 'Jelajahi Bisnis', link: '#layanan' },
-	},
+type HeroSlide = { title: string; description: string; image: string; active?: boolean }
+type PublicHomeContent = { page?: { sections?: { sectionKey: string; content?: { slides?: HeroSlide[] } }[] } }
+type ApiSuccess<T> = { data: T }
 
-]
-
-const heroSlideKeys = ['obc', 'sportCenter', 'eventSpace', 'guestHouse'] as const
+const heroActions = [
+	{ key: 'obc', primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#layanan' },
+	{ key: 'sportCenter', primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#fasilitas' },
+	{ key: 'eventSpace', primaryLink: '#event-space', secondaryLink: '#kontak' },
+	{ key: 'guestHouse', primaryLink: '#kontak', secondaryLink: '#layanan' },
+] as const
 
 export default function Hero() {
-	const { t } = useTranslation()
+	const { t, i18n } = useTranslation()
+	const [slides, setSlides] = useState<HeroSlide[]>([])
 	const [heroIndex, setHeroIndex] = useState(0)
 	const [previousHeroIndex, setPreviousHeroIndex] = useState<number | null>(null)
-	const translatedHeroSlides = heroSlides.map((slide, index) => {
-		const key = `hero.slides.${heroSlideKeys[index]}`
+	const language = i18n.resolvedLanguage === 'en' ? 'en' : 'id'
+	const translatedHeroSlides = slides.map((slide, index) => {
+		const action = heroActions[index % heroActions.length]
+		const key = `hero.slides.${action.key}`
 		return {
 			...slide,
-			title: t(`${key}.title`),
-			description: t(`${key}.description`),
-			primaryBtn: { ...slide.primaryBtn, text: t(`${key}.primaryBtn`) },
-			secondaryBtn: { ...slide.secondaryBtn, text: t(`${key}.secondaryBtn`) },
+			image: getMediaUrl(slide.image),
+			primaryBtn: { text: t(`${key}.primaryBtn`), link: action.primaryLink },
+			secondaryBtn: { text: t(`${key}.secondaryBtn`), link: action.secondaryLink },
 		}
 	})
 	const activeHeroSlide = translatedHeroSlides[heroIndex]
-	const nextHeroIndex = (heroIndex + 1) % heroSlides.length
+	const nextHeroIndex = translatedHeroSlides.length > 0 ? (heroIndex + 1) % translatedHeroSlides.length : 0
 
 	useEffect(() => {
+		let active = true
+		apiClient.get<ApiSuccess<PublicHomeContent>>('/public/tenants/obc-barber/content', {
+			params: { page: 'home', lang: language },
+		}).then((response) => {
+			if (!active) return
+			const heroSection = response.data.data.page?.sections?.find((section) => section.sectionKey === 'hero-home')
+			setSlides((heroSection?.content?.slides ?? []).filter((slide) => slide.active !== false))
+			setHeroIndex(0)
+			setPreviousHeroIndex(null)
+		}).catch(() => {
+			if (active) setSlides([])
+		})
+		return () => { active = false }
+	}, [language])
+
+	useEffect(() => {
+		if (translatedHeroSlides.length < 2) return
 		const advanceTimer = window.setTimeout(() => {
 			setPreviousHeroIndex(heroIndex)
 			setHeroIndex(nextHeroIndex)
 		}, 7000)
 
 		return () => window.clearTimeout(advanceTimer)
-	}, [heroIndex, nextHeroIndex])
+	}, [heroIndex, nextHeroIndex, translatedHeroSlides.length])
 
 	useEffect(() => {
 		if (previousHeroIndex === null) return
@@ -77,12 +67,12 @@ export default function Hero() {
 	}, [heroIndex, previousHeroIndex])
 
 	const selectHero = (index: number) => {
-		if (index === heroIndex) return
+		if (index === heroIndex || index < 0 || index >= translatedHeroSlides.length) return
 		setPreviousHeroIndex(heroIndex)
 		setHeroIndex(index)
 	}
-	const goPrev = () => selectHero((heroIndex - 1 + heroSlides.length) % heroSlides.length)
-	const goNext = () => selectHero((heroIndex + 1) % heroSlides.length)
+	const goPrev = () => selectHero((heroIndex - 1 + translatedHeroSlides.length) % translatedHeroSlides.length)
+	const goNext = () => selectHero((heroIndex + 1) % translatedHeroSlides.length)
 
 	// Scroll halus ke footer (fallback: dasar halaman)
 	const scrollToFooter = () => {
@@ -93,6 +83,8 @@ export default function Hero() {
 			window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
 		}
 	}
+
+	if (!activeHeroSlide) return null
 
 	return (
 		<section

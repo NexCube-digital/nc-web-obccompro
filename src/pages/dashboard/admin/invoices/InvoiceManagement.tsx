@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { BadgeCheck, CircleDollarSign, Clock3, Receipt, Search } from "lucide-react";
+import { BadgeCheck, CircleDollarSign, Clock3, Eye, Pencil, Plus, Receipt, Search, Trash2, WalletCards } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { invoiceService, type Invoice, type InvoiceStatus } from "./invoiceService";
 import { toast } from "sonner";
+import InvoiceForm from "./Form";
 
 const PAGE_SIZE = 8;
 const statuses: InvoiceStatus[] = ["draft", "sent", "paid", "overdue", "expired", "partial", "cancelled"];
@@ -54,6 +55,15 @@ export default function InvoiceManagement() {
 	const [query, setQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 	const [page, setPage] = useState(1);
+	const [formOpen, setFormOpen] = useState(false);
+	const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+	const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+	const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null);
+	const [paymentTerm, setPaymentTerm] = useState("");
+	const [paymentMethod, setPaymentMethod] = useState("");
+	const [paidAt, setPaidAt] = useState("");
+	const [paymentNotes, setPaymentNotes] = useState("");
+	const [paying, setPaying] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -90,6 +100,65 @@ export default function InvoiceManagement() {
 	const currentPage = Math.min(page, totalPages);
 	const rows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+	const openCreateForm = () => {
+		setEditingInvoice(null);
+		setFormOpen(true);
+	};
+
+	const openEditForm = (invoice: Invoice) => {
+		setEditingInvoice(invoice);
+		setFormOpen(true);
+	};
+
+	const handleSaved = (saved: Invoice) => {
+		setInvoices((current) => editingInvoice
+			? current.map((invoice) => invoice.id === saved.id ? saved : invoice)
+			: [saved, ...current]);
+	};
+
+	const deleteInvoice = async (invoice: Invoice) => {
+		if (!window.confirm(`Hapus invoice ${invoice.invoiceNumber}?`)) return;
+		try {
+			await invoiceService.deleteInvoice(invoice.id);
+			setInvoices((current) => current.filter((item) => item.id !== invoice.id));
+			toast.success("Invoice berhasil dihapus.");
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Gagal menghapus invoice.");
+		}
+	};
+
+	const openPayment = (invoice: Invoice) => {
+		const unpaidTerm = invoice.terms.find((term) => !term.paidAt);
+		setPayingInvoice(invoice);
+		setPaymentTerm(unpaidTerm ? String(unpaidTerm.termNumber) : "");
+		setPaymentMethod("");
+		setPaidAt("");
+		setPaymentNotes("");
+	};
+
+	const submitPayment = async () => {
+		if (!payingInvoice || !paymentTerm) {
+			toast.error("Pilih termin yang dibayarkan.");
+			return;
+		}
+		setPaying(true);
+		try {
+			const updated = await invoiceService.payInvoiceTerm(payingInvoice.id, {
+				termNumber: Number(paymentTerm),
+				paymentMethod: paymentMethod || undefined,
+				paidAt: paidAt || undefined,
+				notes: paymentNotes || undefined,
+			});
+			setInvoices((current) => current.map((invoice) => invoice.id === updated.id ? updated : invoice));
+			setPayingInvoice(null);
+			toast.success("Pembayaran termin berhasil dicatat.");
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Gagal mencatat pembayaran termin.");
+		} finally {
+			setPaying(false);
+		}
+	};
+
 	const changeStatus = async (invoice: Invoice, status: InvoiceStatus) => {
 		try {
 			const updated = await invoiceService.updateInvoiceStatus(invoice.id, status);
@@ -102,8 +171,19 @@ export default function InvoiceManagement() {
 		}
 	};
 
+	if (formOpen) {
+		return (
+			<DashboardPageLayout breadcrumb="Invoice" title="Manajemen invoice" description="Pantau tagihan, termin pembayaran, dan status invoice perusahaan.">
+				<InvoiceForm invoice={editingInvoice} onClose={() => setFormOpen(false)} onSaved={handleSaved} />
+			</DashboardPageLayout>
+		);
+	}
+
 	return (
 		<DashboardPageLayout breadcrumb="Invoice" title="Manajemen invoice" description="Pantau tagihan, termin pembayaran, dan status invoice perusahaan.">
+			<div className="mb-4 flex justify-end">
+				<button type="button" onClick={openCreateForm} className="inline-flex h-10 items-center gap-2 rounded-xl bg-obc-green px-4 text-[13px] font-semibold text-white"><Plus size={16} /> Buat invoice</button>
+			</div>
 			<section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 				<Summary label="Total invoice" value={invoices.length.toLocaleString("id-ID")} icon={Receipt} tone="bg-[#E7F5D0] text-obc-green" />
 				<Summary label="Nilai invoice" value={rupiah(totalAmount)} icon={CircleDollarSign} tone="bg-[#CDF178] text-[#404F14]" />
@@ -129,11 +209,11 @@ export default function InvoiceManagement() {
 				<div className="overflow-x-auto">
 					<table className="w-full min-w-220 text-left">
 						<thead><tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
-							<th className="px-5 py-3.5">Invoice</th><th className="px-5 py-3.5">Klien</th><th className="px-5 py-3.5">Nominal</th><th className="px-5 py-3.5">Termin</th><th className="px-5 py-3.5">Jatuh tempo</th><th className="px-5 py-3.5">Status</th>
+							<th className="px-5 py-3.5">Invoice</th><th className="px-5 py-3.5">Klien</th><th className="px-5 py-3.5">Nominal</th><th className="px-5 py-3.5">Termin</th><th className="px-5 py-3.5">Jatuh tempo</th><th className="px-5 py-3.5">Status</th><th className="px-5 py-3.5 text-right">Aksi</th>
 						</tr></thead>
 						<tbody className="text-[13px]">
 							{loading ? (
-								<tr><td colSpan={6} className="px-5 py-12 text-center text-obc-muted">Memuat invoice...</td></tr>
+								<tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">Memuat invoice...</td></tr>
 							) : rows.length ? rows.map((invoice) => {
 								const terms = invoice.terms ?? [];
 								const paidTerms = terms.filter((term) => term.paidAt).length;
@@ -145,10 +225,11 @@ export default function InvoiceManagement() {
 										<td className="px-5 py-3.5 text-obc-muted">{terms.length ? `${paidTerms}/${terms.length} dibayar` : "Tanpa termin"}</td>
 										<td className="whitespace-nowrap px-5 py-3.5 text-obc-muted">{formatDate(invoice.dueDate)}</td>
 										<td className="px-5 py-3.5"><select aria-label={`Status invoice ${invoice.invoiceNumber}`} value={invoice.status} onChange={(event) => changeStatus(invoice, event.target.value as InvoiceStatus)} className={`max-w-40 rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold outline-none ${statusClasses[invoice.status]}`}>{statuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></td>
+								<td className="px-5 py-3.5"><div className="flex justify-end gap-1"><button type="button" onClick={() => setSelectedInvoice(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Lihat detail" aria-label={`Lihat ${invoice.invoiceNumber}`}><Eye size={16} /></button><button type="button" onClick={() => openEditForm(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Edit" aria-label={`Edit ${invoice.invoiceNumber}`}><Pencil size={16} /></button>{invoice.terms.length > 0 && <button type="button" onClick={() => openPayment(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Catat pembayaran" aria-label={`Bayar ${invoice.invoiceNumber}`}><WalletCards size={16} /></button>}<button type="button" onClick={() => deleteInvoice(invoice)} className="grid size-9 place-items-center rounded-lg text-red-600 hover:bg-red-50" title="Hapus" aria-label={`Hapus ${invoice.invoiceNumber}`}><Trash2 size={16} /></button></div></td>
 									</tr>
 								);
 							}) : (
-								<tr><td colSpan={6} className="px-5 py-12 text-center text-obc-muted">Tidak ada invoice yang cocok.</td></tr>
+								<tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">Tidak ada invoice yang cocok.</td></tr>
 							)}
 						</tbody>
 					</table>
@@ -159,6 +240,8 @@ export default function InvoiceManagement() {
 					<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentPage} / {totalPages}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
 				</div>
 			</section>
+			{selectedInvoice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl"><div className="flex items-center justify-between border-b border-obc-border px-5 py-4"><h2 className="font-heading text-lg font-bold">{selectedInvoice.invoiceNumber}</h2><button type="button" onClick={() => setSelectedInvoice(null)} className="size-9 rounded-lg text-obc-muted" aria-label="Tutup">×</button></div><div className="grid gap-4 p-5 sm:grid-cols-2"><div><p className="text-[12px] text-obc-muted">Klien</p><p className="font-medium">{selectedInvoice.clientName}</p><p className="text-[13px] text-obc-muted">{selectedInvoice.clientEmail}</p></div><div><p className="text-[12px] text-obc-muted">Nominal</p><p className="font-semibold">{rupiah(selectedInvoice.amount)}</p></div><div><p className="text-[12px] text-obc-muted">Layanan</p><p>{selectedInvoice.service || "-"}</p></div><div><p className="text-[12px] text-obc-muted">Status</p><p>{statusLabels[selectedInvoice.status]}</p></div><div><p className="text-[12px] text-obc-muted">Tanggal terbit</p><p>{formatDate(selectedInvoice.issueDate)}</p></div><div><p className="text-[12px] text-obc-muted">Jatuh tempo</p><p>{formatDate(selectedInvoice.dueDate)}</p></div></div>{selectedInvoice.description && <p className="border-t border-obc-border px-5 py-4 text-[13px] text-obc-muted">{selectedInvoice.description}</p>}<div className="border-t border-obc-border px-5 py-4"><h3 className="mb-2 font-heading text-[14px] font-semibold">Termin pembayaran</h3>{selectedInvoice.terms.length ? selectedInvoice.terms.map((term) => <div key={term.id} className="flex items-center justify-between border-b border-obc-border py-2 text-[13px] last:border-0"><span>Termin {term.termNumber}</span><span>{rupiah(term.amount)}</span><span className={term.paidAt ? "text-[#1F3320]" : "text-obc-muted"}>{term.paidAt ? `Lunas ${formatDate(term.paidAt)}` : "Belum dibayar"}</span></div>) : <p className="text-[13px] text-obc-muted">Invoice ini belum memiliki termin.</p>}</div></div></div>}
+			{payingInvoice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="w-full max-w-md rounded-2xl bg-white shadow-xl"><div className="border-b border-obc-border px-5 py-4"><h2 className="font-heading text-lg font-bold">Catat pembayaran termin</h2><p className="mt-1 text-[12px] text-obc-muted">{payingInvoice.invoiceNumber}</p></div><div className="space-y-4 p-5"><label className="block text-[13px] font-medium">Termin<select value={paymentTerm} onChange={(event) => setPaymentTerm(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]">{payingInvoice.terms.map((term) => <option key={term.id} value={term.termNumber}>Termin {term.termNumber} - {rupiah(term.amount)}{term.paidAt ? " (sudah lunas)" : ""}</option>)}</select></label><label className="block text-[13px] font-medium">Metode pembayaran<input value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)} placeholder="Transfer bank, QRIS, tunai..." className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]" /></label><label className="block text-[13px] font-medium">Tanggal dibayar<input type="date" value={paidAt} onChange={(event) => setPaidAt(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]" /></label><label className="block text-[13px] font-medium">Catatan<textarea rows={3} value={paymentNotes} onChange={(event) => setPaymentNotes(event.target.value)} className="mt-1 w-full rounded-xl border border-obc-border p-3 text-[13px]" /></label><div className="flex justify-end gap-3"><button type="button" onClick={() => setPayingInvoice(null)} className="rounded-xl border border-obc-border px-4 py-2 text-[13px]">Batal</button><button type="button" disabled={paying} onClick={submitPayment} className="rounded-xl bg-obc-green px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50">{paying ? "Menyimpan..." : "Simpan pembayaran"}</button></div></div></div></div>}
 		</DashboardPageLayout>
 	);
 }

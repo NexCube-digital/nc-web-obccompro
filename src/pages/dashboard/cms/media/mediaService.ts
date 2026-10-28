@@ -23,9 +23,14 @@ interface ApiSuccess<T> {
 
 export function getMediaUrl(url: string): string {
 	try {
+		if (!url) return url;
+		if (/^(https?:|data:|blob:)/i.test(url)) return url;
+
 		const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
 		const apiOrigin = new URL(apiBaseUrl, window.location.origin).origin;
-		return new URL(url, apiOrigin).toString();
+		const frontendPath = /^(layanan\/|unit-bisnis\/|assets\/)/.test(url);
+		const baseUrl = frontendPath ? window.location.origin : apiOrigin;
+		return new URL(url.replace(/^\/?/, "/"), baseUrl).toString();
 	} catch {
 		return url;
 	}

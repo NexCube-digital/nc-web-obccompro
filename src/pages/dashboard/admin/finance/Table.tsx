@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Search } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Pencil, Search, Trash2 } from "lucide-react";
 import type { FinanceRecord } from "./financeService";
 
 const PAGE_SIZE = 10;
@@ -21,9 +21,11 @@ function formatDate(value: string) {
 type Props = {
 	finances: FinanceRecord[];
 	loading: boolean;
+	onEdit: (finance: FinanceRecord) => void;
+	onDelete: (finance: FinanceRecord) => void;
 };
 
-export default function FinanceTable({ finances, loading }: Props) {
+export default function FinanceTable({ finances, loading, onEdit, onDelete }: Props) {
 	const [query, setQuery] = useState("");
 	const [page, setPage] = useState(1);
 	const filtered = useMemo(() => {
@@ -54,10 +56,10 @@ export default function FinanceTable({ finances, loading }: Props) {
 			<div className="overflow-x-auto">
 				<table className="w-full min-w-[760px] text-left">
 					<thead><tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
-						<th className="px-5 py-3.5">Transaksi</th><th className="px-5 py-3.5">Divisi</th><th className="px-5 py-3.5">Jenis</th><th className="px-5 py-3.5">Tanggal</th><th className="px-5 py-3.5 text-right">Nominal</th><th className="px-5 py-3.5">Status</th>
+						<th className="px-5 py-3.5">Transaksi</th><th className="px-5 py-3.5">Divisi</th><th className="px-5 py-3.5">Jenis</th><th className="px-5 py-3.5">Tanggal</th><th className="px-5 py-3.5 text-right">Nominal</th><th className="px-5 py-3.5">Status</th><th className="px-5 py-3.5 text-right">Aksi</th>
 					</tr></thead>
 					<tbody className="text-[13px]">
-						{loading ? <tr><td colSpan={6} className="px-5 py-12 text-center text-obc-muted">Memuat transaksi...</td></tr> : rows.length ? rows.map((finance) => {
+						{loading ? <tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">Memuat transaksi...</td></tr> : rows.length ? rows.map((finance) => {
 							const income = finance.type === "income";
 							return <tr key={finance.id} className="border-t border-obc-border">
 								<td className="max-w-[340px] px-5 py-3.5"><p className="truncate font-semibold text-obc-charcoal">{finance.category || "Tanpa kategori"}</p><p className="truncate text-[11px] text-obc-muted">{finance.description || "-"}</p></td>
@@ -66,8 +68,9 @@ export default function FinanceTable({ finances, loading }: Props) {
 								<td className="whitespace-nowrap px-5 py-3.5 text-obc-muted">{formatDate(finance.date)}</td>
 								<td className={`whitespace-nowrap px-5 py-3.5 text-right font-semibold ${income ? "text-obc-green" : "text-obc-red"}`}>{income ? "+" : "-"}{rupiah(finance.amount)}</td>
 								<td className="px-5 py-3.5"><span className="rounded-full bg-[#F1EFE8] px-2.5 py-1 text-[11px] font-medium capitalize text-obc-muted">{finance.status}</span></td>
+								<td className="px-5 py-3.5"><div className="flex items-center justify-end gap-1"><button type="button" onClick={() => onEdit(finance)} aria-label="Ubah transaksi" title="Ubah transaksi" className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-[#EBEEDC] hover:text-obc-charcoal"><Pencil size={15} /></button><button type="button" onClick={() => onDelete(finance)} aria-label="Hapus transaksi" title="Hapus transaksi" className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-red-50 hover:text-obc-red"><Trash2 size={15} /></button></div></td>
 							</tr>;
-						}) : <tr><td colSpan={6} className="px-5 py-12 text-center text-obc-muted">{finances.length ? "Tidak ada transaksi yang cocok." : "Belum ada transaksi keuangan."}</td></tr>}
+						}) : <tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">{finances.length ? "Tidak ada transaksi yang cocok." : "Belum ada transaksi keuangan."}</td></tr>}
 					</tbody>
 				</table>
 			</div>

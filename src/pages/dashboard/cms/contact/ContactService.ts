@@ -23,6 +23,27 @@ export type ContactUpdatePayload = Partial<Pick<Contact,
 	"name" | "email" | "company" | "phone" | "message" | "service" | "budget" | "status"
 >>;
 
+export interface SiteContactContent {
+	section: "site-contact";
+	email: string;
+	whatsapp: string;
+	instagram: string;
+	tiktok: string;
+	address: string;
+	maps: string;
+}
+
+export const siteContactService = {
+	async getContent(): Promise<SiteContactContent> {
+		const response = await apiClient.get<ApiSuccess<SiteContactContent>>("/admin/cms/content", { params: { section: "site-contact" } });
+		return response.data.data;
+	},
+	async saveContent(payload: SiteContactContent): Promise<SiteContactContent> {
+		const response = await apiClient.put<ApiSuccess<SiteContactContent>>("/admin/cms/content", payload);
+		return response.data.data;
+	},
+};
+
 export const contactService = {
 	async getContactList(): Promise<Contact[]> {
 		const response = await apiClient.get<ApiSuccess<Contact[]>>("/admin/contacts");

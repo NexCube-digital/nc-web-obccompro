@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
-import { contactService, type Contact } from "./ContactService";
+import { contactService, siteContactService, type Contact, type SiteContactContent } from "./ContactService";
 
 const PAGE_SIZE = 10;
 const statuses = ["new_contact", "read", "responded", "active", "inactive"] as const;
@@ -40,9 +40,14 @@ export default function ContactTable() {
 	const [query, setQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 	const [page, setPage] = useState(1);
+	const [siteContact, setSiteContact] = useState<SiteContactContent | null>(null);
+	const [savingContact, setSavingContact] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
+		siteContactService.getContent()
+			.then((data) => { if (!cancelled) setSiteContact(data); })
+			.catch((error: unknown) => { if (!cancelled) toast.error(error instanceof Error ? error.message : "Gagal memuat kontak footer."); });
 		contactService.getContactList()
 			.then((data) => { if (!cancelled) setContacts(data); })
 			.catch((error: unknown) => {
@@ -90,6 +95,19 @@ export default function ContactTable() {
 		}
 	};
 
+	const saveSiteContact = async () => {
+		if (!siteContact) return;
+		setSavingContact(true);
+		try {
+			setSiteContact(await siteContactService.saveContent(siteContact));
+			toast.success("Kontak footer berhasil diperbarui.");
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Gagal menyimpan kontak footer.");
+		} finally {
+			setSavingContact(false);
+		}
+	};
+
 	const deleteContact = async (contact: Contact) => {
 		if (!window.confirm(`Hapus kontak ${contact.name}?`)) return;
 		try {
@@ -103,7 +121,23 @@ export default function ContactTable() {
 
 	return (
 		<>
-			<section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+			<section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+				<div className="rounded-xl border border-obc-border bg-white p-4 sm:col-span-2 xl:col-span-3">
+					<p className="text-[12px] font-semibold uppercase tracking-wide text-obc-muted">Kontak footer</p>
+					{siteContact ? (
+						<div className="mt-3 grid gap-3 text-[13px] md:grid-cols-2 xl:grid-cols-3">
+							<label>Email<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" type="email" value={siteContact.email} onChange={(event) => setSiteContact({ ...siteContact, email: event.target.value })} /></label>
+							<label>WhatsApp<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.whatsapp} onChange={(event) => setSiteContact({ ...siteContact, whatsapp: event.target.value })} /></label>
+							<label>Instagram<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.instagram} onChange={(event) => setSiteContact({ ...siteContact, instagram: event.target.value })} /></label>
+							<label>TikTok<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.tiktok} onChange={(event) => setSiteContact({ ...siteContact, tiktok: event.target.value })} /></label>
+							<label className="xl:col-span-2">Alamat<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.address} onChange={(event) => setSiteContact({ ...siteContact, address: event.target.value })} /></label>
+							<div className="flex items-end"><button type="button" onClick={saveSiteContact} disabled={savingContact} className="h-9 rounded-lg bg-[#1F3320] px-4 text-[12px] font-medium text-white disabled:opacity-60">{savingContact ? "Menyimpan..." : "Simpan kontak"}</button></div>
+						</div>
+					) : <p className="mt-3 text-[13px] text-obc-muted">Memuat data kontak dari backend...</p>}
+				</div>
+			</section>
+
+			<section className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 				<Summary label="Total enquiry" value={counts.all} />
 				<Summary label="Enquiry baru" value={counts.new_contact} />
 				<Summary label="Direspons" value={counts.responded} />
@@ -136,7 +170,7 @@ export default function ContactTable() {
 							) : rows.length ? rows.map((contact) => (
 								<tr key={contact.id} className="border-t border-obc-border">
 									<td className="px-5 py-3.5"><p className="font-semibold text-obc-charcoal">{contact.name}</p><p className="text-[12px] text-obc-muted">{contact.company || contact.email}</p><p className="text-[12px] text-obc-muted">{contact.phone || "Telepon tidak tersedia"}</p></td>
-									<td className="max-w-[360px] px-5 py-3.5"><p className="font-medium">{contact.service || "Permintaan umum"}{contact.budget ? ` · ${contact.budget}` : ""}</p><p className="line-clamp-2 text-[12px] text-obc-muted">{contact.message || "Tidak ada pesan"}</p></td>
+									<td className="max-w-90 px-5 py-3.5"><p className="font-medium">{contact.service || "Permintaan umum"}{contact.budget ? ` · ${contact.budget}` : ""}</p><p className="line-clamp-2 text-[12px] text-obc-muted">{contact.message || "Tidak ada pesan"}</p></td>
 									<td className="whitespace-nowrap px-5 py-3.5 text-obc-muted">{new Date(contact.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</td>
 									<td className="px-5 py-3.5"><select aria-label={`Status kontak ${contact.name}`} value={contact.status} onChange={(event) => updateStatus(contact, event.target.value as ContactStatus)} className={`rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold outline-none ${statusClasses[contact.status]}`}>{statuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></td>
 									<td className="px-5 py-3.5 text-right"><button type="button" title="Hapus kontak" aria-label={`Hapus kontak ${contact.name}`} onClick={() => deleteContact(contact)} className="rounded-lg p-2 text-[#B42318] hover:bg-[#FDF2F2]"><Trash2 size={16} /></button></td>

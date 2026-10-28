@@ -6,9 +6,6 @@ import eventIcon from '../../../assets/icon/iconstack.io - (Event).svg'
 
 const eventCategories = ['wedding', 'gathering', 'otherEvents']
 
-// Kelas badge foto: kelas asli + override di bawah lg
-// <lg: badge di dalam foto (tengah bawah, tanpa translate-y), warna tetap seperti aslinya
-// ≤460px: ukuran font & jarak lebih kecil
 const photoBadgeBase =
 	'absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/25 bg-white/15 py-1 pl-1 pr-3.5 font-heading text-[13px] font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-md max-lg:bottom-2 max-lg:translate-y-0 sm:max-lg:bottom-3 max-[460px]:gap-1.5 max-[460px]:pr-3 max-[460px]:text-[11px]'
 
@@ -16,9 +13,7 @@ export default function GedungMultifungsi() {
 	const { t } = useTranslation()
 
 	return (
-		// Section full layar: min-h-svh + konten di-center vertikal.
-		// Di desktop (lg+) padding vertikal dan tinggi foto mengikuti tinggi layar (clamp berbasis svh),
-		// supaya seluruh konten (termasuk tombol WhatsApp di bawah) muat di satu layar, mis. 1280x800.
+		
 		<section className="flex items-center lg:h-[max(100svh,640px)]" id="event-space">
 			{/* < lg: satu alur (grid 2 kolom hanya untuk baris foto). >= lg: dua kolom berdampingan. */}
 			<div className="mx-auto grid w-[calc(100%-60px)] max-w-[1280px] grid-cols-2 gap-x-[10px] py-6 sm:w-[calc(100%-48px)] sm:gap-x-4 md:gap-x-5 md:py-8 lg:gap-x-10 lg:h-full lg:grid-rows-1 lg:pb-[clamp(16px,4svh,40px)] lg:pt-[clamp(80px,11svh,104px)]">

@@ -38,6 +38,7 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
 
 const FADE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'
 
+// FadeImage hanya dipakai untuk hero & pratinjau (lightbox), bukan untuk grid galeri
 function FadeImage({ className, style, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
 	const ref = useRef<HTMLImageElement>(null)
 	const [loaded, setLoaded] = useState(false)
@@ -175,26 +176,39 @@ function GalleryPage() {
 			</ScrollReveal>
 			</LazySection>
 
-			{/* Grid galeri: 2 kolom (mobile), 3 kolom (md), 4 kolom (lg+) */}
+			{/* Grid galeri: 2 kolom (mobile), 3 kolom (md), 4 kolom (lg+).
+			    Animasi muncul & hover disamakan dengan galeri OBC Guest House:
+			    ScrollReveal per gambar (jeda bertahap) + <img> biasa dengan group-hover:scale-105. */}
 			<LazySection minHeight={900} rootMargin="0px">
-			<ScrollReveal>
 			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
 				<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-					{visiblePhotos.map((photo) => (
-						<button
+					{visiblePhotos.map((photo, index) => (
+						<ScrollReveal
 							key={photo.src}
-							type="button"
-							onClick={() => setSelectedGalleryImage(photo.src)}
-							className="group aspect-square overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
-							aria-label={`Buka gambar ${photo.alt}`}
+							className="aspect-square w-full"
+							delay={(index % 4) * 90}
+							duration={700}
+							distance={16}
+							scale={0.98}
 						>
-							{/* Section dirender dekat viewport; gambar tetap dimuat secara malas. */}
-							<FadeImage src={photo.src} alt={photo.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-						</button>
+							<button
+								type="button"
+								onClick={() => setSelectedGalleryImage(photo.src)}
+								className="group h-full w-full overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
+								aria-label={`Buka gambar ${photo.alt}`}
+							>
+								<img
+									src={photo.src}
+									alt={photo.alt}
+									loading="lazy"
+									decoding="async"
+									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+								/>
+							</button>
+						</ScrollReveal>
 					))}
 				</div>
 			</section>
-			</ScrollReveal>
 			</LazySection>
 
 			{selectedGalleryImage && (

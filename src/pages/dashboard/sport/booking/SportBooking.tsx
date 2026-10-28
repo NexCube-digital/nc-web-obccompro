@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
-import DashboardLayout from "../components/layouts/DashboardLayout";
-import { sportService, type BookingStatus, type SportBooking } from "./SportService";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
+import { sportService, type BookingStatus, type SportBooking } from "../SportService";
 
 const bookingStatuses: BookingStatus[] = ["unpaid", "dp_paid", "fully_paid", "completed", "cancelled", "expired", "refund_requested", "refunded"];
 const statusLabels: Record<BookingStatus, string> = {

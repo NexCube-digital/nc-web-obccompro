@@ -58,10 +58,12 @@ export type SportResource = {
 	name: string;
 	slug: string;
 	description: string | null;
+	imageUrl: string | null;
 	resourceType: "court" | "hall" | "field" | "room";
 	sportTypes: SportType[];
 	capacity: number;
 	slotMinutes: number;
+	amenities: string[];
 	status: "active" | "maintenance" | "inactive";
 	tenant: { id: string; name: string; slug: string };
 	location: { id: string; name: string; city: string } | null;
@@ -94,10 +96,32 @@ export type PricingPackage = {
 	resource: { id: string; name: string; slug: string } | null;
 };
 
+export type PricingRuleUpdateInput = {
+	dayType: PricingRule["dayType"];
+	tierStart: string;
+	tierEnd: string;
+	pricePerHour: number;
+	minBookingPrice?: number;
+	minDurationMinutes?: number;
+	priority: number;
+};
+
+export type PricingPackageUpdateInput = {
+	name: string;
+	description: string;
+	sportType?: SportType;
+	durationMinutes: number;
+	packagePrice: number;
+	discountPercent?: number;
+	priority: number;
+};
+
 export type MembershipPackage = {
 	id: string;
 	name: string;
+	nameEn: string | null;
 	description: string | null;
+	descriptionEn: string | null;
 	sportType: SportType;
 	resourceId: string | null;
 	totalSessions: number;
@@ -110,7 +134,34 @@ export type MembershipPackage = {
 	resource: { id: string; name: string; slug: string } | null;
 };
 
+export type MembershipPackageUpdateInput = {
+	name: string;
+	nameEn?: string;
+	description: string;
+	descriptionEn?: string;
+	sportType: SportType;
+	totalSessions: number;
+	validityDays: number;
+	originalPrice: number;
+	memberPrice: number;
+	discountPercent: number;
+};
+
 type ListParams = { page?: number; limit?: number; status?: string; search?: string };
+
+export type SportResourceInput = {
+	name: string;
+	slug: string;
+	description: string | null;
+	imageUrl: string | null;
+	resourceType: SportResource["resourceType"];
+	sportTypes: SportType[];
+	capacity: number;
+	amenities: string[];
+	slotMinutes: number;
+	locationId?: string;
+	status: SportResource["status"];
+};
 
 async function getPaginated<T>(url: string, params: ListParams): Promise<Paginated<T>> {
 	const response = await apiClient.get<ApiSuccess<T[]>>(url, { params });
@@ -127,6 +178,15 @@ export const sportService = {
 	getResources(params: ListParams & { status?: SportResource["status"] }): Promise<Paginated<SportResource>> {
 		return getPaginated("/admin/resources", params);
 	},
+	createResource(tenantId: string, input: SportResourceInput): Promise<SportResource> {
+		return apiClient.post<ApiSuccess<SportResource>>("/admin/resources", input, { params: { tenantId } }).then((response) => response.data.data);
+	},
+	updateResource(id: string, input: Partial<SportResourceInput>): Promise<SportResource> {
+		return apiClient.put<ApiSuccess<SportResource>>(`/admin/resources/${id}`, input).then((response) => response.data.data);
+	},
+	deleteResource(id: string): Promise<void> {
+		return apiClient.delete(`/admin/resources/${id}`).then(() => undefined);
+	},
 	updateResourceStatus(id: string, status: SportResource["status"]): Promise<StatusUpdate<SportResource["status"]>> {
 		return apiClient.put<ApiSuccess<StatusUpdate<SportResource["status"]>>>(`/admin/resources/${id}`, { status }).then((response) => response.data.data);
 	},
@@ -136,16 +196,34 @@ export const sportService = {
 	updatePricingRuleStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
 		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/pricing/rules/${id}`, { status }).then((response) => response.data.data);
 	},
+	updatePricingRule(id: string, input: PricingRuleUpdateInput): Promise<PricingRule> {
+		return apiClient.put<ApiSuccess<PricingRule>>(`/admin/pricing/rules/${id}`, input).then((response) => response.data.data);
+	},
+	deletePricingRule(id: string): Promise<void> {
+		return apiClient.delete(`/admin/pricing/rules/${id}`).then(() => undefined);
+	},
 	getPricingPackages(params: ListParams & { status?: ActiveStatus }): Promise<Paginated<PricingPackage>> {
 		return getPaginated("/admin/pricing/packages", params);
 	},
 	updatePricingPackageStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
 		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/pricing/packages/${id}`, { status }).then((response) => response.data.data);
 	},
+	updatePricingPackage(id: string, input: PricingPackageUpdateInput): Promise<PricingPackage> {
+		return apiClient.put<ApiSuccess<PricingPackage>>(`/admin/pricing/packages/${id}`, input).then((response) => response.data.data);
+	},
+	deletePricingPackage(id: string): Promise<void> {
+		return apiClient.delete(`/admin/pricing/packages/${id}`).then(() => undefined);
+	},
 	getMembershipPackages(params: ListParams & { status?: ActiveStatus }): Promise<Paginated<MembershipPackage>> {
 		return getPaginated("/admin/membership-packages", params);
 	},
 	updateMembershipPackageStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
 		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/membership-packages/${id}`, { status }).then((response) => response.data.data);
+	},
+	updateMembershipPackage(id: string, input: MembershipPackageUpdateInput): Promise<MembershipPackage> {
+		return apiClient.put<ApiSuccess<MembershipPackage>>(`/admin/membership-packages/${id}`, input).then((response) => response.data.data);
+	},
+	deleteMembershipPackage(id: string): Promise<void> {
+		return apiClient.delete(`/admin/membership-packages/${id}`).then(() => undefined);
 	},
 };

@@ -25,6 +25,7 @@ export default function Management() {
 	const [loading, setLoading] = useState(true);
 	const [loadingSummary, setLoadingSummary] = useState(true);
 	const [showForm, setShowForm] = useState(false);
+	const [editingFinance, setEditingFinance] = useState<FinanceRecord | null>(null);
 	const [divisionInput, setDivisionInput] = useState("");
 	const [divisionFilter, setDivisionFilter] = useState("");
 	const [typeFilter, setTypeFilter] = useState<"all" | FinanceType>("all");
@@ -57,6 +58,22 @@ export default function Management() {
 
 	const refresh = () => setReload((value) => value + 1);
 
+	const editFinance = (finance: FinanceRecord) => {
+		setEditingFinance(finance);
+		setShowForm(true);
+	};
+
+	const deleteFinance = async (finance: FinanceRecord) => {
+		if (!window.confirm(`Hapus transaksi "${finance.category || finance.description || finance.type}"?`)) return;
+		try {
+			await financeService.deleteFinance(finance.id);
+			toast.success("Transaksi berhasil dihapus.");
+			refresh();
+		} catch (error) {
+			toast.error(getApiErrorMessage(error));
+		}
+	};
+
 	return (
 		<DashboardPageLayout breadcrumb="Keuangan" title="Manajemen keuangan" description="Pantau pemasukan, pengeluaran, dan catatan transaksi seluruh divisi.">
 			<section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -75,12 +92,12 @@ export default function Management() {
 				<div className="flex gap-2">
 					<button type="button" onClick={() => setDivisionFilter(divisionInput.trim())} className="h-10 rounded-lg border border-obc-border px-3 text-[13px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]">Terapkan</button>
 					<button type="button" onClick={refresh} aria-label="Muat ulang transaksi" title="Muat ulang" className="grid size-10 place-items-center rounded-lg border border-obc-border text-obc-muted hover:bg-[#FDFCF7]"><RefreshCw size={15} /></button>
-					{!showForm && <button type="button" onClick={() => setShowForm(true)} className="inline-flex h-10 items-center gap-2 rounded-lg bg-obc-green px-3 text-[13px] font-semibold text-white hover:bg-obc-green-hover"><Plus size={15} />Catat transaksi</button>}
+					{!showForm && <button type="button" onClick={() => { setEditingFinance(null); setShowForm(true); }} className="inline-flex h-10 items-center gap-2 rounded-lg bg-obc-green px-3 text-[13px] font-semibold text-white hover:bg-obc-green-hover"><Plus size={15} />Catat transaksi</button>}
 				</div>
 			</section>
 
-			{showForm && <div className="mb-4"><FinanceForm onCancel={() => setShowForm(false)} onCreated={() => { setShowForm(false); refresh(); }} /></div>}
-			<FinanceTable finances={finances} loading={loading} />
+			{showForm && <div className="mb-4"><FinanceForm key={editingFinance?.id ?? "new"} finance={editingFinance} onCancel={() => setShowForm(false)} onCreated={() => { setShowForm(false); refresh(); }} /></div>}
+			<FinanceTable finances={finances} loading={loading} onEdit={editFinance} onDelete={deleteFinance} />
 		</DashboardPageLayout>
 	);
 }

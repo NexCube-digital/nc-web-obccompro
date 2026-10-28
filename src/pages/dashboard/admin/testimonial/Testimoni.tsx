@@ -3,6 +3,7 @@ import { Plus, Search, Trash2, Edit, ToggleLeft, ToggleRight, Star } from "lucid
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { testimonialService, type Testimonial } from "./testimonialService";
 import { toast } from "sonner";
+import { getTestimonialAvatarUrl } from "../../../../services/Public/Testimonial";
 
 export default function Testimoni() {
 	const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -11,6 +12,9 @@ export default function Testimoni() {
 	const [statusFilter, setStatusFilter] = useState<"all" | Testimonial["status"]>("all");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editingItem, setEditingItem] = useState<Testimonial | null>(null);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [avatarPreview, setAvatarPreview] = useState("");
+	const [reload, setReload] = useState(0);
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -22,20 +26,14 @@ export default function Testimoni() {
 	});
 
 	useEffect(() => {
-		loadData();
-	}, [statusFilter]);
-
-	const loadData = async () => {
-		try {
-			setLoading(true);
-			const data = await testimonialService.getTestimonials({ status: statusFilter });
-			setTestimonials(data);
-		} catch (error) {
-			toast.error(error instanceof Error ? error.message : "Gagal muat data testimoni");
-		} finally {
-			setLoading(false);
-		}
-	};
+		let active = true;
+		queueMicrotask(() => { if (active) setLoading(true); });
+		testimonialService.getTestimonials({ status: statusFilter })
+			.then((data) => { if (active) setTestimonials(data); })
+			.catch((error: unknown) => { if (active) toast.error(error instanceof Error ? error.message : "Gagal muat data testimoni"); })
+			.finally(() => { if (active) setLoading(false); });
+		return () => { active = false; };
+	}, [statusFilter, reload]);
 
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
@@ -49,6 +47,7 @@ export default function Testimoni() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		const avatarRemoved = !formData.avatar && !avatarFile;
 		const payload = {
 			...formData,
 			company: formData.company.trim() || null,
@@ -56,15 +55,16 @@ export default function Testimoni() {
 		};
 		try {
 			if (editingItem?.id) {
-				await testimonialService.updateTestimonial(editingItem.id, payload);
+				await testimonialService.updateTestimonial(editingItem.id, payload, avatarFile ?? undefined, avatarRemoved);
 				toast.success("Testimoni berhasil diupdate");
 			} else {
-				await testimonialService.createTestimonial(payload);
+				await testimonialService.createTestimonial(payload, avatarFile ?? undefined);
 				toast.success("Testimoni berhasil dibuat");
 			}
 			setIsModalOpen(false);
 			resetForm();
-			await loadData();
+			setReload((value) => value + 1);
+			
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : "Gagal menyimpan testimoni");
 		}
@@ -80,6 +80,8 @@ export default function Testimoni() {
 			avatar: t.avatar ?? "",
 			status: t.status,
 		});
+		setAvatarFile(null);
+		setAvatarPreview(getTestimonialAvatarUrl(t.avatar) ?? "");
 		setIsModalOpen(true);
 	};
 
@@ -88,7 +90,7 @@ export default function Testimoni() {
 		try {
 			await testimonialService.deleteTestimonial(id);
 			toast.success("Testimoni berhasil dihapus");
-			loadData();
+			setReload((value) => value + 1);
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : "Gagal hapus testimoni");
 		}
@@ -98,7 +100,7 @@ export default function Testimoni() {
 		try {
 			await testimonialService.toggleTestimonialStatus(id);
 			toast.success("Status testimoni diubah");
-			loadData();
+			setReload((value) => value + 1);
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : "Gagal ubah status");
 		}
@@ -107,6 +109,8 @@ export default function Testimoni() {
 	const resetForm = () => {
 		setEditingItem(null);
 		setFormData({ name: "", company: "", text: "", rating: 5, avatar: "", status: "draft" });
+		setAvatarFile(null);
+		setAvatarPreview("");
 	};
 
 	return (
@@ -171,8 +175,10 @@ export default function Testimoni() {
 								filtered.map((t) => (
 									<tr key={t.id} className="border-t border-obc-border hover:bg-[#FDFCF7]">
 										<td className="px-5 py-3.5">
-											<p className="font-semibold text-[#343133]">{t.name}</p>
-											<p className="text-[12px] text-obc-muted">{t.company || "-"}</p>
+										<div className="flex items-center gap-3">
+											{getTestimonialAvatarUrl(t.avatar) ? <img src={getTestimonialAvatarUrl(t.avatar) ?? undefined} alt={t.name} className="size-10 shrink-0 rounded-full object-cover" /> : <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#CDF178] text-[12px] font-bold text-obc-green">{t.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>}
+											<div><p className="font-semibold text-obc-charcoal">{t.name}</p><p className="text-[12px] text-obc-muted">{t.company || "-"}</p></div>
+										</div>
 										</td>
 										<td className="px-5 py-3.5">
 											<div className="flex items-center gap-1 text-amber-500">
@@ -260,13 +266,12 @@ export default function Testimoni() {
 								/>
 							</div>
 								<div>
-									<label className="block text-[13px] font-medium text-[#343133]">URL avatar</label>
-									<input
-										value={formData.avatar}
-										onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-										className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px] outline-none"
-										placeholder="https://..."
-									/>
+								<label className="block text-[13px] font-medium text-[#343133]">Foto / avatar <span className="font-normal text-obc-muted">(opsional)</span></label>
+								<div className="mt-1 flex items-center gap-3 rounded-xl border border-obc-border p-3">
+									{avatarPreview && <img src={avatarPreview} alt="Pratinjau avatar" className="size-14 rounded-full object-cover" />}
+									<label className="inline-flex h-10 cursor-pointer items-center rounded-lg border border-obc-border px-3 text-[13px] font-medium">Pilih gambar<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => { const file = event.target.files?.[0] ?? null; setAvatarFile(file); setAvatarPreview(file ? URL.createObjectURL(file) : getTestimonialAvatarUrl(formData.avatar) ?? ""); }}/></label>
+									{(avatarPreview || formData.avatar) && <button type="button" onClick={() => { setAvatarFile(null); setAvatarPreview(""); setFormData({ ...formData, avatar: "" }); }} className="text-[13px] font-medium text-red-600">Hapus</button>}
+								</div>
 								</div>
 							<div className="grid grid-cols-2 gap-4">
 								<div>

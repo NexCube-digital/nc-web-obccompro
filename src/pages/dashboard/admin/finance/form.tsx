@@ -1,9 +1,10 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FileUp, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { financeService, type FinanceInput, type FinanceType } from "./financeService";
+import { financeService, type FinanceInput, type FinanceRecord, type FinanceType } from "./financeService";
 
 type Props = {
+	finance?: FinanceRecord | null;
 	onCreated: () => void;
 	onCancel: () => void;
 };
@@ -77,16 +78,16 @@ function parseCsv(text: string): Omit<FinanceInput, "division">[] {
 	});
 }
 
-export default function FinanceForm({ onCreated, onCancel }: Props) {
+export default function FinanceForm({ finance = null, onCreated, onCancel }: Props) {
 	const [mode, setMode] = useState<FinanceMode>("single");
 	const [saving, setSaving] = useState(false);
-	const [division, setDivision] = useState("obc");
-	const [type, setType] = useState<FinanceType>("income");
-	const [category, setCategory] = useState("");
-	const [description, setDescription] = useState("");
-	const [amount, setAmount] = useState("");
-	const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-	const [status, setStatus] = useState("confirmed");
+	const [division, setDivision] = useState(finance?.division ?? "obc");
+	const [type, setType] = useState<FinanceType>(finance?.type ?? "income");
+	const [category, setCategory] = useState(finance?.category ?? "");
+	const [description, setDescription] = useState(finance?.description ?? "");
+	const [amount, setAmount] = useState(finance ? String(finance.amount) : "");
+	const [date, setDate] = useState(finance?.date.slice(0, 10) ?? new Date().toISOString().slice(0, 10));
+	const [status, setStatus] = useState(finance?.status ?? "confirmed");
 	const [csvFile, setCsvFile] = useState<File | null>(null);
 
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +99,7 @@ export default function FinanceForm({ onCreated, onCancel }: Props) {
 		setSaving(true);
 		try {
 			if (mode === "single") {
-				await financeService.createFinance({
+				const payload: FinanceInput = {
 					division: division.trim() || "obc",
 					type,
 					category: category.trim() || null,
@@ -106,8 +107,14 @@ export default function FinanceForm({ onCreated, onCancel }: Props) {
 					amount: Number(amount),
 					date,
 					status: status.trim() || "confirmed",
-				});
-				toast.success("Transaksi berhasil ditambahkan.");
+				};
+				if (finance) {
+					await financeService.updateFinance(finance.id, payload);
+					toast.success("Transaksi berhasil diperbarui.");
+				} else {
+					await financeService.createFinance(payload);
+					toast.success("Transaksi berhasil ditambahkan.");
+				}
 			} else {
 				if (!csvFile) throw new Error("Pilih file CSV terlebih dahulu.");
 				const items = parseCsv(await csvFile.text());
@@ -125,11 +132,11 @@ export default function FinanceForm({ onCreated, onCancel }: Props) {
 	return (
 		<form onSubmit={handleSubmit} className="rounded-xl border border-obc-border bg-white p-4 sm:p-5">
 			<div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-				<h2 className="font-heading text-[16px] font-semibold text-obc-charcoal">Catat transaksi</h2>
-				<div role="tablist" aria-label="Mode pencatatan" className="flex rounded-lg border border-obc-border bg-[#FDFCF7] p-1">
+				<h2 className="font-heading text-[16px] font-semibold text-obc-charcoal">{finance ? "Ubah transaksi" : "Catat transaksi"}</h2>
+				{!finance && <div role="tablist" aria-label="Mode pencatatan" className="flex rounded-lg border border-obc-border bg-[#FDFCF7] p-1">
 					<button type="button" role="tab" aria-selected={mode === "single"} onClick={() => setMode("single")} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium ${mode === "single" ? "bg-white text-obc-charcoal shadow-sm" : "text-obc-muted"}`}><Plus size={14} />Satu transaksi</button>
 					<button type="button" role="tab" aria-selected={mode === "bulk"} onClick={() => setMode("bulk")} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium ${mode === "bulk" ? "bg-white text-obc-charcoal shadow-sm" : "text-obc-muted"}`}><Upload size={14} />Impor CSV</button>
-				</div>
+				</div>}
 			</div>
 
 			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -155,8 +162,8 @@ export default function FinanceForm({ onCreated, onCancel }: Props) {
 			<div className="mt-5 flex justify-end gap-2">
 				<button type="button" onClick={onCancel} disabled={saving} className="h-10 rounded-lg border border-obc-border px-4 text-[13px] font-medium text-obc-charcoal hover:bg-[#FDFCF7] disabled:opacity-60">Batal</button>
 				<button type="submit" disabled={saving} className="inline-flex h-10 items-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-wait disabled:opacity-60">
-					{mode === "bulk" ? <Upload size={15} /> : <Plus size={15} />}
-					{saving ? "Menyimpan..." : mode === "bulk" ? "Impor transaksi" : "Tambah transaksi"}
+					{mode === "bulk" ? <Upload size={15} /> : finance ? null : <Plus size={15} />}
+					{saving ? "Menyimpan..." : mode === "bulk" ? "Impor transaksi" : finance ? "Simpan perubahan" : "Tambah transaksi"}
 				</button>
 			</div>
 		</form>

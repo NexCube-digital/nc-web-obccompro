@@ -147,13 +147,13 @@ function BusinessUnitPage() {
 					<div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_45%,rgba(250,250,242,0.592749)_70%,rgba(250,250,242,0)_100%)] md:inset-y-0 md:left-0 md:right-auto md:h-full md:w-[68%] md:bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)] lg:w-[62%] xl:w-[58%] 2xl:w-[55%]" />				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[70px] pt-24 md:items-center md:pb-12">
 					<div className="hero-content-enter mx-auto w-full max-w-[1246px] px-[30px] md:px-10">
 						<div className="w-full max-w-[440px] text-black">
-							<span className="inline-flex h-[24px] w-[99px] items-center justify-center rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
+							<span className="inline-flex h-[24px] w-fit items-center justify-center whitespace-nowrap rounded-full bg-white/20 px-[10px] py-[5px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)]">
 								<span className="font-['Montserrat'] text-[10px] font-bold leading-[14px] tracking-[1px] text-black uppercase">
 									{t('businessUnitPage.badge')}
 								</span>
 							</span>
 							{/* H1: tidak tampil di mobile (tidak ada di desain), tetap ada untuk screen reader/SEO */}
-							<h1 className="sr-only font-['Montserrat'] font-bold tracking-[1.5px] text-black md:not-sr-only md:mt-5 md:text-[56px] md:leading-[70px]">
+							<h1 className="sr-only font-['Montserrat'] font-bold tracking-[1.5px] text-black md:not-sr-only md:mt-5 md:whitespace-nowrap md:text-[56px] md:leading-[70px]">
 								{t('businessUnitPage.heroTitle')}
 							</h1>
 							{/* Subjudul: mobile tebal 24px, desktop 40px medium */}

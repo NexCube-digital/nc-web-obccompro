@@ -63,6 +63,15 @@ export const financeService = {
 		return response.data.data;
 	},
 
+	async updateFinance(id: string, payload: Partial<FinanceInput>): Promise<FinanceRecord> {
+		const response = await apiClient.put<ApiSuccess<FinanceRecord>>(`/admin/finances/${id}`, payload);
+		return response.data.data;
+	},
+
+	async deleteFinance(id: string): Promise<void> {
+		await apiClient.delete(`/admin/finances/${id}`);
+	},
+
 	async bulkCreateFinances(items: Omit<FinanceInput, "division">[], division: string): Promise<{ count: number }> {
 		const response = await apiClient.post<ApiSuccess<{ count: number }>>("/admin/finances/bulk", {
 			items,

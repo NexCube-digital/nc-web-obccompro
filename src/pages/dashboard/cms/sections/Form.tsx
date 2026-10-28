@@ -8,6 +8,7 @@ import { cmsSectionService, type CmsLanguage, type CmsSection, type CmsSectionIn
 type SectionFormProps = {
 	section: CmsSection | null;
 	pages: CmsPage[];
+	fixedType?: CmsSectionType;
 	onCancel: () => void;
 	onSaved: () => void;
 };
@@ -32,11 +33,11 @@ function parseContent(content: string): unknown {
 	return JSON.parse(content) as unknown;
 }
 
-export default function CmsSectionForm({ section, pages, onCancel, onSaved }: SectionFormProps) {
+export default function CmsSectionForm({ section, pages, fixedType, onCancel, onSaved }: SectionFormProps) {
 	const [pageId, setPageId] = useState(section?.pageId ?? "");
 	const [sectionKey, setSectionKey] = useState(section?.sectionKey ?? "");
 	const [title, setTitle] = useState(section?.title ?? "");
-	const [sectionType, setSectionType] = useState<CmsSectionType>(section?.sectionType ?? "custom");
+	const [sectionType, setSectionType] = useState<CmsSectionType>(section?.sectionType ?? fixedType ?? "custom");
 	const [sortOrder, setSortOrder] = useState(String(section?.sortOrder ?? 0));
 	const [status, setStatus] = useState<CmsSectionStatus>(section?.status ?? "active");
 	const [contentText, setContentText] = useState(stringifyContent(section?.content));
@@ -86,7 +87,7 @@ export default function CmsSectionForm({ section, pages, onCancel, onSaved }: Se
 				<label className={labelClass}>Halaman<select className={inputClass} value={pageId} onChange={(event) => setPageId(event.target.value)} required><option value="">Pilih halaman</option>{pages.map((page) => <option key={page.id} value={page.id}>{page.title} (/{page.slug})</option>)}</select></label>
 				<label className={labelClass}>Section key<input className={inputClass} value={sectionKey} onChange={(event) => setSectionKey(event.target.value)} maxLength={100} required placeholder="hero_main" /></label>
 				<label className={labelClass}>Judul<input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={255} required /></label>
-				<label className={labelClass}>Tipe section<select className={inputClass} value={sectionType} onChange={(event) => setSectionType(event.target.value as CmsSectionType)}><option value="hero">Hero</option><option value="about">Tentang</option><option value="services">Layanan</option><option value="gallery">Galeri</option><option value="testimonials">Testimoni</option><option value="contact">Kontak</option><option value="custom">Custom</option></select></label>
+				<label className={labelClass}>Tipe section<select className={inputClass} value={sectionType} disabled={Boolean(fixedType)} onChange={(event) => setSectionType(event.target.value as CmsSectionType)}><option value="hero">Hero</option><option value="about">Tentang</option><option value="services">Layanan</option><option value="gallery">Galeri</option><option value="testimonials">Testimoni</option><option value="contact">Kontak</option><option value="custom">Custom</option></select></label>
 				<label className={labelClass}>Urutan tampil<input className={inputClass} type="number" min="0" step="1" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} required /></label>
 				{section && <label className={labelClass}>Status<select className={inputClass} value={status} onChange={(event) => setStatus(event.target.value as CmsSectionStatus)}><option value="active">Aktif</option><option value="inactive">Nonaktif</option></select></label>}
 				<label className={`${labelClass} sm:col-span-2`}>Content JSON<textarea className={`${inputClass} h-48 resize-y py-2 font-mono text-[12px]`} value={contentText} onChange={(event) => setContentText(event.target.value)} placeholder={'{\n  "headline": "..."\n}'} /></label>
