@@ -84,38 +84,30 @@ function Pill({ children, tone = "green" }: { children: ReactNode; tone?: "green
 
 /* ───────────── Tab: Profil ───────────── */
 function ProfilTab({
-  firstName,
-  lastName,
+  name,
   email,
   phone,
-  bio,
   role,
   avatarUrl,
   loading,
   saving,
   uploadingPhoto,
-  onFirstNameChange,
-  onLastNameChange,
+  onNameChange,
   onPhoneChange,
-  onBioChange,
   onPhotoSelect,
   onReset,
   onSave,
 }: {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   phone: string;
-  bio: string;
   role: string;
   avatarUrl: string | null;
   loading: boolean;
   saving: boolean;
   uploadingPhoto: boolean;
-  onFirstNameChange: (value: string) => void;
-  onLastNameChange: (value: string) => void;
+  onNameChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
-  onBioChange: (value: string) => void;
   onPhotoSelect: (file: File) => void;
   onReset: () => void;
   onSave: () => void;
@@ -134,10 +126,10 @@ function ProfilTab({
       <div className={`${cardCls} h-fit p-5 text-center sm:p-6`}>
         <div className="relative mx-auto h-[88px] w-[88px]">
           {avatarUrl ? (
-            <img src={getProfilePhotoUrl(avatarUrl)} alt={`Foto profil ${firstName} ${lastName}`} className="h-full w-full rounded-2xl object-cover" />
+            <img src={getProfilePhotoUrl(avatarUrl)} alt={`Foto profil ${name}`} className="h-full w-full rounded-2xl object-cover" />
           ) : (
             <div className="grid h-full w-full place-items-center rounded-2xl bg-[#1F3320] font-heading text-[30px] font-bold text-[#CDF178]">
-              {`${firstName} ${lastName}`.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "?"}
+              {name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "?"}
             </div>
           )}
           <button
@@ -151,7 +143,7 @@ function ProfilTab({
           </button>
           <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} className="sr-only" />
         </div>
-        <p className="mt-4 font-heading text-[18px] font-semibold text-obc-charcoal">{`${firstName} ${lastName}`.trim() || "Memuat profil..."}</p>
+        <p className="mt-4 font-heading text-[18px] font-semibold text-obc-charcoal">{name.trim() || "Memuat profil..."}</p>
         <p className="font-body text-[13px] text-obc-muted">Staf OBC Sport</p>
         <div className="mt-3">
           <Pill tone="lime">{role || "Akun"}</Pill>
@@ -165,26 +157,14 @@ function ProfilTab({
       <div className={`${cardCls} min-w-0 p-4 sm:p-6`}>
         <CardTitle title="Informasi pribadi" sub="Data ini tampil di akun admin OBC Sport." />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nama depan" icon={User}>
-            <input className={inputCls} value={firstName} onChange={(event) => onFirstNameChange(event.target.value)} disabled={loading} />
-          </Field>
-          <Field label="Nama belakang">
-            <input className={inputCls} value={lastName} onChange={(event) => onLastNameChange(event.target.value)} disabled={loading} />
+          <Field label="Nama" icon={User}>
+            <input className={inputCls} value={name} onChange={(event) => onNameChange(event.target.value)} disabled={loading} />
           </Field>
           <Field label="Email" icon={Mail}>
             <input type="email" className={`${inputCls} cursor-not-allowed opacity-70`} value={email} readOnly />
           </Field>
           <Field label="No. telepon" icon={Phone}>
             <input type="tel" className={inputCls} value={phone} onChange={(event) => onPhoneChange(event.target.value)} disabled={loading} />
-          </Field>
-          <Field label="Bio" className="sm:col-span-2">
-            <textarea
-              rows={4}
-              className={`${inputCls} h-auto resize-none py-3`}
-              value={bio}
-              onChange={(event) => onBioChange(event.target.value)}
-              disabled={loading}
-            />
           </Field>
         </div>
         <div className="mt-6 flex justify-end gap-2">
@@ -268,10 +248,8 @@ export default function SettingAccount() {
   const [mobileOpen, setMobileOpen] = useState(false); // mobile: drawer
   const [tab, setTab] = useState<Tab>("Profil");
   const [profile, setProfile] = useState<AccountProfile | null>(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [bio, setBio] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -282,11 +260,8 @@ export default function SettingAccount() {
       .then((data) => {
         if (!active) return;
         setProfile(data);
-        const [first, ...rest] = data.name.trim().split(/\s+/);
-        setFirstName(first ?? "");
-        setLastName(rest.join(" "));
+        setName(data.name);
         setPhone(data.phone ?? "");
-        setBio(data.bio ?? "");
       })
       .catch((error: unknown) => toast.error(getApiErrorMessage(error)))
       .finally(() => {
@@ -298,15 +273,15 @@ export default function SettingAccount() {
   }, []);
 
   const handleProfileSave = async () => {
-    const name = `${firstName} ${lastName}`.trim();
-    if (name.length < 2) {
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2) {
       toast.error("Nama minimal 2 karakter.");
       return;
     }
 
     setSavingProfile(true);
     try {
-      const updated = await updateProfile({ name, phone: phone || null, bio: bio || null });
+      const updated = await updateProfile({ name: trimmedName, phone: phone || null, bio: null });
       setProfile(updated);
       toast.success("Perubahan profil berhasil disimpan.");
     } catch (error) {
@@ -318,11 +293,8 @@ export default function SettingAccount() {
 
   const handleProfileReset = () => {
     if (!profile) return;
-    const [first, ...rest] = profile.name.trim().split(/\s+/);
-    setFirstName(first ?? "");
-    setLastName(rest.join(" "));
+    setName(profile.name);
     setPhone(profile.phone ?? "");
-    setBio(profile.bio ?? "");
   };
 
   const handlePhotoSelect = async (file: File) => {
@@ -411,20 +383,16 @@ export default function SettingAccount() {
 
           {tab === "Profil" ? (
             <ProfilTab
-              firstName={firstName}
-              lastName={lastName}
+              name={name}
               email={profile?.email ?? ""}
               phone={phone}
-              bio={bio}
               role={profile?.role ?? ""}
               avatarUrl={profile?.avatarUrl ?? null}
               loading={loadingProfile}
               saving={savingProfile}
               uploadingPhoto={uploadingPhoto}
-              onFirstNameChange={setFirstName}
-              onLastNameChange={setLastName}
+              onNameChange={setName}
               onPhoneChange={setPhone}
-              onBioChange={setBio}
               onPhotoSelect={handlePhotoSelect}
               onReset={handleProfileReset}
               onSave={handleProfileSave}

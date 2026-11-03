@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, Play, X } from 'lucide-react'
 import ModalVideo from '../../../components/ui/modal/ModalVideo'
-import lapangF2Image from '../../../assets/layanan/Lapang F1.png'
-import lapangF1Image from '../../../assets/layanan/Lapang F2.png'
-import billiardImage from '../../../assets/layanan/Meja Billiard.png'
+import lapangF2Image from '../../../assets/images/lapang/Lapang F1.webp'
+import lapangF1Image from '../../../assets/images/lapang/Lapang F2.webp'
+import billiardImage from '../../../assets/images/lapang/Meja Billiard.webp'
 import academyTeamImage from '../../../assets/layanan/OBC ACADEMY/sae-375.JPEG'
 import academyRedImage from '../../../assets/layanan/OBC ACADEMY/sae-371.JPEG'
 import volleyballIcon from '../../../assets/icon/iconstack.io - (Volleyball 2).svg'
@@ -30,8 +30,7 @@ export type SportCardProps = {
 function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight = 'h-[230px]', price }: SportCardProps) {
 	const { t } = useTranslation()
 	return (
-		// Hover: kartu membesar tipis (scale 1.025) + bayangan melembut, smooth 500ms.
-		// Gambar diberi scale kebalikan (1.025 -> 1) sehingga ukurannya TIDAK terlihat membesar (tanpa efek zoom).
+		
 		<article
 			role="button"
 			tabIndex={0}

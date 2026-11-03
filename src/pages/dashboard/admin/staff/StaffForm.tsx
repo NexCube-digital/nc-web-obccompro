@@ -97,7 +97,6 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
 					<select required value={values.role} onChange={(event) => update("role", event.target.value)} className={inputClass}>
 						<option value="">Pilih role</option>
 						<option value="admin">Admin</option>
-						<option value="super_admin">Super admin</option>
 						<option value="marketing">Marketing</option>
 						<option value="sport">Sport</option>
 					</select>

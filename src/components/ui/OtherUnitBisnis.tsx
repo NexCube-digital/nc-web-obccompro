@@ -1,5 +1,12 @@
 import TransitionLink from '../common/TransitionLink'
 import { useTranslation } from 'react-i18next'
+import sportCenterImage from '../../assets/images/lapang/Lapang F2.webp'
+import guestHouseImage from '../../assets/images/unit-bisnis/guesthouse.webp'
+import villaImage from '../../assets/images/unit-bisnis/villa.webp'
+import laundryImage from '../../assets/images/unit-bisnis/laundry.webp'
+import foodCourtImage from '../../assets/images/unit-bisnis/foodcourt.webp'
+import coffeeImage from '../../assets/images/unit-bisnis/coffe.webp'
+import agribisnisImage from '../../assets/images/unit-bisnis/agribisnis.webp'
 
 export interface UnitBisnisItem {
 	slug: string
@@ -8,14 +15,25 @@ export interface UnitBisnisItem {
 	image: string
 }
 
+const unitItems: UnitBisnisItem[] = [
+	{ slug: 'sport-center', category: 'Sport & Event Space', title: 'OBC Sports Center', image: sportCenterImage },
+	{ slug: 'guest-house', category: 'Hospitality & Accommodation', title: 'OBC Guest House', image: guestHouseImage },
+	{ slug: 'villa', category: 'Hospitality & Accommodation', title: 'OBC Villa', image: villaImage },
+	{ slug: 'laundry', category: 'Laundry Services', title: 'OBC Laundry', image: laundryImage },
+	{ slug: 'food-court', category: 'Food & Beverage', title: 'OBC Food Court', image: foodCourtImage },
+	{ slug: 'coffee', category: 'Coffee & Lifestyle', title: 'OBC Coffee', image: coffeeImage },
+	{ slug: 'agribisnis', category: 'Agribisnis', title: 'OBC Agribisnis', image: agribisnisImage },
+]
+
 interface UnitBisnisProps {
-	items: UnitBisnisItem[]
+	excludeSlug: string
 	title?: string
 	className?: string
 }
 
-export function UnitBisnis({ items, title = 'Jelajahi Unit Bisnis OBC Group Lainnya', className = '' }: UnitBisnisProps) {
+export function UnitBisnis({ excludeSlug, title = 'Jelajahi Unit Bisnis OBC Group Lainnya', className = '' }: UnitBisnisProps) {
 	const { t } = useTranslation()
+	const items = unitItems.filter((unit) => unit.slug !== excludeSlug)
 	const translationKeys: Record<string, string> = {
 		'food-court': 'foodCourt',
 		'guest-house': 'guestHouse',

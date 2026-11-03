@@ -62,24 +62,26 @@ export default function StaffTable() {
 		};
 	}, []);
 
+	const visibleStaff = useMemo(() => staff.filter((user) => user.role !== "super_admin"), [staff]);
+
 	const counts = useMemo(() => ({
-		all: staff.length,
-		active: staff.filter((user) => user.status === "active").length,
-		inactive: staff.filter((user) => user.status === "inactive").length,
-		suspended: staff.filter((user) => user.status === "suspended").length,
-	}), [staff]);
+		all: visibleStaff.length,
+		active: visibleStaff.filter((user) => user.status === "active").length,
+		inactive: visibleStaff.filter((user) => user.status === "inactive").length,
+		suspended: visibleStaff.filter((user) => user.status === "suspended").length,
+	}), [visibleStaff]);
 
 	const filtered = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
-		return staff.filter((user) => {
+		return visibleStaff.filter((user) => {
 			const matchesStatus = statusFilter === "all" || user.status === statusFilter;
-			const searchable = [user.name, user.email, user.role, user.teamProfile?.position, user.teamProfile?.expertise]
+			const searchable = [user.name, user.email, user.role]
 				.filter(Boolean)
 				.join(" ")
 				.toLowerCase();
 			return matchesStatus && searchable.includes(normalizedQuery);
 		});
-	}, [query, staff, statusFilter]);
+	}, [query, statusFilter, visibleStaff]);
 
 	const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 	const currentPage = Math.min(page, totalPages);
@@ -125,14 +127,13 @@ export default function StaffTable() {
 							<tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
 								<th className="px-5 py-3.5">Staff</th>
 								<th className="px-5 py-3.5">Role</th>
-								<th className="px-5 py-3.5">Posisi / keahlian</th>
 								<th className="px-5 py-3.5">Bergabung</th>
 								<th className="px-5 py-3.5">Status akun</th>
 							</tr>
 						</thead>
 						<tbody className="text-[13px]">
 							{loading ? (
-								<tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Memuat data staff...</td></tr>
+								<tr><td colSpan={4} className="px-5 py-12 text-center text-obc-muted">Memuat data staff...</td></tr>
 							) : rows.length ? rows.map((user) => (
 								<tr key={user.id} className="border-t border-obc-border">
 									<td className="px-5 py-3.5">
@@ -142,7 +143,6 @@ export default function StaffTable() {
 										</div>
 									</td>
 									<td className="px-5 py-3.5">{roleLabels[user.role]}</td>
-									<td className="px-5 py-3.5"><p>{user.teamProfile?.position || "-"}</p><p className="max-w-[240px] truncate text-[11px] text-obc-muted">{user.teamProfile?.expertise || ""}</p></td>
 									<td className="px-5 py-3.5 text-obc-muted">{new Date(user.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</td>
 									<td className="px-5 py-3.5">
 										<select aria-label={`Status akun ${user.name}`} value={user.status} onChange={(event) => updateStatus(user, event.target.value as StaffStatus)} className={`rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold outline-none ${statusClasses[user.status]}`}>
@@ -151,7 +151,7 @@ export default function StaffTable() {
 									</td>
 								</tr>
 							)) : (
-								<tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Tidak ada staff yang cocok.</td></tr>
+								<tr><td colSpan={4} className="px-5 py-12 text-center text-obc-muted">Tidak ada staff yang cocok.</td></tr>
 							)}
 						</tbody>
 					</table>

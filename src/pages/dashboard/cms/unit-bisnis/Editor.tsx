@@ -37,6 +37,8 @@ export default function BusinessUnitEditor({ unit, onClose, onSubmit }: Props) {
 	const [locationAddress, setLocationAddress] = useState(() => getConfigString(unit?.config, "locationAddress"));
 	const [locationMapUrl, setLocationMapUrl] = useState(() => getConfigString(unit?.config, "locationMapUrl"));
 	const [locationInfo, setLocationInfo] = useState(() => Array.isArray(unit?.config?.locationInfo) ? unit.config.locationInfo.filter((info): info is string => typeof info === "string").join("\n") : "");
+	const [showOnSport, setShowOnSport] = useState(() => unit?.config?.showOnSport !== false);
+	const [showOnCompro, setShowOnCompro] = useState(() => unit?.config?.showOnCompro !== false);
 	const existingImageUrl = getConfigString(unit?.config, "imageUrl");
 	const [imageUrl, setImageUrl] = useState(existingImageUrl);
 	const [imageFile, setImageFile] = useState<File | null>(null);
@@ -59,6 +61,8 @@ export default function BusinessUnitEditor({ unit, onClose, onSubmit }: Props) {
 					locationAddress: locationAddress.trim() || undefined,
 					locationMapUrl: locationMapUrl.trim() || undefined,
 					locationInfo: locationInfo.split("\n").map((info) => info.trim()).filter(Boolean),
+					showOnSport,
+					showOnCompro,
 				},
 			});
 			if (imageFile) {
@@ -73,6 +77,8 @@ export default function BusinessUnitEditor({ unit, onClose, onSubmit }: Props) {
 					locationAddress: locationAddress.trim() || undefined,
 					locationMapUrl: locationMapUrl.trim() || undefined,
 					locationInfo: locationInfo.split("\n").map((info) => info.trim()).filter(Boolean),
+						showOnSport,
+						showOnCompro,
 					},
 				});
 			}
@@ -126,6 +132,19 @@ export default function BusinessUnitEditor({ unit, onClose, onSubmit }: Props) {
 					<label className="text-[13px] font-medium sm:col-span-2">Informasi lokasi (satu per baris)
 						<textarea rows={3} value={locationInfo} onChange={(event) => setLocationInfo(event.target.value)} placeholder="Check-in 14.00 WIB\nCheck-out 12.00 WIB" className="mt-1 w-full rounded-lg border border-obc-border p-3 font-normal" />
 					</label>
+					<fieldset className="sm:col-span-2">
+						<legend className="text-[13px] font-medium">Tampilkan unit di</legend>
+						<div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+							<label className="inline-flex items-center gap-2 text-[13px]">
+								<input type="checkbox" checked={showOnSport} onChange={(event) => setShowOnSport(event.target.checked)} className="size-4 accent-[#1F3320]" />
+								Sport OBC
+							</label>
+							<label className="inline-flex items-center gap-2 text-[13px]">
+								<input type="checkbox" checked={showOnCompro} onChange={(event) => setShowOnCompro(event.target.checked)} className="size-4 accent-[#1F3320]" />
+								Compro OBC
+							</label>
+						</div>
+					</fieldset>
 					<label className="text-[13px] font-medium">Status
 						<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as BusinessUnitInput["status"] })} className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal">
 							<option value="active">Aktif</option><option value="inactive">Nonaktif</option>

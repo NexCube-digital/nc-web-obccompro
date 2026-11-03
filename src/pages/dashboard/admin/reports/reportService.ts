@@ -1,6 +1,12 @@
 import apiClient from "../../../../services/api";
 
-export type ReportType = "invoices" | "finance" | "clients";
+export type ReportType = "invoices" | "finance";
+export type FinanceReportPeriod = "day" | "month" | "year";
+
+export interface FinanceReportParameters {
+	period: FinanceReportPeriod;
+	value: string;
+}
 
 export interface ReportRecord {
 	id: string;
@@ -18,8 +24,7 @@ interface ApiSuccess<T> {
 
 export const REPORT_TYPE_LABELS: Record<ReportType, string> = {
 	invoices: "Invoice",
-	finance: "Keuangan",
-	clients: "Klien",
+	finance: "Pemasukan",
 };
 
 export const reportService = {
@@ -28,10 +33,10 @@ export const reportService = {
 		return response.data.data;
 	},
 
-	async generateReport(type: ReportType): Promise<ReportRecord> {
+	async generateReport(type: ReportType, parameters?: FinanceReportParameters): Promise<ReportRecord> {
 		const response = await apiClient.post<ApiSuccess<ReportRecord>>(
 			`/admin/reports/generate/${type}`,
-			{},
+			parameters ?? {},
 		);
 		return response.data.data;
 	},

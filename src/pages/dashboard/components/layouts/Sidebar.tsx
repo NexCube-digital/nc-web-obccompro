@@ -5,7 +5,6 @@ import obcLogo from "../../../../assets/logo/obclogo.webp";
 import {
   Building2,
   ChevronDown,
-  ClipboardList,
   Dumbbell,
   FileBarChart,
   Globe,
@@ -26,75 +25,33 @@ type MenuItem = {
 
 const MENU: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
-  {
-    label: "Operasional",
-    category: "OPERASIONAL",
-    icon: Dumbbell,
-    children: [
-      { label: "Booking", to: "/sport/booking" },
-      { label: "Lapangan", to: "/sport/court" },
-      { label: "Resource & Lapangan", to: "/sport/resource" },
-      { label: "Review", to: "/sport/review" },
-      { label: "Harga & Tarif", to: "/sport/harga" },
-      { label: "Membership", to: "/sport/membership" },
-      { label: "Kalender Master", to: "/kalender" },
-      { label: "Pengajuan Event", to: "/event/pengajuan" },
-      { label: "Invoice & DP Event", to: "/event/invoice" },
-    ],
-  },
-  {
-    label: "Transaksi & Pelanggan",
-    category: "TRANSAKSI",
-    icon: Receipt,
-    children: [
-      { label: "Invoice Management", to: "/admin/invoices" },
-      { label: "Keuangan", to: "/admin/finance" },
-      { label: "Pelanggan", to: "/admin/customers" },
-      { label: "Permintaan Kontak", to: "/admin/contacts" },
-    ],
-  },
+  { label: "Booking", category: "OPERASIONAL", icon: Dumbbell, to: "/sport/booking" },
+  { label: "Lapangan", category: "OPERASIONAL", icon: Building2, to: "/sport/court" },
+  { label: "Harga & Tarif", category: "OPERASIONAL", icon: Receipt, to: "/sport/harga" },
+  { label: "Membership", category: "OPERASIONAL", icon: Users, to: "/sport/membership" },
+  { label: "Invoice Management", category: "TRANSAKSI & KEUANGAN", icon: Receipt, to: "/admin/invoices" },
+  { label: "Pelanggan", category: "TRANSAKSI & KEUANGAN", icon: Users, to: "/admin/customers" },
+  { label: "Laporan", category: "TRANSAKSI & KEUANGAN", icon: FileBarChart, to: "/laporan" },
+  { label: "Unit Bisnis", category: "KONTEN & ADMINISTRASI", icon: Building2, to: "/admin/cms/unit-bisnis" },
+  { label: "Staff", category: "KONTEN & ADMINISTRASI", icon: Users, to: "/staff" },
   {
     label: "Konten Website",
-    category: "CONTENT",
+    category: "KONTEN & ADMINISTRASI",
     icon: Globe,
     children: [
-      { label: "Manajemen Halaman", to: "/admin/cms/pages" },
-      { label: "Manajemen Section", to: "/admin/cms/sections" },
       { label: "Portfolio", to: "/admin/portfolio" },
-      { label: "Slider", to: "/admin/cms/slider" },
-      { label: "Sport Center", to: "/admin/cms/sport-center" },
       { label: "Paket Layanan", to: "/admin/packages" },
-      { label: "Pustaka Media", to: "/admin/media" },
       { label: "Testimoni", to: "/testimoni" },
-      { label: "Kontak", to: "/kontak" },
-      { label: "Sosial Media", to: "/kontak-lokasi" },
+      { label: "Kontak & Lokasi", to: "/kontak-lokasi" },
     ],
   },
   {
-    label: "Unit Bisnis",
-    icon: Building2,
-    to: "/admin/cms/unit-bisnis",
-  },
-  {
-    label: "Tim & Administrasi",
-    category: "ADMINISTRASI",
-    icon: Users,
+    label: "Akses & Audit",
+    category: "KONTEN & ADMINISTRASI",
+    icon: FileBarChart,
     children: [
-      { label: "Staff", to: "/staff" },
-      { label: "Tim", to: "/admin/teams" },
       { label: "Role & Permission", to: "/admin/role-permissions" },
       { label: "Audit Log", to: "/admin/activities" },
-      { label: "Pengaturan", to: "/pengaturan" },
-    ],
-  },
-  { label: "Laporan", category: "LAPORAN", icon: FileBarChart, to: "/laporan" },
-  {
-    label: "Utilitas",
-    category: "UTILITAS",
-    icon: ClipboardList,
-    children: [
-      { label: "Form", to: "/template/form" },
-      { label: "Tabel", to: "/template/tabel" },
     ],
   },
 ];
@@ -194,11 +151,7 @@ export default function Sidebar({
             collapsed ? "lg:px-3" : ""
           }`}
         >
-          <p
-            className={`px-3 pb-2 pt-1 font-heading text-[11px] font-semibold tracking-[0.12em] text-obc-muted ${hide}`}
-          >
-            MENU
-          </p>
+          
           {collapsed && <div className="mb-2 hidden border-t border-obc-border lg:block" />}
 
           <ul className="space-y-0.5">

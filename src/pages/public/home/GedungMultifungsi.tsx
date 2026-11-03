@@ -1,7 +1,7 @@
 import WhatsAppLogo from '../../../assets/icon/whatsapp2.svg'
 import { useTranslation } from 'react-i18next'
-import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
-import lapangF2Image from '../../../assets/layanan/Lapang F2.png'
+import lapangF1Image from '../../../assets/images/multifungsi/multifungsi1.webp'
+import lapangF2Image from '../../../assets/images/multifungsi/multifungsi2.webp'
 import eventIcon from '../../../assets/icon/iconstack.io - (Event).svg'
 
 const eventCategories = ['wedding', 'gathering', 'otherEvents']

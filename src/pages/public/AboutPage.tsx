@@ -3,11 +3,11 @@ import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LazySection from '../../components/common/LazySectionHome'
 import ScrollReveal from '../../components/animation/ScrollReveal'
 import { useTranslation } from 'react-i18next'
-import heroImage from '../../assets/layanan/Lapang F1.png'
-import storyImageOne from '../../assets/layanan/galeri-cones.png'
-import storyImageTwo from '../../assets/layanan/Lapang F2.png'
-import storyImageThree from '../../assets/layanan/galeri-villa-1.png'
-import storyImageFour from '../../assets/layanan/galeri-villa-2.png'
+import heroImage from '../../assets/images/unit-bisnis/academy2.webp'
+import storyImageOne from '../../assets/images/lapang/lapang-bola.webp'
+import storyImageTwo from '../../assets/images/lapang/pickebal.webp'
+import storyImageThree from '../../assets/images/lapang/Lapang F2.webp'
+import storyImageFour from '../../assets/images/lapang/Lapang F1.webp'
 import { ArrowUpRight } from 'lucide-react'
 import targetArrowIcon from '../../assets/icon/iconstack.io - (Target Arrow).svg'
 import rosetteIcon from '../../assets/icon/iconstack.io - (Rosette Discount Check).svg'
@@ -79,13 +79,17 @@ function AboutPage() {
 					{/* Galeri 2x2. Desktop: 528px di tinggi 800, mengecil tipis di layar lebih pendek (min 440px) */}
 					<div className="order-first grid grid-cols-2 gap-x-[15px] gap-y-[10px] pb-[25px] md:order-none md:w-[min(100%,max(440px,66svh))] md:justify-self-end md:gap-x-[10px] md:gap-y-[clamp(22px,3.75svh,30px)] md:pb-0">
 						{STORY_IMAGES.map((img, i) => (
-							<img
+							<div
 								key={img.src}
-								src={img.src}
-								alt={img.alt}
-								loading="lazy"
-								className={`aspect-square w-full rounded-2xl object-cover shadow-[0_4px_16px_rgba(52,49,51,0.12)] ${STORY_IMAGE_POSITION[i]}`}
-							/>
+								className={`aspect-square w-full overflow-hidden rounded-2xl shadow-[0_4px_16px_rgba(52,49,51,0.12)] transition-transform duration-300 hover:scale-[1.01] ${STORY_IMAGE_POSITION[i]}`}
+							>
+								<img
+									src={img.src}
+									alt={img.alt}
+									loading="lazy"
+									className="h-full w-full scale-[1.25] object-cover"
+								/>
+							</div>
 						))}
 					</div>
 				</div>

@@ -2,12 +2,14 @@ import apiClient from "../api";
 
 export interface PublicTestimonial {
 	id: string;
+	source: 'compro' | 'sport';
 	name: string;
 	company: string | null;
 	text: string;
 	rating: number;
 	avatar: string | null;
 	createdAt: string;
+	resourceId: string | null;
 }
 
 interface ApiSuccess<T> {
@@ -26,13 +28,16 @@ export function getTestimonialAvatarUrl(avatar: string | null): string | null {
 }
 
 export const publicTestimonialService = {
-	async getPublished(): Promise<PublicTestimonial[]> {
-		const response = await apiClient.get<ApiSuccess<PublicTestimonial[]>>("/public/testimonials");
+	async getPublished(source?: PublicTestimonial['source']): Promise<PublicTestimonial[]> {
+		const response = await apiClient.get<ApiSuccess<PublicTestimonial[]>>("/public/testimonials", {
+			params: source ? { source } : undefined,
+		});
 		return response.data.data;
 	},
 
 	async submit(payload: {
 		name: string;
+		unit: string;
 		company: string;
 		text: string;
 		rating: number;

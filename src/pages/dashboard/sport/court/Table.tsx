@@ -1,4 +1,4 @@
-import { Building2, Eye, ImageOff, MapPin } from "lucide-react";
+import { Building2, Eye, ImageOff, MapPin, Pencil } from "lucide-react";
 import { getMediaUrl } from "../../cms/media/mediaService";
 import type { CourtResource } from "./courtService";
 
@@ -6,9 +6,10 @@ interface Props {
   resources: CourtResource[];
   loading: boolean;
   onView: (resource: CourtResource) => void;
+  onEdit: (resource: CourtResource) => void;
 }
 
-export default function ResourceTable({ resources, loading, onView }: Props) {
+export default function ResourceTable({ resources, loading, onView, onEdit }: Props) {
   if (loading) {
     return <div className="px-5 py-12 text-center text-[13px] text-obc-muted">Memuat resource lapangan...</div>;
   }
@@ -55,9 +56,14 @@ export default function ResourceTable({ resources, loading, onView }: Props) {
                 <td className="px-4 py-3 font-semibold text-obc-charcoal">{resource.fromPriceFormatted ?? "Belum ada tarif"}</td>
                 <td className="px-4 py-3"><span className="inline-flex items-center gap-1"><Building2 size={14} />{resource.capacity} orang</span></td>
                 <td className="px-4 py-3 text-right">
-                  <button type="button" title="Lihat detail" aria-label={`Lihat detail ${resource.name}`} onClick={() => onView(resource)} className="rounded-lg border border-obc-border p-2 text-obc-muted hover:border-obc-olive hover:text-obc-charcoal">
-                    <Eye size={15} />
-                  </button>
+                  <div className="flex justify-end gap-1">
+                    <button type="button" title="Lihat detail" aria-label={`Lihat detail ${resource.name}`} onClick={() => onView(resource)} className="rounded-lg border border-obc-border p-2 text-obc-muted hover:border-obc-olive hover:text-obc-charcoal">
+                      <Eye size={15} />
+                    </button>
+                    <button type="button" title="Edit lapangan" aria-label={`Edit ${resource.name}`} onClick={() => onEdit(resource)} className="rounded-lg border border-obc-border p-2 text-obc-muted hover:border-obc-olive hover:text-obc-charcoal">
+                      <Pencil size={15} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             );

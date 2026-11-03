@@ -40,10 +40,10 @@ const formatDate = (value: string | null) => value
 
 function Summary({ label, value, icon: Icon, tone }: { label: string; value: string; icon: typeof Receipt; tone: string }) {
 	return (
-		<div className="rounded-xl border border-obc-border bg-white p-4">
-			<div className="flex items-center gap-3">
-				<span className={`grid size-10 place-items-center rounded-lg ${tone}`}><Icon size={18} /></span>
-				<div><p className="text-[12px] text-obc-muted">{label}</p><p className="font-heading text-[20px] font-bold text-obc-charcoal">{value}</p></div>
+		<div className="rounded-xl border border-obc-border bg-white p-4 transition-shadow hover:shadow-[0_3px_14px_rgba(52,49,51,0.06)]">
+			<div className="flex min-w-0 items-center gap-3">
+				<span className={`grid size-10 shrink-0 place-items-center rounded-lg ${tone}`}><Icon size={18} /></span>
+				<div className="min-w-0"><p className="text-[12px] text-obc-muted">{label}</p><p className="mt-0.5 truncate font-heading text-[18px] font-bold text-obc-charcoal sm:text-[20px]">{value}</p></div>
 			</div>
 		</div>
 	);
@@ -182,7 +182,7 @@ export default function InvoiceManagement() {
 	return (
 		<DashboardPageLayout breadcrumb="Invoice" title="Manajemen invoice" description="Pantau tagihan, termin pembayaran, dan status invoice perusahaan.">
 			<div className="mb-4 flex justify-end">
-				<button type="button" onClick={openCreateForm} className="inline-flex h-10 items-center gap-2 rounded-xl bg-obc-green px-4 text-[13px] font-semibold text-white"><Plus size={16} /> Buat invoice</button>
+				<button type="button" onClick={openCreateForm} className="inline-flex h-10 items-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-obc-green-hover"><Plus size={16} /> Buat invoice</button>
 			</div>
 			<section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 				<Summary label="Total invoice" value={invoices.length.toLocaleString("id-ID")} icon={Receipt} tone="bg-[#E7F5D0] text-obc-green" />
@@ -191,19 +191,22 @@ export default function InvoiceManagement() {
 				<Summary label="Perlu ditindaklanjuti" value={followUpCount.toLocaleString("id-ID")} icon={Clock3} tone="bg-[#FBF0D3] text-[#8A6100]" />
 			</section>
 
-			<section className="overflow-hidden rounded-2xl border border-obc-border bg-white">
-				<div className="flex flex-col gap-3 border-b border-obc-border p-4 sm:flex-row sm:items-center sm:justify-between">
-					<div role="tablist" aria-label="Filter status invoice" className="flex gap-1 overflow-x-auto rounded-xl border border-obc-border bg-[#FDFCF7] p-1">
+			<section className="overflow-hidden rounded-xl border border-obc-border bg-white">
+				<div className="border-b border-obc-border p-4 sm:p-5">
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+						<div><h2 className="font-heading text-[15px] font-semibold text-obc-charcoal">Daftar invoice</h2><p className="mt-0.5 text-[12px] text-obc-muted">{filtered.length.toLocaleString("id-ID")} invoice sesuai pencarian dan status</p></div>
+						<label className="relative block w-full sm:max-w-70">
+							<Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" />
+							<input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Cari nomor, klien, layanan..." className="h-10 w-full rounded-lg border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]" />
+						</label>
+					</div>
+					<div role="tablist" aria-label="Filter status invoice" className="mt-4 flex gap-1 overflow-x-auto pb-0.5">
 						{(["all", ...statuses] as StatusFilter[]).map((status) => (
-							<button key={status} type="button" role="tab" aria-selected={statusFilter === status} onClick={() => { setStatusFilter(status); setPage(1); }} className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-medium ${statusFilter === status ? "bg-white text-obc-charcoal shadow-sm" : "text-obc-muted"}`}>
-								{status === "all" ? "Semua" : statusLabels[status]} <span className="ml-1">{status === "all" ? invoices.length : counts[status]}</span>
+							<button key={status} type="button" role="tab" aria-selected={statusFilter === status} onClick={() => { setStatusFilter(status); setPage(1); }} className={`shrink-0 rounded-lg border px-3 py-2 text-[12px] font-medium transition-colors ${statusFilter === status ? "border-obc-green bg-[#F3F8E8] text-obc-green" : "border-transparent text-obc-muted hover:border-obc-border hover:bg-[#FDFCF7]"}`}>
+								{status === "all" ? "Semua" : statusLabels[status]} <span className="ml-1 opacity-70">{status === "all" ? invoices.length : counts[status]}</span>
 							</button>
 						))}
 					</div>
-					<label className="relative block w-full sm:max-w-70">
-						<Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" />
-						<input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Cari nomor, klien, layanan..." className="h-10 w-full rounded-xl border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[13px] outline-none focus:border-obc-olive focus:ring-2 focus:ring-[#CDF178]" />
-					</label>
 				</div>
 
 				<div className="overflow-x-auto">
@@ -218,7 +221,7 @@ export default function InvoiceManagement() {
 								const terms = invoice.terms ?? [];
 								const paidTerms = terms.filter((term) => term.paidAt).length;
 								return (
-									<tr key={invoice.id} className="border-t border-obc-border">
+									<tr key={invoice.id} className="border-t border-obc-border transition-colors hover:bg-[#FDFCF7]">
 										<td className="px-5 py-3.5"><p className="font-semibold text-obc-charcoal">{invoice.invoiceNumber}</p><p className="text-[11px] text-obc-muted">Dibuat {formatDate(invoice.createdAt)}</p></td>
 										<td className="px-5 py-3.5"><p className="font-medium">{invoice.clientName}</p><p className="text-[11px] text-obc-muted">{invoice.clientEmail}</p></td>
 										<td className="whitespace-nowrap px-5 py-3.5 font-semibold">{rupiah(invoice.amount)}</td>

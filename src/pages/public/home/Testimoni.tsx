@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react'
-import laundryLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (4).png'
-import villaLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (3).png'
-import sportCenterLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER.png'
-import guestHouseLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (1).png'
-import coffeeLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (6).png'
-import agribusinessLogo from '../../../assets/logo/unit bisnis/LOGO OBC SPORT CENTER (7).png'
+
+import guestHouseLogo from '../../../assets/logo/unit bisnis/gues-house.webp'
+import villaLogo from '../../../assets/logo/unit bisnis/villa.webp'
+import laundryLogo from '../../../assets/logo/unit bisnis/laundry.webp'
+import coffeeLogo from '../../../assets/logo/unit bisnis/coffe.webp'
+import agribusinessLogo from '../../../assets/logo/unit bisnis/agribisnis.webp'
+import foodCourtLogo from '../../../assets/logo/unit bisnis/foodcort.webp'
+import sportCenterLogo from '../../../assets/logo/unit bisnis/sport.webp'
+
 import reviewIcon from '../../../assets/icon/iconstack.io - (Pen New Square).svg'
 import ModalTestimoni, { type TestimoniFormData } from '../../../components/ui/modal/ModalTestimoni'
 import { getApiErrorMessage } from '../../../services/api'
 import { getTestimonialAvatarUrl, publicTestimonialService, type PublicTestimonial } from '../../../services/Public/Testimonial'
 
-function getCompanyLogo(company: string | null) {
-	const normalizedCompany = company?.toLowerCase() ?? ''
+function getCompanyLogo(company: string | null, source: PublicTestimonial['source']) {
+	if (source === 'sport') return sportCenterLogo
+
+	const normalizedCompany = company?.toLowerCase().replace(/[^a-z0-9]/g, '') ?? ''
 	if (normalizedCompany.includes('laundry')) return laundryLogo
 	if (normalizedCompany.includes('villa')) return villaLogo
 	if (normalizedCompany.includes('sport')) return sportCenterLogo
-	if (normalizedCompany.includes('guest house')) return guestHouseLogo
-	if (normalizedCompany.includes('coffee')) return coffeeLogo
-	if (normalizedCompany.includes('agribisnis')) return agribusinessLogo
+	if (normalizedCompany.includes('guesthouse')) return guestHouseLogo
+	if (normalizedCompany.includes('foodcourt')) return foodCourtLogo
+	if (normalizedCompany.includes('coffee') || normalizedCompany.includes('coffe')) return coffeeLogo
+	if (normalizedCompany.includes('agribisnis') || normalizedCompany.includes('agribusiness')) return agribusinessLogo
 	return null
 }
 
@@ -56,6 +62,7 @@ export default function Testimoni() {
 	const handleSubmitReview = async (data: TestimoniFormData) => {
 		await publicTestimonialService.submit({
 			name: data.name,
+			unit: data.unit,
 			company: `${data.unit} · ${data.role}`,
 			text: data.text,
 			rating: data.rating,
@@ -136,7 +143,7 @@ export default function Testimoni() {
 						const opacity = isActive ? 1 : 0.55
 						const blur = isActive ? 0 : 0.2
 						const avatarUrl = getTestimonialAvatarUrl(item.avatar)
-						const companyLogo = getCompanyLogo(item.company)
+						const companyLogo = getCompanyLogo(item.company, item.source)
 						const initials = item.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
 
 						return (

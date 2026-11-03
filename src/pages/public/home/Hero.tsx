@@ -1,54 +1,34 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import apiClient from '../../../services/api'
 import { scrollToContact } from '../../../components/common/scrollToContact'
-import { getMediaUrl } from '../../dashboard/cms/media/mediaService'
+import billiardImage from '../../../assets/images/lapang/Meja Billiard.webp'
+import courtOneImage from '../../../assets/images/lapang/Lapang F1.webp'
+import courtTwoImage from '../../../assets/images/lapang/Lapang F2.webp'
+import guestHouseImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
 
-type HeroSlide = { title: string; description: string; image: string; active?: boolean }
-type PublicHomeContent = { page?: { sections?: { sectionKey: string; content?: { slides?: HeroSlide[] } }[] } }
-type ApiSuccess<T> = { data: T }
-
-const heroActions = [
-	{ key: 'obc', primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#layanan' },
-	{ key: 'sportCenter', primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#fasilitas' },
-	{ key: 'eventSpace', primaryLink: '#event-space', secondaryLink: '#kontak' },
-	{ key: 'guestHouse', primaryLink: '#kontak', secondaryLink: '#layanan' },
+const heroSlides = [
+	{ key: 'obc', image: billiardImage, primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#layanan' },
+	{ key: 'sportCenter', image: courtOneImage, primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#fasilitas' },
+	{ key: 'eventSpace', image: courtTwoImage, primaryLink: '#event-space', secondaryLink: '#kontak' },
+	{ key: 'guestHouse', image: guestHouseImage, primaryLink: '#kontak', secondaryLink: '#layanan' },
 ] as const
 
 export default function Hero() {
-	const { t, i18n } = useTranslation()
-	const [slides, setSlides] = useState<HeroSlide[]>([])
+	const { t } = useTranslation()
 	const [heroIndex, setHeroIndex] = useState(0)
 	const [previousHeroIndex, setPreviousHeroIndex] = useState<number | null>(null)
-	const language = i18n.resolvedLanguage === 'en' ? 'en' : 'id'
-	const translatedHeroSlides = slides.map((slide, index) => {
-		const action = heroActions[index % heroActions.length]
-		const key = `hero.slides.${action.key}`
+	const translatedHeroSlides = heroSlides.map((slide) => {
+		const key = `hero.slides.${slide.key}`
 		return {
-			...slide,
-			image: getMediaUrl(slide.image),
-			primaryBtn: { text: t(`${key}.primaryBtn`), link: action.primaryLink },
-			secondaryBtn: { text: t(`${key}.secondaryBtn`), link: action.secondaryLink },
+			title: t(`${key}.title`),
+			description: t(`${key}.description`),
+			image: slide.image,
+			primaryBtn: { text: t(`${key}.primaryBtn`), link: slide.primaryLink },
+			secondaryBtn: { text: t(`${key}.secondaryBtn`), link: slide.secondaryLink },
 		}
 	})
 	const activeHeroSlide = translatedHeroSlides[heroIndex]
 	const nextHeroIndex = translatedHeroSlides.length > 0 ? (heroIndex + 1) % translatedHeroSlides.length : 0
-
-	useEffect(() => {
-		let active = true
-		apiClient.get<ApiSuccess<PublicHomeContent>>('/public/tenants/obc-barber/content', {
-			params: { page: 'home', lang: language },
-		}).then((response) => {
-			if (!active) return
-			const heroSection = response.data.data.page?.sections?.find((section) => section.sectionKey === 'hero-home')
-			setSlides((heroSection?.content?.slides ?? []).filter((slide) => slide.active !== false))
-			setHeroIndex(0)
-			setPreviousHeroIndex(null)
-		}).catch(() => {
-			if (active) setSlides([])
-		})
-		return () => { active = false }
-	}, [language])
 
 	useEffect(() => {
 		if (translatedHeroSlides.length < 2) return

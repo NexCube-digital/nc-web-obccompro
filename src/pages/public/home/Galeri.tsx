@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom'
 import TransitionLink from '../../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, X } from 'lucide-react'
-import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
-import coffeeGalleryImage from '../../../assets/unit-bisnis/213fd83a6a5b24b44a156bf5b8fce2b06410ed48.png'
-import foodCourtGalleryImage from '../../../assets/unit-bisnis/0873dc839902dcf8ebac8ee04d6e42f7f07c6a50.jpg'
-import laundryGalleryImage from '../../../assets/unit-bisnis/2f8d082612cddd916d6e7f0c3823d1db3a6d30dc.png'
-import sportsCenterGalleryImage from '../../../assets/unit-bisnis/4086acc6319c22edd57799828a517da01ea58de7.png'
+import guestHouseGalleryImage from '../../../assets/images/unit-bisnis/guesthouse.webp'
+import coffeeGalleryImage from '../../../assets/images/unit-bisnis/coffe-fasilitas/fas5.webp'
+import foodCourtGalleryImage from '../../../assets/images/unit-bisnis/foodcourt.webp'
+import laundryGalleryImage from '../../../assets/images/unit-bisnis/laundry.webp'
+import sportsCenterGalleryImage from '../../../assets/images/lapang/Lapang F2.webp'
 
 const GALLERY_ITEMS = [
 	{

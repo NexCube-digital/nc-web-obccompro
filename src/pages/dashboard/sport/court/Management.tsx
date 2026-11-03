@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { getMediaUrl } from "../../cms/media/mediaService";
-import { courtService, type CourtResource } from "./courtService";
+import { getMediaUrl, mediaService } from "../../cms/media/mediaService";
+import { courtService, type CourtResource, type CourtResourceUpdateInput } from "./courtService";
+import CourtResourceForm from "./Form";
 import ResourceTable from "./Table";
 
 export default function CourtManagement() {
@@ -11,6 +12,8 @@ export default function CourtManagement() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedResource, setSelectedResource] = useState<CourtResource | null>(null);
+  const [editorResource, setEditorResource] = useState<CourtResource | null>(null);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -21,7 +24,23 @@ export default function CourtManagement() {
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [reload]);
+
+  const saveResource = async (input: CourtResourceUpdateInput, image?: File) => {
+    if (!editorResource) return;
+    try {
+      const saved = await courtService.updateResource(editorResource.id, input);
+      if (image) {
+        const media = await mediaService.uploadMedia(image, editorResource.tenant.id);
+        await courtService.updateResource(saved.id, { ...input, imageUrl: media.url });
+      }
+      setReload((current) => current + 1);
+      toast.success("Data lapangan berhasil diperbarui.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal memperbarui data lapangan.");
+      throw error;
+    }
+  };
 
   const filtered = resources.filter((resource) =>
     `${resource.name} ${resource.description ?? ""} ${resource.sportTypes.join(" ")}`.toLowerCase().includes(search.toLowerCase()),
@@ -45,7 +64,7 @@ export default function CourtManagement() {
           </div>
         </section>
         <section className="overflow-hidden rounded-xl border border-obc-border bg-white">
-          <ResourceTable resources={filtered} loading={loading} onView={setSelectedResource} />
+          <ResourceTable resources={filtered} loading={loading} onView={setSelectedResource} onEdit={setEditorResource} />
         </section>
         {selectedResource && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedResource(null); }}>
@@ -70,6 +89,7 @@ export default function CourtManagement() {
             </section>
           </div>
         )}
+        {editorResource && <CourtResourceForm resource={editorResource} onClose={() => setEditorResource(null)} onSave={saveResource} />}
       </div>
     </DashboardLayout>
   );

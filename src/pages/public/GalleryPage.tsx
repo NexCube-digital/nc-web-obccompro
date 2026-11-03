@@ -5,36 +5,10 @@ import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
 import LazySection from '../../components/common/LazySectionHome'
 import ScrollReveal from '../../components/animation/ScrollReveal'
-import lapangF2Image from '../../assets/layanan/Lapang F2.png'
-import pickleballImage from '../../assets/layanan/pickleball-mockup.png'
-import tenisMejaImage from '../../assets/layanan/tenis-meja-mockup.png'
-import guestHouseImage from '../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
-import villaImage from '../../assets/unit-bisnis/3f3b0cf46ed28fc2c0546f8d44a8e2a9977f0c43.jpg'
-import laundryImage from '../../assets/unit-bisnis/2f8d082612cddd916d6e7f0c3823d1db3a6d30dc.png'
-import foodCourtImage from '../../assets/unit-bisnis/0873dc839902dcf8ebac8ee04d6e42f7f07c6a50.jpg'
-import coffeeImage from '../../assets/unit-bisnis/213fd83a6a5b24b44a156bf5b8fce2b06410ed48.png'
-import agribusinessImage from '../../assets/unit-bisnis/395bf2125ecb1a04ee7212871af8ece20326074d.jpg'
-import sliderGalleryImage from '../../assets/slider-gallery.jpg'
-
-interface GalleryPhoto {
-	src: string
-	alt: string
-	category: string
-}
+import sliderGalleryImage from '../../assets/images/slider-gallery.webp'
+import { getPublicGalleryPhotos, type GalleryPhoto } from '../../services/Public/GalleryService'
 
 const CATEGORIES = ['all', 'sports', 'hospitality', 'laundry', 'foodCourt', 'coffee', 'agribusiness'] as const
-
-const GALLERY_PHOTOS: GalleryPhoto[] = [
-	{ src: guestHouseImage, alt: 'OBC Guest House', category: 'hospitality' },
-	{ src: villaImage, alt: 'OBC Villa', category: 'hospitality' },
-	{ src: laundryImage, alt: 'OBC Laundry', category: 'laundry' },
-	{ src: foodCourtImage, alt: 'OBC Food Court', category: 'foodCourt' },
-	{ src: coffeeImage, alt: 'OBC Coffee', category: 'coffee' },
-	{ src: agribusinessImage, alt: 'OBC Agribisnis', category: 'agribusiness' },
-	{ src: lapangF2Image, alt: 'Lapangan OBC Sport Center', category: 'sports' },
-	{ src: pickleballImage, alt: 'Fasilitas pickleball OBC Sport Center', category: 'sports' },
-	{ src: tenisMejaImage, alt: 'Fasilitas tenis meja OBC Sport Center', category: 'sports' },
-]
 
 const FADE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'
 
@@ -93,11 +67,37 @@ function FadeImage({ className, style, ...props }: ImgHTMLAttributes<HTMLImageEl
 function GalleryPage() {
 	const { t } = useTranslation()
 	const [activeCategory, setActiveCategory] = useState<(typeof CATEGORIES)[number]>('all')
+	const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([])
+	const [isLoadingGallery, setIsLoadingGallery] = useState(true)
+	const [galleryLoadFailed, setGalleryLoadFailed] = useState(false)
+	const [galleryLoadAttempt, setGalleryLoadAttempt] = useState(0)
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
 	}, [])
+
+	useEffect(() => {
+		let active = true
+
+		getPublicGalleryPhotos()
+			.then((photos) => {
+				if (active) setGalleryPhotos(photos)
+			})
+			.catch(() => {
+				if (active) {
+					setGalleryPhotos([])
+					setGalleryLoadFailed(true)
+				}
+			})
+			.finally(() => {
+				if (active) setIsLoadingGallery(false)
+			})
+
+		return () => {
+			active = false
+		}
+	}, [galleryLoadAttempt])
 
 	useEffect(() => {
 		if (!selectedGalleryImage) return
@@ -111,8 +111,8 @@ function GalleryPage() {
 	}, [selectedGalleryImage])
 
 	const visiblePhotos = useMemo(
-		() => (activeCategory === 'all' ? GALLERY_PHOTOS : GALLERY_PHOTOS.filter((photo) => photo.category === activeCategory)),
-		[activeCategory],
+		() => (activeCategory === 'all' ? galleryPhotos : galleryPhotos.filter((photo) => photo.category === activeCategory)),
+		[activeCategory, galleryPhotos],
 	)
 
 	return (
@@ -181,33 +181,60 @@ function GalleryPage() {
 			    ScrollReveal per gambar (jeda bertahap) + <img> biasa dengan group-hover:scale-105. */}
 			<LazySection minHeight={900} rootMargin="0px">
 			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
-				<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-					{visiblePhotos.map((photo, index) => (
-						<ScrollReveal
-							key={photo.src}
-							className="aspect-square w-full"
-							delay={(index % 4) * 90}
-							duration={700}
-							distance={16}
-							scale={0.98}
+				{isLoadingGallery ? (
+					<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4" aria-busy="true">
+						{Array.from({ length: 8 }, (_, index) => (
+							<div key={index} className="aspect-square animate-pulse rounded-[24px] bg-black/5 md:rounded-xl" />
+						))}
+					</div>
+				) : galleryLoadFailed ? (
+					<div className="py-10 text-center" role="alert">
+						<p className="font-['Montserrat'] text-sm text-black">{t('errorStates.failedToLoad.description')}</p>
+						<button
+							type="button"
+							onClick={() => {
+								setIsLoadingGallery(true)
+								setGalleryLoadFailed(false)
+								setGalleryLoadAttempt((attempt) => attempt + 1)
+							}}
+							className="mt-4 rounded-full border border-black px-4 py-2 font-['Montserrat'] text-sm text-black transition-colors hover:bg-black hover:text-white"
 						>
-							<button
-								type="button"
-								onClick={() => setSelectedGalleryImage(photo.src)}
-								className="group h-full w-full overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
-								aria-label={`Buka gambar ${photo.alt}`}
+							{t('errorStates.failedToLoad.button')}
+						</button>
+					</div>
+				) : visiblePhotos.length > 0 ? (
+					<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+						{visiblePhotos.map((photo, index) => (
+							<ScrollReveal
+								key={photo.src}
+								className="aspect-square w-full"
+								delay={(index % 4) * 90}
+								duration={700}
+								distance={16}
+								scale={0.98}
 							>
-								<img
-									src={photo.src}
-									alt={photo.alt}
-									loading="lazy"
-									decoding="async"
-									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-								/>
-							</button>
-						</ScrollReveal>
-					))}
-				</div>
+								<button
+									type="button"
+									onClick={() => setSelectedGalleryImage(photo.src)}
+									className="group h-full w-full overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
+									aria-label={`Buka gambar ${photo.alt}`}
+								>
+									<img
+										src={photo.src}
+										alt={photo.alt}
+										loading="lazy"
+										decoding="async"
+										className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+									/>
+								</button>
+							</ScrollReveal>
+						))}
+					</div>
+				) : (
+					<p className="py-10 text-center font-['Montserrat'] text-sm text-black">
+						{t('errorStates.emptyState.description')}
+					</p>
+				)}
 			</section>
 			</LazySection>
 

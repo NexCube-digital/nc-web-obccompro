@@ -11,7 +11,7 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import heroImage from '../../../assets/unit-bisnis/slider/laundry.webp'
+import heroImage from '../../../assets/images/unit-bisnis/laundry.webp'
 import serviceTypeIcon from '../../../assets/icon/iconstack.io - (Ic Fluent Washer 24 Filled).svg'
 import clockIcon from '../../../assets/icon/clock.svg'
 import foldingServiceIcon from '../../../assets/icon/gantungan.svg'
@@ -25,19 +25,11 @@ import unyellowingIcon from '../../../assets/icon/pinlukis.svg'
 import deliveryIcon from '../../../assets/icon/motor.svg'
 import waitingRoomIcon from '../../../assets/icon/kursi22.svg'
 import quickLaundryIcon from '../../../assets/icon/speedmeeter.svg'
-import galleryImage1 from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
-import galleryImage2 from '../../../assets/unit-bisnis/guest-house/6a3b9e7c6468ad26c8dd7db04e41a8af085cf07c.png'
-import galleryImage3 from '../../../assets/unit-bisnis/guest-house/cd92feca5d086df44322cf32f9ffba37aed4d61d.png'
-import galleryImage4 from '../../../assets/unit-bisnis/guest-house/d04b14ff8c58c89c1b536a6ac3a885785c68d003.png'
-import galleryImage5 from '../../../assets/unit-bisnis/guest-house/ed96a44b2ee52e1c52adbdee104d644a71ed3461.png'
-import galleryImage6 from '../../../assets/unit-bisnis/guest-house/fb58a940485f759e525012e5cee240ca9379a1db.png'
-import galleryImage7 from '../../../assets/unit-bisnis/guest-house/2f8d082612cddd916d6e7f0c3823d1db3a6d30dc.png'
-import sportCenterThumb from '../../../assets/unit-bisnis/4086acc6319c22edd57799828a517da01ea58de7.png'
-import guestHouseThumb from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
-import villaThumb from '../../../assets/unit-bisnis/3f3b0cf46ed28fc2c0546f8d44a8e2a9977f0c43.jpg'
-import foodCourtThumb from '../../../assets/unit-bisnis/0873dc839902dcf8ebac8ee04d6e42f7f07c6a50.jpg'
-import coffeeThumb from '../../../assets/unit-bisnis/213fd83a6a5b24b44a156bf5b8fce2b06410ed48.png'
-import agribisnisThumb from '../../../assets/unit-bisnis/395bf2125ecb1a04ee7212871af8ece20326074d.jpg'
+import galleryImage1 from '../../../assets/images/unit-bisnis/laundry.webp'
+import galleryImage2 from '../../../assets/images/unit-bisnis/laundry-fasilitas/fas1.webp'
+import galleryImage3 from '../../../assets/images/unit-bisnis/laundry-fasilitas/fas2.webp'
+import galleryImage4 from '../../../assets/images/unit-bisnis/laundry-fasilitas/fas3.webp'
+import galleryImage5 from '../../../assets/images/unit-bisnis/laundry-fasilitas/fas4.webp'
 
 interface LaundryService {
 	badge: string
@@ -77,13 +69,6 @@ interface AssetStat {
 interface Facility {
 	icon: string
 	label: string
-}
-
-interface OtherUnit {
-	slug: string
-	category: string
-	title: string
-	image: string
 }
 
 const WHATSAPP_LINK = 'https://wa.me/6280000000000'
@@ -203,19 +188,6 @@ const GALLERY_IMAGES = [
 	galleryImage3,
 	galleryImage4,
 	galleryImage5,
-	galleryImage6,
-	galleryImage7,
-	galleryImage2,
-]
-
-// Unit bisnis lain untuk section "Jelajahi Unit Bisnis OBC Group Lainnya" (laundry sengaja dikecualikan)
-const OTHER_UNITS: OtherUnit[] = [
-	{ slug: 'sport-center', category: 'Sport & Event Space', title: 'OBC Sports Center', image: sportCenterThumb },
-	{ slug: 'guest-house', category: 'Hospitality & Accommodation', title: 'OBC Guest House', image: guestHouseThumb },
-	{ slug: 'villa', category: 'Hospitality & Accommodation', title: 'OBC Villa', image: villaThumb },
-	{ slug: 'food-court', category: 'Food & Beverage', title: 'OBC Food Court', image: foodCourtThumb },
-	{ slug: 'coffee', category: 'Coffee & Lifestyle', title: 'OBC Coffee', image: coffeeThumb },
-	{ slug: 'agribisnis', category: 'Agribisnis', title: 'OBC Agribisnis', image: agribisnisThumb },
 ]
 
 function LaundryPage() {
@@ -755,7 +727,7 @@ function LaundryPage() {
 			{/* Unit Bisnis lain — tetap full width */}
 			<LazySection minHeight={600}>
 			<ScrollReveal>
-			<UnitBisnis items={OTHER_UNITS} title="Jelajahi Unit Bisnis OBC Group Lainnya" />
+			<UnitBisnis excludeSlug="laundry" title="Jelajahi Unit Bisnis OBC Group Lainnya" />
 			</ScrollReveal>
 			</LazySection>
 

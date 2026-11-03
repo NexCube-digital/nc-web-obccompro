@@ -51,6 +51,21 @@ export interface FacilityAvailability {
 	slots: AvailabilitySlot[];
 }
 
+export interface FacilityCalendarDate {
+	date: string;
+	status: "available" | "partial" | "full" | "closed" | "maintenance";
+	availableCount: number;
+	totalCount: number;
+	hasBookings: boolean;
+}
+
+export interface FacilityCalendar {
+	resourceId: string;
+	from: string;
+	to: string;
+	dates: FacilityCalendarDate[];
+}
+
 export interface BookingPricePreview {
 	basePrice: number;
 	discountAmount: number;
@@ -86,6 +101,13 @@ export const invoiceService = {
 	async getFacilityAvailability(resourceId: string, date: string, sportType?: string): Promise<FacilityAvailability> {
 		const response = await apiClient.get<ApiSuccess<FacilityAvailability>>("/sports/availability", {
 			params: { resourceId, date, ...(sportType ? { sportType } : {}) },
+		});
+		return response.data.data;
+	},
+
+	async getFacilityCalendar(resourceId: string, from: string, to: string): Promise<FacilityCalendar> {
+		const response = await apiClient.get<ApiSuccess<FacilityCalendar>>("/sports/availability/calendar", {
+			params: { resourceId, from, to },
 		});
 		return response.data.data;
 	},

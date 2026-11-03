@@ -147,7 +147,7 @@ export type MembershipPackageUpdateInput = {
 	discountPercent: number;
 };
 
-type ListParams = { page?: number; limit?: number; status?: string; search?: string };
+type ListParams = { page?: number; limit?: number; status?: string; search?: string; date?: string };
 
 export type SportResourceInput = {
 	name: string;

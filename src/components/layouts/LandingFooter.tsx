@@ -1,19 +1,18 @@
+import { useEffect, useState } from 'react'
 import TransitionLink from '../common/TransitionLink'
 import { scrollToContact } from '../common/scrollToContact'
 import { ArrowUp, Globe, Headphones, Mail, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import apiClient from '../../services/api'
 import logo from '../../assets/logo/obclogo.webp'
-import lapangF1Image from '../../assets/layanan/Lapang F1.webp'
+import lapangF1Image from '../../assets/images/lapang/Lapang F1.webp'
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
 
 const NAVIGASI_LINKS = [
 	{ label: 'nav.home', to: '/' },
 	{ label: 'nav.about', to: '/tentang-kami' },
 	{ label: 'nav.businessUnits', to: '/unit-bisnis' },
-	{ label: 'nav.sportCenter', to: '/unit-bisnis/sport-center' },
-	{ label: 'nav.multipurpose', to: '/unit-bisnis/gedung-multifungsi' },
 	{ label: 'nav.gallery', to: '/galeri' },
-	{ label: 'nav.testimonials', to: '/testimoni' },
 	{ label: 'nav.contact', to: '#kontak' },
 ]
 
@@ -27,15 +26,12 @@ const UNIT_LINKS = [
 	{ label: 'units.agribisnis.title', to: '/unit-bisnis/agribisnis' },
 ]
 
-/* Data kontak — ganti dengan data resmi OBC kalau sudah tersedia dari admin/CMS. */
-const CONTACT = {
-	email: 'obc.managementbdg@gmail.com',
-	whatsapp: 'https://wa.me/6288860709000',
-	instagram: 'https://instagram.com/obcgroup.bdg',
-	tiktok: 'https://www.tiktok.com/@obcgroup.bdg',
-	address: 'Jl. Rancabentang, No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142',
-	maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Jl. Rancabentang, No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142')}`,
+type SocialLinks = { whatsapp: string; instagram: string; tiktok: string }
+type ContactDetails = { email: string; address: string; maps: string }
+type PublicHomeContent = {
+	page?: { sections?: { sectionKey: string; content?: Partial<SocialLinks & ContactDetails> }[] }
 }
+type ApiSuccess<T> = { data: T }
 
 function InstagramLogo({ className = 'h-[16px] w-[16px]' }: { className?: string }) {
 	return (
@@ -81,20 +77,12 @@ function NexcubeLink() {
 	)
 }
 
-/*
- * Kelas bersama.
- * Breakpoint: mobile (< md), tablet (md → < lg), desktop (lg+).
- * Nilai desktop dikembalikan lewat awalan lg: supaya tampilan desktop tidak berubah.
- */
+
 const headingClass =
 	"font-['Montserrat'] text-[14px] font-bold uppercase leading-4 tracking-[0px] text-white md:text-[15px] md:leading-5 lg:h-4 lg:w-[169px] lg:text-[14px] lg:leading-4"
 const linkClass =
 	"font-['Montserrat'] text-[clamp(11px,1.7svh,13px)] font-medium leading-[clamp(14px,2.2svh,16px)] tracking-[0px] text-white! transition-colors hover:text-[#CDF178]! md:text-[13px] md:leading-5 lg:text-[12px] lg:leading-4"
 
-/*
- * Jarak antar daftar tautan di mobile dibuat fleksibel mengikuti tinggi layar (svh).
- * Tablet (md) memakai nilai tetap yang lebih lega, desktop (lg) kembali ke nilai aslinya.
- */
 const listClass =
 	"mt-[clamp(4px,calc(1.4svh_-_1px),16px)] flex flex-col gap-[clamp(3px,calc(1.6svh_-_4px),14px)] font-['Montserrat'] text-[clamp(11px,1.7svh,13px)] font-medium leading-[clamp(14px,2.2svh,16px)] tracking-[0px] text-white md:mt-4 md:gap-3 md:text-[13px] md:leading-5 lg:mt-[15px] lg:gap-[15px] lg:text-[12px] lg:leading-4"
 
@@ -108,7 +96,36 @@ const backTopClass =
 
 function Footer() {
 	const { t } = useTranslation()
+	const [socialLinks, setSocialLinks] = useState<SocialLinks>({ whatsapp: '', instagram: '', tiktok: '' })
+	const [contactDetails, setContactDetails] = useState<ContactDetails>({ email: '', address: '', maps: '' })
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+	useEffect(() => {
+		let active = true
+		apiClient.get<ApiSuccess<PublicHomeContent>>('/public/tenants/obc-barber/content', {
+			params: { page: 'home', lang: 'id' },
+		}).then((response) => {
+			if (!active) return
+			const sections = response.data.data.page?.sections ?? []
+			const socialContent = sections.find((section) => section.sectionKey === 'site-social')?.content
+			const contactContent = sections.find((section) => section.sectionKey === 'site-contact')?.content
+			if (socialContent) {
+				setSocialLinks({
+					whatsapp: typeof socialContent.whatsapp === 'string' ? socialContent.whatsapp.trim() : '',
+					instagram: typeof socialContent.instagram === 'string' ? socialContent.instagram.trim() : '',
+					tiktok: typeof socialContent.tiktok === 'string' ? socialContent.tiktok.trim() : '',
+				})
+			}
+			if (contactContent) {
+				setContactDetails({
+					email: typeof contactContent.email === 'string' ? contactContent.email.trim() : '',
+					address: typeof contactContent.address === 'string' ? contactContent.address.trim() : '',
+					maps: typeof contactContent.maps === 'string' ? contactContent.maps.trim() : '',
+				})
+			}
+		}).catch(() => undefined)
+		return () => { active = false }
+	}, [])
 
 	return (
 		<footer
@@ -144,7 +161,7 @@ function Footer() {
 							</TransitionLink>
 							<div className="mt-[clamp(10px,2svh,20px)] flex items-center justify-center gap-3 md:mt-0 md:justify-end md:gap-4 lg:justify-start lg:pt-1 [@media(max-width:1023px)_and_(max-height:640px)]:mt-0 [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
 								<a
-									href={CONTACT.whatsapp}
+									href={socialLinks.whatsapp}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="WhatsApp OBC Group"
@@ -159,7 +176,7 @@ function Footer() {
 									/>
 								</a>
 								<a
-									href={CONTACT.instagram}
+									href={socialLinks.instagram}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="Instagram OBC Group"
@@ -168,7 +185,7 @@ function Footer() {
 									<InstagramLogo className="h-4 w-4 md:h-5 md:w-5 lg:h-4 lg:w-4" />
 								</a>
 								<a
-									href={CONTACT.tiktok}
+									href={socialLinks.tiktok}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="TikTok OBC Group"
@@ -240,21 +257,21 @@ function Footer() {
 								<li className="flex items-center gap-3 md:gap-2">
 									<Mail size={15} className="shrink-0" />
 									<a
-										href={`mailto:${CONTACT.email}`}
+										href={contactDetails.email ? `mailto:${contactDetails.email}` : undefined}
 										className="min-w-0 break-all transition-colors hover:text-[#CDF178]"
 									>
-										{CONTACT.email}
+										{contactDetails.email}
 									</a>
 								</li>
 								<li className="flex items-start gap-3 md:gap-2">
 									<MapPin size={15} className="mt-[3px] shrink-0" />
 									<a
-										href={CONTACT.maps}
+										href={contactDetails.maps || undefined}
 										target="_blank"
 										rel="noreferrer"
 										className="text-left transition-colors hover:text-[#CDF178]"
 									>
-										{CONTACT.address}
+										{contactDetails.address}
 									</a>
 								</li>
 							</ul>
@@ -328,13 +345,13 @@ function Footer() {
 								{t('footer.currentLanguage')}
 							</span>
 							<div className="flex items-center gap-5">
-								<a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+								<a href={socialLinks.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
 									<WhatsAppSocialIcon className="h-[16.5px] w-[16.5px]" />
 								</a>
-								<a href={CONTACT.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+								<a href={socialLinks.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
 									<TikTokLogo className="h-[14px] w-[14px] bg-white text-black" />
 								</a>
-								<a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+								<a href={socialLinks.instagram} target="_blank" rel="noreferrer" aria-label="Instagram OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
 									<InstagramLogo className="h-[16.5px] w-[16.5px]" />
 								</a>
 							</div>

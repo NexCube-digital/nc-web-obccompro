@@ -29,7 +29,7 @@ const UNIT_OPTIONS = [
 
 const ROLE_OPTIONS = ['Customer', 'Guest', 'Member', 'Visitor']
 
-const MAX_TEXT = 300
+const MAX_TEXT = 2000
 const MIN_TEXT = 20
 
 const initialForm: TestimoniFormData = {

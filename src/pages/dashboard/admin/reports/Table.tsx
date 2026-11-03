@@ -24,7 +24,8 @@ export default function ReportTable({ reports, loading, onView }: Props) {
 			<div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left">
 				<thead><tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted"><th className="px-5 py-3.5">Nama laporan</th><th className="px-5 py-3.5">Jenis</th><th className="px-5 py-3.5">Dibuat</th><th className="px-5 py-3.5 text-right">Data</th><th className="px-5 py-3.5 text-right">Aksi</th></tr></thead>
 				<tbody className="text-[13px]">{loading ? <tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Memuat riwayat laporan...</td></tr> : reports.length ? reports.map((report) => {
-					const rowCount = Array.isArray(report.data) ? report.data.length : report.data ? 1 : 0;
+					const financeData = report.data && typeof report.data === "object" ? report.data as { transactions?: unknown[] } : null;
+					const rowCount = Array.isArray(report.data) ? report.data.length : Array.isArray(financeData?.transactions) ? financeData.transactions.length : report.data ? 1 : 0;
 					return <tr key={report.id} className="border-t border-obc-border hover:bg-[#FDFCF7]">
 						<td className="px-5 py-3.5"><p className="font-semibold text-obc-charcoal">{report.title}</p><p className="text-[11px] text-obc-muted">ID {report.id}</p></td>
 						<td className="px-5 py-3.5"><span className="rounded-full bg-[#EBEEDC] px-2.5 py-1 text-[11px] font-medium text-[#404F14]">{REPORT_TYPE_LABELS[report.type as ReportType] ?? report.type}</span></td>
