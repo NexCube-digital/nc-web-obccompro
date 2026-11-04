@@ -7,7 +7,15 @@ export function WhatsAppLogo({ className = 'h-8 w-8' }: { className?: string }) 
 
 function WhatsAppIcon() {
 	const { pathname } = useLocation()
-	const isBusinessDetailPage = pathname.replace(/\/$/, '').startsWith('/unit-bisnis/')
+	const normalizedPath = pathname.replace(/\/+$/, '') || '/'
+	const isPublicRoute = normalizedPath === '/'
+		|| normalizedPath === '/tentang-kami'
+		|| normalizedPath === '/galeri'
+		|| normalizedPath === '/unit-bisnis'
+		|| normalizedPath.startsWith('/unit-bisnis/')
+	const isBusinessDetailPage = normalizedPath.startsWith('/unit-bisnis/')
+
+	if (!isPublicRoute) return null
 
 	return (
 		<a

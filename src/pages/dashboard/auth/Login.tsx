@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { navigateWithTransition } from "../../../components/common/TransitionLink";
 import obcLogoLight from "../../../assets/logo/obclogo.webp";
-import obcLogo from "../../../assets/logo/LOGO-OBC.png";
+import obcLogo from "../../../assets/logo/obclogo.webp";
 import { getApiErrorMessage } from "../../../services/api";
 import { authService } from "../../../services/auth";
 

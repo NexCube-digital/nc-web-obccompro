@@ -9,7 +9,13 @@ type ModalVideoProps = {
 	onClose: () => void
 }
 
-function getYouTubeEmbedUrl(videoUrl: string) {
+type VideoEmbed = {
+	url: string
+	orientation: 'landscape' | 'portrait'
+	provider: 'youtube' | 'instagram' | 'tiktok'
+}
+
+function getVideoEmbed(videoUrl: string): VideoEmbed | null {
 	try {
 		const url = new URL(videoUrl)
 		const hostname = url.hostname.replace(/^www\./, '')
@@ -22,15 +28,44 @@ function getYouTubeEmbedUrl(videoUrl: string) {
 			else if (/^\/(embed|shorts)\//.test(url.pathname)) videoId = url.pathname.split('/')[2] ?? ''
 		}
 
-		if (!/^[\w-]{11}$/.test(videoId)) return null
-		return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
+		if (/^[\w-]{11}$/.test(videoId)) {
+			return {
+				url: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`,
+				orientation: 'landscape',
+				provider: 'youtube',
+			}
+		}
+
+		if (['instagram.com', 'm.instagram.com'].includes(hostname)) {
+			const match = url.pathname.match(/^\/reel\/([\w-]+)/)
+			if (match) {
+				return {
+					url: `https://www.instagram.com/reel/${match[1]}/`,
+					orientation: 'portrait',
+					provider: 'instagram',
+				}
+			}
+		}
+
+		if (['tiktok.com', 'm.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'].includes(hostname)) {
+			const match = url.pathname.match(/\/video\/(\d+)/)
+			if (match) {
+				return {
+					url: `https://www.tiktok.com/player/v1/${match[1]}?autoplay=1&controls=1`,
+					orientation: 'portrait',
+					provider: 'tiktok',
+				}
+			}
+		}
+
+		return null
 	} catch {
 		return null
 	}
 }
 
 export default function ModalVideo({ isOpen, videoUrl, title, onClose }: ModalVideoProps) {
-	const embedUrl = getYouTubeEmbedUrl(videoUrl)
+	const embed = getVideoEmbed(videoUrl)
 	const closeButtonRef = useRef<HTMLButtonElement>(null)
 
 	useEffect(() => {
@@ -74,7 +109,7 @@ export default function ModalVideo({ isOpen, videoUrl, title, onClose }: ModalVi
 				role="dialog"
 				aria-modal="true"
 				aria-label={title}
-				className="w-full max-w-[min(64rem,calc((100svh-7.5rem)*16/9))] overflow-hidden rounded-2xl bg-[#0E1A0F] shadow-[0_24px_80px_rgba(0,0,0,0.6)] ring-1 ring-white/10 transition-all duration-300 ease-out starting:translate-y-3 starting:scale-95 starting:opacity-0 motion-reduce:transition-none sm:rounded-3xl"
+				className={`w-full ${embed?.orientation === 'portrait' ? 'max-w-[min(28rem,calc((100svh-8rem)*9/16))]' : 'max-w-[min(64rem,calc((100svh-7.5rem)*16/9))]'} overflow-hidden rounded-2xl bg-[#0E1A0F] shadow-[0_24px_80px_rgba(0,0,0,0.6)] ring-1 ring-white/10 transition-all duration-300 ease-out starting:translate-y-3 starting:scale-95 starting:opacity-0 motion-reduce:transition-none sm:rounded-3xl`}
 				onClick={(event) => event.stopPropagation()}
 			>
 				{/* Header */}
@@ -94,10 +129,10 @@ export default function ModalVideo({ isOpen, videoUrl, title, onClose }: ModalVi
 				</div>
 
 				{/* Video 16:9 */}
-				<div className="aspect-video w-full bg-black">
-					{embedUrl ? (
+				<div className={`${embed?.orientation === 'portrait' ? 'aspect-[9/16]' : 'aspect-video'} w-full bg-black`}>
+					{embed && embed.provider !== 'instagram' ? (
 						<iframe
-							src={embedUrl}
+							src={embed.url}
 							title={title}
 							className="h-full w-full border-0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -105,9 +140,16 @@ export default function ModalVideo({ isOpen, videoUrl, title, onClose }: ModalVi
 							allowFullScreen
 						/>
 					) : (
-						<p className="grid h-full place-items-center px-6 text-center font-['Montserrat'] text-xs text-white/90 sm:text-sm">
-							Tautan video YouTube tidak valid.
-						</p>
+						<div className="grid h-full place-items-center gap-2 px-6 text-center font-['Montserrat'] text-xs text-white/90 sm:text-sm">
+							<p>
+								{embed?.provider === 'instagram'
+									? 'Instagram membatasi pemutaran Reel di dalam situs.'
+									: 'Video tidak dapat ditampilkan di sini.'}
+							</p>
+							<a className="underline underline-offset-4" href={videoUrl} target="_blank" rel="noreferrer">
+								{embed?.provider === 'instagram' ? 'Tonton Reel di Instagram' : 'Buka video di platform asal'}
+							</a>
+						</div>
 					)}
 				</div>
 			</div>

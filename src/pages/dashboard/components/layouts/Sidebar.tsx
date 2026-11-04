@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TransitionLink from "../../../../components/common/TransitionLink";
+import { authService } from "../../../../services/auth";
 import obcLogo from "../../../../assets/logo/obclogo.webp";
 import {
   Building2,
@@ -20,38 +21,49 @@ type MenuItem = {
   icon: LucideIcon;
   to?: string;
   category?: string;
-  children?: { label: string; to: string }[];
+  roles: StaffRole[];
+  children?: { label: string; to: string; roles: StaffRole[] }[];
 };
 
+type StaffRole = "super_admin" | "admin" | "marketing" | "sport";
+
+const ALL_ROLES: StaffRole[] = ["super_admin", "admin", "marketing", "sport"];
+const ADMIN_ROLES: StaffRole[] = ["super_admin", "admin"];
+const OPERATIONAL_ROLES: StaffRole[] = ["super_admin", "admin", "sport"];
+const CONTENT_ROLES: StaffRole[] = ["super_admin", "admin", "marketing"];
+const SUPER_ADMIN_ROLE: StaffRole[] = ["super_admin"];
+
 const MENU: MenuItem[] = [
-  { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
-  { label: "Booking", category: "OPERASIONAL", icon: Dumbbell, to: "/sport/booking" },
-  { label: "Lapangan", category: "OPERASIONAL", icon: Building2, to: "/sport/court" },
-  { label: "Harga & Tarif", category: "OPERASIONAL", icon: Receipt, to: "/sport/harga" },
-  { label: "Membership", category: "OPERASIONAL", icon: Users, to: "/sport/membership" },
-  { label: "Invoice Management", category: "TRANSAKSI & KEUANGAN", icon: Receipt, to: "/admin/invoices" },
-  { label: "Pelanggan", category: "TRANSAKSI & KEUANGAN", icon: Users, to: "/admin/customers" },
-  { label: "Laporan", category: "TRANSAKSI & KEUANGAN", icon: FileBarChart, to: "/laporan" },
-  { label: "Unit Bisnis", category: "KONTEN & ADMINISTRASI", icon: Building2, to: "/admin/cms/unit-bisnis" },
-  { label: "Staff", category: "KONTEN & ADMINISTRASI", icon: Users, to: "/staff" },
+  { label: "Dashboard", icon: LayoutGrid, to: "/dashboard", roles: ALL_ROLES },
+  { label: "Booking", category: "OPERASIONAL", icon: Dumbbell, to: "/sport/booking", roles: OPERATIONAL_ROLES },
+  { label: "Lapangan", category: "OPERASIONAL", icon: Building2, to: "/sport/court", roles: OPERATIONAL_ROLES },
+  { label: "Harga & Tarif", category: "OPERASIONAL", icon: Receipt, to: "/sport/harga", roles: OPERATIONAL_ROLES },
+  { label: "Membership", category: "OPERASIONAL", icon: Users, to: "/sport/membership", roles: OPERATIONAL_ROLES },
+  { label: "Invoice Management", category: "TRANSAKSI & KEUANGAN", icon: Receipt, to: "/admin/invoices", roles: ADMIN_ROLES },
+  { label: "Pelanggan", category: "TRANSAKSI & KEUANGAN", icon: Users, to: "/admin/customers", roles: ADMIN_ROLES },
+  { label: "Laporan", category: "TRANSAKSI & KEUANGAN", icon: FileBarChart, to: "/laporan", roles: ADMIN_ROLES },
+  { label: "Unit Bisnis", category: "KONTEN & ADMINISTRASI", icon: Building2, to: "/admin/cms/unit-bisnis", roles: CONTENT_ROLES },
+  { label: "Staff", category: "KONTEN & ADMINISTRASI", icon: Users, to: "/staff", roles: SUPER_ADMIN_ROLE },
   {
     label: "Konten Website",
     category: "KONTEN & ADMINISTRASI",
     icon: Globe,
+    roles: CONTENT_ROLES,
     children: [
-      { label: "Portfolio", to: "/admin/portfolio" },
-      { label: "Paket Layanan", to: "/admin/packages" },
-      { label: "Testimoni", to: "/testimoni" },
-      { label: "Kontak & Lokasi", to: "/kontak-lokasi" },
+      { label: "Portfolio", to: "/admin/portfolio", roles: CONTENT_ROLES },
+      { label: "Paket Layanan", to: "/admin/packages", roles: CONTENT_ROLES },
+      { label: "Testimoni", to: "/testimoni", roles: CONTENT_ROLES },
+      { label: "Kontak & Lokasi", to: "/kontak-lokasi", roles: CONTENT_ROLES },
     ],
   },
   {
     label: "Akses & Audit",
     category: "KONTEN & ADMINISTRASI",
     icon: FileBarChart,
+    roles: SUPER_ADMIN_ROLE,
     children: [
-      { label: "Role & Permission", to: "/admin/role-permissions" },
-      { label: "Audit Log", to: "/admin/activities" },
+      { label: "Role & Permission", to: "/admin/role-permissions", roles: SUPER_ADMIN_ROLE },
+      { label: "Audit Log", to: "/admin/activities", roles: SUPER_ADMIN_ROLE },
     ],
   },
 ];
@@ -76,7 +88,14 @@ export default function Sidebar({
   onExpand,
 }: Props) {
   const location = useLocation();
-  const activeGroup = MENU.find((item) => item.children?.some((child) =>
+  const role = authService.getCurrentSession()?.user.role as StaffRole | undefined;
+  const visibleMenu = MENU.flatMap((item) => {
+    if (!role) return [];
+    if (!item.children) return item.roles.includes(role) ? [item] : [];
+    const children = item.children.filter((child) => child.roles.includes(role));
+    return children.length ? [{ ...item, children }] : [];
+  });
+  const activeGroup = visibleMenu.find((item) => item.children?.some((child) =>
     location.pathname === child.to || location.pathname.startsWith(`${child.to}/`),
   ))?.label ?? null;
   const [expanded, setExpanded] = useState<string | null>(() => activeGroup);
@@ -155,7 +174,7 @@ export default function Sidebar({
           {collapsed && <div className="mb-2 hidden border-t border-obc-border lg:block" />}
 
           <ul className="space-y-0.5">
-            {MENU.map((item, index) => {
+            {visibleMenu.map((item, index) => {
               const Icon = item.icon;
               const tip = collapsed ? item.label : undefined;
               const previousCategory = MENU[index - 1]?.category;

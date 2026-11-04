@@ -7,6 +7,8 @@ export type PriceBreakdownItem = {
 	subtotal: number;
 };
 
+export type InvoicePaymentMethod = "qris" | "gopay" | "shopeepay" | "ovo" | "dana" | "credit_card" | "bca_va" | "bni_va" | "bri_va" | "mandiri_va" | "permata_va" | "alfamart" | "indomaret" | "cod";
+
 export type Invoice = {
 	id: string;
 	invoiceNumber: string;
@@ -16,6 +18,7 @@ export type Invoice = {
 	phone: string | null;
 	amount: number;
 	status: InvoiceStatus;
+	paymentMethod: InvoicePaymentMethod | null;
 	service: string | null;
 	description: string | null;
 	priceBreakdown: PriceBreakdownItem[] | null;
@@ -151,6 +154,7 @@ export const invoiceService = {
 		phone?: string | null;
 		amount: number;
 		status?: InvoiceStatus;
+		paymentMethod?: InvoicePaymentMethod | null;
 		service?: string | null;
 		description?: string | null;
 		priceBreakdown?: PriceBreakdownItem[] | null;
@@ -161,7 +165,7 @@ export const invoiceService = {
 		return response.data.data;
 	},
 
-	async updateInvoice(id: string, payload: Partial<Pick<Invoice, "clientName" | "clientEmail" | "phone" | "amount" | "status" | "service" | "description" | "priceBreakdown" | "issueDate" | "dueDate" | "paidAt">>): Promise<Invoice> {
+	async updateInvoice(id: string, payload: Partial<Pick<Invoice, "clientName" | "clientEmail" | "phone" | "amount" | "status" | "paymentMethod" | "service" | "description" | "priceBreakdown" | "issueDate" | "dueDate" | "paidAt">>): Promise<Invoice> {
 		const response = await apiClient.put<ApiSuccess<Invoice>>(`/admin/compro-invoices/${id}`, payload);
 		return response.data.data;
 	},

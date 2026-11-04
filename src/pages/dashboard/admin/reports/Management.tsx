@@ -26,12 +26,14 @@ const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
 	maximumFractionDigits: 0,
 }).format(amount);
 
-	const periodLabels = { day: "Harian", month: "Bulanan", year: "Tahunan" };
+const PAGE_SIZE = 10;
+const periodLabels = { day: "Harian", month: "Bulanan", year: "Tahunan" };
 
 export default function Management() {
 	const [reports, setReports] = useState<ReportRecord[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedReport, setSelectedReport] = useState<ReportRecord | null>(null);
+	const [detailPage, setDetailPage] = useState(1);
 
 	useEffect(() => {
 		let active = true;
@@ -45,17 +47,26 @@ export default function Management() {
 	const handleGenerated = (report: ReportRecord) => {
 		if (report.type === "clients") return;
 		setReports((current) => [report, ...current.filter((item) => item.id !== report.id)]);
+		setDetailPage(1);
+		setSelectedReport(report);
+	};
+
+	const handleViewReport = (report: ReportRecord) => {
+		setDetailPage(1);
 		setSelectedReport(report);
 	};
 
 	const ReportIcon = selectedReport ? typeIcons[selectedReport.type as ReportType] ?? FileText : FileText;
 	const financeSnapshot = selectedReport?.type === "finance" ? getFinanceReportSnapshot(selectedReport.data, selectedReport.parameters) : null;
-	const invoiceSnapshot = selectedReport?.type === "invoices" ? getInvoiceReportSnapshot(selectedReport.data) : null;
+	const invoiceSnapshot = selectedReport?.type === "invoices" ? getInvoiceReportSnapshot(selectedReport.data, selectedReport.parameters) : null;
+	const invoiceTotalPages = Math.max(1, Math.ceil((invoiceSnapshot?.rows.length ?? 0) / PAGE_SIZE));
+	const currentInvoicePage = Math.min(detailPage, invoiceTotalPages);
+	const visibleInvoices = invoiceSnapshot?.rows.slice((currentInvoicePage - 1) * PAGE_SIZE, currentInvoicePage * PAGE_SIZE) ?? [];
 
 	return (
 		<DashboardPageLayout breadcrumb="Laporan" title="Manajemen laporan" description="Generate dan tinjau laporan invoice serta keuangan.">
 			<div className="mb-4"><ReportForm onGenerated={handleGenerated} /></div>
-			<ReportTable reports={reports} loading={loading} onView={setSelectedReport} />
+			<ReportTable reports={reports} loading={loading} onView={handleViewReport} />
 
 			{selectedReport && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedReport(null); }}>
 				<section role="dialog" aria-modal="true" aria-labelledby="report-dialog-title" className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-xl">
@@ -91,12 +102,16 @@ export default function Management() {
 								["Total lunas", rupiah(invoiceSnapshot.rows.filter((item) => item.status.toLowerCase() === "paid").reduce((total, item) => total + item.amount, 0))],
 							].map(([label, value]) => <div key={label} className="rounded-lg border border-obc-border bg-white p-3"><p className="text-[11px] text-obc-muted">{label}</p><p className="mt-1 truncate text-[13px] font-semibold text-obc-charcoal">{value}</p></div>)}
 						</div>
-						<p className="mb-3 text-[12px] text-obc-muted">{invoiceSnapshot.rows.length.toLocaleString("id-ID")} data invoice</p>
+						<p className="mb-3 text-[12px] text-obc-muted">{invoiceSnapshot.range ? `${invoiceSnapshot.range.from} sampai ${invoiceSnapshot.range.to} · ` : ""}{invoiceSnapshot.rows.length.toLocaleString("id-ID")} data invoice</p>
 						<div className="overflow-x-auto rounded-lg border border-obc-border"><table className="w-full min-w-200 text-left text-[12px]">
 							<thead className="bg-[#FDFCF7] text-[11px] font-semibold uppercase text-obc-muted"><tr><th className="px-3 py-2.5">Nomor invoice</th><th className="px-3 py-2.5">Klien</th><th className="px-3 py-2.5">Layanan</th><th className="px-3 py-2.5">Tanggal</th><th className="px-3 py-2.5">Status</th><th className="px-3 py-2.5 text-right">Nominal</th></tr></thead>
-							<tbody>{invoiceSnapshot.rows.map((invoice) => <tr key={invoice.invoiceNumber} className="border-t border-obc-border"><td className="whitespace-nowrap px-3 py-2.5 font-medium">{invoice.invoiceNumber}</td><td className="px-3 py-2.5">{invoice.clientName}</td><td className="px-3 py-2.5">{invoice.service}</td><td className="whitespace-nowrap px-3 py-2.5">{invoice.issueDate || "-"}</td><td className="px-3 py-2.5 capitalize">{invoice.status}</td><td className="whitespace-nowrap px-3 py-2.5 text-right font-medium">{rupiah(invoice.amount)}</td></tr>)}
+							<tbody>{visibleInvoices.map((invoice) => <tr key={invoice.invoiceNumber} className="border-t border-obc-border"><td className="whitespace-nowrap px-3 py-2.5 font-medium">{invoice.invoiceNumber}</td><td className="px-3 py-2.5">{invoice.clientName}</td><td className="px-3 py-2.5">{invoice.service}</td><td className="whitespace-nowrap px-3 py-2.5">{invoice.issueDate || "-"}</td><td className="px-3 py-2.5 capitalize">{invoice.status}</td><td className="whitespace-nowrap px-3 py-2.5 text-right font-medium">{rupiah(invoice.amount)}</td></tr>)}
 							{!invoiceSnapshot.rows.length && <tr><td colSpan={6} className="px-3 py-8 text-center text-obc-muted">Tidak ada invoice pada laporan ini.</td></tr>}</tbody>
 						</table></div>
+						{invoiceSnapshot.rows.length > PAGE_SIZE && <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+							<p className="text-[12px] text-obc-muted">Menampilkan {visibleInvoices.length} dari {invoiceSnapshot.rows.length} invoice</p>
+							<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setDetailPage(currentInvoicePage - 1)} disabled={currentInvoicePage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentInvoicePage} / {invoiceTotalPages}</span><button type="button" onClick={() => setDetailPage(currentInvoicePage + 1)} disabled={currentInvoicePage === invoiceTotalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
+						</div>}
 					</div> : <pre className="overflow-x-auto rounded-lg bg-[#F7F7F2] p-4 text-[11px] leading-relaxed text-obc-charcoal">{JSON.stringify(selectedReport.data, null, 2) ?? "Tidak ada data pada laporan ini."}</pre>}</div>
 				</section>
 			</div>}

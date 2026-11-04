@@ -56,6 +56,9 @@ development, frontend mengakses backend langsung di
 `http://localhost:3000/api/v1`; jalankan backend OBC dan izinkan origin frontend
 di `CORS_ORIGINS`. Untuk deployment, set `VITE_API_BASE_URL` ke URL API yang
 dapat dijangkau browser, termasuk prefix `/api/v1`.
+Untuk menerima login staff dari OBC Sport, atur `VITE_SPORT_APP_URL` ke origin
+OBC Sport (lokal: `http://localhost:5173`). Kedua frontend harus memakai origin
+pasangan yang tepat agar transfer sesi staff hanya diterima dari aplikasi Sport.
 
 ## Teknologi
 

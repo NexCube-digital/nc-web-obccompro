@@ -4,7 +4,7 @@ import { scrollToContact } from '../../../components/common/scrollToContact'
 import billiardImage from '../../../assets/images/lapang/Meja Billiard.webp'
 import courtOneImage from '../../../assets/images/lapang/Lapang F1.webp'
 import courtTwoImage from '../../../assets/images/lapang/Lapang F2.webp'
-import guestHouseImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
+import guestHouseImage from '../../../assets/images/unit-bisnis/fasilitas-guest/fas2.webp'
 
 const heroSlides = [
 	{ key: 'obc', image: billiardImage, primaryLink: 'https://sport.obcgroup.id/', secondaryLink: '#layanan' },

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Eye } from "lucide-react";
 import { REPORT_TYPE_LABELS, type ReportRecord, type ReportType } from "./reportService";
+
+const PAGE_SIZE = 10;
 
 type Props = {
 	reports: ReportRecord[];
@@ -18,12 +21,16 @@ function formatDate(value: string) {
 }
 
 export default function ReportTable({ reports, loading, onView }: Props) {
+	const [page, setPage] = useState(1);
+	const totalPages = Math.max(1, Math.ceil(reports.length / PAGE_SIZE));
+	const currentPage = Math.min(page, totalPages);
+	const visibleReports = reports.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 	return (
 		<section className="overflow-hidden rounded-xl border border-obc-border bg-white">
 			<div className="border-b border-obc-border px-4 py-4 sm:px-5"><h2 className="font-heading text-[15px] font-semibold text-obc-charcoal">Riwayat laporan</h2><p className="mt-0.5 text-[12px] text-obc-muted">{reports.length.toLocaleString("id-ID")} laporan tersimpan</p></div>
 			<div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left">
 				<thead><tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted"><th className="px-5 py-3.5">Nama laporan</th><th className="px-5 py-3.5">Jenis</th><th className="px-5 py-3.5">Dibuat</th><th className="px-5 py-3.5 text-right">Data</th><th className="px-5 py-3.5 text-right">Aksi</th></tr></thead>
-				<tbody className="text-[13px]">{loading ? <tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Memuat riwayat laporan...</td></tr> : reports.length ? reports.map((report) => {
+				<tbody className="text-[13px]">{loading ? <tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Memuat riwayat laporan...</td></tr> : reports.length ? visibleReports.map((report) => {
 					const financeData = report.data && typeof report.data === "object" ? report.data as { transactions?: unknown[] } : null;
 					const rowCount = Array.isArray(report.data) ? report.data.length : Array.isArray(financeData?.transactions) ? financeData.transactions.length : report.data ? 1 : 0;
 					return <tr key={report.id} className="border-t border-obc-border hover:bg-[#FDFCF7]">
@@ -35,6 +42,10 @@ export default function ReportTable({ reports, loading, onView }: Props) {
 					</tr>;
 				}) : <tr><td colSpan={5} className="px-5 py-12 text-center text-obc-muted">Belum ada laporan. Buat laporan pertama untuk melihat riwayatnya.</td></tr>}</tbody>
 			</table></div>
+			{!loading && reports.length > 0 && <div className="flex flex-col gap-3 border-t border-obc-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+				<p className="text-[12px] text-obc-muted">Menampilkan {visibleReports.length} dari {reports.length} laporan</p>
+				<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentPage} / {totalPages}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
+			</div>}
 		</section>
 	);
 }

@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowUpRight, Play, X } from 'lucide-react'
+import { ArrowUpRight, Play } from 'lucide-react'
 import ModalVideo from '../../../components/ui/modal/ModalVideo'
+import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
 import lapangF2Image from '../../../assets/images/lapang/Lapang F1.webp'
+import sepakbola from '../../../assets/images/lapang/lapang-bola.webp'
 import lapangF1Image from '../../../assets/images/lapang/Lapang F2.webp'
 import billiardImage from '../../../assets/images/lapang/Meja Billiard.webp'
-import academyTeamImage from '../../../assets/layanan/OBC ACADEMY/sae-375.JPEG'
-import academyRedImage from '../../../assets/layanan/OBC ACADEMY/sae-371.JPEG'
+import tenismeja from '../../../assets/images/lapang/pingpong.webp'
+import academyRedImage from '../../../assets/images/lapang/academy.webp'
+import pickeball from '../../../assets/images/lapang/pickebal2.webp'
 import volleyballIcon from '../../../assets/icon/iconstack.io - (Volleyball 2).svg'
 import basketballIcon from '../../../assets/icon/iconstack.io - (Ic Fluent Sport Basketball 24 Filled).svg'
 import footballIcon from '../../../assets/icon/iconstack.io - (Play Football).svg'
@@ -21,7 +23,7 @@ export type SportCardProps = {
 	badge: string // label kiri atas
 	icon: React.ReactNode // ikon kecil kanan atas
 	items: string[] // list bullet di bawah gambar
-	videoUrl?: string // tautan YouTube untuk video kartu
+	videoUrl?: string // tautan video dari platform yang didukung
 	onCardClick?: () => void
 	imgHeight?: string // tinggi gambar, beda antar baris
 	price?: string // teks harga yang muncul saat hover (opsional)
@@ -64,11 +66,7 @@ function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight
 					className="absolute left-[-8px] top-[22px] h-[17px] w-[8px] rounded-bl-[8px] bg-[#7FA52B] max-[460px]:hidden"
 				/>
 
-				{/* Label pill: kelas asli + override khusus ≤460px:
-				    - sudut 10px (bukan full) supaya rapi saat teks 2-3 baris
-				    - padding & line-height lebih rapat, teks rata kiri
-				    - lebar maks dibatasi agar tidak menabrak ikon bulat di kanan atas
-				    Catatan: pakai "!" agar menimpa rounded-full & rounded-bl-none bawaan */}
+
 				<span className="absolute left-[-8px] top-3 max-w-[80%] rounded-full rounded-bl-none bg-[#CDF178] px-[10px] py-[3px] font-['Montserrat'] text-[10px] font-semibold leading-[13px] tracking-[0.3px] text-[#000000] max-[460px]:max-w-[calc(100%-28px)] max-[460px]:!rounded-[10px] max-[460px]:!rounded-bl-none max-[460px]:px-2 max-[460px]:py-[3px] max-[460px]:text-left max-[460px]:leading-[12px] max-[460px]:tracking-[0.2px] sm:max-w-[calc(100%-28px)] md:text-[11px] md:leading-[14px] md:tracking-[0.5px]">
 					{badge}
 					{/* Lipatan baru: menempel di bawah kiri badge, hanya tampil ≤460px */}
@@ -132,23 +130,23 @@ const sportRow1: SportCardProps[] = [
 		price: 'Mulai dari Rp100.000/jam',
 	},
 	{
-		image: lapangF2Image,
+		image: sepakbola,
 		badge: 'Lapang Sepak Bola',
 		icon: <img src={footballIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Untuk flat 2jam Permainan'],
 		price: 'Mulai dari Rp250.000/jam',
-		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
+		videoUrl: 'https://www.instagram.com/reel/DeV68wKRMLd/',
 	},
 ]
 
 const sportRow2: SportCardProps[] = [
 	{
-		image: academyTeamImage,
+		image: tenismeja,
 		badge: 'Ruang Tenis Meja',
 		icon: <img src={tennisRacketIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['2 meja tenis', 'Bisa 2 booking paralel'],
 		price: 'Mulai dari Rp50.000/jam',
-		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
+		videoUrl: 'https://www.tiktok.com/@_musicroom.63/video/7703888015843757319',
 	},
 	{
 		image: billiardImage,
@@ -165,12 +163,12 @@ const sportRow2: SportCardProps[] = [
 		price: 'Mulai dari Rp75.000/jam',
 	},
 	{
-		image: lapangF1Image,
+		image: pickeball,
 		badge: 'Coaching Class Pickleball',
 		icon: <img src={bowlingBallIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] object-contain" />,
 		items: ['Training Program ±3 bulan', 'Setiap Sabtu & Minggu'],
 		price: 'Mulai dari Rp150.000/jam',
-		videoUrl: 'https://youtu.be/IMg-w8g8Ekk?si=PJFi08CA4CaQGyhX',
+		videoUrl: 'https://www.instagram.com/reel/DeV68wKRMLd/',
 	},
 ]
 
@@ -178,7 +176,6 @@ export default function SportCenter() {
 	const { t } = useTranslation()
 	const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null)
 	const [activeImage, setActiveImage] = useState<{ src: string; title: string } | null>(null)
-	const imageCloseButtonRef = useRef<HTMLButtonElement>(null)
 	const row1TranslationKeys = [
 		{ badge: 'sportCenterSection.courtF2_1', items: ['futsal1', 'badminton', 'pickleball'] },
 		{ badge: 'sportCenterSection.courtF1_1', items: ['futsal2', 'basket'] },
@@ -190,26 +187,6 @@ export default function SportCenter() {
 		{ badge: 'sportCenterSection.academy', items: ['academyAge', 'freeTrial2x'] },
 		{ badge: 'sportCenterSection.pickleballClass', items: ['pickleballDuration', 'pickleballSchedule'] },
 	]
-
-	useEffect(() => {
-		if (!activeImage) return
-
-		const previousOverflow = document.body.style.overflow
-		const previouslyFocused = document.activeElement as HTMLElement | null
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setActiveImage(null)
-		}
-
-		document.body.style.overflow = 'hidden'
-		document.addEventListener('keydown', handleEscape)
-		imageCloseButtonRef.current?.focus()
-
-		return () => {
-			document.body.style.overflow = previousOverflow
-			document.removeEventListener('keydown', handleEscape)
-			previouslyFocused?.focus?.()
-		}
-	}, [activeImage])
 
 	const openCardMedia = (card: SportCardProps, title: string) => {
 		if (card.videoUrl) {
@@ -282,37 +259,14 @@ export default function SportCenter() {
 				title={activeVideo?.title ?? t('sportCenterSection.title')}
 				onClose={() => setActiveVideo(null)}
 			/>
-			{activeImage &&
-				createPortal(
-					<div
-						className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm sm:p-8"
-						onClick={() => setActiveImage(null)}
-					>
-						<div
-							role="dialog"
-							aria-modal="true"
-							aria-label={activeImage.title}
-							className="relative grid max-h-[94svh] max-w-[96vw] place-items-center"
-							onClick={(event) => event.stopPropagation()}
-						>
-							<button
-								ref={imageCloseButtonRef}
-								type="button"
-								aria-label="Tutup gambar"
-								onClick={() => setActiveImage(null)}
-								className="absolute -right-2 -top-2 z-10 grid h-10 w-10 place-items-center rounded-full bg-white text-black shadow-lg transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:-right-4 sm:-top-4"
-							>
-								<X size={22} />
-							</button>
-							<img
-								className="max-h-[92svh] max-w-[96vw] rounded-xl object-contain shadow-2xl"
-								src={activeImage.src}
-								alt={activeImage.title}
-							/>
-						</div>
-					</div>,
-					document.body,
-				)}
+			{activeImage && (
+				<ImageLightbox
+					src={activeImage.src}
+					alt={activeImage.title}
+					caption={activeImage.title}
+					onClose={() => setActiveImage(null)}
+				/>
+			)}
 		</section>
 	)
 }

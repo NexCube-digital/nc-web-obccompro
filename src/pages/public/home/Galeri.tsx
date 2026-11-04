@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { useState } from 'react'
 import TransitionLink from '../../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
-import { ArrowUpRight, X } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
 import guestHouseGalleryImage from '../../../assets/images/unit-bisnis/guesthouse.webp'
 import coffeeGalleryImage from '../../../assets/images/unit-bisnis/coffe-fasilitas/fas5.webp'
 import foodCourtGalleryImage from '../../../assets/images/unit-bisnis/foodcourt.webp'
@@ -41,23 +41,6 @@ export default function Galeri() {
 	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 	const selectedGalleryItem = GALLERY_ITEMS.find((item) => item.image === selectedGalleryImage)
-
-	useEffect(() => {
-		if (!selectedGalleryImage) return
-
-		const previousOverflow = document.body.style.overflow
-		document.body.style.overflow = 'hidden'
-
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setSelectedGalleryImage(null)
-		}
-
-		document.addEventListener('keydown', handleEscape)
-		return () => {
-			document.removeEventListener('keydown', handleEscape)
-			document.body.style.overflow = previousOverflow
-		}
-	}, [selectedGalleryImage])
 
 	return (
 		
@@ -114,36 +97,13 @@ export default function Galeri() {
 			</div>
 
 			{/* Lightbox */}
-			{selectedGalleryImage && (
-				createPortal(
-					<div
-						className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#07110b]/90 p-4 backdrop-blur-md sm:p-8"
-						role="dialog"
-						aria-modal="true"
-						aria-label={selectedGalleryItem?.label ?? 'Pratinjau gambar galeri'}
-						onClick={() => setSelectedGalleryImage(null)}
-					>
-						<button
-							className="absolute right-4 top-4 grid h-11 w-11 cursor-pointer place-items-center rounded-full border border-white/20 bg-black/45 text-white shadow-lg backdrop-blur transition-colors hover:bg-[#CDF178] hover:text-[#004000] sm:right-6 sm:top-6"
-							type="button"
-							aria-label={t('common.close')}
-							onClick={() => setSelectedGalleryImage(null)}
-						>
-							<X size={24} />
-						</button>
-						<div className="flex max-h-[92svh] max-w-[94vw] flex-col items-center gap-3" onClick={(event) => event.stopPropagation()}>
-							<img
-								className="max-h-[84svh] max-w-[94vw] rounded-xl border border-white/15 bg-black/20 object-contain shadow-[0_24px_80px_rgba(0,0,0,0.5)]"
-								src={selectedGalleryImage}
-								alt={selectedGalleryItem?.label ?? 'Pratinjau galeri OBC'}
-							/>
-							<p className="max-w-[90vw] truncate font-['Montserrat'] text-sm font-medium text-white sm:text-base">
-								{selectedGalleryItem?.label}
-							</p>
-						</div>
-					</div>,
-					document.body,
-				)
+			{selectedGalleryImage && selectedGalleryItem && (
+				<ImageLightbox
+					src={selectedGalleryImage}
+					alt={selectedGalleryItem.label}
+					caption={selectedGalleryItem.label}
+					onClose={() => setSelectedGalleryImage(null)}
+				/>
 			)}
 		</section>
 	)

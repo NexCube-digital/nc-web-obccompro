@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ImgHTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import { X } from 'lucide-react'
 import LandingNavbar from '../../components/layouts/LandingNavbar'
 import LandingFooter from '../../components/layouts/LandingFooter'
 import LazySection from '../../components/common/LazySectionHome'
 import ScrollReveal from '../../components/animation/ScrollReveal'
+import ImageLightbox from '../../components/ui/modal/ImageLightbox'
 import sliderGalleryImage from '../../assets/images/slider-gallery.webp'
 import { getPublicGalleryPhotos, type GalleryPhoto } from '../../services/Public/GalleryService'
 
@@ -71,7 +71,7 @@ function GalleryPage() {
 	const [isLoadingGallery, setIsLoadingGallery] = useState(true)
 	const [galleryLoadFailed, setGalleryLoadFailed] = useState(false)
 	const [galleryLoadAttempt, setGalleryLoadAttempt] = useState(0)
-	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
+	const [selectedGalleryImage, setSelectedGalleryImage] = useState<GalleryPhoto | null>(null)
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
@@ -98,17 +98,6 @@ function GalleryPage() {
 			active = false
 		}
 	}, [galleryLoadAttempt])
-
-	useEffect(() => {
-		if (!selectedGalleryImage) return
-
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setSelectedGalleryImage(null)
-		}
-
-		document.addEventListener('keydown', handleEscape)
-		return () => document.removeEventListener('keydown', handleEscape)
-	}, [selectedGalleryImage])
 
 	const visiblePhotos = useMemo(
 		() => (activeCategory === 'all' ? galleryPhotos : galleryPhotos.filter((photo) => photo.category === activeCategory)),
@@ -176,9 +165,6 @@ function GalleryPage() {
 			</ScrollReveal>
 			</LazySection>
 
-			{/* Grid galeri: 2 kolom (mobile), 3 kolom (md), 4 kolom (lg+).
-			    Animasi muncul & hover disamakan dengan galeri OBC Guest House:
-			    ScrollReveal per gambar (jeda bertahap) + <img> biasa dengan group-hover:scale-105. */}
 			<LazySection minHeight={900} rootMargin="0px">
 			<section className="mx-auto max-w-[1200px] px-10 py-10 md:px-8">
 				{isLoadingGallery ? (
@@ -215,7 +201,7 @@ function GalleryPage() {
 							>
 								<button
 									type="button"
-									onClick={() => setSelectedGalleryImage(photo.src)}
+									onClick={() => setSelectedGalleryImage(photo)}
 									className="group h-full w-full overflow-hidden rounded-[24px] bg-black/5 md:rounded-xl"
 									aria-label={`Buka gambar ${photo.alt}`}
 								>
@@ -239,25 +225,11 @@ function GalleryPage() {
 			</LazySection>
 
 			{selectedGalleryImage && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
-					role="dialog"
-					aria-modal="true"
-					aria-label="Pratinjau gambar galeri"
-					onClick={() => setSelectedGalleryImage(null)}
-				>
-					<button
-						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
-						type="button"
-						aria-label={t('common.close')}
-						onClick={() => setSelectedGalleryImage(null)}
-					>
-						<X size={22} />
-					</button>
-					<div className="relative max-h-[90vh] max-w-[92vw]" onClick={(event) => event.stopPropagation()}>
-						<FadeImage key={selectedGalleryImage} className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl" src={selectedGalleryImage} alt="Pratinjau galeri OBC" />
-					</div>
-				</div>
+				<ImageLightbox
+					src={selectedGalleryImage.src}
+					alt={selectedGalleryImage.alt}
+					onClose={() => setSelectedGalleryImage(null)}
+				/>
 			)}
 
 			<LandingFooter />

@@ -19,6 +19,10 @@ export interface FinanceReportSnapshot {
 }
 
 export interface InvoiceReportSnapshot {
+	period?: FinanceReportPeriod;
+	periodValue?: string;
+	range?: { from: string; to: string };
+	summary: { totalAmount: number; paidAmount: number; count: number };
 	rows: {
 		invoiceNumber: string;
 		clientName: string;
@@ -54,7 +58,7 @@ export function getFinanceReportSnapshot(data: unknown, parameters?: unknown): F
 	if (!candidate.summary || !Array.isArray(candidate.transactions) || !candidate.range) return null;
 	const params = parameters && typeof parameters === "object" ? parameters as { period?: unknown; value?: unknown } : {};
 	const period = isPeriod(candidate.period) ? candidate.period : isPeriod(params.period) ? params.period : "year";
-	const transactions = candidate.transactions.filter((item) => item && item.type === "income");
+	const transactions = candidate.transactions.filter((item) => item && (item as { type?: string }).type === "income");
 	return {
 		period,
 		periodValue: typeof candidate.periodValue === "string" ? candidate.periodValue : typeof params.value === "string" ? params.value : "Semua periode",
@@ -67,21 +71,35 @@ export function getFinanceReportSnapshot(data: unknown, parameters?: unknown): F
 	};
 }
 
-export function getInvoiceReportSnapshot(data: unknown): InvoiceReportSnapshot | null {
-	if (!Array.isArray(data)) return null;
+
+export function getInvoiceReportSnapshot(data: unknown, parameters?: unknown): InvoiceReportSnapshot | null {
+	const candidate = Array.isArray(data) ? null : data && typeof data === "object" ? data as Record<string, unknown> : null;
+	const invoices = Array.isArray(data) ? data : candidate?.invoices;
+	if (!Array.isArray(invoices)) return null;
+	const rows = invoices.map((item) => {
+		const invoice = item as Record<string, unknown>;
+		return {
+			invoiceNumber: String(invoice.invoiceNumber ?? invoice.id ?? "-"),
+			clientName: String(invoice.clientName ?? "-"),
+			service: String(invoice.service ?? invoice.description ?? "-"),
+			amount: Number(invoice.amount ?? 0),
+			status: String(invoice.status ?? "-"),
+			issueDate: invoice.issueDate ? String(invoice.issueDate).slice(0, 10) : String(invoice.createdAt ?? "").slice(0, 10),
+			dueDate: invoice.dueDate ? String(invoice.dueDate).slice(0, 10) : "-",
+		};
+	});
+	const params = parameters && typeof parameters === "object" ? parameters as { period?: unknown; value?: unknown } : {};
+	const summary = candidate?.summary && typeof candidate.summary === "object" ? candidate.summary as Record<string, unknown> : {};
 	return {
-		rows: data.map((item) => {
-			const invoice = item as Record<string, unknown>;
-			return {
-				invoiceNumber: String(invoice.invoiceNumber ?? invoice.id ?? "-"),
-				clientName: String(invoice.clientName ?? "-"),
-				service: String(invoice.service ?? invoice.description ?? "-"),
-				amount: Number(invoice.amount ?? 0),
-				status: String(invoice.status ?? "-"),
-				issueDate: invoice.issueDate ? String(invoice.issueDate).slice(0, 10) : String(invoice.createdAt ?? "").slice(0, 10),
-				dueDate: invoice.dueDate ? String(invoice.dueDate).slice(0, 10) : "-",
-			};
-		}),
+		period: isPeriod(candidate?.period) ? candidate.period : isPeriod(params.period) ? params.period : undefined,
+		periodValue: typeof candidate?.periodValue === "string" ? candidate.periodValue : typeof params.value === "string" ? params.value : undefined,
+		range: candidate?.range && typeof candidate.range === "object" ? candidate.range as { from: string; to: string } : undefined,
+		summary: {
+			totalAmount: Number(summary.totalAmount ?? rows.reduce((total, item) => total + item.amount, 0)),
+			paidAmount: Number(summary.paidAmount ?? rows.filter((item) => item.status.toLowerCase() === "paid").reduce((total, item) => total + item.amount, 0)),
+			count: Number(summary.count ?? rows.length),
+		},
+		rows,
 	};
 }
 

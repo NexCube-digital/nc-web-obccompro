@@ -31,7 +31,7 @@ export default function ReportForm({ onGenerated }: Props) {
 		event.preventDefault();
 		setGenerating(true);
 		try {
-			const report = await reportService.generateReport(type, type === "finance" ? { period, value: periodValue } : undefined);
+			const report = await reportService.generateReport(type, { period, value: periodValue });
 			onGenerated(report);
 			toast.success(`${REPORT_TYPE_LABELS[type]} berhasil dibuat.`);
 		} catch (error) {
@@ -55,8 +55,8 @@ export default function ReportForm({ onGenerated }: Props) {
 					</button>;
 				})}
 			</div>
-			{type === "finance" && <div className="mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-4">
-				<div className="mb-3"><p className="text-[13px] font-semibold text-obc-charcoal">Periode pemasukan</p><p className="mt-0.5 text-[11px] text-obc-muted">Tentukan rentang waktu laporan.</p></div>
+			<div className="mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-4">
+				<div className="mb-3"><p className="text-[13px] font-semibold text-obc-charcoal">Periode {type === "finance" ? "pemasukan" : "invoice"}</p><p className="mt-0.5 text-[11px] text-obc-muted">Tentukan rentang waktu laporan.</p></div>
 				<div className="grid gap-3 sm:grid-cols-2">
 				<label className="block text-[12px] font-medium text-obc-charcoal">Periode
 					<select value={period} onChange={(event) => {
@@ -71,7 +71,7 @@ export default function ReportForm({ onGenerated }: Props) {
 					<input required type={period === "day" ? "date" : period === "month" ? "month" : "number"} min={period === "year" ? 2000 : undefined} max={period === "year" ? 9999 : undefined} value={periodValue} onChange={(event) => setPeriodValue(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-obc-border bg-[#FDFCF7] px-3 text-[13px] outline-none focus:border-obc-olive" />
 				</label>
 				</div>
-			</div>}
+			</div>
 			<div className="mt-4 flex justify-end"><button type="submit" disabled={generating} className="inline-flex h-10 items-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:opacity-60"><FileText size={15} />{generating ? "Membuat laporan..." : `Generate ${REPORT_TYPE_LABELS[type].toLowerCase()}`}</button></div>
 			</div>
 		</form>

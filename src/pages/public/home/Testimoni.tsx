@@ -12,7 +12,6 @@ import sportCenterLogo from '../../../assets/logo/unit bisnis/sport.webp'
 
 import reviewIcon from '../../../assets/icon/iconstack.io - (Pen New Square).svg'
 import ModalTestimoni, { type TestimoniFormData } from '../../../components/ui/modal/ModalTestimoni'
-import { getApiErrorMessage } from '../../../services/api'
 import { getTestimonialAvatarUrl, publicTestimonialService, type PublicTestimonial } from '../../../services/Public/Testimonial'
 
 function getCompanyLogo(company: string | null, source: PublicTestimonial['source']) {
@@ -30,10 +29,10 @@ function getCompanyLogo(company: string | null, source: PublicTestimonial['sourc
 }
 
 export default function Testimoni() {
-	const { t } = useTranslation()
+	const { t, i18n } = useTranslation()
 	const [testimonials, setTestimonials] = useState<PublicTestimonial[]>([])
 	const [isLoading, setIsLoading] = useState(true)
-	const [loadError, setLoadError] = useState('')
+	const [hasLoadError, setHasLoadError] = useState(false)
 	const [activeTestimonial, setActiveTestimonial] = useState(0)
 	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
@@ -43,8 +42,8 @@ export default function Testimoni() {
 			.then((data) => {
 				if (isMounted) setTestimonials(data)
 			})
-			.catch((error: unknown) => {
-				if (isMounted) setLoadError(getApiErrorMessage(error))
+			.catch(() => {
+				if (isMounted) setHasLoadError(true)
 			})
 			.finally(() => {
 				if (isMounted) setIsLoading(false)
@@ -127,11 +126,11 @@ export default function Testimoni() {
 				    Tinggi mengikuti tinggi layar (svh) di desktop agar seluruh section muat dalam satu layar. */}
 				<div className="relative order-3 -mx-5 mt-6 h-[clamp(430px,58svh,460px)] overflow-hidden md:order-none md:mx-0 md:mt-[clamp(16px,3svh,32px)] md:h-[clamp(320px,calc(400px_+_(100svh_-_800px)_*_1.1),470px)]">
 					{isLoading ? (
-						<div className="absolute inset-0 grid place-items-center font-['Montserrat'] text-[14px] text-[#555555]">Memuat testimoni...</div>
-					) : loadError ? (
-						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">Testimoni belum dapat dimuat. {loadError}</div>
+						<div role="status" className="absolute inset-0 grid place-items-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.loading')}</div>
+					) : hasLoadError ? (
+						<div role="alert" className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.loadError')}</div>
 					) : testimonials.length === 0 ? (
-						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">Belum ada testimoni yang dipublikasikan.</div>
+						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.empty')}</div>
 					) : testimonials.map((item, i) => {
 						const offset = (i - activeTestimonial + testimonials.length) % testimonials.length
 						const normalizedOffset = offset > testimonials.length / 2 ? offset - testimonials.length : offset
@@ -169,7 +168,7 @@ export default function Testimoni() {
 												{item.name}
 											</strong>
 											<small className="mt-1 block font-['Montserrat'] text-[14px] font-normal italic leading-[16px] tracking-[0px] text-[#555555]">
-												{item.company || 'Pelanggan OBC'}
+												{item.company || t('testimonialsSection.defaultCustomer')}
 											</small>
 										</div>
 									</div>
@@ -181,7 +180,7 @@ export default function Testimoni() {
 								<Quote className="mt-3 shrink-0 rotate-180 text-[#d1d5db]" width={36} height={26} preserveAspectRatio="none" fill="currentColor" strokeWidth={0} />
 								{/* Teks: mengisi sisa tinggi kartu (flex-1) sehingga logo/bintang selalu menempel di bawah */}
 								<p className="mt-3 min-h-0 w-full flex-1 overflow-hidden font-['Montserrat'] text-[16px] font-normal leading-[27px] tracking-[0px] text-[#000000] md:text-[clamp(14px,2.25svh,18px)] md:leading-[clamp(24px,3.75svh,30px)]">
-									{item.text}
+									{i18n.resolvedLanguage?.startsWith('en') && item.textEn ? item.textEn : item.text}
 								</p>
 
 								<div className="mt-4 flex shrink-0 items-center justify-between">

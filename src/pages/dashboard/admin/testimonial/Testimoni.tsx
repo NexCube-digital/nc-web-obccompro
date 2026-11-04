@@ -20,6 +20,7 @@ export default function Testimoni() {
 		name: "",
 		company: "",
 		text: "",
+		textEn: "",
 		rating: 5,
 		avatar: "",
 		status: "draft" as "published" | "draft" | "archived",
@@ -41,7 +42,8 @@ export default function Testimoni() {
 			(t) =>
 				(t.name?.toLowerCase() || "").includes(q) ||
 				(t.company?.toLowerCase() || "").includes(q) ||
-				(t.text?.toLowerCase() || "").includes(q)
+				(t.text?.toLowerCase() || "").includes(q) ||
+				(t.textEn?.toLowerCase() || "").includes(q)
 		);
 	}, [query, testimonials]);
 
@@ -76,6 +78,7 @@ export default function Testimoni() {
 			name: t.name,
 			company: t.company ?? "",
 			text: t.text,
+			textEn: t.textEn ?? "",
 			rating: t.rating,
 			avatar: t.avatar ?? "",
 			status: t.status,
@@ -108,7 +111,7 @@ export default function Testimoni() {
 
 	const resetForm = () => {
 		setEditingItem(null);
-		setFormData({ name: "", company: "", text: "", rating: 5, avatar: "", status: "draft" });
+		setFormData({ name: "", company: "", text: "", textEn: "", rating: 5, avatar: "", status: "draft" });
 		setAvatarFile(null);
 		setAvatarPreview("");
 	};
@@ -308,6 +311,17 @@ export default function Testimoni() {
 									onChange={(e) => setFormData({ ...formData, text: e.target.value })}
 									className="mt-1 w-full rounded-xl border border-obc-border p-3 text-[13px] outline-none"
 									placeholder="Tulis ulasan pelanggan..."
+								/>
+							</div>
+							<div>
+								<label className="block text-[13px] font-medium text-[#343133]">Testimoni / Pesan (English)</label>
+								<textarea
+									rows={4}
+									maxLength={2000}
+									value={formData.textEn}
+									onChange={(e) => setFormData({ ...formData, textEn: e.target.value })}
+									className="mt-1 w-full rounded-xl border border-obc-border p-3 text-[13px] outline-none"
+									placeholder="English translation (optional)"
 								/>
 							</div>
 							<div className="flex justify-end gap-3 pt-2">

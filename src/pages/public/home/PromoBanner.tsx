@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import promoPelajarImage from '../../../assets/OBC Guest House.png'
-import lapangF1Image from '../../../assets/layanan/Lapang F1.png'
-import guestHouseGalleryImage from '../../../assets/unit-bisnis/guest-house/4dfc9c1b31ccba420b81032601d73bd5d713286b.png'
-import academyTeamImage from '../../../assets/layanan/OBC ACADEMY/sae-375.JPEG'
-import obcLogoImage from '../../../assets/logo/LOGO-OBC.png'
+import lapangF1Image from '../../../assets/images/lapang/Lapang F1.webp'
+import guestHouseGalleryImage from '../../../assets/images/unit-bisnis/fasilitas-guest/fas2.webp'
+import academyTeamImage from '../../../assets/images/lapang/Meja Billiard.webp'
+import obcLogoImage from '../../../assets/logo/obclogo.webp'
 
 const promoSlides = [
 	{

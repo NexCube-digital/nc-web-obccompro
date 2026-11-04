@@ -5,6 +5,7 @@ export type Testimonial = {
 	name: string;
 	company: string | null;
 	text: string;
+	textEn: string | null;
 	rating: number;
 	avatar: string | null;
 	status: "published" | "draft" | "archived";

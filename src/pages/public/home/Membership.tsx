@@ -1,6 +1,6 @@
 import { Check, ArrowUpRight, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import member from '../../../assets/bfe838718c7f801119930d28d3d286f12b853b5e.jpg'
+import member from '../../../assets/images/member.webp'
 
 const membershipBenefits = [
 	'20% OFF untuk 4x pertemuan',

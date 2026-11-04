@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, FileText, MapPin, Receipt, Timer, UserRound } from "lucide-react";
+import { ArrowLeft, Banknote, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, CreditCard, MapPin, Receipt, Smartphone, Store, Timer, UserRound, WalletCards } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { DayPicker } from "react-day-picker";
 import { id } from "date-fns/locale";
@@ -6,7 +6,7 @@ import "react-day-picker/style.css";
 import { toast } from "sonner";
 import { contactService, type Contact } from "../../cms/contact/ContactService";
 import { courtService, type CourtResource } from "../../sport/court/courtService";
-import { invoiceService, type AvailabilitySlot, type FacilityCalendarDate, type Invoice, type InvoiceStatus, type PriceBreakdownItem } from "./invoiceService";
+import { invoiceService, type AvailabilitySlot, type FacilityCalendarDate, type Invoice, type InvoicePaymentMethod, type InvoiceStatus, type PriceBreakdownItem } from "./invoiceService";
 
 const statuses: InvoiceStatus[] = ["draft", "sent", "paid", "overdue", "expired", "partial", "cancelled"];
 const statusLabels: Record<InvoiceStatus, string> = {
@@ -18,6 +18,44 @@ const statusLabels: Record<InvoiceStatus, string> = {
 	partial: "Sebagian dibayar",
 	cancelled: "Dibatalkan",
 };
+
+const paymentMethodGroups: { label: string; methods: { id: InvoicePaymentMethod; name: string; description: string; badge: string; icon: typeof CreditCard }[] }[] = [
+	{
+		label: "QRIS & E-WALLET",
+		methods: [
+			{ id: "qris", name: "QRIS", description: "Pembayaran dengan scan kode QR", badge: "QRIS", icon: Smartphone },
+			{ id: "gopay", name: "GoPay", description: "Konfirmasi melalui aplikasi GoPay", badge: "GOPAY", icon: Smartphone },
+			{ id: "shopeepay", name: "ShopeePay", description: "Bayar melalui saldo ShopeePay", badge: "SPAY", icon: Smartphone },
+			{ id: "ovo", name: "OVO", description: "Konfirmasi melalui aplikasi OVO", badge: "OVO", icon: Smartphone },
+			{ id: "dana", name: "DANA", description: "Bayar melalui saldo DANA", badge: "DANA", icon: Smartphone },
+		],
+	},
+	{
+		label: "KARTU",
+		methods: [{ id: "credit_card", name: "Kartu kredit / debit", description: "Pembayaran aman dengan kartu", badge: "CARD", icon: CreditCard }],
+	},
+	{
+		label: "VIRTUAL ACCOUNT",
+		methods: [
+			{ id: "bca_va", name: "BCA Virtual Account", description: "Transfer ke nomor VA BCA", badge: "BCA", icon: WalletCards },
+			{ id: "bni_va", name: "BNI Virtual Account", description: "Transfer ke nomor VA BNI", badge: "BNI", icon: WalletCards },
+			{ id: "bri_va", name: "BRI Virtual Account", description: "Transfer ke nomor VA BRI", badge: "BRI", icon: WalletCards },
+			{ id: "mandiri_va", name: "Mandiri Virtual Account", description: "Transfer ke nomor VA Mandiri", badge: "MANDIRI", icon: WalletCards },
+			{ id: "permata_va", name: "Permata Virtual Account", description: "Transfer ke nomor VA Permata", badge: "PERMATA", icon: WalletCards },
+		],
+	},
+	{
+		label: "GERAI RETAIL",
+		methods: [
+			{ id: "alfamart", name: "Alfamart", description: "Bayar melalui kasir Alfamart", badge: "ALFA", icon: Store },
+			{ id: "indomaret", name: "Indomaret", description: "Bayar melalui kasir Indomaret", badge: "INDO", icon: Store },
+		],
+	},
+	{
+		label: "PEMBAYARAN LANGSUNG",
+		methods: [{ id: "cod", name: "Cash on Delivery (COD)", description: "Pembayaran dilakukan langsung di lokasi saat kedatangan.", badge: "COD", icon: Banknote }],
+	},
+];
 
 const generateInvoiceNumber = () => {
 	const now = new Date();
@@ -51,6 +89,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const [phone, setPhone] = useState(invoice?.phone ?? "");
 	const [amount, setAmount] = useState(invoice?.amount ?? 0);
 	const [status, setStatus] = useState<InvoiceStatus>(invoice?.status ?? "draft");
+	const [paymentMethod, setPaymentMethod] = useState<InvoicePaymentMethod | "">(invoice?.paymentMethod ?? "");
 	const [service, setService] = useState(invoice?.service ?? "");
 	const [description, setDescription] = useState(invoice?.description ?? "");
 	const [issueDate, setIssueDate] = useState(toDateInput(invoice?.issueDate ?? null));
@@ -118,7 +157,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const formSteps = [
 		{ id: 1, title: "Data klien", subtitle: "Penerima tagihan" },
 		{ id: 2, title: "Detail booking", subtitle: "Lapangan dan jadwal" },
-		{ id: 3, title: "Informasi invoice", subtitle: "Status dan catatan" },
+		{ id: 3, title: "Informasi pembayaran", subtitle: "Metode dan ketentuan" },
 	];
 
 	const validateStep = (step: number) => {
@@ -136,9 +175,15 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 				return false;
 			}
 		}
-		if (step === 3 && (!Number.isInteger(amount) || amount <= 0)) {
-			toast.error("Nominal invoice harus lebih dari 0.");
-			return false;
+		if (step === 3) {
+			if (!paymentMethod) {
+				toast.error("Pilih metode pembayaran terlebih dahulu.");
+				return false;
+			}
+			if (!Number.isInteger(amount) || amount <= 0) {
+				toast.error("Nominal invoice harus lebih dari 0.");
+				return false;
+			}
 		}
 		return true;
 	};
@@ -224,6 +269,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 					phone: phone || null,
 					amount,
 					status,
+					paymentMethod: paymentMethod || null,
 					service: service || null,
 					description: description || null,
 					priceBreakdown: breakdown,
@@ -239,6 +285,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 					phone: phone || null,
 					amount,
 					status,
+					paymentMethod: paymentMethod || null,
 					service: service || null,
 					description: description || null,
 					priceBreakdown: breakdown,
@@ -389,7 +436,36 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 							<div className={`mt-4 flex items-center justify-between gap-4 rounded-lg border px-4 py-3 ${startTime ? "border-obc-green bg-[#F3F8E8]" : "border-obc-border bg-[#FDFCF7]"}`}><div><p className="text-[11px] text-obc-muted">Waktu dipilih</p><p className="mt-1 font-heading text-[16px] font-semibold text-obc-charcoal">{startTime && endTime ? `${startTime} – ${endTime}` : "Pilih jam kosong"}</p></div><div className="text-right"><p className="text-[11px] text-obc-muted">Durasi</p><p className="mt-1 text-[13px] font-semibold text-obc-charcoal">{durationSlots} jam</p></div></div>
 						</div>}
 					</section>}
-					{activeStep === 3 && <section className="rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-5"><div className="mb-4 flex items-center gap-3 border-b border-obc-border pb-4"><span className="grid size-9 place-items-center rounded-lg bg-obc-ivory text-obc-green"><FileText size={17} /></span><div><h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Informasi invoice</h3><p className="mt-0.5 text-[12px] text-obc-muted">Status dan ketentuan pembayaran.</p></div></div><div className="grid gap-4 md:grid-cols-3"><label className="text-[13px] font-medium text-obc-charcoal">Status<select value={status} onChange={(event) => setStatus(event.target.value as InvoiceStatus)} className={inputClass}>{statuses.map((item) => <option key={item} value={item}>{statusLabels[item]}</option>)}</select></label><label className="text-[13px] font-medium text-obc-charcoal">Tanggal jatuh tempo<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium text-obc-charcoal">Layanan<input value={service} onChange={(event) => setService(event.target.value)} className={inputClass} /></label></div><label className="mt-4 block text-[13px] font-medium text-obc-charcoal">Catatan invoice<textarea rows={3} value={description} onChange={(event) => setDescription(event.target.value)} className="mt-1 w-full rounded-lg border border-obc-border bg-[#FDFCF7] p-3 text-[13px] text-obc-charcoal outline-none transition-colors focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]" /></label></section>}
+					{activeStep === 3 && <section className="rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-5">
+						<div className="mb-4 flex items-center gap-3 border-b border-obc-border pb-4">
+							<span className="grid size-9 place-items-center rounded-lg bg-[#E7F5D0] text-obc-green"><WalletCards size={17} /></span>
+							<div><h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Informasi pembayaran</h3><p className="mt-0.5 text-[12px] text-obc-muted">Pilih metode pembayaran yang akan dicantumkan pada invoice.</p></div>
+						</div>
+						<div role="radiogroup" aria-label="Metode pembayaran invoice" className="space-y-4">
+							{paymentMethodGroups.map((group) => <div key={group.label}>
+								<h4 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wide text-obc-green">{group.label}</h4>
+								<div className="grid gap-2 sm:grid-cols-2">
+									{group.methods.map(({ id, name, description, badge, icon: Icon }) => {
+										const selected = paymentMethod === id;
+										return <button key={id} type="button" role="radio" aria-checked={selected} onClick={() => setPaymentMethod(id)} className={`flex min-h-[76px] min-w-0 items-center gap-3 rounded-lg border bg-white px-3 py-2.5 text-left transition-colors ${selected ? "border-2 border-obc-green bg-[#F3F8E8]" : "border-obc-border hover:border-obc-green hover:bg-[#FDFCF7]"}`}>
+											<span className={`grid size-10 shrink-0 place-items-center rounded-lg ${selected ? "bg-obc-green text-white" : "bg-obc-ivory text-obc-green"}`}><Icon size={18} /></span>
+											<span className="min-w-0 flex-1"><span className="flex items-center gap-2"><span className="block break-words text-[13px] font-semibold text-obc-charcoal">{name}</span><span className="shrink-0 rounded bg-[#F1EFE8] px-1.5 py-0.5 text-[9px] font-bold text-obc-muted">{badge}</span></span><span className="mt-1 block text-[11px] leading-4 text-obc-muted">{description}</span></span>
+											<span aria-hidden="true" className={`grid size-4 shrink-0 place-items-center rounded-full ${selected ? "border-2 border-obc-green" : "border border-obc-border"}`}>{selected && <span className="size-2 rounded-full bg-obc-green" />}</span>
+										</button>;
+									})}
+								</div>
+							</div>)}
+						</div>
+						<div className="mt-5 border-t border-obc-border pt-4">
+							<h4 className="mb-3 text-[13px] font-semibold text-obc-charcoal">Status dan detail invoice</h4>
+							<div className="grid gap-4 md:grid-cols-3">
+								<label className="text-[13px] font-medium text-obc-charcoal">Status<select value={status} onChange={(event) => setStatus(event.target.value as InvoiceStatus)} className={inputClass}>{statuses.map((item) => <option key={item} value={item}>{statusLabels[item]}</option>)}</select></label>
+								<label className="text-[13px] font-medium text-obc-charcoal">Tanggal jatuh tempo<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} className={inputClass} /></label>
+								<label className="text-[13px] font-medium text-obc-charcoal">Layanan<input value={service} onChange={(event) => setService(event.target.value)} className={inputClass} /></label>
+							</div>
+							<label className="mt-4 block text-[13px] font-medium text-obc-charcoal">Catatan invoice<textarea rows={3} value={description} onChange={(event) => setDescription(event.target.value)} className="mt-1 w-full rounded-lg border border-obc-border bg-[#FDFCF7] p-3 text-[13px] text-obc-charcoal outline-none transition-colors focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]" /></label>
+						</div>
+					</section>}
 					<div className="flex items-center justify-between gap-3">
 						<button type="button" onClick={() => moveToStep(activeStep - 1)} disabled={activeStep === 1} className="h-10 rounded-lg border border-obc-border px-4 text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory disabled:invisible">Kembali</button>
 						{activeStep < 3 ? <button type="button" onClick={() => moveToStep(activeStep + 1)} className="h-10 rounded-lg bg-obc-green px-5 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover">Lanjutkan</button> : <p className="text-[12px] text-obc-muted">Periksa ringkasan sebelum menyimpan.</p>}
@@ -401,7 +477,8 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 					<div className="space-y-3 border-b border-obc-border py-4 text-[13px]"><div><span className="text-[11px] text-obc-muted">Nomor invoice</span><p className="mt-1 font-medium text-obc-charcoal">{invoiceNumber}</p></div><div><span className="text-[11px] text-obc-muted">Lapangan</span><p className="mt-1 font-medium text-obc-charcoal">{selectedFacility?.name ?? "Belum dipilih"}</p></div><div><span className="text-[11px] text-obc-muted">Tanggal</span><p className="mt-1 font-medium text-obc-charcoal">{issueDate || "Belum dipilih"}</p></div><div><span className="text-[11px] text-obc-muted">Waktu</span><p className="mt-1 font-medium text-obc-charcoal">{startTime && endTime ? `${startTime} - ${endTime}` : "Belum dipilih"}</p></div></div>
 					{items.map((item) => <div key={item.name} className="flex justify-between gap-3 py-4 text-[13px]"><span className="text-obc-muted">{item.name}</span><span className="shrink-0 font-medium">{rupiah(item.subtotal)}</span></div>)}
 					<div className="rounded-lg bg-[#F3F8E8] p-4"><span className="text-[11px] font-medium text-obc-muted">Total invoice</span><p className="mt-1 font-heading text-[24px] font-bold text-obc-green">{rupiah(amount)}</p></div>
-					{activeStep === 3 && <button type="submit" disabled={saving || !resourceId || !issueDate || !startTime || !endTime} className="mt-4 h-11 w-full rounded-lg bg-obc-green text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-not-allowed disabled:opacity-50">{saving ? "Menyimpan..." : invoice ? "Simpan perubahan" : "Buat invoice"}</button>}<button type="button" onClick={onClose} className="mb-4 mt-2 h-10 w-full rounded-lg border border-obc-border text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory">Batal</button>
+					{activeStep === 3 && <div className="mt-3 rounded-lg border border-obc-border px-3 py-2.5"><p className="text-[11px] text-obc-muted">Metode pembayaran</p><p className="mt-1 text-[13px] font-semibold text-obc-charcoal">{paymentMethodGroups.flatMap((group) => group.methods).find((method) => method.id === paymentMethod)?.name ?? "Belum dipilih"}</p></div>}
+					{activeStep === 3 && <button type="submit" disabled={saving || !resourceId || !issueDate || !startTime || !endTime || !paymentMethod} className="mt-4 h-11 w-full rounded-lg bg-obc-green text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-not-allowed disabled:opacity-50">{saving ? "Menyimpan..." : invoice ? "Simpan perubahan" : "Buat invoice"}</button>}<button type="button" onClick={onClose} className="mb-4 mt-2 h-10 w-full rounded-lg border border-obc-border text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory">Batal</button>
 					</div>
 				</aside>
 			</form>

@@ -40,6 +40,7 @@ const ObcLaundry = lazyPreload(() => import('../pages/public/bisnis/ObcLaundry')
 const ObcVilla = lazyPreload(() => import('../pages/public/bisnis/ObcVilla'))
 const DashboardPage = lazyPreload(() => import('../pages/dashboard/admin/DashboardPage'))
 const LoginPage = lazyPreload(() => import('../pages/dashboard/auth/Login'))
+const StaffAuthBridgePage = lazyPreload(() => import('../pages/dashboard/auth/StaffAuthBridge'))
 const ForgetPasswordPage = lazyPreload(() => import('../pages/dashboard/auth/ForgetPassword'))
 const SettingAccountPage = lazyPreload(() => import('../pages/dashboard/auth/SettingAccount'))
 const FormPage = lazyPreload(() => import('../pages/dashboard/template/Form'))
@@ -156,6 +157,7 @@ const AppRoutes = (
 
 		{/* dashboard */}
 		<Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+		<Route path="/auth/bridge" element={<StaffAuthBridgePage />} />
 		<Route path="/login" element={<LoginPage />} />
 		<Route path="/lupa-password" element={<ForgetPasswordPage />} />
 		<Route path="/settingaccount" element={<RequireAuth><SettingAccountPage /></RequireAuth>} />
