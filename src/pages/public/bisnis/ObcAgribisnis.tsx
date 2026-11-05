@@ -22,7 +22,7 @@ interface Area {
 	size: number
 }
 
-const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Tugulaksana,+Lembang,+Kabupaten+Bandung+Barat'
+const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8398,107.6195+(OBC+Agribisnis)'
 
 // Tiga area/plot lahan OBC Agribisnis — alamat & luas mengikuti desain
 const AREAS: Area[] = [
@@ -272,7 +272,7 @@ function AgribisnisPage() {
 				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
 					<iframe
 						title={t('common.locationOf', { unit: t('units.agribisnis.title') })}
-						src="https://www.google.com/maps?q=Jl.+Tugulaksana,+Lembang,+Kabupaten+Bandung+Barat&output=embed"
+						src="https://www.google.com/maps?q=-6.8398,107.6195+(OBC+Agribisnis)&hl=id&z=17&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
 						referrerPolicy="no-referrer-when-downgrade"

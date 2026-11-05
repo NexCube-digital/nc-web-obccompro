@@ -39,7 +39,7 @@ interface Facility {
 	label: string
 }
 
-const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Rancabentang+1+No.10,+Kec.+Cidadap,+Kota+Bandung'
+const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8750,107.6075+(OBC+Villa)'
 
 // Ringkasan cepat yang tampil di bawah deskripsi hero — sesuaikan dengan data villa aktual
 const QUICK_FACTS = ['3 kamar tidur', '3 kamar mandi', '1 ruang keluarga', '2 ruang santai']
@@ -287,7 +287,7 @@ function VillaPage() {
 				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
 					<iframe
 						title="Lokasi OBC Villa"
-						src="https://www.google.com/maps?q=Jl.+Rancabentang+1+No.10,+Kec.+Cidadap,+Kota+Bandung&output=embed"
+						src="https://www.google.com/maps?q=-6.8750,107.6075+(OBC+Villa)&hl=id&z=17&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
 						referrerPolicy="no-referrer-when-downgrade"

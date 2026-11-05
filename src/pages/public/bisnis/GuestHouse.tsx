@@ -40,7 +40,7 @@ interface Facility {
 	label: string
 }
 
-const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Rancabentang+1+No.10,+Ciumbuleuit,+Bandung'
+const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8742,107.6068+(OBC+Guest+House)'
 
 // Data kamar — sesuaikan dengan data unit kamar aktual dari admin/CMS
 const ROOM_TYPES: RoomType[] = [
@@ -357,7 +357,7 @@ function GuestHousePage() {
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Guest House */}
 					<iframe
 						title="Lokasi OBC Guest House"
-						src="https://www.google.com/maps?q=Jl.+Rancabentang+1+No.10,+Ciumbuleuit,+Bandung&output=embed"
+						src="https://www.google.com/maps?q=-6.8742,107.6068+(OBC+Guest+House)&hl=id&z=17&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
 						referrerPolicy="no-referrer-when-downgrade"

@@ -39,7 +39,7 @@ interface Blok {
 	facilities: string[]
 }
 
-const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung'
+const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Food+Court)'
 
 // Daftar area food court untuk kartu info di section "Tentang" (tanda titik ditambahkan saat render)
 const AREA_LIST = ['Blok A&B', 'Blok C', 'Blok D', 'Blok E', 'Blok F']
@@ -438,7 +438,7 @@ function FoodCourtPage() {
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Food Court */}
 					<iframe
 						title={t('common.locationOf', { unit: t('units.foodCourt.title') })}
-						src="https://www.google.com/maps?q=Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung&output=embed"
+						src="https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Food+Court)&hl=id&z=17&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
 						referrerPolicy="no-referrer-when-downgrade"

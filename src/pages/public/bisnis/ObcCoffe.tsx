@@ -33,7 +33,7 @@ interface Equipment {
 }
 
 const GOOGLE_MAPS_LINK =
-	'https://maps.google.com/?q=Area+OBC+Cafe+B2-B3+Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung'
+	'https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Coffee)'
 
 const FACILITIES: Facility[] = [
 	{ icon: wifiIcon, label: 'Free Wifi' },
@@ -299,7 +299,7 @@ function CoffeePage() {
 					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Coffee */}
 					<iframe
 						title={t('common.locationOf', { unit: t('units.coffee.title') })}
-						src="https://www.google.com/maps?q=Area+OBC+Cafe+B2-B3+Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung&output=embed"
+						src="https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Coffee)&hl=id&z=17&output=embed"
 						className="h-full w-full border-0"
 						loading="lazy"
 						referrerPolicy="no-referrer-when-downgrade"
