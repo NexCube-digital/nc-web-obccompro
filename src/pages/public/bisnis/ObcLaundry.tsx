@@ -1,9 +1,8 @@
 import {
 	ArrowRight,
 	ExternalLink,
-	X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -11,6 +10,7 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
+import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
 import heroImage from '../../../assets/images/unit-bisnis/laundry.webp'
 import serviceTypeIcon from '../../../assets/icon/iconstack.io - (Ic Fluent Washer 24 Filled).svg'
 import clockIcon from '../../../assets/icon/clock.svg'
@@ -71,7 +71,6 @@ interface Facility {
 	label: string
 }
 
-const WHATSAPP_LINK = 'https://wa.me/6280000000000'
 const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Rancabentang+1+No.12,+Ciumbuleuit,+Kec.+Cidadap,+Kota+Bandung'
 
 // Layanan utama — ditampilkan sebagai 4 card ringkas di section "Layanan OBC Laundry"
@@ -193,17 +192,6 @@ const GALLERY_IMAGES = [
 function LaundryPage() {
 	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
-
-	useEffect(() => {
-		if (!selectedGalleryImage) return
-
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setSelectedGalleryImage(null)
-		}
-
-		document.addEventListener('keydown', handleEscape)
-		return () => document.removeEventListener('keydown', handleEscape)
-	}, [selectedGalleryImage])
 
 	return (
 		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
@@ -608,7 +596,6 @@ function LaundryPage() {
 							className="lg:!w-full"
 							title={t('units.laundry.whatsappCardTitle')}
 							description={t('units.laundry.whatsappCardDesc')}
-							link={WHATSAPP_LINK}
 						/>
 					</div>
 				</aside>
@@ -665,25 +652,11 @@ function LaundryPage() {
 			</LazySection>
 
 			{selectedGalleryImage && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
-					role="dialog"
-					aria-modal="true"
-					aria-label="Pratinjau gambar galeri Laundry"
-					onClick={() => setSelectedGalleryImage(null)}
-				>
-					<button
-						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
-						type="button"
-						aria-label={t('common.close')}
-						onClick={() => setSelectedGalleryImage(null)}
-					>
-						<X size={22} />
-					</button>
-					<div className="relative max-h-[90vh] max-w-[92vw]" onClick={(event) => event.stopPropagation()}>
-						<img className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl" src={selectedGalleryImage} alt="Pratinjau galeri OBC Laundry" />
-					</div>
-				</div>
+				<ImageLightbox
+					src={selectedGalleryImage}
+					alt="Pratinjau galeri OBC Laundry"
+					onClose={() => setSelectedGalleryImage(null)}
+				/>
 			)}
 
 			{/* Lokasi — tetap full width */}
@@ -740,7 +713,6 @@ function LaundryPage() {
 						variant="bar"
 						title={t('units.laundry.whatsappCardTitle')}
 						description={t('units.laundry.whatsappCardDesc')}
-						link={WHATSAPP_LINK}
 					/>
 				</div>
 			</div>

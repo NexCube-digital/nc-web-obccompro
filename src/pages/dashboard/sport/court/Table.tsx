@@ -1,6 +1,6 @@
 import { Building2, Eye, ImageOff, MapPin, Pencil } from "lucide-react";
-import { getMediaUrl } from "../../cms/media/mediaService";
-import type { CourtResource } from "./courtService";
+import { getMediaUrl } from "../../v2/media/mediaService";
+import { sportOptions, tableSportTypes, type CourtResource } from "./courtService";
 
 interface Props {
   resources: CourtResource[];
@@ -35,6 +35,7 @@ export default function ResourceTable({ resources, loading, onView, onEdit }: Pr
         <tbody>
           {resources.map((resource) => {
             const image = resource.imageUrl ?? resource.gallery?.[0];
+            const hasTables = resource.sportTypes.some((sport) => tableSportTypes.includes(sport));
             return (
               <tr key={resource.id} className="border-t border-obc-border align-top">
                 <td className="px-4 py-3">
@@ -49,12 +50,12 @@ export default function ResourceTable({ resources, loading, onView, onEdit }: Pr
                   <p className="mt-0.5 text-[11px] text-obc-muted">{resource.resourceType} · slot {resource.slotMinutes} menit</p>
                   {resource.description && <p className="mt-1 max-w-90 text-[11px] leading-4 text-obc-muted">{resource.description}</p>}
                 </td>
-                <td className="px-4 py-3 capitalize">{resource.sportTypes.join(", ") || "-"}</td>
+                <td className="px-4 py-3">{resource.sportTypes.map((sport) => sportOptions.find((option) => option.value === sport)?.label ?? sport).join(", ") || "-"}</td>
                 <td className="px-4 py-3">
                   {resource.location ? <><p className="flex items-center gap-1"><MapPin size={13} />{resource.location.name}</p><p className="mt-1 text-[11px] text-obc-muted">{resource.location.city}</p></> : <span className="text-obc-muted">-</span>}
                 </td>
                 <td className="px-4 py-3 font-semibold text-obc-charcoal">{resource.fromPriceFormatted ?? "Belum ada tarif"}</td>
-                <td className="px-4 py-3"><span className="inline-flex items-center gap-1"><Building2 size={14} />{resource.capacity} orang</span></td>
+                <td className="px-4 py-3"><span className="inline-flex items-center gap-1"><Building2 size={14} />{hasTables ? `${resource.parallelUnits} meja` : `${resource.capacity} orang`}</span></td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-1">
                     <button type="button" title="Lihat detail" aria-label={`Lihat detail ${resource.name}`} onClick={() => onView(resource)} className="rounded-lg border border-obc-border p-2 text-obc-muted hover:border-obc-olive hover:text-obc-charcoal">

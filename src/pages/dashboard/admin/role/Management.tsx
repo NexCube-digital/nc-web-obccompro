@@ -58,17 +58,18 @@ export default function Management() {
 		}
 	};
 
-	const totalPermissions = roles.reduce((total, role) => total + role.permissions.length, 0);
+	const visibleRoles = roles.filter((role) => role.role !== "super_admin");
+	const totalPermissions = visibleRoles.reduce((total, role) => total + role.permissions.length, 0);
 
 	return (
 		<DashboardPageLayout breadcrumb="Role & permission" title="Role dan permission" description="Atur hak akses menu untuk setiap role staf.">
 			<section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-				<div className="rounded-xl border border-obc-border bg-white p-4"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-[#E7F5D0] text-[#1F3320]"><Users size={18} /></span><div><p className="text-[12px] text-obc-muted">Role terdaftar</p><p className="font-heading text-[20px] font-bold text-obc-charcoal">{roles.length.toLocaleString("id-ID")}</p></div></div></div>
+				<div className="rounded-xl border border-obc-border bg-white p-4"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-[#E7F5D0] text-[#1F3320]"><Users size={18} /></span><div><p className="text-[12px] text-obc-muted">Role terdaftar</p><p className="font-heading text-[20px] font-bold text-obc-charcoal">{visibleRoles.length.toLocaleString("id-ID")}</p></div></div></div>
 				<div className="rounded-xl border border-obc-border bg-white p-4"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-[#FBF0D3] text-[#8A6100]"><KeyRound size={18} /></span><div><p className="text-[12px] text-obc-muted">Permission aktif</p><p className="font-heading text-[20px] font-bold text-obc-charcoal">{totalPermissions.toLocaleString("id-ID")}</p></div></div></div>
 				<div className="flex items-center justify-between gap-3 rounded-xl border border-obc-border bg-white p-4"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-[#EBEEDC] text-[#404F14]"><ShieldCheck size={18} /></span><div><p className="text-[12px] text-obc-muted">Konfigurasi akses</p><p className="font-heading text-[16px] font-semibold text-obc-charcoal">{loading ? "Memuat..." : "Tersimpan di server"}</p></div></div><button type="button" onClick={resetDefaults} disabled={resetting || loading} aria-label="Reset permission ke default" title="Reset ke default" className="grid size-9 shrink-0 place-items-center rounded-lg border border-obc-border text-obc-muted hover:bg-[#FDFCF7] disabled:opacity-50"><RotateCcw size={15} /></button></div>
 			</section>
-			{editingRole && <div className="mb-4"><RolePermissionForm key={editingRole.role} rolePermission={editingRole} saving={saving} onCancel={() => setEditingRole(null)} onSave={saveRolePermissions} /></div>}
-			<RolePermissionTable roles={roles} loading={loading} onEdit={setEditingRole} />
+			{editingRole && <RolePermissionForm key={editingRole.role} rolePermission={editingRole} saving={saving} onCancel={() => setEditingRole(null)} onSave={saveRolePermissions} />}
+			<RolePermissionTable roles={visibleRoles} loading={loading} onEdit={setEditingRole} />
 		</DashboardPageLayout>
 	);
 }

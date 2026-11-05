@@ -12,6 +12,7 @@ export interface CourtResource {
   resourceType: "court" | "hall" | "field" | "room";
   sportTypes: string[];
   capacity: number;
+  parallelUnits: number;
   amenities: string[];
   imageUrl: string | null;
   gallery: string[] | null;
@@ -27,10 +28,28 @@ export interface CourtResourceUpdateInput {
   description: string | null;
   sportTypes: string[];
   capacity: number;
+  parallelUnits: number;
   amenities: string[];
   slotMinutes: number;
   imageUrl?: string | null;
 }
+
+export const sportOptions = [
+  { value: "futsal", label: "Futsal" },
+  { value: "badminton", label: "Badminton" },
+  { value: "basketball", label: "Basket" },
+  { value: "volleyball", label: "Voli" },
+  { value: "pickleball", label: "Pickleball" },
+  { value: "tennis", label: "Tenis" },
+  { value: "table_tennis", label: "Tenis meja" },
+  { value: "billiard", label: "Biliar" },
+  { value: "swimming", label: "Renang" },
+  { value: "sepakbola", label: "Sepak bola" },
+  { value: "event", label: "Event" },
+  { value: "other", label: "Lainnya" },
+] as const;
+
+export const tableSportTypes = ["billiard", "table_tennis"];
 
 export const courtService = {
   async getResources(tenant = "obc-sport"): Promise<CourtResource[]> {

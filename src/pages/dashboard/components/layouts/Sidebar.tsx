@@ -42,7 +42,6 @@ const MENU: MenuItem[] = [
   { label: "Invoice Management", category: "TRANSAKSI & KEUANGAN", icon: Receipt, to: "/admin/invoices", roles: ADMIN_ROLES },
   { label: "Pelanggan", category: "TRANSAKSI & KEUANGAN", icon: Users, to: "/admin/customers", roles: ADMIN_ROLES },
   { label: "Laporan", category: "TRANSAKSI & KEUANGAN", icon: FileBarChart, to: "/laporan", roles: ADMIN_ROLES },
-  { label: "Unit Bisnis", category: "KONTEN & ADMINISTRASI", icon: Building2, to: "/admin/cms/unit-bisnis", roles: CONTENT_ROLES },
   { label: "Staff", category: "KONTEN & ADMINISTRASI", icon: Users, to: "/staff", roles: SUPER_ADMIN_ROLE },
   {
     label: "Konten Website",
@@ -50,8 +49,8 @@ const MENU: MenuItem[] = [
     icon: Globe,
     roles: CONTENT_ROLES,
     children: [
+      { label: "Unit Bisnis", to: "/admin/cms/unit-bisnis", roles: CONTENT_ROLES },
       { label: "Portfolio", to: "/admin/portfolio", roles: CONTENT_ROLES },
-      { label: "Paket Layanan", to: "/admin/packages", roles: CONTENT_ROLES },
       { label: "Testimoni", to: "/testimoni", roles: CONTENT_ROLES },
       { label: "Kontak & Lokasi", to: "/kontak-lokasi", roles: CONTENT_ROLES },
     ],

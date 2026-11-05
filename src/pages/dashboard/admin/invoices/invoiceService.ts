@@ -13,6 +13,7 @@ export type Invoice = {
 	id: string;
 	invoiceNumber: string;
 	contactId: string | null;
+	bookingId: string | null;
 	clientName: string;
 	clientEmail: string;
 	phone: string | null;
@@ -96,6 +97,52 @@ export type PaymentTerm = {
 	notes: string | null;
 };
 
+export interface InvoiceBookingResult {
+	bookingId: string;
+	status: string;
+	totalPrice: number;
+	totalPriceFormatted: string;
+	payment:
+		| { token: string; redirectUrl: string }
+		| { cardPayment: true }
+		| { chargeResponse: Record<string, unknown> }
+		| { unavailable: true; message: string }
+		| null;
+	holdExpiresAt: string | null;
+	message: string;
+}
+
+export interface InvoiceBookingDetails {
+	id: string;
+	status: string;
+	bookingDate: string;
+	startTime: string;
+	endTime: string;
+	durationMinutes: number;
+	sportType: string;
+	resource: { id: string; name: string; slug: string; resourceType: string };
+	pricing: { basePrice: number; discountAmount: number; adminFee: number; totalPrice: number };
+	payments: Array<{
+		id: string;
+		midtransOrderId: string | null;
+		method: string | null;
+		amount: number;
+		status: string;
+		paymentDetails: Record<string, unknown> | null;
+		paidAt: string | null;
+		redirectUrl: string | null;
+		expiredAt: string | null;
+	}>;
+	lockedUntil: string | null;
+	paidAt: string | null;
+	notes: string | null;
+}
+
+export interface InvoiceCardChargeResult {
+	transactionStatus: string;
+	redirectUrl: string | null;
+}
+
 interface ApiSuccess<T> {
 	data: T;
 }
@@ -121,8 +168,37 @@ export const invoiceService = {
 		startTime: string;
 		endTime: string;
 		sportType: string;
+		paymentChannel?: InvoicePaymentMethod;
+		paymentMethod?: "bank_transfer" | "credit_card" | "ewallet" | "convenience_store" | "qris" | "other";
 	}): Promise<BookingPricePreview> {
 		const response = await apiClient.post<ApiSuccess<BookingPricePreview>>("/sports/pricing/calculate", payload);
+		return response.data.data;
+	},
+
+	async createBooking(payload: {
+		resourceId: string;
+		bookingDate: string;
+		startTime: string;
+		endTime: string;
+		sportType: string;
+		bookingType: "regular";
+		paymentChannel: InvoicePaymentMethod;
+		allowPastSlot: true;
+		invoiceCheckout: true;
+		notes: string;
+		returnUrl: string;
+	}): Promise<InvoiceBookingResult> {
+		const response = await apiClient.post<ApiSuccess<InvoiceBookingResult>>("/sports/bookings", payload);
+		return response.data.data;
+	},
+
+	async getBookingDetails(id: string): Promise<InvoiceBookingDetails> {
+		const response = await apiClient.get<ApiSuccess<InvoiceBookingDetails>>(`/sports/bookings/${id}`);
+		return response.data.data;
+	},
+
+	async chargeBookingByCreditCard(id: string, tokenId: string, retry = false): Promise<InvoiceCardChargeResult> {
+		const response = await apiClient.post<ApiSuccess<InvoiceCardChargeResult>>(`/sports/bookings/${id}/credit-card`, { tokenId, retry });
 		return response.data.data;
 	},
 
@@ -148,6 +224,7 @@ export const invoiceService = {
 
 	async createInvoice(payload: {
 		invoiceNumber: string;
+		bookingId?: string | null;
 		contactId?: string | null;
 		clientName: string;
 		clientEmail: string;

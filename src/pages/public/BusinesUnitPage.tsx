@@ -19,6 +19,8 @@ import coffeeLogo from '../../assets/logo/unit bisnis/coffe.webp'
 import agribusinessLogo from '../../assets/logo/unit bisnis/agribisnis.webp'
 import clockIcon from '../../assets/icon/clock.svg'
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
+import usePublicSiteContact from '../../hooks/usePublicSiteContact'
+import { getWhatsAppHref } from '../../services/publicSiteContactService'
 import guestHouseIcon from '../../assets/icon/iconstack.io - (House Door Fill).svg'
 import villaIcon from '../../assets/icon/iconstack.io - (Ic Fluent Bed 24 Filled).svg'
 import laundryIcon from '../../assets/icon/iconstack.io - (Ic Fluent Washer 24 Filled).svg'
@@ -128,10 +130,10 @@ const BUSINESS_UNITS: BusinessUnit[] = [
 	},
 ]
 
-const WHATSAPP_LINK = 'https://wa.me/6280000000000'
-
 function BusinessUnitPage() {
 	const { t } = useTranslation()
+	const contact = usePublicSiteContact()
+	const whatsappHref = getWhatsAppHref(contact.whatsapp)
 	return (
 		<div className="min-h-screen bg-obc-ivory">
 			<LandingNavbar />
@@ -318,8 +320,8 @@ function BusinessUnitPage() {
 
 										{/* Aksi: mobile ditumpuk vertikal */}
 										<div className="mt-3 flex max-w-[420px] flex-col items-start gap-3 md:mt-5 md:flex-row md:flex-wrap md:items-center md:gap-5">
-											<a
-												href={WHATSAPP_LINK}
+											{whatsappHref && <a
+												href={whatsappHref}
 												target="_blank"
 												rel="noreferrer"
 												className="group flex items-center gap-1.5 font-['Montserrat'] text-[11px] font-medium leading-5 tracking-normal text-black transition-colors duration-500 hover:text-obc-green md:text-[15px]"
@@ -330,7 +332,7 @@ function BusinessUnitPage() {
 												<span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat pb-[2px] transition-[background-size] duration-500 ease-in-out group-hover:bg-[length:100%_1.5px]">
 													{t('common.contactWhatsApp')}
 												</span>
-											</a>
+											</a>}
 											<TransitionLink
 												to={`/unit-bisnis/${unit.slug}`}
 												className="group flex items-center gap-1.5 font-['Montserrat'] text-[16px] font-semibold leading-6 tracking-normal text-black transition-colors duration-500 hover:text-obc-green-hover"

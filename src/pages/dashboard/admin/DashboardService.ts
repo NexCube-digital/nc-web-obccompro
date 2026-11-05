@@ -21,7 +21,7 @@ export interface DashboardSummary {
 		sportType: string;
 		totalPrice: number;
 		createdAt: string;
-		customer: { name: string };
+		customer: { name: string } | null;
 		resource: { name: string };
 	}[];
 }

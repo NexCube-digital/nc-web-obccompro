@@ -27,6 +27,7 @@ export interface SiteContactContent {
 	section: "site-contact";
 	email: string;
 	whatsapp: string;
+	whatsappPic?: string;
 	instagram: string;
 	tiktok: string;
 	address: string;

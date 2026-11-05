@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import lapangF1Image from '../../../assets/images/multifungsi/multifungsi1.webp'
 import lapangF2Image from '../../../assets/images/multifungsi/multifungsi2.webp'
 import eventIcon from '../../../assets/icon/iconstack.io - (Event).svg'
+import usePublicSiteContact from '../../../hooks/usePublicSiteContact'
+import { getWhatsAppHref } from '../../../services/publicSiteContactService'
 
 const eventCategories = ['wedding', 'gathering', 'otherEvents']
 
@@ -11,6 +13,8 @@ const photoBadgeBase =
 
 export default function GedungMultifungsi() {
 	const { t } = useTranslation()
+	const contact = usePublicSiteContact()
+	const whatsappUrl = getWhatsAppHref(contact.whatsapp)
 
 	return (
 		
@@ -45,9 +49,9 @@ export default function GedungMultifungsi() {
 					</div>
 
 					{/* Tombol: < lg lebar penuh, ikon di kiri teks. >= lg ikon di kanan teks */}
-					<a
+					{whatsappUrl && <a
 						className="relative order-7 col-span-2 flex min-h-[60px] w-full max-w-full shrink-0 flex-row-reverse items-center justify-center gap-[10px] rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-2 font-['Montserrat'] text-[14px] font-semibold leading-tight tracking-[0.04em] text-[#000000] shadow-[0px_5px_4px_0px_#00000040] transition-colors hover:bg-[#c8ec60] min-[400px]:text-[16px] sm:min-h-[64px] sm:px-[18px] sm:text-[17px] sm:tracking-[0.08em] lg:order-none lg:flex-row lg:gap-3 lg:px-5 lg:py-1 lg:text-[16px] lg:tracking-[0.05em] xl:min-h-[clamp(56px,8.5svh,68px)] xl:text-[19px] xl:tracking-[0.08em]"
-						href="https://wa.me/628886070900"
+						href={whatsappUrl}
 						target="_blank"
 						rel="noreferrer"
 					>
@@ -55,7 +59,7 @@ export default function GedungMultifungsi() {
 						<span className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-full bg-[#004000] sm:h-[52px] sm:w-[52px]">
 							<img src={WhatsAppLogo} alt="" aria-hidden="true" className="h-[26px] w-[26px] shrink-0 sm:h-[30px] sm:w-[30px]" />
 						</span>
-					</a>
+					</a>}
 				</div>
 
 				{/* Kolom kanan */}

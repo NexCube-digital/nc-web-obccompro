@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { CircleDollarSign, Clock3, Package } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
+import Pagination from "../../components/common/Pagination";
+import DeleteModal from "../../components/ui/DeleteModal";
 import {
 	sportService,
 	type ActiveStatus,
@@ -11,16 +13,16 @@ import {
 	type PricingRuleUpdateInput,
 } from "../SportService";
 import PricingEditForm from "./PricingEditForm";
+import PricingTable, { type PricingRecord, type PricingView } from "./PricingTable";
 
-type PricingView = "rules" | "packages";
-type PricingRecord = PricingRule | PricingPackage;
+const PAGE_SIZE = 10;
 type PricingUpdate = PricingRuleUpdateInput | PricingPackageUpdateInput;
 
-const activeStatuses: ActiveStatus[] = ["active", "inactive"];
-const activeLabel: Record<ActiveStatus, string> = { active: "Aktif", inactive: "Nonaktif" };
-const activeStyle: Record<ActiveStatus, string> = { active: "bg-[#E7F5D0] text-[#1F3320]", inactive: "bg-[#F1EFE8] text-obc-muted" };
-const money = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 const dayLabel: Record<PricingRule["dayType"], string> = { weekday: "Hari kerja", weekend: "Akhir pekan", holiday: "Hari libur" };
+
+function SummaryMetric({ label, value, note, icon: Icon, tone }: { label: string; value: string; note: string; icon: typeof CircleDollarSign; tone: string }) {
+	return <div className="flex min-w-0 items-center gap-3 rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_3px_rgba(31,51,32,0.04)]"><span className={`grid size-10 shrink-0 place-items-center rounded-lg ${tone}`}><Icon size={18} /></span><div className="min-w-0"><p className="text-[11px] text-obc-muted">{label}</p><p className="mt-0.5 truncate font-heading text-[20px] font-bold text-obc-charcoal">{value}</p><p className="mt-0.5 truncate text-[10px] text-obc-muted">{note}</p></div></div>;
+}
 
 export default function SportHarga() {
 	const [view, setView] = useState<PricingView>("rules");
@@ -33,13 +35,16 @@ export default function SportHarga() {
 	const [totalPages, setTotalPages] = useState(1);
 	const [reload, setReload] = useState(0);
 	const [editingItem, setEditingItem] = useState<PricingRecord | null>(null);
+	const [deletingItem, setDeletingItem] = useState<PricingRecord | null>(null);
+	const [deleteLoading, setDeleteLoading] = useState(false);
+	const closeDeleteModal = useCallback(() => setDeletingItem(null), []);
 
 	useEffect(() => {
 		let cancelled = false;
 		setLoading(true);
 		const request = view === "rules"
-			? sportService.getPricingRules({ page, limit: 10, ...(status === "all" ? {} : { status }) })
-			: sportService.getPricingPackages({ page, limit: 10, ...(status === "all" ? {} : { status }) });
+			? sportService.getPricingRules({ page, limit: PAGE_SIZE, ...(status === "all" ? {} : { status }) })
+			: sportService.getPricingPackages({ page, limit: PAGE_SIZE, ...(status === "all" ? {} : { status }) });
 		request.then((result) => {
 			if (cancelled) return;
 			if (view === "rules") setRules(result.data as PricingRule[]);
@@ -77,16 +82,21 @@ export default function SportHarga() {
 		setReload((current) => current + 1);
 	};
 
-	const deactivateItem = async (item: PricingRecord) => {
-		const itemName = "dayType" in item ? `aturan tarif ${dayLabel[item.dayType]}` : `paket "${item.name}"`;
-		if (!window.confirm(`Nonaktifkan ${itemName}? Item tidak akan dihapus permanen.`)) return;
+	const deactivateItem = (item: PricingRecord) => setDeletingItem(item);
+
+	const confirmDeactivate = async () => {
+		if (!deletingItem) return;
+		setDeleteLoading(true);
 		try {
-			if ("dayType" in item) await sportService.deletePricingRule(item.id);
-			else await sportService.deletePricingPackage(item.id);
+			if ("dayType" in deletingItem) await sportService.deletePricingRule(deletingItem.id);
+			else await sportService.deletePricingPackage(deletingItem.id);
 			toast.success("Item harga berhasil dinonaktifkan.");
+			setDeletingItem(null);
 			setReload((current) => current + 1);
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : "Gagal menonaktifkan item harga.");
+		} finally {
+			setDeleteLoading(false);
 		}
 	};
 
@@ -94,39 +104,44 @@ export default function SportHarga() {
 		setLoading(true);
 		setPage(nextPage);
 	};
+	const visibleCount = view === "rules" ? rules.length : packages.length;
+	const activeCount = (view === "rules" ? rules : packages).filter((item) => item.status === "active").length;
+	const viewLabel = view === "rules" ? "aturan tarif" : "paket durasi";
+	const rangeStart = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+	const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
 	return (
 		<DashboardLayout>
-			<div className="px-3 py-5 sm:px-6 sm:py-6">
-				<header className="mb-5"><p className="text-[13px] text-obc-muted">OBC Sport / Harga & Tarif</p><h1 className="mt-1 font-heading text-[26px] font-bold text-obc-charcoal">Harga & tarif</h1><p className="mt-1 text-[13px] text-obc-muted">Aturan tarif per jam dan paket durasi dari backend.</p></header>
-				<section className="mb-4 flex flex-col gap-3 rounded-xl border border-obc-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-					<div role="tablist" aria-label="Jenis harga" className="flex gap-1 rounded-lg border border-obc-border bg-[#FDFCF7] p-1">
-						<button type="button" role="tab" aria-selected={view === "rules"} onClick={() => { setLoading(true); setView("rules"); setPage(1); }} className={`rounded-md px-3 py-2 text-[12px] font-medium ${view === "rules" ? "bg-white text-obc-charcoal shadow-sm" : "text-obc-muted"}`}>Aturan per jam</button>
-						<button type="button" role="tab" aria-selected={view === "packages"} onClick={() => { setLoading(true); setView("packages"); setPage(1); }} className={`rounded-md px-3 py-2 text-[12px] font-medium ${view === "packages" ? "bg-white text-obc-charcoal shadow-sm" : "text-obc-muted"}`}>Paket durasi</button>
+			<div className="mx-auto max-w-screen-2xl px-3 py-5 sm:px-6 sm:py-6">
+				<header className="mb-6"><p className="text-[11px] font-semibold uppercase tracking-wide text-obc-green">OBC Sport / Pengelolaan tarif</p><h1 className="mt-1 font-heading text-[26px] font-bold text-obc-charcoal">Harga & tarif</h1><p className="mt-1 max-w-2xl text-[13px] text-obc-muted">Kelola tarif lapangan dan paket durasi dalam satu katalog yang mudah dicari dan ditinjau.</p></header>
+				<section className="mb-5 grid gap-3 sm:grid-cols-3">
+					<SummaryMetric label={`Total ${viewLabel}`} value={total.toLocaleString("id-ID")} note="Hasil sesuai status yang dipilih" icon={CircleDollarSign} tone="bg-[#E7F5D0] text-obc-green" />
+					<SummaryMetric label="Aktif di halaman ini" value={activeCount.toLocaleString("id-ID")} note={`Dari ${visibleCount} item yang dimuat`} icon={Clock3} tone="bg-[#EAF4F0] text-[#296049]" />
+					<SummaryMetric label="Rentang data" value={total ? `${rangeStart}–${rangeEnd}` : "0"} note={`Halaman ${page} dari ${totalPages}`} icon={Package} tone="bg-[#FBF0D3] text-[#8A6100]" />
+				</section>
+				<section className="mb-4 flex flex-col gap-4 rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_3px_rgba(31,51,32,0.04)] lg:flex-row lg:items-center lg:justify-between">
+					<div role="tablist" aria-label="Jenis harga" className="grid grid-cols-2 gap-1 rounded-lg border border-obc-border bg-[#F7F7F2] p-1 sm:inline-flex">
+						<button type="button" role="tab" aria-selected={view === "rules"} onClick={() => { setLoading(true); setView("rules"); setPage(1); }} className={`inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-[12px] font-semibold transition-colors ${view === "rules" ? "bg-white text-obc-green shadow-sm" : "text-obc-muted hover:text-obc-charcoal"}`}><Clock3 size={15} />Aturan per jam</button>
+						<button type="button" role="tab" aria-selected={view === "packages"} onClick={() => { setLoading(true); setView("packages"); setPage(1); }} className={`inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-[12px] font-semibold transition-colors ${view === "packages" ? "bg-white text-obc-green shadow-sm" : "text-obc-muted hover:text-obc-charcoal"}`}><Package size={15} />Paket durasi</button>
 					</div>
-					<div className="flex items-center justify-between gap-3"><span className="text-[12px] text-obc-muted">{total.toLocaleString("id-ID")} data</span><select aria-label="Filter status harga" value={status} onChange={(event) => { setLoading(true); setStatus(event.target.value as ActiveStatus | "all"); setPage(1); }} className="h-10 rounded-lg border border-obc-border bg-white px-3 text-[13px]"><option value="all">Semua status</option>{activeStatuses.map((item) => <option key={item} value={item}>{activeLabel[item]}</option>)}</select></div>
+					<div className="grid gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+						<span className="inline-flex h-10 items-center justify-between gap-3 rounded-lg border border-obc-border bg-[#FDFCF7] px-3 text-[11px] font-medium text-obc-muted"><span>Data per halaman</span><span className="font-semibold text-obc-charcoal">10</span></span>
+						<label className="flex items-center justify-between gap-3 rounded-lg border border-obc-border bg-[#FDFCF7] px-3 text-[11px] font-medium text-obc-muted"><span>Status</span><select aria-label="Filter status harga" value={status} onChange={(event) => { setLoading(true); setStatus(event.target.value as ActiveStatus | "all"); setPage(1); }} className="h-10 bg-transparent text-[12px] font-semibold text-obc-charcoal outline-none"><option value="all">Semua status</option><option value="active">Aktif</option><option value="inactive">Nonaktif</option></select></label>
+					</div>
 				</section>
-				<section className="overflow-hidden rounded-xl border border-obc-border bg-white">
-					<div className="overflow-x-auto"><table className="w-full min-w-220 text-left text-[13px]">
-						<thead><tr className="bg-[#FDFCF7] text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
-							{view === "rules" ? <><th className="px-4 py-3">Resource</th><th className="px-4 py-3">Hari</th><th className="px-4 py-3">Rentang waktu</th><th className="px-4 py-3">Tarif / jam</th><th className="px-4 py-3">Min. durasi</th></> : <><th className="px-4 py-3">Paket</th><th className="px-4 py-3">Olahraga</th><th className="px-4 py-3">Resource</th><th className="px-4 py-3">Durasi</th><th className="px-4 py-3">Harga paket</th></>}
-							<th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Aksi</th>
-						</tr></thead>
-						<tbody>
-							{loading ? <tr><td colSpan={7} className="px-4 py-12 text-center text-obc-muted">Memuat data tarif...</td></tr> : view === "rules" ? rules.length ? rules.map((rule) => <tr key={rule.id} className="border-t border-obc-border">
-								<td className="px-4 py-3">{rule.resource?.name ?? "Semua resource"}</td><td className="px-4 py-3">{dayLabel[rule.dayType]}</td><td className="whitespace-nowrap px-4 py-3">{rule.tierStartTime}–{rule.tierEndTime}</td><td className="whitespace-nowrap px-4 py-3 font-semibold">{money(rule.pricePerHour)}</td><td className="px-4 py-3">{rule.minDurationMinutes ? `${rule.minDurationMinutes} menit` : "-"}</td>
-								<td className="px-4 py-3"><select aria-label={`Status aturan tarif ${rule.id}`} value={rule.status} onChange={(event) => changeStatus(rule, event.target.value as ActiveStatus)} className={`rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold ${activeStyle[rule.status]}`}>{activeStatuses.map((item) => <option key={item} value={item}>{activeLabel[item]}</option>)}</select></td>
-								<td className="px-4 py-3"><div className="flex justify-end gap-1"><button type="button" onClick={() => setEditingItem(rule)} title="Ubah aturan tarif" aria-label="Ubah aturan tarif" className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-obc-status-locked-bg hover:text-obc-charcoal"><Pencil size={15} /></button><button type="button" onClick={() => deactivateItem(rule)} title="Nonaktifkan aturan tarif" aria-label="Nonaktifkan aturan tarif" className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-red-50 hover:text-obc-red"><Trash2 size={15} /></button></div></td>
-							</tr>) : <tr><td colSpan={7} className="px-4 py-12 text-center text-obc-muted">Belum ada aturan tarif.</td></tr> : packages.length ? packages.map((pricingPackage) => <tr key={pricingPackage.id} className="border-t border-obc-border">
-								<td className="px-4 py-3"><p className="font-semibold">{pricingPackage.name}</p><p className="text-[11px] text-obc-muted">{pricingPackage.description || "-"}</p></td><td className="px-4 py-3 capitalize">{pricingPackage.sportType || "Semua"}</td><td className="px-4 py-3">{pricingPackage.resource?.name ?? "Semua resource"}</td><td className="px-4 py-3">{pricingPackage.durationMinutes} menit</td><td className="whitespace-nowrap px-4 py-3 font-semibold">{money(pricingPackage.packagePrice)}{pricingPackage.discountPercent ? <span className="ml-2 text-[11px] font-normal text-obc-muted">Diskon {pricingPackage.discountPercent}%</span> : null}</td>
-								<td className="px-4 py-3"><select aria-label={`Status paket ${pricingPackage.name}`} value={pricingPackage.status} onChange={(event) => changeStatus(pricingPackage, event.target.value as ActiveStatus)} className={`rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold ${activeStyle[pricingPackage.status]}`}>{activeStatuses.map((item) => <option key={item} value={item}>{activeLabel[item]}</option>)}</select></td>
-								<td className="px-4 py-3"><div className="flex justify-end gap-1"><button type="button" onClick={() => setEditingItem(pricingPackage)} title="Ubah paket harga" aria-label="Ubah paket harga" className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-obc-status-locked-bg hover:text-obc-charcoal"><Pencil size={15} /></button><button type="button" onClick={() => deactivateItem(pricingPackage)} title="Nonaktifkan paket harga" aria-label={`Nonaktifkan paket ${pricingPackage.name}`} className="grid size-8 place-items-center rounded-lg text-obc-muted hover:bg-red-50 hover:text-obc-red"><Trash2 size={15} /></button></div></td>
-							</tr>) : <tr><td colSpan={7} className="px-4 py-12 text-center text-obc-muted">Belum ada paket harga.</td></tr>}
-						</tbody>
-					</table></div>
-					<div className="flex items-center justify-between border-t border-obc-border px-4 py-3 text-[12px] text-obc-muted"><span>Halaman {page} dari {Math.max(totalPages, 1)}</span><div className="flex gap-2"><button type="button" disabled={page <= 1} onClick={() => changePage(page - 1)} className="rounded-lg border border-obc-border px-3 py-2 disabled:opacity-40">Sebelumnya</button><button type="button" disabled={page >= totalPages} onClick={() => changePage(page + 1)} className="rounded-lg border border-obc-border px-3 py-2 disabled:opacity-40">Berikutnya</button></div></div>
-				</section>
+				<PricingTable view={view} rules={rules} packages={packages} loading={loading} onStatusChange={changeStatus} onEdit={setEditingItem} onDeactivate={deactivateItem} />
+				<Pagination page={page} totalPages={totalPages} onPageChange={changePage} totalItems={total} pageSize={PAGE_SIZE} itemLabel={view === "rules" ? "aturan tarif" : "paket harga"} disabled={loading} className="mt-3 flex flex-col gap-3 rounded-xl border border-obc-border bg-white px-4 py-4 shadow-[0_1px_3px_rgba(31,51,32,0.04)] sm:flex-row sm:items-center sm:justify-between sm:px-5" />
 				{editingItem && <PricingEditForm key={editingItem.id} item={editingItem} onClose={() => setEditingItem(null)} onSave={(payload) => saveItem(editingItem, payload)} />}
+				<DeleteModal
+					isOpen={Boolean(deletingItem)}
+					title="Nonaktifkan item harga?"
+					description="Item ini tidak akan dihapus permanen dan dapat diaktifkan kembali nanti."
+					itemName={deletingItem ? "dayType" in deletingItem ? `Aturan tarif ${dayLabel[deletingItem.dayType]}` : `Paket ${deletingItem.name}` : undefined}
+					confirmLabel="Nonaktifkan"
+					isLoading={deleteLoading}
+					onClose={closeDeleteModal}
+					onConfirm={confirmDeactivate}
+				/>
 			</div>
 		</DashboardLayout>
 	);

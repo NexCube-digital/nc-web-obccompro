@@ -1,31 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
-import { BadgeCheck, CircleDollarSign, Clock3, Eye, Pencil, Plus, Receipt, Search, Trash2, WalletCards } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BadgeCheck, CircleDollarSign, Clock3, Plus, Receipt } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { invoiceService, type Invoice, type InvoiceStatus } from "./invoiceService";
+import DeleteModal from "../../components/ui/DeleteModal";
+import { invoiceService, type Invoice, type InvoiceBookingDetails, type InvoiceStatus } from "./invoiceService";
 import { toast } from "sonner";
 import InvoiceForm from "./Form";
+import InvoiceTable from "./Table";
+import InvoiceDetailModal from "./InvoiceDetailModal";
 
-const PAGE_SIZE = 8;
 const statuses: InvoiceStatus[] = ["draft", "sent", "paid", "overdue", "expired", "partial", "cancelled"];
-type StatusFilter = "all" | InvoiceStatus;
-
 const statusLabels: Record<InvoiceStatus, string> = {
 	draft: "Draft",
-	sent: "Terkirim",
-	paid: "Lunas",
-	overdue: "Jatuh tempo",
-	expired: "Kedaluwarsa",
-	partial: "Sebagian dibayar",
-	cancelled: "Dibatalkan",
-};
-const statusClasses: Record<InvoiceStatus, string> = {
-	draft: "bg-[#F1EFE8] text-[#404F14]",
-	sent: "bg-[#FBF0D3] text-[#8A6100]",
-	paid: "bg-[#E7F5D0] text-[#1F3320]",
-	overdue: "bg-[#FDF2F2] text-[#B42318]",
-	expired: "bg-[#F1EFE8] text-obc-muted",
-	partial: "bg-[#EBEEDC] text-[#404F14]",
-	cancelled: "bg-[#FDF2F2] text-[#B42318]",
+	sent: "Pending",
+	paid: "Success",
+	overdue: "Pending",
+	expired: "Gagal",
+	partial: "Pending",
+	cancelled: "Gagal",
 };
 
 const rupiah = (value: number) => new Intl.NumberFormat("id-ID", {
@@ -52,18 +43,21 @@ function Summary({ label, value, icon: Icon, tone }: { label: string; value: str
 export default function InvoiceManagement() {
 	const [invoices, setInvoices] = useState<Invoice[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [query, setQuery] = useState("");
-	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-	const [page, setPage] = useState(1);
 	const [formOpen, setFormOpen] = useState(false);
 	const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
 	const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+	const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
+	const [detailBooking, setDetailBooking] = useState<InvoiceBookingDetails | null>(null);
+	const [loadingDetailBooking, setLoadingDetailBooking] = useState(false);
 	const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null);
 	const [paymentTerm, setPaymentTerm] = useState("");
 	const [paymentMethod, setPaymentMethod] = useState("");
 	const [paidAt, setPaidAt] = useState("");
 	const [paymentNotes, setPaymentNotes] = useState("");
 	const [paying, setPaying] = useState(false);
+	const [deletingInvoice, setDeletingInvoice] = useState<Invoice | null>(null);
+	const [deleteLoading, setDeleteLoading] = useState(false);
+	const closeDeleteModal = useCallback(() => setDeletingInvoice(null), []);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -86,20 +80,6 @@ export default function InvoiceManagement() {
 	const paidCount = counts.paid;
 	const followUpCount = counts.sent + counts.overdue + counts.partial;
 
-	const filtered = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
-		return invoices.filter((invoice) => {
-			const matchesStatus = statusFilter === "all" || invoice.status === statusFilter;
-			const searchText = [invoice.invoiceNumber, invoice.clientName, invoice.clientEmail, invoice.service]
-				.filter(Boolean).join(" ").toLowerCase();
-			return matchesStatus && searchText.includes(normalizedQuery);
-		});
-	}, [invoices, query, statusFilter]);
-
-	const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-	const currentPage = Math.min(page, totalPages);
-	const rows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
 	const openCreateForm = () => {
 		setEditingInvoice(null);
 		setFormOpen(true);
@@ -110,20 +90,38 @@ export default function InvoiceManagement() {
 		setFormOpen(true);
 	};
 
+	const openInvoiceDetails = (invoice: Invoice) => {
+		setDetailInvoice(invoice);
+		setDetailBooking(null);
+		if (!invoice.bookingId) return;
+
+		setLoadingDetailBooking(true);
+		invoiceService.getBookingDetails(invoice.bookingId)
+			.then(setDetailBooking)
+			.catch((error: unknown) => toast.error(error instanceof Error ? error.message : "Detail booking invoice gagal dimuat."))
+			.finally(() => setLoadingDetailBooking(false));
+	};
+
 	const handleSaved = (saved: Invoice) => {
 		setInvoices((current) => editingInvoice
 			? current.map((invoice) => invoice.id === saved.id ? saved : invoice)
 			: [saved, ...current]);
 	};
 
-	const deleteInvoice = async (invoice: Invoice) => {
-		if (!window.confirm(`Hapus invoice ${invoice.invoiceNumber}?`)) return;
+	const deleteInvoice = (invoice: Invoice) => setDeletingInvoice(invoice);
+
+	const confirmDeleteInvoice = async () => {
+		if (!deletingInvoice) return;
+		setDeleteLoading(true);
 		try {
-			await invoiceService.deleteInvoice(invoice.id);
-			setInvoices((current) => current.filter((item) => item.id !== invoice.id));
+			await invoiceService.deleteInvoice(deletingInvoice.id);
+			setInvoices((current) => current.filter((item) => item.id !== deletingInvoice.id));
+			setDeletingInvoice(null);
 			toast.success("Invoice berhasil dihapus.");
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : "Gagal menghapus invoice.");
+		} finally {
+			setDeleteLoading(false);
 		}
 	};
 
@@ -191,59 +189,19 @@ export default function InvoiceManagement() {
 				<Summary label="Perlu ditindaklanjuti" value={followUpCount.toLocaleString("id-ID")} icon={Clock3} tone="bg-[#FBF0D3] text-[#8A6100]" />
 			</section>
 
-			<section className="overflow-hidden rounded-xl border border-obc-border bg-white">
-				<div className="border-b border-obc-border p-4 sm:p-5">
-					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-						<div><h2 className="font-heading text-[15px] font-semibold text-obc-charcoal">Daftar invoice</h2><p className="mt-0.5 text-[12px] text-obc-muted">{filtered.length.toLocaleString("id-ID")} invoice sesuai pencarian dan status</p></div>
-						<label className="relative block w-full sm:max-w-70">
-							<Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" />
-							<input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Cari nomor, klien, layanan..." className="h-10 w-full rounded-lg border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]" />
-						</label>
-					</div>
-					<div role="tablist" aria-label="Filter status invoice" className="mt-4 flex gap-1 overflow-x-auto pb-0.5">
-						{(["all", ...statuses] as StatusFilter[]).map((status) => (
-							<button key={status} type="button" role="tab" aria-selected={statusFilter === status} onClick={() => { setStatusFilter(status); setPage(1); }} className={`shrink-0 rounded-lg border px-3 py-2 text-[12px] font-medium transition-colors ${statusFilter === status ? "border-obc-green bg-[#F3F8E8] text-obc-green" : "border-transparent text-obc-muted hover:border-obc-border hover:bg-[#FDFCF7]"}`}>
-								{status === "all" ? "Semua" : statusLabels[status]} <span className="ml-1 opacity-70">{status === "all" ? invoices.length : counts[status]}</span>
-							</button>
-						))}
-					</div>
-				</div>
-
-				<div className="overflow-x-auto">
-					<table className="w-full min-w-220 text-left">
-						<thead><tr className="border-b border-obc-border bg-[#FDFCF7] font-heading text-[11px] font-semibold uppercase tracking-wide text-obc-muted">
-							<th className="px-5 py-3.5">Invoice</th><th className="px-5 py-3.5">Klien</th><th className="px-5 py-3.5">Nominal</th><th className="px-5 py-3.5">Termin</th><th className="px-5 py-3.5">Jatuh tempo</th><th className="px-5 py-3.5">Status</th><th className="px-5 py-3.5 text-right">Aksi</th>
-						</tr></thead>
-						<tbody className="text-[13px]">
-							{loading ? (
-								<tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">Memuat invoice...</td></tr>
-							) : rows.length ? rows.map((invoice) => {
-								const terms = invoice.terms ?? [];
-								const paidTerms = terms.filter((term) => term.paidAt).length;
-								return (
-									<tr key={invoice.id} className="border-t border-obc-border transition-colors hover:bg-[#FDFCF7]">
-										<td className="px-5 py-3.5"><p className="font-semibold text-obc-charcoal">{invoice.invoiceNumber}</p><p className="text-[11px] text-obc-muted">Dibuat {formatDate(invoice.createdAt)}</p></td>
-										<td className="px-5 py-3.5"><p className="font-medium">{invoice.clientName}</p><p className="text-[11px] text-obc-muted">{invoice.clientEmail}</p></td>
-										<td className="whitespace-nowrap px-5 py-3.5 font-semibold">{rupiah(invoice.amount)}</td>
-										<td className="px-5 py-3.5 text-obc-muted">{terms.length ? `${paidTerms}/${terms.length} dibayar` : "Tanpa termin"}</td>
-										<td className="whitespace-nowrap px-5 py-3.5 text-obc-muted">{formatDate(invoice.dueDate)}</td>
-										<td className="px-5 py-3.5"><select aria-label={`Status invoice ${invoice.invoiceNumber}`} value={invoice.status} onChange={(event) => changeStatus(invoice, event.target.value as InvoiceStatus)} className={`max-w-40 rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold outline-none ${statusClasses[invoice.status]}`}>{statuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></td>
-								<td className="px-5 py-3.5"><div className="flex justify-end gap-1"><button type="button" onClick={() => setSelectedInvoice(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Lihat detail" aria-label={`Lihat ${invoice.invoiceNumber}`}><Eye size={16} /></button><button type="button" onClick={() => openEditForm(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Edit" aria-label={`Edit ${invoice.invoiceNumber}`}><Pencil size={16} /></button>{invoice.terms.length > 0 && <button type="button" onClick={() => openPayment(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Catat pembayaran" aria-label={`Bayar ${invoice.invoiceNumber}`}><WalletCards size={16} /></button>}<button type="button" onClick={() => deleteInvoice(invoice)} className="grid size-9 place-items-center rounded-lg text-red-600 hover:bg-red-50" title="Hapus" aria-label={`Hapus ${invoice.invoiceNumber}`}><Trash2 size={16} /></button></div></td>
-									</tr>
-								);
-							}) : (
-								<tr><td colSpan={7} className="px-5 py-12 text-center text-obc-muted">Tidak ada invoice yang cocok.</td></tr>
-							)}
-						</tbody>
-					</table>
-				</div>
-
-				<div className="flex flex-col gap-3 border-t border-obc-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-					<p className="text-[12px] text-obc-muted">Menampilkan {rows.length} dari {filtered.length} invoice</p>
-					<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentPage} / {totalPages}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
-				</div>
-			</section>
-			{selectedInvoice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl"><div className="flex items-center justify-between border-b border-obc-border px-5 py-4"><h2 className="font-heading text-lg font-bold">{selectedInvoice.invoiceNumber}</h2><button type="button" onClick={() => setSelectedInvoice(null)} className="size-9 rounded-lg text-obc-muted" aria-label="Tutup">×</button></div><div className="grid gap-4 p-5 sm:grid-cols-2"><div><p className="text-[12px] text-obc-muted">Klien</p><p className="font-medium">{selectedInvoice.clientName}</p><p className="text-[13px] text-obc-muted">{selectedInvoice.clientEmail}</p></div><div><p className="text-[12px] text-obc-muted">Nominal</p><p className="font-semibold">{rupiah(selectedInvoice.amount)}</p></div><div><p className="text-[12px] text-obc-muted">Layanan</p><p>{selectedInvoice.service || "-"}</p></div><div><p className="text-[12px] text-obc-muted">Status</p><p>{statusLabels[selectedInvoice.status]}</p></div><div><p className="text-[12px] text-obc-muted">Tanggal terbit</p><p>{formatDate(selectedInvoice.issueDate)}</p></div><div><p className="text-[12px] text-obc-muted">Jatuh tempo</p><p>{formatDate(selectedInvoice.dueDate)}</p></div></div>{selectedInvoice.description && <p className="border-t border-obc-border px-5 py-4 text-[13px] text-obc-muted">{selectedInvoice.description}</p>}<div className="border-t border-obc-border px-5 py-4"><h3 className="mb-2 font-heading text-[14px] font-semibold">Termin pembayaran</h3>{selectedInvoice.terms.length ? selectedInvoice.terms.map((term) => <div key={term.id} className="flex items-center justify-between border-b border-obc-border py-2 text-[13px] last:border-0"><span>Termin {term.termNumber}</span><span>{rupiah(term.amount)}</span><span className={term.paidAt ? "text-[#1F3320]" : "text-obc-muted"}>{term.paidAt ? `Lunas ${formatDate(term.paidAt)}` : "Belum dibayar"}</span></div>) : <p className="text-[13px] text-obc-muted">Invoice ini belum memiliki termin.</p>}</div></div></div>}
+			<InvoiceTable
+				invoices={invoices}
+				loading={loading}
+				counts={counts}
+				onView={openInvoiceDetails}
+				onEdit={openEditForm}
+				onRecordPayment={openPayment}
+				onDelete={deleteInvoice}
+				onChangeStatus={changeStatus}
+			/>
+			<DeleteModal isOpen={Boolean(deletingInvoice)} title="Hapus invoice?" description="Invoice yang dihapus tidak dapat dikembalikan." itemName={deletingInvoice?.invoiceNumber} isLoading={deleteLoading} onClose={closeDeleteModal} onConfirm={confirmDeleteInvoice} />
+			{detailInvoice && <InvoiceDetailModal invoice={detailInvoice} booking={detailBooking} loadingBooking={loadingDetailBooking} onClose={() => setDetailInvoice(null)} />}
+			{selectedInvoice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl"><div className="flex items-center justify-between border-b border-obc-border px-5 py-4"><h2 className="font-heading text-lg font-bold">{selectedInvoice.invoiceNumber}</h2><button type="button" onClick={() => setSelectedInvoice(null)} className="size-9 rounded-lg text-obc-muted" aria-label="Tutup">×</button></div><div className="grid gap-4 p-5 sm:grid-cols-2"><div><p className="text-[12px] text-obc-muted">Klien</p><p className="font-medium">{selectedInvoice.clientName}</p><p className="text-[13px] text-obc-muted">{selectedInvoice.clientEmail}</p></div><div><p className="text-[12px] text-obc-muted">Nominal</p><p className="font-semibold">{rupiah(selectedInvoice.amount)}</p></div><div><p className="text-[12px] text-obc-muted">Layanan</p><p>{selectedInvoice.service || "-"}</p></div><div><p className="text-[12px] text-obc-muted">Status</p><p>{statusLabels[selectedInvoice.status]}</p></div><div><p className="text-[12px] text-obc-muted">Tanggal terbit</p><p>{formatDate(selectedInvoice.issueDate)}</p></div></div>{selectedInvoice.description && <p className="border-t border-obc-border px-5 py-4 text-[13px] text-obc-muted">{selectedInvoice.description}</p>}<div className="border-t border-obc-border px-5 py-4"><h3 className="mb-2 font-heading text-[14px] font-semibold">Termin pembayaran</h3>{selectedInvoice.terms.length ? selectedInvoice.terms.map((term) => <div key={term.id} className="flex items-center justify-between border-b border-obc-border py-2 text-[13px] last:border-0"><span>Termin {term.termNumber}</span><span>{rupiah(term.amount)}</span><span className={term.paidAt ? "text-[#1F3320]" : "text-obc-muted"}>{term.paidAt ? `Lunas ${formatDate(term.paidAt)}` : "Belum dibayar"}</span></div>) : <p className="text-[13px] text-obc-muted">Invoice ini belum memiliki termin.</p>}</div></div></div>}
 			{payingInvoice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="w-full max-w-md rounded-2xl bg-white shadow-xl"><div className="border-b border-obc-border px-5 py-4"><h2 className="font-heading text-lg font-bold">Catat pembayaran termin</h2><p className="mt-1 text-[12px] text-obc-muted">{payingInvoice.invoiceNumber}</p></div><div className="space-y-4 p-5"><label className="block text-[13px] font-medium">Termin<select value={paymentTerm} onChange={(event) => setPaymentTerm(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]">{payingInvoice.terms.map((term) => <option key={term.id} value={term.termNumber}>Termin {term.termNumber} - {rupiah(term.amount)}{term.paidAt ? " (sudah lunas)" : ""}</option>)}</select></label><label className="block text-[13px] font-medium">Metode pembayaran<input value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)} placeholder="Transfer bank, QRIS, tunai..." className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]" /></label><label className="block text-[13px] font-medium">Tanggal dibayar<input type="date" value={paidAt} onChange={(event) => setPaidAt(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]" /></label><label className="block text-[13px] font-medium">Catatan<textarea rows={3} value={paymentNotes} onChange={(event) => setPaymentNotes(event.target.value)} className="mt-1 w-full rounded-xl border border-obc-border p-3 text-[13px]" /></label><div className="flex justify-end gap-3"><button type="button" onClick={() => setPayingInvoice(null)} className="rounded-xl border border-obc-border px-4 py-2 text-[13px]">Batal</button><button type="button" disabled={paying} onClick={submitPayment} className="rounded-xl bg-obc-green px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50">{paying ? "Menyimpan..." : "Simpan pembayaran"}</button></div></div></div></div>}
 		</DashboardPageLayout>
 	);

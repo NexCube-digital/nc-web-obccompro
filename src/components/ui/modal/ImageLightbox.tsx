@@ -32,7 +32,7 @@ export default function ImageLightbox({ src, alt, caption, onClose }: ImageLight
 
 	return createPortal(
 		<div
-			className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/85 p-3 backdrop-blur-md sm:p-6"
+			className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
 			onClick={onClose}
 		>
 			<div
@@ -42,18 +42,17 @@ export default function ImageLightbox({ src, alt, caption, onClose }: ImageLight
 				className="relative flex max-h-[96svh] max-w-[96vw] flex-col items-center gap-3"
 				onClick={(event) => event.stopPropagation()}
 			>
-				{/* Tombol X diposisikan absolut di pojok kanan atas, sedikit keluar dari gambar */}
 				<button
 					ref={closeButtonRef}
 					type="button"
 					aria-label="Tutup gambar"
 					onClick={onClose}
-					className="absolute -top-2 -right-2 z-10 grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:-top-4 sm:-right-4"
+					className="fixed right-5 top-5 z-10 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
 				>
 					<X size={22} />
 				</button>
 				<img
-					className="max-h-[calc(96svh_-_5rem)] max-w-[96vw] rounded-xl object-contain shadow-2xl sm:max-w-[min(96vw,1400px)]"
+					className="max-h-[calc(90vh_-_3rem)] max-w-[92vw] rounded-xl object-contain shadow-2xl"
 					src={src}
 					alt={alt}
 					decoding="async"

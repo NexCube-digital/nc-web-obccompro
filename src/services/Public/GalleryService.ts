@@ -1,5 +1,5 @@
 import apiClient from '../api'
-import { getMediaUrl } from '../../pages/dashboard/cms/media/mediaService'
+import { getMediaUrl } from '../../pages/dashboard/v2/media/mediaService'
 
 interface PortfolioRecord {
 	id: string

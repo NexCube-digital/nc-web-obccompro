@@ -2,11 +2,11 @@ import apiClient from "../../../../services/api";
 
 export type ReportType = "invoices" | "finance";
 export type FinanceReportPeriod = "day" | "month" | "year";
+export type ReportPeriod = FinanceReportPeriod | "range";
 
-export interface FinanceReportParameters {
-	period: FinanceReportPeriod;
-	value: string;
-}
+export type FinanceReportParameters =
+	| { period: FinanceReportPeriod; value: string }
+	| { period: "range"; startDate: string; endDate: string };
 
 export interface ReportRecord {
 	id: string;

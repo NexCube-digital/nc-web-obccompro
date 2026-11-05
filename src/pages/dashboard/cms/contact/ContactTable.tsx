@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Trash2, Users } from "lucide-react";
+import Pagination from "../../components/common/Pagination";
 import { toast } from "sonner";
 import { contactService, siteContactService, type Contact, type SiteContactContent } from "./ContactService";
 
@@ -128,6 +129,7 @@ export default function ContactTable() {
 						<div className="mt-3 grid gap-3 text-[13px] md:grid-cols-2 xl:grid-cols-3">
 							<label>Email<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" type="email" value={siteContact.email} onChange={(event) => setSiteContact({ ...siteContact, email: event.target.value })} /></label>
 							<label>WhatsApp<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.whatsapp} onChange={(event) => setSiteContact({ ...siteContact, whatsapp: event.target.value })} /></label>
+							<label>WhatsApp PIC<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.whatsappPic ?? ""} onChange={(event) => setSiteContact({ ...siteContact, whatsappPic: event.target.value })} /></label>
 							<label>Instagram<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.instagram} onChange={(event) => setSiteContact({ ...siteContact, instagram: event.target.value })} /></label>
 							<label>TikTok<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.tiktok} onChange={(event) => setSiteContact({ ...siteContact, tiktok: event.target.value })} /></label>
 							<label className="xl:col-span-2">Alamat<input className="mt-1 h-9 w-full rounded-lg border border-obc-border px-3" value={siteContact.address} onChange={(event) => setSiteContact({ ...siteContact, address: event.target.value })} /></label>
@@ -182,10 +184,7 @@ export default function ContactTable() {
 					</table>
 				</div>
 
-				<div className="flex flex-col gap-3 border-t border-obc-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-					<p className="text-[12px] text-obc-muted">Menampilkan {rows.length} dari {filteredContacts.length} kontak</p>
-					<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentPage} / {totalPages}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
-				</div>
+				<Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} totalItems={filteredContacts.length} pageSize={PAGE_SIZE} itemLabel="kontak" className="flex flex-col gap-3 border-t border-obc-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5" />
 			</section>
 		</>
 	);

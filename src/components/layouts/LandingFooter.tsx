@@ -27,7 +27,7 @@ const UNIT_LINKS = [
 ]
 
 type SocialLinks = { whatsapp: string; instagram: string; tiktok: string }
-type ContactDetails = { email: string; address: string; maps: string }
+type ContactDetails = { email: string; address: string; maps: string; whatsapp: string; whatsappPic: string }
 type PublicHomeContent = {
 	page?: { sections?: { sectionKey: string; content?: Partial<SocialLinks & ContactDetails> }[] }
 }
@@ -49,6 +49,14 @@ function TikTokLogo({ className = 'h-[14px] w-[14px]' }: { className?: string })
 			<path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
 		</svg>
 	)
+}
+
+function whatsappHref(value: string): string {
+	const contact = value.trim()
+	if (/^https?:\/\//i.test(contact)) return contact
+	const digits = contact.replace(/\D/g, '')
+	const internationalNumber = digits.startsWith('0') ? `62${digits.slice(1)}` : digits
+	return internationalNumber ? `https://wa.me/${internationalNumber}` : ''
 }
 
 function WhatsAppSocialIcon({ className = 'h-[16px] w-[16px]' }: { className?: string }) {
@@ -97,7 +105,7 @@ const backTopClass =
 function Footer() {
 	const { t } = useTranslation()
 	const [socialLinks, setSocialLinks] = useState<SocialLinks>({ whatsapp: '', instagram: '', tiktok: '' })
-	const [contactDetails, setContactDetails] = useState<ContactDetails>({ email: '', address: '', maps: '' })
+	const [contactDetails, setContactDetails] = useState<ContactDetails>({ email: '', address: '', maps: '', whatsapp: '', whatsappPic: '' })
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	useEffect(() => {
@@ -109,11 +117,15 @@ function Footer() {
 			const sections = response.data.data.page?.sections ?? []
 			const socialContent = sections.find((section) => section.sectionKey === 'site-social')?.content
 			const contactContent = sections.find((section) => section.sectionKey === 'site-contact')?.content
-			if (socialContent) {
+			const preferredLink = (contactLink: unknown, socialLink: unknown) => {
+				if (typeof contactLink === 'string' && contactLink.trim()) return contactLink.trim()
+				return typeof socialLink === 'string' ? socialLink.trim() : ''
+			}
+			if (socialContent || contactContent) {
 				setSocialLinks({
-					whatsapp: typeof socialContent.whatsapp === 'string' ? socialContent.whatsapp.trim() : '',
-					instagram: typeof socialContent.instagram === 'string' ? socialContent.instagram.trim() : '',
-					tiktok: typeof socialContent.tiktok === 'string' ? socialContent.tiktok.trim() : '',
+					whatsapp: preferredLink(contactContent?.whatsapp, socialContent?.whatsapp),
+					instagram: preferredLink(contactContent?.instagram, socialContent?.instagram),
+					tiktok: preferredLink(contactContent?.tiktok, socialContent?.tiktok),
 				})
 			}
 			if (contactContent) {
@@ -121,6 +133,8 @@ function Footer() {
 					email: typeof contactContent.email === 'string' ? contactContent.email.trim() : '',
 					address: typeof contactContent.address === 'string' ? contactContent.address.trim() : '',
 					maps: typeof contactContent.maps === 'string' ? contactContent.maps.trim() : '',
+					whatsapp: typeof contactContent.whatsapp === 'string' ? contactContent.whatsapp.trim() : '',
+					whatsappPic: typeof contactContent.whatsappPic === 'string' ? contactContent.whatsappPic.trim() : '',
 				})
 			}
 		}).catch(() => undefined)
@@ -161,7 +175,7 @@ function Footer() {
 							</TransitionLink>
 							<div className="mt-[clamp(10px,2svh,20px)] flex items-center justify-center gap-3 md:mt-0 md:justify-end md:gap-4 lg:justify-start lg:pt-1 [@media(max-width:1023px)_and_(max-height:640px)]:mt-0 [@media(max-width:1023px)_and_(max-height:640px)]:gap-2">
 								<a
-									href={socialLinks.whatsapp}
+									href={whatsappHref(socialLinks.whatsapp)}
 									target="_blank"
 									rel="noreferrer"
 									aria-label="WhatsApp OBC Group"
@@ -263,6 +277,7 @@ function Footer() {
 										{contactDetails.email}
 									</a>
 								</li>
+								{contactDetails.whatsappPic && <li className="flex items-center gap-3 md:gap-2"><img src={whatsappIcon} alt="" aria-hidden="true" className="h-4 w-4 shrink-0 brightness-0 invert" /><a href={whatsappHref(contactDetails.whatsappPic)} target="_blank" rel="noreferrer" className="transition-colors hover:text-[#CDF178]">WhatsApp PIC</a></li>}
 								<li className="flex items-start gap-3 md:gap-2">
 									<MapPin size={15} className="mt-[3px] shrink-0" />
 									<a
@@ -345,7 +360,7 @@ function Footer() {
 								{t('footer.currentLanguage')}
 							</span>
 							<div className="flex items-center gap-5">
-								<a href={socialLinks.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
+								<a href={whatsappHref(socialLinks.whatsapp)} target="_blank" rel="noreferrer" aria-label="WhatsApp OBC Group" className="text-white transition-colors hover:text-[#CDF178]">
 									<WhatsAppSocialIcon className="h-[16.5px] w-[16.5px]" />
 								</a>
 								<a href={socialLinks.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok OBC Group" className="text-white transition-colors hover:text-[#CDF178]">

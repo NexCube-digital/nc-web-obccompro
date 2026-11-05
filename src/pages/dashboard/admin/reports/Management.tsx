@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { FileDown, FileSpreadsheet, FileText, Receipt, Wallet, X } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
+import Pagination from "../../components/common/Pagination";
 import { getApiErrorMessage } from "../../../../services/api";
 import ReportForm from "./Form";
 import ReportTable from "./Table";
-import { reportService, REPORT_TYPE_LABELS, type ReportRecord, type ReportType } from "./reportService";
+import { reportService, REPORT_TYPE_LABELS, type ReportRecord, type ReportPeriod, type ReportType } from "./reportService";
 import {
 	downloadFinanceReportExcel,
 	downloadFinanceReportPdf,
@@ -27,7 +28,7 @@ const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
 }).format(amount);
 
 const PAGE_SIZE = 10;
-const periodLabels = { day: "Harian", month: "Bulanan", year: "Tahunan" };
+const periodLabels: Record<ReportPeriod, string> = { day: "Harian", month: "Bulanan", year: "Tahunan", range: "Rentang tanggal" };
 
 export default function Management() {
 	const [reports, setReports] = useState<ReportRecord[]>([]);
@@ -62,6 +63,9 @@ export default function Management() {
 	const invoiceTotalPages = Math.max(1, Math.ceil((invoiceSnapshot?.rows.length ?? 0) / PAGE_SIZE));
 	const currentInvoicePage = Math.min(detailPage, invoiceTotalPages);
 	const visibleInvoices = invoiceSnapshot?.rows.slice((currentInvoicePage - 1) * PAGE_SIZE, currentInvoicePage * PAGE_SIZE) ?? [];
+	const financePeriodDescription = financeSnapshot?.period === "range"
+		? `${financeSnapshot.range.from} - ${financeSnapshot.range.to}`
+		: financeSnapshot ? `${periodLabels[financeSnapshot.period]} ${financeSnapshot.periodValue}` : "";
 
 	return (
 		<DashboardPageLayout breadcrumb="Laporan" title="Manajemen laporan" description="Generate dan tinjau laporan invoice serta keuangan.">
@@ -84,7 +88,7 @@ export default function Management() {
 					<div className="min-h-0 flex-1 overflow-auto p-4 sm:p-5">{financeSnapshot ? <div>
 						<div className="mb-4 grid gap-2 sm:grid-cols-2">
 							{[
-								["Periode", `${periodLabels[financeSnapshot.period]} ${financeSnapshot.periodValue}`],
+								["Periode", financePeriodDescription],
 								["Total pemasukan", rupiah(financeSnapshot.summary.totalIncome)],
 							].map(([label, value]) => <div key={label} className="rounded-lg border border-obc-border bg-white p-3"><p className="text-[11px] text-obc-muted">{label}</p><p className="mt-1 truncate text-[13px] font-semibold text-obc-charcoal">{value}</p></div>)}
 						</div>
@@ -95,8 +99,9 @@ export default function Management() {
 							{!financeSnapshot.transactions.length && <tr><td colSpan={5} className="px-3 py-8 text-center text-obc-muted">Tidak ada pemasukan pada periode ini.</td></tr>}</tbody>
 						</table></div>
 					</div> : invoiceSnapshot ? <div>
-						<div className="mb-4 grid gap-2 sm:grid-cols-3">
+						<div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
 							{[
+								["Rentang tanggal", invoiceSnapshot.range ? `${invoiceSnapshot.range.from} - ${invoiceSnapshot.range.to}` : "Semua periode"],
 								["Jumlah invoice", invoiceSnapshot.rows.length.toLocaleString("id-ID")],
 								["Total nominal", rupiah(invoiceSnapshot.rows.reduce((total, item) => total + item.amount, 0))],
 								["Total lunas", rupiah(invoiceSnapshot.rows.filter((item) => item.status.toLowerCase() === "paid").reduce((total, item) => total + item.amount, 0))],
@@ -108,10 +113,7 @@ export default function Management() {
 							<tbody>{visibleInvoices.map((invoice) => <tr key={invoice.invoiceNumber} className="border-t border-obc-border"><td className="whitespace-nowrap px-3 py-2.5 font-medium">{invoice.invoiceNumber}</td><td className="px-3 py-2.5">{invoice.clientName}</td><td className="px-3 py-2.5">{invoice.service}</td><td className="whitespace-nowrap px-3 py-2.5">{invoice.issueDate || "-"}</td><td className="px-3 py-2.5 capitalize">{invoice.status}</td><td className="whitespace-nowrap px-3 py-2.5 text-right font-medium">{rupiah(invoice.amount)}</td></tr>)}
 							{!invoiceSnapshot.rows.length && <tr><td colSpan={6} className="px-3 py-8 text-center text-obc-muted">Tidak ada invoice pada laporan ini.</td></tr>}</tbody>
 						</table></div>
-						{invoiceSnapshot.rows.length > PAGE_SIZE && <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-							<p className="text-[12px] text-obc-muted">Menampilkan {visibleInvoices.length} dari {invoiceSnapshot.rows.length} invoice</p>
-							<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setDetailPage(currentInvoicePage - 1)} disabled={currentInvoicePage === 1} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{currentInvoicePage} / {invoiceTotalPages}</span><button type="button" onClick={() => setDetailPage(currentInvoicePage + 1)} disabled={currentInvoicePage === invoiceTotalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
-						</div>}
+						{invoiceSnapshot.rows.length > PAGE_SIZE && <Pagination page={currentInvoicePage} totalPages={invoiceTotalPages} onPageChange={setDetailPage} totalItems={invoiceSnapshot.rows.length} pageSize={PAGE_SIZE} itemLabel="invoice" className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" />}
 					</div> : <pre className="overflow-x-auto rounded-lg bg-[#F7F7F2] p-4 text-[11px] leading-relaxed text-obc-charcoal">{JSON.stringify(selectedReport.data, null, 2) ?? "Tidak ada data pada laporan ini."}</pre>}</div>
 				</section>
 			</div>}

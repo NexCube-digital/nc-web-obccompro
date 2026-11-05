@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import TransitionLink from '../../../components/common/TransitionLink'
 import { ArrowRight, Building2, Heart } from 'lucide-react'
 import { getPublicBusinessUnits } from '../../../services/businessUnitPublicService'
-import { getMediaUrl } from '../../dashboard/cms/media/mediaService'
+import { getMediaUrl } from '../../dashboard/v2/media/mediaService'
 
 type Unit = {
 	slug: string

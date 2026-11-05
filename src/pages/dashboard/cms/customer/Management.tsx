@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
+import Pagination from "../../components/common/Pagination";
 import { getApiErrorMessage } from "../../../../services/api";
 import CustomerFilters from "./Form";
 import CustomerTable from "./Table";
@@ -43,10 +44,7 @@ export default function Management() {
 			<section className="mb-4 rounded-xl border border-obc-border bg-white p-4"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-[#E7F5D0] text-[#1F3320]"><Users size={18} /></span><div><p className="text-[12px] text-obc-muted">Total hasil</p><p className="font-heading text-[20px] font-bold text-obc-charcoal">{data.pagination.total.toLocaleString("id-ID")}</p></div></div></section>
 			<CustomerFilters search={searchInput} onSearchChange={setSearchInput} onSubmit={applyFilters} />
 			<CustomerTable customers={data.items} loading={loading} />
-			<div className="mt-4 flex flex-col gap-3 border-t border-obc-border px-1 py-3 sm:flex-row sm:items-center sm:justify-between">
-				<p className="text-[12px] text-obc-muted">Menampilkan {data.items.length} dari {data.pagination.total} pelanggan</p>
-				<div className="flex items-center justify-end gap-2"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1 || loading} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Sebelumnya</button><span className="text-[12px] text-obc-muted">{data.pagination.totalPages ? currentPage : 0} / {data.pagination.totalPages}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage >= totalPages || loading || !data.pagination.totalPages} className="rounded-lg border border-obc-border px-3 py-2 text-[12px] disabled:opacity-50">Berikutnya</button></div>
-			</div>
+			<Pagination page={currentPage} totalPages={data.pagination.totalPages} onPageChange={setPage} totalItems={data.pagination.total} pageSize={data.pagination.limit} itemLabel="pelanggan" disabled={loading} className="mt-4 flex flex-col gap-3 border-t border-obc-border px-1 py-3 sm:flex-row sm:items-center sm:justify-between" />
 		</DashboardPageLayout>
 	);
 }

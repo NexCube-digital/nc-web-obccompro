@@ -43,41 +43,27 @@ const LoginPage = lazyPreload(() => import('../pages/dashboard/auth/Login'))
 const StaffAuthBridgePage = lazyPreload(() => import('../pages/dashboard/auth/StaffAuthBridge'))
 const ForgetPasswordPage = lazyPreload(() => import('../pages/dashboard/auth/ForgetPassword'))
 const SettingAccountPage = lazyPreload(() => import('../pages/dashboard/auth/SettingAccount'))
-const FormPage = lazyPreload(() => import('../pages/dashboard/template/Form'))
-const TablePage = lazyPreload(() => import('../pages/dashboard/template/Tabel'))
 const SportBookingPage = lazyPreload(() => import('../pages/dashboard/sport/booking/SportBooking'))
-const SportResourcePage = lazyPreload(() => import('../pages/dashboard/sport/lapang/SportResource'))
 const SportCourtPage = lazyPreload(() => import('../pages/dashboard/sport/court/Management'))
-const SportReviewPage = lazyPreload(() => import('../pages/dashboard/sport/review/Management'))
 const SportHargaPage = lazyPreload(() => import('../pages/dashboard/sport/harga/SportHarga'))
 const SportMembershipPage = lazyPreload(() => import('../pages/dashboard/sport/membership/SportMembership'))
-const KalenderMasterPage = lazyPreload(() => import('../pages/dashboard/master/KalenderMaster'))
-const EventPengajuanPage = lazyPreload(() => import('../pages/dashboard/event/EventPengajuan'))
-const EventInvoicePage = lazyPreload(() => import('../pages/dashboard/event/EventInvoice'))
-const GaleriPage = lazyPreload(() => import('../pages/dashboard/master/Galeri'))
-const TestimoniPage = lazyPreload(() => import('../pages/dashboard/admin/testimonial/Testimoni'))
-const KontakPage = lazyPreload(() => import('../pages/dashboard/master/Kontak'))
+const TestimoniPage = lazyPreload(() => import('../pages/dashboard/cms/testimonial/Testimoni'))
 const KontakLokasiPage = lazyPreload(() => import('../pages/dashboard/cms/contact/SiteContactManagement'))
-const SosialMediaPage = lazyPreload(() => import('../pages/dashboard/cms/sosmed/Management'))
 const PelangganPage = lazyPreload(() => import('../pages/dashboard/cms/customer/Management'))
 const LaporanPage = lazyPreload(() => import('../pages/dashboard/admin/reports/Management'))
 const InvoiceManagementPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/InvoiceManagement'))
+const InvoiceCardPaymentPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/CreditCardPaymentPage'))
+const InvoiceFinalizingPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FinalisasiOrder'))
+const InvoiceSuccessPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/SuccessOrder'))
+const InvoiceFailedPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FailedOrder'))
 const SettingsPage = lazyPreload(() => import('../pages/dashboard/admin/Settings'))
 const StaffPage = lazyPreload(() => import('../pages/dashboard/admin/staff/Management'))
 const ContactsPage = lazyPreload(() => import('../pages/dashboard/cms/contact/Management'))
-const FinancePage = lazyPreload(() => import('../pages/dashboard/admin/finance/Management'))
 const PortfolioPage = lazyPreload(() => import('../pages/dashboard/cms/portfolio/Management'))
-const PackageManagementPage = lazyPreload(() => import('../pages/dashboard/admin/package/Management'))
 const RolePermissionsPage = lazyPreload(() => import('../pages/dashboard/admin/role/Management'))
 const ReportsPage = LaporanPage
 const ActivitiesPage = lazyPreload(() => import('../pages/dashboard/admin/logs/Management'))
-const TeamsManagementPage = lazyPreload(() => import('../pages/dashboard/admin/teams/Management'))
 const CustomersManagementPage = PelangganPage
-const MediaManagementPage = lazyPreload(() => import('../pages/dashboard/cms/media/Management'))
-const CmsPagesManagementPage = lazyPreload(() => import('../pages/dashboard/cms/pages/Management'))
-const CmsSectionsManagementPage = lazyPreload(() => import('../pages/dashboard/cms/sections/Management'))
-const CmsSliderManagementPage = lazyPreload(() => import('../pages/dashboard/cms/slider/Management'))
-const CmsSportCenterManagementPage = lazyPreload(() => import('../pages/dashboard/cms/sport-center/Management'))
 const CmsBusinessUnitsPage = lazyPreload(() => import('../pages/dashboard/cms/unit-bisnis/Management'))
 
 const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
@@ -95,40 +81,26 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/login': LoginPage,
 	'/lupa-password': ForgetPasswordPage,
 	'/settingaccount': SettingAccountPage,
-	'/template/form': FormPage,
-	'/template/tabel': TablePage,
 	'/sport/booking': SportBookingPage,
-	'/sport/resource': SportResourcePage,
 	'/sport/court': SportCourtPage,
-	'/sport/review': SportReviewPage,
 	'/sport/harga': SportHargaPage,
 	'/sport/membership': SportMembershipPage,
-	'/kalender': KalenderMasterPage,
-	'/event/pengajuan': EventPengajuanPage,
-	'/event/invoice': EventInvoicePage,
-	'/dashboard/galeri': GaleriPage,
+	'/invoice-payment/card': InvoiceCardPaymentPage,
+	'/invoice-payment/finalizing': InvoiceFinalizingPage,
+	'/invoice-payment/success': InvoiceSuccessPage,
+	'/invoice-payment/failed': InvoiceFailedPage,
 	'/testimoni': TestimoniPage,
-	'/kontak': KontakPage,
 	'/kontak-lokasi': KontakLokasiPage,
-	'/sosial-media': SosialMediaPage,
 	'/pelanggan': PelangganPage,
 	'/admin/customers': CustomersManagementPage,
-	'/admin/media': MediaManagementPage,
-	'/admin/cms/pages': CmsPagesManagementPage,
-	'/admin/cms/sections': CmsSectionsManagementPage,
-	'/admin/cms/slider': CmsSliderManagementPage,
-	'/admin/cms/sport-center': CmsSportCenterManagementPage,
 	'/admin/cms/unit-bisnis': CmsBusinessUnitsPage,
 	'/laporan': LaporanPage,
 	'/admin/reports': ReportsPage,
 	'/admin/activities': ActivitiesPage,
-	'/admin/teams': TeamsManagementPage,
 	'/pengaturan': SettingsPage,
 	'/staff': StaffPage,
 	'/admin/contacts': ContactsPage,
-	'/admin/finance': FinancePage,
 	'/admin/portfolio': PortfolioPage,
-	'/admin/packages': PackageManagementPage,
 	'/admin/role-permissions': RolePermissionsPage,
 }
 
@@ -154,6 +126,10 @@ const AppRoutes = (
 		<Route path="/unit-bisnis/food-court" element={<ObcFoodcourt />} />
 		<Route path="/unit-bisnis/coffee" element={<ObcCoffee />} />
 		<Route path="/unit-bisnis/agribisnis" element={<ObcAgribisnis />} />
+		<Route path="/invoice-payment/card" element={<InvoiceCardPaymentPage />} />
+		<Route path="/invoice-payment/finalizing" element={<InvoiceFinalizingPage />} />
+		<Route path="/invoice-payment/success" element={<InvoiceSuccessPage />} />
+		<Route path="/invoice-payment/failed" element={<InvoiceFailedPage />} />
 
 		{/* dashboard */}
 		<Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
@@ -161,47 +137,26 @@ const AppRoutes = (
 		<Route path="/login" element={<LoginPage />} />
 		<Route path="/lupa-password" element={<ForgetPasswordPage />} />
 		<Route path="/settingaccount" element={<RequireAuth><SettingAccountPage /></RequireAuth>} />
-		<Route path="/template/form" element={<RequireAuth><FormPage /></RequireAuth>} />
-		<Route path="/template/tabel" element={<RequireAuth><TablePage /></RequireAuth>} />	
-		
 		{/* sport */}
 		<Route path="/sport/booking" element={<RequireAuth><SportBookingPage /></RequireAuth>} />
-		<Route path="/sport/resource" element={<RequireAuth><SportResourcePage /></RequireAuth>} />
 		<Route path="/sport/court" element={<RequireAuth><SportCourtPage /></RequireAuth>} />
-		<Route path="/sport/review" element={<RequireAuth><SportReviewPage /></RequireAuth>} />
 		<Route path="/sport/harga" element={<RequireAuth><SportHargaPage /></RequireAuth>} />
 		<Route path="/sport/membership" element={<RequireAuth><SportMembershipPage /></RequireAuth>} />
 		
 		{/* master */}
-		<Route path="/kalender" element={<RequireAuth><KalenderMasterPage /></RequireAuth>} />
-		<Route path="/galeri" element={<RequireAuth><GaleriPage /></RequireAuth>} />
 		<Route path="/testimoni" element={<RequireAuth><TestimoniPage /></RequireAuth>} />
-		<Route path="/kontak" element={<RequireAuth><KontakPage /></RequireAuth>} />
 		<Route path="/kontak-lokasi" element={<RequireAuth><KontakLokasiPage /></RequireAuth>} />
-		<Route path="/sosial-media" element={<RequireAuth><SosialMediaPage /></RequireAuth>} />
 		<Route path="/pelanggan" element={<RequireAuth><PelangganPage /></RequireAuth>} />
 		<Route path="/admin/customers" element={<RequireAuth><CustomersManagementPage /></RequireAuth>} />
-		<Route path="/admin/media" element={<RequireAuth><MediaManagementPage /></RequireAuth>} />
-		<Route path="/admin/cms/pages" element={<RequireAuth><CmsPagesManagementPage /></RequireAuth>} />
-		<Route path="/admin/cms/sections" element={<RequireAuth><CmsSectionsManagementPage /></RequireAuth>} />
-		<Route path="/admin/cms/slider" element={<RequireAuth><CmsSliderManagementPage /></RequireAuth>} />
-		<Route path="/admin/cms/sport-center" element={<RequireAuth><CmsSportCenterManagementPage /></RequireAuth>} />
 		<Route path="/admin/cms/unit-bisnis" element={<RequireAuth><CmsBusinessUnitsPage /></RequireAuth>} />
 		<Route path="/laporan" element={<RequireAuth><LaporanPage /></RequireAuth>} />
 		<Route path="/admin/reports" element={<RequireAuth><ReportsPage /></RequireAuth>} />
 		<Route path="/admin/activities" element={<RequireAuth><ActivitiesPage /></RequireAuth>} />
-		<Route path="/admin/teams" element={<RequireAuth><TeamsManagementPage /></RequireAuth>} />
-		
-		{/* event */}
-		<Route path="/event/pengajuan" element={<RequireAuth><EventPengajuanPage /></RequireAuth>} />
-		<Route path="/event/invoice" element={<RequireAuth><EventInvoicePage /></RequireAuth>} />
 		
 		{/* admin */}
 		<Route path="/admin/invoices" element={<RequireAuth><InvoiceManagementPage /></RequireAuth>} />
 		<Route path="/admin/contacts" element={<RequireAuth><ContactsPage /></RequireAuth>} />
-		<Route path="/admin/finance" element={<RequireAuth><FinancePage /></RequireAuth>} />
 		<Route path="/admin/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
-		<Route path="/admin/packages" element={<RequireAuth><PackageManagementPage /></RequireAuth>} />
 		<Route path="/admin/role-permissions" element={<RequireAuth><RolePermissionsPage /></RequireAuth>} />
 		<Route path="/pengaturan" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 		<Route path="/staff" element={<RequireAuth><StaffPage /></RequireAuth>} />	</>

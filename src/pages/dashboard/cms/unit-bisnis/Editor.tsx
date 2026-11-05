@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
-import { ImagePlus, X } from "lucide-react";
-import { mediaService, getMediaUrl } from "../media/mediaService";
+import { Building2, ImagePlus, LoaderCircle, Save, X } from "lucide-react";
+import ThemedSelect from "../../components/common/ThemedSelect";
+import { mediaService, getMediaUrl } from "../../v2/media/mediaService";
 import { unitbisnisService, type BusinessUnit, type BusinessUnitInput } from "./unitbisnisService";
 
 type Props = {
@@ -89,72 +90,67 @@ export default function BusinessUnitEditor({ unit, onClose, onSubmit }: Props) {
 	};
 
 	return (
-		<div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-			<form onSubmit={submit} className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
-				<div className="mb-5 flex items-center justify-between gap-3">
-					<h2 className="font-heading text-xl font-semibold text-obc-charcoal">{unit ? "Edit unit bisnis" : "Tambah unit bisnis"}</h2>
-					<button type="button" aria-label="Tutup" onClick={onClose} className="grid size-9 place-items-center rounded-lg border border-obc-border"><X size={17} /></button>
-				</div>
-				<div className="grid gap-4 sm:grid-cols-2">
-					<label className="text-[13px] font-medium">Nama
-						<input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium">Slug
-						<input required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value.toLowerCase() })} className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Deskripsi
-						<textarea rows={3} value={form.description ?? ""} onChange={(event) => setForm({ ...form, description: event.target.value || null })} className="mt-1 w-full rounded-lg border border-obc-border p-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Judul kartu
-						<input required value={title} onChange={(event) => setTitle(event.target.value)} placeholder="OBC Villa" className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Kategori kartu
-						<input value={category} onChange={(event) => setCategory(event.target.value)} placeholder="Hospitality & Accommodation" className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<div className="sm:col-span-2">
-						<span className="text-[13px] font-medium">Gambar kartu</span>
-						<div className="mt-1 flex items-center gap-3 rounded-lg border border-obc-border p-3">
-							{imagePreview && <img src={imagePreview} alt="Pratinjau gambar kartu" className="size-16 rounded-lg object-cover" />}
-							<button type="button" onClick={() => imageInputRef.current?.click()} className="inline-flex h-10 items-center gap-2 rounded-lg border border-obc-border px-3 text-[13px] font-medium"><ImagePlus size={16} />{imageFile || imagePreview ? "Ganti gambar" : "Pilih gambar"}</button>
-							{(imageFile || imagePreview) && <button type="button" onClick={() => { setImageFile(null); setImagePreview(""); setImageUrl(""); if (imageInputRef.current) imageInputRef.current.value = ""; }} className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-[13px] font-medium text-red-600"><X size={16} />Hapus</button>}
-							<input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="sr-only" onChange={(event) => { const file = event.target.files?.[0] ?? null; setImageFile(file); setImagePreview(file ? URL.createObjectURL(file) : imageUrl ? getMediaUrl(imageUrl) : ""); }} />
-						</div>
+		<div className="fixed inset-0 z-[70] grid place-items-center bg-[#172119]/65 p-3 backdrop-blur-sm sm:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !saving) onClose(); }}>
+			<form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="business-unit-editor-title" aria-busy={saving} className="flex max-h-[92svh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-white/70 bg-white shadow-[0_28px_90px_rgba(24,28,24,0.3)]">
+				<header className="flex shrink-0 items-center justify-between gap-4 border-b border-obc-border bg-[#F8FAF4] px-5 py-4 sm:px-7">
+					<div className="flex min-w-0 items-center gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-lg bg-obc-green text-white"><Building2 size={18} /></span><div className="min-w-0"><p className="text-[10px] font-semibold uppercase tracking-widest text-obc-olive">CMS / Unit bisnis</p><h2 id="business-unit-editor-title" className="mt-0.5 truncate font-heading text-lg font-bold text-obc-charcoal">{unit ? "Edit unit bisnis" : "Tambah unit bisnis"}</h2><p className="mt-0.5 text-[11px] text-obc-muted">Informasi publik, gambar, lokasi, dan status penayangan.</p></div></div>
+					<button type="button" aria-label="Tutup editor unit bisnis" disabled={saving} onClick={onClose} className="grid size-9 shrink-0 place-items-center rounded-lg border border-obc-border bg-white text-obc-muted transition-colors hover:bg-obc-ivory hover:text-obc-charcoal disabled:opacity-50"><X size={17} /></button>
+				</header>
+
+				<div className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_300px]">
+					<div className="space-y-5 p-5 sm:p-7">
+						<section>
+							<div className="mb-4"><p className="text-[10px] font-bold uppercase tracking-widest text-obc-muted">Informasi utama</p><h3 className="mt-0.5 font-heading text-[14px] font-semibold text-obc-charcoal">Identitas unit bisnis</h3></div>
+							<div className="grid gap-4 sm:grid-cols-2">
+								<label className="block text-[12px] font-semibold text-obc-charcoal">Nama unit<input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal">Slug<input required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value.toLowerCase() })} className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 font-mono text-[12px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal sm:col-span-2">Deskripsi<textarea rows={3} value={form.description ?? ""} onChange={(event) => setForm({ ...form, description: event.target.value || null })} className="mt-1.5 w-full rounded-lg border border-obc-border bg-white p-3 text-[13px] font-normal leading-5 outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal">Judul kartu<input required value={title} onChange={(event) => setTitle(event.target.value)} placeholder="OBC Villa" className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal">Kategori kartu<input value={category} onChange={(event) => setCategory(event.target.value)} placeholder="Hospitality & Accommodation" className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+							</div>
+						</section>
+
+						<section className="border-t border-obc-border pt-5">
+							<div className="mb-3"><p className="text-[10px] font-bold uppercase tracking-widest text-obc-muted">Informasi publik</p><h3 className="mt-0.5 font-heading text-[14px] font-semibold text-obc-charcoal">Lokasi dan konten</h3></div>
+							<div className="grid gap-4 sm:grid-cols-2">
+								<label className="block text-[12px] font-semibold text-obc-charcoal sm:col-span-2">Tag <span className="font-normal text-obc-muted">(satu per baris)</span><textarea rows={3} value={tags} onChange={(event) => setTags(event.target.value)} placeholder="Accommodation\nCiumbuleuit\nCheck-in 14.00 WIB" className="mt-1.5 w-full rounded-lg border border-obc-border bg-white p-3 text-[12px] font-normal leading-5 outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal sm:col-span-2">Alamat lokasi<input value={locationAddress} onChange={(event) => setLocationAddress(event.target.value)} placeholder="Jl. Rancabentang No. 10, Bandung" className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal sm:col-span-2">Link Google Maps<input type="url" value={locationMapUrl} onChange={(event) => setLocationMapUrl(event.target.value)} placeholder="https://maps.google.com/..." className="mt-1.5 h-10 w-full rounded-lg border border-obc-border bg-white px-3 text-[13px] font-normal outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+								<label className="block text-[12px] font-semibold text-obc-charcoal sm:col-span-2">Informasi lokasi <span className="font-normal text-obc-muted">(satu per baris)</span><textarea rows={3} value={locationInfo} onChange={(event) => setLocationInfo(event.target.value)} placeholder="Check-in 14.00 WIB\nCheck-out 12.00 WIB" className="mt-1.5 w-full rounded-lg border border-obc-border bg-white p-3 text-[12px] font-normal leading-5 outline-none transition focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]/60" /></label>
+							</div>
+						</section>
 					</div>
-					<label className="text-[13px] font-medium sm:col-span-2">Tag (satu per baris)
-						<textarea rows={4} value={tags} onChange={(event) => setTags(event.target.value)} placeholder="Accommodation\nCiumbuleuit\nCheck-in 14.00 WIB" className="mt-1 w-full rounded-lg border border-obc-border p-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Alamat lokasi
-						<input value={locationAddress} onChange={(event) => setLocationAddress(event.target.value)} placeholder="Jl. Rancabentang No. 10, Bandung" className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Link Google Maps
-						<input type="url" value={locationMapUrl} onChange={(event) => setLocationMapUrl(event.target.value)} placeholder="https://maps.google.com/..." className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal" />
-					</label>
-					<label className="text-[13px] font-medium sm:col-span-2">Informasi lokasi (satu per baris)
-						<textarea rows={3} value={locationInfo} onChange={(event) => setLocationInfo(event.target.value)} placeholder="Check-in 14.00 WIB\nCheck-out 12.00 WIB" className="mt-1 w-full rounded-lg border border-obc-border p-3 font-normal" />
-					</label>
-					<fieldset className="sm:col-span-2">
-						<legend className="text-[13px] font-medium">Tampilkan unit di</legend>
-						<div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-							<label className="inline-flex items-center gap-2 text-[13px]">
-								<input type="checkbox" checked={showOnSport} onChange={(event) => setShowOnSport(event.target.checked)} className="size-4 accent-[#1F3320]" />
-								Sport OBC
+
+					<aside className="space-y-5 border-t border-obc-border bg-[#F7F8F3] p-5 sm:p-7 lg:border-l lg:border-t-0">
+						<section>
+							<div className="flex items-end justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-widest text-obc-muted">Media utama</p><h3 className="mt-0.5 font-heading text-[14px] font-semibold text-obc-charcoal">Gambar kartu</h3></div>{(imageFile || imagePreview) && <button type="button" onClick={() => { setImageFile(null); setImagePreview(""); setImageUrl(""); if (imageInputRef.current) imageInputRef.current.value = ""; }} className="text-[10px] font-semibold text-obc-red hover:underline">Hapus</button>}</div>
+							<div className="relative mt-3 aspect-[4/3] overflow-hidden rounded-lg border border-obc-border bg-[#E8ECE3]">
+								{imagePreview ? <img src={imagePreview} alt="Pratinjau gambar kartu" className="absolute inset-0 h-full w-full object-cover" /> : <div className="absolute inset-0 flex flex-col items-center justify-center text-[#737D67]"><span className="grid size-11 place-items-center rounded-lg bg-white/80 text-obc-olive shadow-sm"><ImagePlus size={20} /></span><p className="mt-2 text-[10px] font-semibold uppercase tracking-wide">Belum ada gambar</p></div>}
+								<label className="absolute inset-x-2.5 bottom-2.5 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/70 bg-white/95 px-3 text-[11px] font-semibold text-obc-charcoal shadow-sm transition hover:bg-white"><ImagePlus size={14} />{imageFile || imagePreview ? "Ganti gambar" : "Pilih gambar"}<input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="sr-only" onChange={(event) => { const file = event.target.files?.[0] ?? null; setImageFile(file); setImagePreview(file ? URL.createObjectURL(file) : imageUrl ? getMediaUrl(imageUrl) : ""); }} /></label>
+							</div>
+							<p className="mt-2 text-[10px] leading-4 text-obc-muted">JPG, PNG, WebP, atau SVG. Gunakan gambar lanskap untuk hasil terbaik.</p>
+						</section>
+
+						<section className="border-t border-obc-border pt-5">
+							<p className="text-[10px] font-bold uppercase tracking-widest text-obc-muted">Penayangan</p>
+							<label className="mt-3 block text-[11px] font-semibold text-obc-charcoal">Status
+								<ThemedSelect label="Status unit bisnis" value={form.status} options={[{ value: "active", label: "Aktif" }, { value: "inactive", label: "Nonaktif" }]} onValueChange={(status) => setForm({ ...form, status: status as BusinessUnitInput["status"] })} className="mt-1.5 h-10 w-full text-[12px]" />
 							</label>
-							<label className="inline-flex items-center gap-2 text-[13px]">
-								<input type="checkbox" checked={showOnCompro} onChange={(event) => setShowOnCompro(event.target.checked)} className="size-4 accent-[#1F3320]" />
-								Compro OBC
-							</label>
-						</div>
-					</fieldset>
-					<label className="text-[13px] font-medium">Status
-						<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as BusinessUnitInput["status"] })} className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 font-normal">
-							<option value="active">Aktif</option><option value="inactive">Nonaktif</option>
-					</select>
-					</label>
+							<fieldset className="mt-4">
+								<legend className="text-[11px] font-semibold text-obc-charcoal">Tampilkan unit di</legend>
+								<div className="mt-2 grid gap-2">
+									<label className={`flex min-h-10 cursor-pointer items-center gap-2.5 rounded-lg border px-3 text-[11px] font-medium transition-colors ${showOnSport ? "border-obc-green bg-[#F3F8E8] text-obc-green" : "border-obc-border bg-white text-obc-muted"}`}><input type="checkbox" checked={showOnSport} onChange={(event) => setShowOnSport(event.target.checked)} className="size-3.5 accent-obc-green" />Sport OBC</label>
+									<label className={`flex min-h-10 cursor-pointer items-center gap-2.5 rounded-lg border px-3 text-[11px] font-medium transition-colors ${showOnCompro ? "border-obc-green bg-[#F3F8E8] text-obc-green" : "border-obc-border bg-white text-obc-muted"}`}><input type="checkbox" checked={showOnCompro} onChange={(event) => setShowOnCompro(event.target.checked)} className="size-3.5 accent-obc-green" />Compro OBC</label>
+								</div>
+							</fieldset>
+						</section>
+					</aside>
 				</div>
-				<div className="mt-5 flex justify-end gap-2">
-					<button type="button" onClick={onClose} className="h-10 rounded-lg border border-obc-border px-4 text-[13px] font-medium">Batal</button>
-					<button type="submit" disabled={saving} className="h-10 rounded-lg bg-[#1F3320] px-4 text-[13px] font-medium text-white disabled:opacity-60">{saving ? "Menyimpan..." : "Simpan"}</button>
-				</div>
+
+				<footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-obc-border bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
+					<button type="button" onClick={onClose} disabled={saving} className="h-10 rounded-lg border border-obc-border px-5 text-[12px] font-semibold text-obc-charcoal transition hover:bg-obc-ivory disabled:opacity-50">Batal</button>
+					<button type="submit" disabled={saving} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-5 text-[12px] font-semibold text-white shadow-sm transition hover:bg-obc-green-hover disabled:cursor-wait disabled:opacity-60">{saving ? <><LoaderCircle size={15} className="animate-spin" />Menyimpan...</> : <><Save size={15} />Simpan unit</>}</button>
+				</footer>
 			</form>
 		</div>
 	);

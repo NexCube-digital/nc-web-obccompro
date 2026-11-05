@@ -1,5 +1,5 @@
-import { MapPin, LayoutGrid, ExternalLink, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { MapPin, LayoutGrid, ExternalLink } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -7,6 +7,7 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
+import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
 import heroImage from '../../../assets/images/unit-bisnis/agribisnis.webp'
 import agricultureIcon from '../../../assets/icon/iconstack.io - (Agriculture Analytics).svg'
 import galleryImage1 from '../../../assets/images/unit-bisnis/agribisnis/fas1.webp'
@@ -21,7 +22,6 @@ interface Area {
 	size: number
 }
 
-const WHATSAPP_LINK = 'https://wa.me/6280000000000'
 const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Tugulaksana,+Lembang,+Kabupaten+Bandung+Barat'
 
 // Tiga area/plot lahan OBC Agribisnis — alamat & luas mengikuti desain
@@ -44,17 +44,6 @@ function AgribisnisPage() {
 	const waTitle = t('units.agribisnis.whatsappCardTitle')
 	const waDescription = t('units.agribisnis.whatsappCardDesc')
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
-
-	useEffect(() => {
-		if (!selectedGalleryImage) return
-
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setSelectedGalleryImage(null)
-		}
-
-		document.addEventListener('keydown', handleEscape)
-		return () => document.removeEventListener('keydown', handleEscape)
-	}, [selectedGalleryImage])
 
 	return (
 		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
@@ -193,7 +182,7 @@ function AgribisnisPage() {
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24 mb-12">
 						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
-						<WhatsAppCard className="md:!w-full" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
+						<WhatsAppCard className="md:!w-full" title={waTitle} description={waDescription} />
 					</div>
 				</aside>
 			</div>
@@ -249,25 +238,11 @@ function AgribisnisPage() {
 			</LazySection>
 
 			{selectedGalleryImage && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
-					role="dialog"
-					aria-modal="true"
-					aria-label="Pratinjau gambar galeri Agribisnis"
-					onClick={() => setSelectedGalleryImage(null)}
-				>
-					<button
-						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
-						type="button"
-										aria-label={t('common.close')}
-						onClick={() => setSelectedGalleryImage(null)}
-					>
-						<X size={22} />
-					</button>
-					<div className="relative max-h-[90vh] max-w-[92vw]" onClick={(event) => event.stopPropagation()}>
-						<img className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl" src={selectedGalleryImage} alt="Pratinjau galeri OBC Agribisnis" />
-					</div>
-				</div>
+				<ImageLightbox
+					src={selectedGalleryImage}
+					alt="Pratinjau galeri OBC Agribisnis"
+					onClose={() => setSelectedGalleryImage(null)}
+				/>
 			)}
 
 			{/* Lokasi */}
@@ -318,7 +293,7 @@ function AgribisnisPage() {
 			{/* Card WhatsApp fixed di bawah layar pada mobile dan tablet; desktop memakai sidebar sticky */}
 			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
 				<div className="mx-auto w-full max-w-[720px]">
-					<WhatsAppCard variant="bar" title={waTitle} description={waDescription} link={WHATSAPP_LINK} />
+					<WhatsAppCard variant="bar" title={waTitle} description={waDescription} />
 				</div>
 			</div>
 		</div>

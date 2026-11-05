@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import StaffForm from "./StaffForm";
 import StaffTable from "./StaffTable";
@@ -15,10 +16,11 @@ export default function Management() {
 			<div className="mb-5 flex justify-end">
 				{!showForm && (
 					<button
+						type="button"
 						onClick={() => setShowForm(true)}
-						className="rounded-lg bg-gradient-to-r from-[#404F14] to-[#9AAD3E] px-5 py-2 text-[13px] font-semibold text-white hover:shadow-md"
+						className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-obc-green-hover"
 					>
-						+ Tambah staff
+						<Plus size={15} />Tambah staff
 					</button>
 				)}
 			</div>

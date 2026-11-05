@@ -1,9 +1,10 @@
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
+import usePublicSiteContact from '../../hooks/usePublicSiteContact'
+import { getWhatsAppHref } from '../../services/publicSiteContactService'
 
 interface WhatsAppCardProps {
 	title: string
 	description: string
-	link?: string
 	className?: string
 	/** 'card' = kartu penuh (sidebar/section). 'bar' = ringkas untuk bar fixed di bawah layar. */
 	variant?: 'card' | 'bar'
@@ -12,10 +13,12 @@ interface WhatsAppCardProps {
 export function WhatsAppCard({
 	title,
 	description,
-	link = 'https://wa.me/6280000000000',
 	className = '',
 	variant = 'card',
 }: WhatsAppCardProps) {
+	const contact = usePublicSiteContact()
+	const link = getWhatsAppHref(contact.whatsapp)
+
 	if (variant === 'bar') {
 		return (
 			<div className={`w-full ${className}`.trim()}>
@@ -29,7 +32,7 @@ export function WhatsAppCard({
 							{description}
 						</p>
 					</div>
-					<a
+					{link && <a
 						href={link}
 						target="_blank"
 						rel="noreferrer"
@@ -40,7 +43,7 @@ export function WhatsAppCard({
 							<img src={whatsappIcon} alt="" aria-hidden="true" className="h-[14px] w-[14px] shrink-0 brightness-0 invert" />
 						</span>
 						<span className="font-['Montserrat'] text-[15px] font-medium leading-[20px] text-white">Pesan</span>
-					</a>
+					</a>}
 				</div>
 			</div>
 		)
@@ -56,7 +59,7 @@ export function WhatsAppCard({
 				<p className="w-full font-['Montserrat'] text-[14px] font-normal leading-[22px] tracking-[0%] text-black md:text-[13px] md:leading-[20px]">
 					{description}
 				</p>
-				<a
+				{link && <a
 					href={link}
 					target="_blank"
 					rel="noreferrer"
@@ -69,7 +72,7 @@ export function WhatsAppCard({
 					<span className="font-['Montserrat'] text-[16px] font-medium leading-[20px] tracking-[0px] text-white">
 						Pesan
 					</span>
-				</a>
+				</a>}
 			</div>
 		</div>
 	)

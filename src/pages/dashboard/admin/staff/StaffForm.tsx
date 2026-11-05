@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
+import ThemedSelect from "../../components/common/ThemedSelect";
 import { accountService, type StaffRole } from "./AccountService";
 
 type StaffFormValues = {
@@ -94,12 +95,13 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
 				</label>
 				<label className="grid gap-1.5">
 					<span className="text-[13px] font-semibold">Role *</span>
-					<select required value={values.role} onChange={(event) => update("role", event.target.value)} className={inputClass}>
-						<option value="">Pilih role</option>
-						<option value="admin">Admin</option>
-						<option value="marketing">Marketing</option>
-						<option value="sport">Sport</option>
-					</select>
+					<ThemedSelect
+						label="Role staff"
+						value={values.role || "unselected"}
+						options={[{ value: "unselected", label: "Pilih role" }, { value: "admin", label: "Admin" }, { value: "marketing", label: "Marketing" }, { value: "sport", label: "Sport" }]}
+						onValueChange={(value) => update("role", value === "unselected" ? "" : value)}
+						className="h-11 w-full rounded-xl text-[13px]"
+					/>
 				</label>
 				<label className="grid gap-1.5">
 					<span className="text-[13px] font-semibold">Posisi tim</span>

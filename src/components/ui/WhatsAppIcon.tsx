@@ -1,5 +1,7 @@
 import whatsappIcon from '../../assets/icon/whatsapp.svg'
 import { useLocation } from 'react-router-dom'
+import usePublicSiteContact from '../../hooks/usePublicSiteContact'
+import { getWhatsAppHref } from '../../services/publicSiteContactService'
 
 export function WhatsAppLogo({ className = 'h-8 w-8' }: { className?: string }) {
 	return <img src={whatsappIcon} alt="" aria-hidden="true" className={className} />
@@ -13,13 +15,15 @@ function WhatsAppIcon() {
 		|| normalizedPath === '/galeri'
 		|| normalizedPath === '/unit-bisnis'
 		|| normalizedPath.startsWith('/unit-bisnis/')
+	const contact = usePublicSiteContact(isPublicRoute)
 	const isBusinessDetailPage = normalizedPath.startsWith('/unit-bisnis/')
 
-	if (!isPublicRoute) return null
+	const whatsappHref = getWhatsAppHref(contact.whatsapp)
+	if (!isPublicRoute || !whatsappHref) return null
 
 	return (
 		<a
-			href="https://wa.me/6281234567890"
+			href={whatsappHref}
 			target="_blank"
 			rel="noopener noreferrer"
 			aria-label="Hubungi kami via WhatsApp"

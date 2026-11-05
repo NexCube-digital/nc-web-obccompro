@@ -1,10 +1,9 @@
 import {
-	X,
 	LogIn,
 	LogOut,
 	ExternalLink,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -12,6 +11,7 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
+import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
 import heroImage from '../../../assets/images/unit-bisnis/guesthouse.webp'
 import roomIcon from '../../../assets/icon/kamar.svg'
 import parkingIcon from '../../../assets/icon/parkir.svg'
@@ -40,7 +40,6 @@ interface Facility {
 	label: string
 }
 
-const WHATSAPP_LINK = 'https://wa.me/6280000000000'
 const GOOGLE_MAPS_LINK = 'https://maps.google.com/?q=Jl.+Rancabentang+1+No.10,+Ciumbuleuit,+Bandung'
 
 // Data kamar — sesuaikan dengan data unit kamar aktual dari admin/CMS
@@ -91,17 +90,6 @@ const GALLERY_IMAGES = [
 function GuestHousePage() {
 	const { t } = useTranslation()
 	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
-
-	useEffect(() => {
-		if (!selectedGalleryImage) return
-
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setSelectedGalleryImage(null)
-		}
-
-		document.addEventListener('keydown', handleEscape)
-		return () => document.removeEventListener('keydown', handleEscape)
-	}, [selectedGalleryImage])
 
 	return (
 		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
@@ -278,7 +266,6 @@ function GuestHousePage() {
 							className="lg:!w-full"
 							title={t('units.guestHouse.whatsappCardTitle')}
 							description={t('units.guestHouse.whatsappCardDesc')}
-							link={WHATSAPP_LINK}
 						/>
 					</div>
 				</aside>
@@ -335,29 +322,11 @@ function GuestHousePage() {
 			</LazySection>
 
 			{selectedGalleryImage && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
-					role="dialog"
-					aria-modal="true"
-					aria-label="Pratinjau gambar galeri Guest House"
-					onClick={() => setSelectedGalleryImage(null)}
-				>
-					<button
-						className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white text-obc-green shadow-lg transition-transform hover:scale-105"
-						type="button"
-										aria-label={t('common.close')}
-						onClick={() => setSelectedGalleryImage(null)}
-					>
-						<X size={22} />
-					</button>
-					<div className="relative max-h-[90vh] max-w-[92vw]" onClick={(event) => event.stopPropagation()}>
-						<img
-							className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
-							src={selectedGalleryImage}
-							alt="Pratinjau galeri OBC Guest House"
-						/>
-					</div>
-				</div>
+				<ImageLightbox
+					src={selectedGalleryImage}
+					alt="Pratinjau galeri OBC Guest House"
+					onClose={() => setSelectedGalleryImage(null)}
+				/>
 			)}
 
 			{/* Lokasi */}
@@ -413,7 +382,6 @@ function GuestHousePage() {
 						variant="bar"
 						title={t('units.guestHouse.whatsappCardTitle')}
 						description={t('units.guestHouse.whatsappCardDesc')}
-						link={WHATSAPP_LINK}
 					/>
 				</div>
 			</div>
