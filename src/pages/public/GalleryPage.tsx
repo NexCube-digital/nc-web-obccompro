@@ -6,6 +6,7 @@ import LazySection from '../../components/common/LazySectionHome'
 import ScrollReveal from '../../components/animation/ScrollReveal'
 import ImageLightbox from '../../components/ui/modal/ImageLightbox'
 import sliderGalleryImage from '../../assets/images/slider-gallery.webp'
+import fallbackImage from '../../assets/no-image.webp'
 import { getPublicGalleryPhotos, type GalleryPhoto } from '../../services/Public/GalleryService'
 
 const CATEGORIES = ['all', 'sports', 'hospitality', 'laundry', 'foodCourt', 'coffee', 'agribusiness'] as const
@@ -208,6 +209,7 @@ function GalleryPage() {
 									<img
 										src={photo.src}
 										alt={photo.alt}
+										onError={(event) => { event.currentTarget.src = fallbackImage }}
 										loading="lazy"
 										decoding="async"
 										className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

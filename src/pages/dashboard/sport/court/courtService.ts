@@ -1,4 +1,5 @@
 import apiClient from "../../../../services/api";
+import fallbackImage from "../../../../assets/no-image.webp";
 
 interface ApiSuccess<T> {
   data: T;
@@ -50,6 +51,10 @@ export const sportOptions = [
 ] as const;
 
 export const tableSportTypes = ["billiard", "table_tennis"];
+
+export function getCourtResourceImage(resource: Pick<CourtResource, "imageUrl">): string {
+  return resource.imageUrl || fallbackImage;
+}
 
 export const courtService = {
   async getResources(tenant = "obc-sport"): Promise<CourtResource[]> {

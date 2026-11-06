@@ -46,6 +46,7 @@ const SettingAccountPage = lazyPreload(() => import('../pages/dashboard/auth/Set
 const SportBookingPage = lazyPreload(() => import('../pages/dashboard/sport/booking/SportBooking'))
 const SportCourtPage = lazyPreload(() => import('../pages/dashboard/sport/court/Management'))
 const SportHargaPage = lazyPreload(() => import('../pages/dashboard/sport/harga/SportHarga'))
+const SportPackagePage = lazyPreload(() => import('../pages/dashboard/sport/paket/Management'))
 const SportMembershipPage = lazyPreload(() => import('../pages/dashboard/sport/membership/SportMembership'))
 const TestimoniPage = lazyPreload(() => import('../pages/dashboard/cms/testimonial/Testimoni'))
 const KontakLokasiPage = lazyPreload(() => import('../pages/dashboard/cms/contact/SiteContactManagement'))
@@ -84,6 +85,7 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/sport/booking': SportBookingPage,
 	'/sport/court': SportCourtPage,
 	'/sport/harga': SportHargaPage,
+	'/sport/paket': SportPackagePage,
 	'/sport/membership': SportMembershipPage,
 	'/invoice-payment/card': InvoiceCardPaymentPage,
 	'/invoice-payment/finalizing': InvoiceFinalizingPage,
@@ -141,6 +143,7 @@ const AppRoutes = (
 		<Route path="/sport/booking" element={<RequireAuth><SportBookingPage /></RequireAuth>} />
 		<Route path="/sport/court" element={<RequireAuth><SportCourtPage /></RequireAuth>} />
 		<Route path="/sport/harga" element={<RequireAuth><SportHargaPage /></RequireAuth>} />
+		<Route path="/sport/paket" element={<RequireAuth><SportPackagePage /></RequireAuth>} />
 		<Route path="/sport/membership" element={<RequireAuth><SportMembershipPage /></RequireAuth>} />
 		
 		{/* master */}

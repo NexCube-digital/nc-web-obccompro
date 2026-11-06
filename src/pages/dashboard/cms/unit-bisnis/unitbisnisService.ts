@@ -1,4 +1,6 @@
 import apiClient from "../../../../services/api";
+import fallbackImage from "../../../../assets/no-image.webp";
+import { getMediaUrl } from "../../v2/media/mediaService";
 
 export interface BusinessUnit {
 	id: string;
@@ -84,6 +86,13 @@ export interface BusinessUnitDetail extends Omit<BusinessUnit, "locationCount" |
 
 interface ApiSuccess<T> {
 	data: T;
+}
+
+export function getBusinessUnitImage(config: unknown): string {
+	const imageUrl = typeof config === "object" && config !== null && "imageUrl" in config && typeof config.imageUrl === "string"
+		? config.imageUrl
+		: "";
+	return imageUrl ? getMediaUrl(imageUrl) : fallbackImage;
 }
 
 export const unitbisnisService = {

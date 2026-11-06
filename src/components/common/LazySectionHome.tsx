@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type LazySectionProps = {
 	minHeight?: number
+	className?: string
 	// Jarak sebelum masuk layar saat section mulai di-render
 	rootMargin?: string
 	children: ReactNode
@@ -14,6 +15,7 @@ type LazySectionProps = {
  */
 export default function LazySection({
 	minHeight = 400,
+	className = '',
 	rootMargin = '700px 0px',
 	children,
 }: LazySectionProps) {
@@ -45,7 +47,7 @@ export default function LazySection({
 	}, [rootMargin])
 
 	return (
-		<div ref={ref} style={shouldRender ? undefined : { minHeight }}>
+		<div ref={ref} className={className} style={shouldRender ? undefined : { minHeight }}>
 			{shouldRender ? children : null}
 		</div>
 	)

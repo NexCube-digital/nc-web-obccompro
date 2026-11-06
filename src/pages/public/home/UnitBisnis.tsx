@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import TransitionLink from '../../../components/common/TransitionLink'
-import { ArrowRight, Building2, Heart } from 'lucide-react'
+import { ArrowRight, Heart } from 'lucide-react'
 import { getPublicBusinessUnits } from '../../../services/businessUnitPublicService'
 import { getMediaUrl } from '../../dashboard/v2/media/mediaService'
+import fallbackImage from '../../../assets/no-image.webp'
 
 type Unit = {
 	slug: string
@@ -87,11 +88,12 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 						}`}
 						src={unit.image}
 						alt={`Logo ${unit.name}`}
+						onError={(event) => { event.currentTarget.src = fallbackImage }}
 						loading="lazy"
 						decoding="async"
 					/>
 				) : (
-					<Building2 size={38} aria-hidden="true" className="text-[#7B8A72]" />
+					<img src={fallbackImage} alt={`Logo ${unit.name}`} className="block max-h-full max-w-full object-contain" />
 				)}
 			</div>
 

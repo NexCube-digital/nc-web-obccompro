@@ -183,7 +183,7 @@ export const invoiceService = {
 		sportType: string;
 		bookingType: "regular";
 		paymentChannel: InvoicePaymentMethod;
-		allowPastSlot: true;
+		allowPastSlot: false;
 		invoiceCheckout: true;
 		notes: string;
 		returnUrl: string;

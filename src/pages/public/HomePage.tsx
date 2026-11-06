@@ -168,9 +168,9 @@ function SmoothImages({ children }: { children: ReactNode }) {
  *  -> ScrollReveal (fade + naik halus saat masuk layar)
  *  -> SmoothImages (gambar fade-in setelah di-decode)
  */
-function Section({ minHeight, children }: { minHeight: number; children: ReactNode }) {
+function Section({ minHeight, className = '', children }: { minHeight: number; className?: string; children: ReactNode }) {
 	return (
-		<LazySection minHeight={minHeight}>
+		<LazySection minHeight={minHeight} className={className}>
 			<Suspense fallback={<div aria-hidden="true" style={{ minHeight }} />}>
 				<ScrollReveal>
 					<SmoothImages>{children}</SmoothImages>
@@ -230,12 +230,12 @@ function HomePage() {
 				</Section>
 
 				{/* 9. Testimoni */}
-				<Section minHeight={400}>
+				<Section minHeight={400} className="pb-4 lg:pb-6">
 					<Testimoni />
 				</Section>
 
 				{/* 10. Lokasi OBC Group */}
-				<Section minHeight={500}>
+				<Section minHeight={500} className="pb-8 lg:pb-12">
 					<Lokasi />
 				</Section>
 			</main>

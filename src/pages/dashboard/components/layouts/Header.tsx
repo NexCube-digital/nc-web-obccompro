@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Bell, ChevronDown, LogOut, Menu, Search, Settings, Sun } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, Search, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
@@ -143,12 +143,6 @@ export default function Header({ onToggleSidebar }: Props) {
           className="grid h-9 w-9 place-items-center rounded-lg border border-obc-border text-obc-charcoal transition-colors hover:bg-obc-hover-surface sm:hidden"
         >
           <Search size={16} />
-        </button>
-        <button
-          aria-label="Ganti tema"
-          className="grid h-9 w-9 place-items-center rounded-lg border border-obc-border text-obc-charcoal transition-colors hover:bg-obc-hover-surface"
-        >
-          <Sun size={16} />
         </button>
         <div ref={notificationsRef} className="relative">
           <button

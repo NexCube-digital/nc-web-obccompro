@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, MapPin, Receipt, Timer, UserRound, WalletCards } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Receipt, Timer, UserRound, WalletCards } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
@@ -100,7 +100,6 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const service = invoice?.service ?? "";
 	const description = invoice?.description ?? "";
 	const [issueDate, setIssueDate] = useState(toDateInput(invoice?.issueDate ?? null));
-	const [bookingCalendarOpen, setBookingCalendarOpen] = useState(false);
 	const [bookingCalendarMonth, setBookingCalendarMonth] = useState(() => invoice?.issueDate ? new Date(`${invoice.issueDate.slice(0, 10)}T00:00:00`) : new Date());
 	const dueDate = toDateInput(invoice?.dueDate ?? null);
 	const initialPriceBreakdown = invoice?.priceBreakdown ?? [];
@@ -144,6 +143,10 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 
 	const selectedFacility = facilities.find((facility) => facility.id === resourceId) ?? null;
 	const selectedSportType = selectedFacility?.sportTypes[0] ?? "";
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const todayKey = toDateKey(today);
+	const currentTimeMinutes = new Date().getHours() * 60 + new Date().getMinutes();
 	const bookedDateValues = calendarDates.filter((day) => day.hasBookings).map((day) => new Date(`${day.date}T00:00:00`));
 	const unavailableDateValues = calendarDates.filter((day) => ["full", "closed", "maintenance"].includes(day.status)).map((day) => new Date(`${day.date}T00:00:00`));
 	const slotMinutes = 60;
@@ -154,6 +157,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const hourlyAvailabilitySlots = availabilitySlots.filter((slot) => timeToMinutes(slot.startTime) % 60 === 0);
 	const isRangeAvailable = (start: string, duration: number, slots = availabilitySlots) => {
 		if (timeToMinutes(start) % 60 !== 0 || duration % 60 !== 0) return false;
+		if (issueDate < todayKey || (issueDate === todayKey && timeToMinutes(start) <= currentTimeMinutes)) return false;
 		const slotsByStart = new Map(slots.map((slot) => [slot.startTime, slot]));
 		const endMinute = timeToMinutes(start) + duration;
 		for (let minute = timeToMinutes(start); minute < endMinute; minute += availabilityIntervalMinutes) {
@@ -166,14 +170,21 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		.filter((duration) => hourlyAvailabilitySlots.some((slot) => slot.available && isRangeAvailable(slot.startTime, duration)));
 	const availableStartSlots = hourlyAvailabilitySlots.filter((slot) => isRangeAvailable(slot.startTime, durationMinutes));
 	const timePeriods = [
-		{ label: "Pagi", from: 0, to: 12 * 60 },
-		{ label: "Siang", from: 12 * 60, to: 17 * 60 },
-		{ label: "Malam", from: 17 * 60, to: 24 * 60 },
+		{ label: "Pagi - Siang", from: 5 * 60, to: 17 * 60 },
+		{ label: "Malam", from: 17 * 60, to: 5 * 60 },
 	].map((period) => ({
 		...period,
 		slots: hourlyAvailabilitySlots.filter((slot) => {
 			const time = timeToMinutes(slot.startTime);
-			return time >= period.from && time < period.to;
+			return period.label === "Malam"
+				? time >= period.from || time < period.to
+				: time >= period.from && time < period.to;
+		}).sort((first, second) => {
+			const sortTime = (time: string) => {
+				const minutes = timeToMinutes(time);
+				return period.label === "Malam" && minutes < period.to ? minutes + 24 * 60 : minutes;
+			};
+			return sortTime(first.startTime) - sortTime(second.startTime);
 		}),
 	})).filter((period) => period.slots.length > 0);
 	const formSteps = [
@@ -184,8 +195,8 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const visibleFormSteps = invoice ? formSteps.slice(0, 2) : formSteps;
 
 	const validateStep = (step: number) => {
-		if (step === 1 && (!clientName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail) || !invoiceNumber.trim())) {
-			toast.error("Lengkapi nama, email, dan nomor invoice terlebih dahulu.");
+		if (step === 1 && (!clientName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim()) || !/^(?:08[1-9]\d{7,10}|628[1-9]\d{7,10})$/.test(phone))) {
+			toast.error("Lengkapi nama, email yang valid, dan nomor telepon Indonesia yang valid.");
 			return false;
 		}
 		if (step === 2) {
@@ -228,7 +239,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	};
 
 	useEffect(() => {
-		if (!bookingCalendarOpen || !resourceId) return;
+		if (!resourceId) return;
 		let active = true;
 		const from = toDateKey(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth(), 1));
 		const to = toDateKey(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() + 1, 0));
@@ -237,7 +248,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 			.catch((error: unknown) => { if (active) toast.error(error instanceof Error ? error.message : "Penanda jadwal gagal dimuat."); })
 			.finally(() => { if (active) setLoadingCalendarDates(false); });
 		return () => { active = false; };
-	}, [bookingCalendarMonth, bookingCalendarOpen, resourceId]);
+	}, [bookingCalendarMonth, resourceId]);
 
 	useEffect(() => {
 		if (!resourceId || !issueDate || !selectedSportType) return;
@@ -290,6 +301,8 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 			}
 		}
 		if (!invoice && !paymentMethod) return;
+		const finalInvoiceNumber = invoice ? invoice.invoiceNumber : invoiceNumber.trim() || generateInvoiceNumber();
+		if (!invoice) setInvoiceNumber(finalInvoiceNumber);
 
 		const breakdown: PriceBreakdownItem[] = items.map((item) => ({
 			name: item.name.trim(),
@@ -305,9 +318,9 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		try {
 			if (invoice) {
 				const saved = await invoiceService.updateInvoice(invoice.id, {
-					clientName,
-					clientEmail,
-					phone: phone || null,
+					clientName: clientName.trim(),
+					clientEmail: clientEmail.trim(),
+					phone,
 					amount,
 					service: service || null,
 					description: description || null,
@@ -329,21 +342,21 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 				sportType: selectedSportType,
 				bookingType: "regular",
 				paymentChannel: paymentMethod as InvoicePaymentMethod,
-				allowPastSlot: true,
+				allowPastSlot: false,
 				invoiceCheckout: true,
-				notes: `Invoice ${invoiceNumber} untuk ${clientName} (${clientEmail})${phone ? `, ${phone}` : ""}`,
+				notes: `Invoice ${finalInvoiceNumber} untuk ${clientName} (${clientEmail})${phone ? `, ${phone}` : ""}`,
 				returnUrl: `${window.location.origin}/invoice-payment/finalizing`,
 			});
 			if (booking.payment && "unavailable" in booking.payment) throw new Error(booking.payment.message);
 
 			const bookingDescription = `${selectedFacility?.name ?? "Lapangan"} - ${issueDate} (${startTime}-${endTime})`;
 			const saved = await invoiceService.createInvoice({
-				invoiceNumber,
+				invoiceNumber: finalInvoiceNumber,
 				contactId: contactId || null,
 				bookingId: booking.bookingId,
-				clientName,
-				clientEmail,
-				phone: phone || null,
+				clientName: clientName.trim(),
+				clientEmail: clientEmail.trim(),
+				phone,
 				amount: booking.totalPrice,
 				status: "sent",
 				paymentMethod: paymentMethod as InvoicePaymentMethod,
@@ -380,7 +393,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		if (!contact) return;
 		setClientName(contact.name);
 		setClientEmail(contact.email);
-		setPhone(contact.phone ?? "");
+		setPhone(contact.phone?.replace(/\D/g, "") ?? "");
 	};
 
 	const clearSelectedTime = () => {
@@ -397,7 +410,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		const nextFacility = facilities.find((facility) => facility.id === id);
 		setLoadingAvailability(Boolean(id && issueDate && nextFacility?.sportTypes[0]));
 		setCalendarDates([]);
-		setLoadingCalendarDates(Boolean(id && bookingCalendarOpen));
+		setLoadingCalendarDates(Boolean(id));
 		setAvailabilitySlots([]);
 		setDurationSlots(1);
 		clearSelectedTime();
@@ -412,7 +425,6 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		}
 		setIssueDate(date);
 		if (date) setBookingCalendarMonth(new Date(`${date}T00:00:00`));
-		setBookingCalendarOpen(false);
 		setLoadingAvailability(Boolean(resourceId && date && selectedSportType));
 		setAvailabilitySlots([]);
 		setDurationSlots(1);
@@ -441,7 +453,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 				<div className="flex items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-lg bg-[#E7F5D0] text-obc-green"><Receipt size={20} /></span><div><p className="text-[11px] font-semibold uppercase tracking-wide text-obc-green">Invoice / {invoice ? "Edit" : "Baru"}</p><h2 className="mt-1 font-heading text-[21px] font-bold text-obc-charcoal sm:text-[24px]">{invoice ? "Edit invoice" : "Buat invoice booking"}</h2><p className="mt-0.5 text-[12px] text-obc-muted">Lengkapi detail klien dan jadwal lapangan.</p></div></div>
 				<button type="button" onClick={onClose} className="inline-flex h-10 items-center gap-2 rounded-lg border border-obc-border px-3 text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory"><ArrowLeft size={15} />Kembali</button>
 			</header>
-			<form onSubmit={handleSubmit} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+			<form onSubmit={handleSubmit} className={`grid gap-5 ${!invoice && (activeStep === 2 || activeStep === 3) ? "lg:grid-cols-[minmax(0,1fr)_340px]" : ""}`}>
 				<div className="space-y-5">
 					<div role="tablist" aria-label="Langkah pembuatan invoice" className="grid grid-cols-3 gap-1 rounded-xl border border-obc-border bg-white p-1.5">
 							{visibleFormSteps.map((step) => {
@@ -463,10 +475,10 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 								className="mt-1 h-11 w-full text-[13px]"
 							/>
 						</label>
-						<div className="mt-4 grid gap-4 md:grid-cols-2"><label className="text-[13px] font-medium">Nama klien<input required value={clientName} onChange={(event) => setClientName(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Email klien<input required type="email" value={clientEmail} onChange={(event) => setClientEmail(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Telepon<input value={phone} onChange={(event) => setPhone(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Nomor invoice<input required disabled={Boolean(invoice)} value={invoiceNumber} onChange={(event) => setInvoiceNumber(event.target.value)} className={inputClass} /></label></div>
+						<div className="mt-4 grid gap-4 md:grid-cols-2"><label className="text-[13px] font-medium">Nama klien<input required value={clientName} onChange={(event) => setClientName(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Email klien<input required type="email" value={clientEmail} onChange={(event) => setClientEmail(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Telepon<input required type="tel" inputMode="numeric" pattern="(?:08[1-9][0-9]{7,10}|628[1-9][0-9]{7,10})" title="Masukkan nomor telepon Indonesia yang valid menggunakan digit saja" value={phone} onChange={(event) => setPhone(event.target.value.replace(/\D/g, ""))} className={inputClass} /></label><label className="text-[13px] font-medium">Nomor invoice<input disabled={Boolean(invoice)} placeholder={invoice ? "" : "Otomatis dibuat jika kosong"} value={invoiceNumber} onChange={(event) => setInvoiceNumber(event.target.value)} className={inputClass} /></label></div>
 					</section>}
 					{activeStep === 2 && <section className="rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-5">
-						<div className="flex items-start gap-3 border-b border-obc-border pb-4"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6EC] text-obc-green"><CalendarDays size={19} /></span><div><h3 className="font-heading text-[16px] font-semibold">Detail booking</h3><p className="mt-1 text-[12px] text-obc-muted">Pilih lapangan, tanggal, dan rentang waktu yang tersedia.</p></div></div>
+						<div className="flex items-start gap-3 border-b border-obc-border pb-4"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6EC] text-obc-green"><CalendarDays size={19} /></span><div><h3 className="font-heading text-[16px] font-semibold">Detail booking</h3><p className="mt-1 text-[12px] text-obc-muted">Pilih lapangan dan rentang waktu yang tersedia.</p></div></div>
 						{invoice && <div className="mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-4">
 							{loadingInvoiceBooking ? <p role="status" className="text-[13px] text-obc-muted">Memuat detail booking...</p> : invoiceBooking ? <dl className="grid gap-3 text-[13px] sm:grid-cols-2">
 								<div><dt className="text-[11px] text-obc-muted">Lapangan</dt><dd className="mt-1 font-semibold text-obc-charcoal">{invoiceBooking.resource.name}</dd></div>
@@ -478,44 +490,18 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 						<div className={invoice ? "hidden" : ""}>
 						<div className="mt-4">
 							<div className="mb-2 flex items-center justify-between gap-3"><span className="text-[13px] font-semibold text-obc-charcoal">Pilih lapangan</span><span className="text-[11px] text-obc-muted">{facilities.length} tersedia</span></div>
-							{facilities.length ? <div role="group" aria-label="Pilihan lapangan" className="grid max-h-52 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+							{facilities.length ? <div role="group" aria-label="Pilihan lapangan" className="grid max-h-52 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
 								{facilities.map((facility) => {
 									const selected = resourceId === facility.id;
-									return <button key={facility.id} type="button" aria-pressed={selected} onClick={() => chooseFacility(facility.id)} className={`flex min-h-16 items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors ${selected ? "border-obc-green bg-[#F3F8E8]" : "border-obc-border bg-white hover:border-obc-green hover:bg-[#FDFCF7]"}`}>
-										<span className={`grid size-9 shrink-0 place-items-center rounded-lg ${selected ? "bg-obc-green text-white" : "bg-obc-ivory text-obc-muted"}`}><MapPin size={16} /></span>
-										<span className="min-w-0 flex-1"><span className="block truncate text-[13px] font-semibold text-obc-charcoal">{facility.name}</span><span className="mt-0.5 block truncate text-[11px] capitalize text-obc-muted">{facility.location?.name ?? "OBC Sport Center"} · {facility.sportTypes[0]?.replaceAll("_", " ") ?? "Lapangan"}</span></span>
+									return <button key={facility.id} type="button" aria-pressed={selected} onClick={() => chooseFacility(facility.id)} className={`flex min-h-12 min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors ${selected ? "border-obc-green bg-[#F3F8E8]" : "border-obc-border bg-white hover:border-obc-green hover:bg-[#FDFCF7]"}`}>
+										<span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-obc-charcoal">{facility.name}</span>
 										{selected && <Check size={16} className="shrink-0 text-obc-green" />}
 									</button>;
 								})}
 							</div> : <p className="rounded-lg border border-dashed border-obc-border px-4 py-6 text-center text-[12px] text-obc-muted">{facilitiesLoaded ? "Belum ada lapangan yang tersedia." : "Memuat pilihan lapangan..."}</p>}
 						</div>
-						<div className="relative mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-3 sm:p-4">
-							<div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[13px] font-semibold text-obc-charcoal">Tanggal booking</p><p className="mt-0.5 text-[11px] text-obc-muted">Pilih tanggal untuk memeriksa slot lapangan.</p></div><button type="button" aria-expanded={bookingCalendarOpen} aria-controls="invoice-booking-calendar" onClick={() => { const opening = !bookingCalendarOpen; setBookingCalendarOpen(opening); if (opening && resourceId) { setCalendarDates([]); setLoadingCalendarDates(true); } }} className={`flex h-10 min-w-52 items-center justify-between gap-3 rounded-lg border bg-white px-3 text-left text-[12px] transition-colors ${bookingCalendarOpen ? "border-obc-green ring-2 ring-[#CDF178]" : "border-obc-border hover:border-obc-green"}`}><span className="flex min-w-0 items-center gap-2"><CalendarDays size={16} className="shrink-0 text-obc-green" /><span className={`truncate ${issueDate ? "font-semibold text-obc-charcoal" : "text-obc-muted"}`}>{issueDate ? formatBookingDate(issueDate) : "Pilih tanggal"}</span></span><ChevronDown size={15} className={`shrink-0 text-obc-muted transition-transform ${bookingCalendarOpen ? "rotate-180" : ""}`} /></button></div>
-							{bookingCalendarOpen && <div id="invoice-booking-calendar" className="absolute right-0 top-full z-30 mt-2 w-full max-w-85 rounded-xl border border-obc-border bg-white p-3 shadow-[0_12px_35px_rgba(31,49,32,0.16)] sm:p-4">
-								<div className="mb-2 grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_32px] items-center gap-1.5">
-									<button type="button" aria-label="Bulan sebelumnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() - 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronLeft size={16} /></button>
-									<ThemedSelect
-									label="Pilih bulan"
-									value={String(bookingCalendarMonth.getMonth())}
-									options={calendarMonths.map((month, index) => ({ value: String(index), label: month }))}
-									onValueChange={(value) => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), Number(value), 1))}
-									capitalize
-								/>
-									<ThemedSelect
-									label="Pilih tahun"
-									value={String(bookingCalendarMonth.getFullYear())}
-									options={calendarYears.map((year) => ({ value: String(year), label: String(year) }))}
-									onValueChange={(value) => loadCalendarMonth(new Date(Number(value), bookingCalendarMonth.getMonth(), 1))}
-								/>
-									<button type="button" aria-label="Bulan berikutnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() + 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronRight size={16} /></button>
-								</div>
-								<DayPicker mode="single" selected={issueDate ? new Date(`${issueDate}T00:00:00`) : undefined} onSelect={(date) => chooseBookingDate(date ? toDateKey(date) : "")} month={bookingCalendarMonth} onMonthChange={loadCalendarMonth} locale={id} weekStartsOn={1} hideNavigation showOutsideDays disabled={loadingCalendarDates ? true : unavailableDateValues} modifiers={{ booked: bookedDateValues }} modifiersClassNames={{ booked: "relative after:absolute after:bottom-0 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-obc-red [&>button]:font-semibold", disabled: "cursor-not-allowed opacity-45" }} className="w-full" style={{ "--rdp-accent-color": "#1F3320", "--rdp-accent-background-color": "#E7F5D0", "--rdp-day-height": "36px", "--rdp-day-width": "34px", "--rdp-day_button-border-radius": "0.5rem", "--rdp-day_button-height": "31px", "--rdp-day_button-width": "31px" } as CSSProperties} classNames={{ root: "w-full", months: "w-full", month: "w-full", month_caption: "sr-only", caption_label: "sr-only", month_grid: "w-full border-collapse", weekdays: "grid grid-cols-7", weekday: "py-2 text-center text-[10px] font-semibold uppercase text-obc-muted", weeks: "grid gap-y-1", week: "grid grid-cols-7", day: "grid place-items-center p-0", day_button: "grid size-8 place-items-center rounded-lg text-[12px] text-inherit transition-colors hover:bg-obc-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-obc-green", selected: "rounded-lg !bg-obc-green !font-bold !text-white [&>button]:!bg-obc-green [&>button]:!text-white [&>button:hover]:!bg-obc-green-hover", today: "rounded-lg font-bold text-obc-green ring-1 ring-inset ring-obc-green/70", outside: "text-obc-muted/40" }} />
-								<div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-obc-border pt-2"><div className="flex items-center gap-3 text-[10px] text-obc-muted"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-obc-red" />Ada booking</span><span>{loadingCalendarDates ? "Memeriksa tanggal..." : "Tanggal penuh nonaktif"}</span></div><div className="flex"><button type="button" disabled={loadingCalendarDates || unavailableDateValues.some((date) => toDateKey(date) === toDateKey(new Date()))} onClick={() => chooseBookingDate(toDateKey(new Date()))} className="rounded-lg px-3 py-2 text-[12px] font-medium text-obc-green transition-colors hover:bg-obc-ivory disabled:cursor-not-allowed disabled:opacity-40">Hari ini</button><button type="button" onClick={() => setBookingCalendarOpen(false)} className="rounded-lg px-3 py-2 text-[12px] font-medium text-obc-muted transition-colors hover:bg-obc-ivory">Tutup</button></div></div>
-							</div>}
-						</div>
-						{selectedFacility && <div className="mt-3 flex items-center gap-3 rounded-lg border border-[#DDE8D2] bg-[#F3F8E8] p-3"><MapPin size={17} className="shrink-0 text-obc-green" /><div><p className="text-[13px] font-semibold text-obc-charcoal">{selectedFacility.name}</p><p className="text-[11px] text-obc-muted">{selectedFacility.location?.name ?? "OBC Sport Center"} · durasi slot {slotMinutes} menit</p></div></div>}
-						{resourceId && issueDate && <div className="mt-5 border-t border-obc-border pt-4">
-							<div className="flex flex-wrap items-center justify-between gap-3"><div><h4 className="flex items-center gap-2 text-[13px] font-semibold text-obc-charcoal"><Clock3 size={16} className="text-obc-green" />Pilih waktu booking</h4><p className="mt-1 text-[12px] text-obc-muted">Jam yang tidak tersedia atau tidak cukup untuk durasi dipilih akan dinonaktifkan.</p></div><label className="flex items-center gap-2 text-[12px] font-medium text-obc-charcoal"><Timer size={15} className="text-obc-green" />Durasi<ThemedSelect label="Durasi booking" value={String(durationSlots)} options={durationOptions.length ? durationOptions.map((minutes) => ({ value: String(minutes / slotMinutes), label: minutes >= 60 ? `${minutes / 60} jam` : `${minutes} menit` })) : [{ value: String(durationSlots), label: loadingAvailability ? "Memuat..." : "Tidak tersedia" }]} disabled={loadingAvailability || !durationOptions.length} onValueChange={(value) => chooseDuration(Number(value))} className="h-9 min-w-[110px] text-[12px]" /></label></div>
+						{resourceId && issueDate && <div className="mt-5 border-t border-obc-border pt-4 lg:col-start-1">
+							<div className="flex flex-wrap items-center justify-between gap-3"><div><h4 className="flex items-center gap-2 text-[13px] font-semibold text-obc-charcoal"><Clock3 size={16} className="text-obc-green" />Pilih waktu booking</h4><p className="mt-1 text-[12px] text-obc-muted">Jam yang tidak tersedia atau tidak cukup untuk durasi dipilih akan dinonaktifkan.</p></div><label className="flex items-center gap-2 text-[12px] font-medium text-obc-charcoal"><Timer size={15} className="text-obc-green" />Durasi<ThemedSelect label="Durasi booking" value={String(durationSlots)} options={durationOptions.length ? durationOptions.map((minutes) => ({ value: String(minutes / slotMinutes), label: minutes >= 60 ? `${minutes / 60} jam` : `${minutes} menit` })) : [{ value: String(durationSlots), label: loadingAvailability ? "Memuat..." : "Tidak tersedia" }]} disabled={loadingAvailability || !durationOptions.length} onValueChange={(value) => chooseDuration(Number(value))} className="h-9 min-w-27.5 text-[12px]" /></label></div>
 							{loadingAvailability ? <p role="status" className="mt-4 rounded-lg bg-[#FDFCF7] px-4 py-3 text-[12px] text-obc-muted">Memeriksa ketersediaan jadwal...</p> : availabilitySlots.length > 0 ? <>
 								<div className="mt-4 flex flex-wrap items-center gap-3 text-[11px] text-obc-muted"><span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#E7F5D0]" />Kosong</span><span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#F1EFE8]" />Tidak tersedia</span><span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-obc-green" />Dipilih</span><span className="ml-auto font-semibold text-obc-green">{availableStartSlots.length} jam tersedia</span></div>
 								{availableStartSlots.length === 0 && <p className="mt-3 rounded-lg border border-[#F3CACA] bg-[#FDF2F2] px-3 py-2.5 text-[12px] text-[#A53B3B]">Tidak ada slot kosong untuk durasi ini. Coba ubah durasi atau tanggal.</p>}
@@ -547,9 +533,9 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 								<div className="grid gap-2 sm:grid-cols-2">
 									{group.methods.map(({ id, name, description, image }) => {
 										const selected = paymentMethod === id;
-										return <button key={id} type="button" role="radio" aria-checked={selected} onClick={() => setPaymentMethod(id)} className={`flex min-h-[76px] min-w-0 items-center gap-3 rounded-lg border bg-white px-3 py-2.5 text-left transition-colors ${selected ? "border-2 border-obc-green bg-[#F3F8E8]" : "border-obc-border hover:border-obc-green hover:bg-[#FDFCF7]"}`}>
+										return <button key={id} type="button" role="radio" aria-checked={selected} onClick={() => setPaymentMethod(id)} className={`flex min-h-19 min-w-0 items-center gap-3 rounded-lg border bg-white px-3 py-2.5 text-left transition-colors ${selected ? "border-2 border-obc-green bg-[#F3F8E8]" : "border-obc-border hover:border-obc-green hover:bg-[#FDFCF7]"}`}>
 											<span className="grid h-10 w-14 shrink-0 place-items-center"><img src={image} alt="" aria-hidden="true" className="block h-8 w-full object-contain" /></span>
-											<span className="min-w-0 flex-1"><span className="block break-words text-[13px] font-semibold text-obc-charcoal">{name}</span><span className="mt-1 block text-[11px] leading-4 text-obc-muted">{description}</span></span>
+											<span className="min-w-0 flex-1"><span className="wrap-break-word block text-[13px] font-semibold text-obc-charcoal">{name}</span><span className="mt-1 block text-[11px] leading-4 text-obc-muted">{description}</span></span>
 											<span aria-hidden="true" className={`grid size-4 shrink-0 place-items-center rounded-full ${selected ? "border-2 border-obc-green" : "border border-obc-border"}`}>{selected && <span className="size-2 rounded-full bg-obc-green" />}</span>
 										</button>;
 									})}
@@ -559,10 +545,36 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 					</section>}
 					<div className="flex items-center justify-between gap-3">
 						<button type="button" onClick={() => moveToStep(activeStep - 1)} disabled={activeStep === 1} className="h-10 rounded-lg border border-obc-border px-4 text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory disabled:invisible">Kembali</button>
-						{activeStep < visibleFormSteps.length ? <button type="button" onClick={() => moveToStep(activeStep + 1)} className="h-10 rounded-lg bg-obc-green px-5 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover">Lanjutkan</button> : <p className="text-[12px] text-obc-muted">{invoice ? "Periksa data klien dan booking sebelum menyimpan." : "Periksa ringkasan sebelum menyimpan."}</p>}
+						{activeStep < visibleFormSteps.length ? <button type="button" onClick={() => moveToStep(activeStep + 1)} className="h-10 rounded-lg bg-obc-green px-5 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover">Lanjutkan</button> : invoice ? <button type="submit" disabled={saving} className="h-10 rounded-lg bg-obc-green px-5 text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-not-allowed disabled:opacity-50">{saving ? "Menyimpan..." : "Simpan perubahan"}</button> : <p className="text-[12px] text-obc-muted">Periksa ringkasan sebelum menyimpan.</p>}
 					</div>
 				</div>
-				<aside className="h-fit overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)] lg:sticky lg:top-5">
+				{activeStep === 2 && !invoice && <aside className="h-fit overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)] lg:sticky lg:top-5">
+					<div className="flex items-center gap-3 border-b border-obc-border px-4 py-4 sm:px-5"><span className="grid size-9 place-items-center rounded-lg bg-[#E7F5D0] text-obc-green"><CalendarDays size={17} /></span><div><h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Tanggal booking</h3><p className="mt-0.5 text-[11px] text-obc-muted">{issueDate ? formatBookingDate(issueDate) : "Pilih tanggal yang tersedia."}</p></div></div>
+					<div className="p-3 sm:p-4">
+						<div id="invoice-booking-calendar" className="w-full rounded-lg border border-obc-border bg-[#FDFCF7] p-2.5 sm:p-3">
+							<div className="mb-2 grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_32px] items-center gap-1.5">
+								<button type="button" aria-label="Bulan sebelumnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() - 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronLeft size={16} /></button>
+								<ThemedSelect
+									label="Pilih bulan"
+									value={String(bookingCalendarMonth.getMonth())}
+									options={calendarMonths.map((month, index) => ({ value: String(index), label: month }))}
+									onValueChange={(value) => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), Number(value), 1))}
+									capitalize
+								/>
+								<ThemedSelect
+									label="Pilih tahun"
+									value={String(bookingCalendarMonth.getFullYear())}
+									options={calendarYears.map((year) => ({ value: String(year), label: String(year) }))}
+									onValueChange={(value) => loadCalendarMonth(new Date(Number(value), bookingCalendarMonth.getMonth(), 1))}
+								/>
+								<button type="button" aria-label="Bulan berikutnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() + 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronRight size={16} /></button>
+							</div>
+							<DayPicker mode="single" selected={issueDate ? new Date(`${issueDate}T00:00:00`) : undefined} onSelect={(date) => chooseBookingDate(date ? toDateKey(date) : "")} month={bookingCalendarMonth} onMonthChange={loadCalendarMonth} locale={id} weekStartsOn={1} hideNavigation showOutsideDays disabled={loadingCalendarDates ? true : [{ before: today }, ...unavailableDateValues]} modifiers={{ booked: bookedDateValues }} modifiersClassNames={{ booked: "relative after:absolute after:bottom-0 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-obc-red [&>button]:font-semibold", disabled: "cursor-not-allowed opacity-45" }} className="w-full" style={{ "--rdp-accent-color": "#1F3320", "--rdp-accent-background-color": "#E7F5D0", "--rdp-day-height": "36px", "--rdp-day-width": "34px", "--rdp-day_button-border-radius": "0.5rem", "--rdp-day_button-height": "31px", "--rdp-day_button-width": "31px" } as CSSProperties} classNames={{ root: "w-full", months: "w-full", month: "w-full", month_caption: "sr-only", caption_label: "sr-only", month_grid: "w-full border-collapse", weekdays: "grid grid-cols-7", weekday: "py-2 text-center text-[10px] font-semibold uppercase text-obc-muted", weeks: "grid gap-y-1", week: "grid grid-cols-7", day: "grid place-items-center p-0", day_button: "grid size-8 place-items-center rounded-lg text-[12px] text-inherit transition-colors hover:bg-obc-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-obc-green", selected: "rounded-lg !bg-obc-green !font-bold !text-white [&>button]:!bg-obc-green [&>button]:!text-white [&>button:hover]:!bg-obc-green-hover", today: "rounded-lg font-bold text-obc-green ring-1 ring-inset ring-obc-green/70", outside: "text-obc-muted/40" }} />
+							<div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-obc-border pt-2"><div className="flex items-center gap-3 text-[10px] text-obc-muted"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-obc-red" />Ada booking</span><span>{loadingCalendarDates ? "Memeriksa tanggal..." : "Tanggal penuh nonaktif"}</span></div><button type="button" disabled={loadingCalendarDates || unavailableDateValues.some((date) => toDateKey(date) === todayKey)} onClick={() => chooseBookingDate(todayKey)} className="rounded-lg px-3 py-2 text-[12px] font-medium text-obc-green transition-colors hover:bg-obc-ivory disabled:cursor-not-allowed disabled:opacity-40">Hari ini</button></div>
+						</div>
+					</div>
+				</aside>}
+				{activeStep === 3 && !invoice && <aside className="h-fit overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)] lg:sticky lg:top-5">
 					<div className="flex items-center gap-3 border-b border-obc-border px-4 py-4 sm:px-5"><span className="grid size-9 place-items-center rounded-lg bg-[#E7F5D0] text-obc-green"><CalendarDays size={17} /></span><div><h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Ringkasan booking</h3><p className="mt-0.5 text-[11px] text-obc-muted">Periksa detail sebelum menyimpan.</p></div></div>
 					<div className="px-4 sm:px-5">
 					<div className="space-y-3 border-b border-obc-border py-4 text-[13px]"><div><span className="text-[11px] text-obc-muted">Nomor invoice</span><p className="mt-1 font-medium text-obc-charcoal">{invoiceNumber}</p></div><div><span className="text-[11px] text-obc-muted">Lapangan</span><p className="mt-1 font-medium text-obc-charcoal">{invoiceBooking?.resource.name ?? selectedFacility?.name ?? "Belum dipilih"}</p></div><div><span className="text-[11px] text-obc-muted">Tanggal</span><p className="mt-1 font-medium text-obc-charcoal">{invoiceBooking ? formatBookingDate(invoiceBooking.bookingDate) : issueDate || "Belum dipilih"}</p></div><div><span className="text-[11px] text-obc-muted">Waktu</span><p className="mt-1 font-medium text-obc-charcoal">{invoiceBooking ? `${invoiceBooking.startTime} - ${invoiceBooking.endTime}` : startTime && endTime ? `${startTime} - ${endTime}` : "Belum dipilih"}</p></div></div>
@@ -573,7 +585,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 						{activeStep === 3 && !invoice && <div className="mt-3 rounded-lg border border-obc-border px-3 py-2.5"><p className="text-[11px] text-obc-muted">Metode pembayaran</p><p className="mt-1 text-[13px] font-semibold text-obc-charcoal">{paymentMethodGroups.flatMap((group) => group.methods).find((method) => method.id === paymentMethod)?.name ?? "Belum dipilih"}</p></div>}
 						{activeStep === visibleFormSteps.length && <button type="submit" disabled={saving || (invoice ? false : !resourceId || !issueDate || !startTime || !endTime || !paymentMethod)} className="mt-4 h-11 w-full rounded-lg bg-obc-green text-[13px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-not-allowed disabled:opacity-50">{saving ? "Menyimpan..." : invoice ? "Simpan perubahan" : "Buat invoice"}</button>}<button type="button" onClick={onClose} className="mb-4 mt-2 h-10 w-full rounded-lg border border-obc-border text-[13px] font-medium text-obc-charcoal transition-colors hover:bg-obc-ivory">Batal</button>
 					</div>
-				</aside>
+				</aside>}
 			</form>
 		</div>
 	);

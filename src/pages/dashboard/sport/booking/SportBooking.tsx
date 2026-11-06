@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { sportService, type BookingStatus, type SportBooking } from "../SportService";
+import { courtService, type CourtResource } from "../court/courtService";
+import { sportService, type ResourceAvailability, type SportBooking } from "../SportService";
 import BookingCalendar from "./BookingCalendar";
 import BookingList from "./BookingList";
 
@@ -11,56 +12,58 @@ const getTodayDateValue = () => {
 };
 
 export default function SportBooking() {
+  const [resources, setResources] = useState<CourtResource[]>([]);
   const [bookings, setBookings] = useState<SportBooking[]>([]);
+  const [availability, setAvailability] = useState<Record<string, ResourceAvailability>>({});
+  const [resourcesLoading, setResourcesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(getTodayDateValue);
-  const [status, setStatus] = useState<BookingStatus | "all">("all");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [meta, setMeta] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
 
   useEffect(() => {
-    if (!selectedDate) return;
-    let cancelled = false;
-    sportService.getBookings({ page, limit: 10, date: selectedDate, ...(status === "all" ? {} : { status }), ...(search.trim() ? { search: search.trim() } : {}) })
-      .then((result) => {
-        if (!cancelled) {
-          setBookings(result.data);
-          setMeta(result.meta);
-        }
+    let active = true;
+    courtService.getResources()
+      .then((items) => { if (active) setResources(items); })
+      .catch((error: unknown) => { if (active) toast.error(error instanceof Error ? error.message : "Data lapang gagal dimuat."); })
+      .finally(() => { if (active) setResourcesLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (resourcesLoading) return;
+    if (!selectedDate || resources.length === 0) {
+      setBookings([]);
+      setAvailability({});
+      setLoading(false);
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    const loadBookings = async () => {
+      const firstPage = await sportService.getBookings({ page: 1, limit: 100, date: selectedDate });
+      const remainingPages = await Promise.all(Array.from({ length: Math.max(0, firstPage.meta.totalPages - 1) }, (_, index) =>
+        sportService.getBookings({ page: index + 2, limit: 100, date: selectedDate }),
+      ));
+      return [...firstPage.data, ...remainingPages.flatMap((page) => page.data)];
+    };
+    Promise.all([
+      loadBookings(),
+      Promise.all(resources.map((resource) => sportService.getResourceAvailability(resource.id, selectedDate))),
+    ])
+      .then(([bookingItems, availabilityItems]) => {
+        if (!active) return;
+        setBookings(bookingItems);
+        setAvailability(Object.fromEntries(availabilityItems.map((item) => [item.resourceId, item])));
       })
       .catch((error: unknown) => {
-        if (!cancelled) toast.error(error instanceof Error ? error.message : "Gagal memuat booking.");
+        if (active) toast.error(error instanceof Error ? error.message : "Jadwal booking gagal dimuat.");
       })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [page, search, selectedDate, status]);
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [resources, resourcesLoading, selectedDate]);
 
   const handleDateChange = (value: string) => {
     setSelectedDate(value);
-    setPage(1);
     setLoading(Boolean(value));
-    if (!value) {
-      setBookings([]);
-      setMeta({ page: 1, limit: 10, total: 0, totalPages: 0 });
-    }
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setLoading(Boolean(selectedDate));
-    setPage(1);
-  };
-
-  const handleStatusChange = (value: BookingStatus | "all") => {
-    setStatus(value);
-    setLoading(Boolean(selectedDate));
-    setPage(1);
-  };
-
-  const handlePageChange = (nextPage: number) => {
-    setLoading(true);
-    setPage(nextPage);
   };
 
   return (
@@ -70,22 +73,18 @@ export default function SportBooking() {
           <div>
             <p className="text-[13px] text-obc-muted">OBC Sport / Booking</p>
             <h1 className="mt-1 font-heading text-[26px] font-bold text-obc-charcoal">Booking olahraga</h1>
-            <p className="mt-1 text-[13px] text-obc-muted">Atur tanggal, lalu tinjau jadwal dan pembayaran.</p>
+            <p className="mt-1 text-[13px] text-obc-muted">Pilih tanggal dan olahraga untuk melihat jadwal lapang.</p>
           </div>
         </div>
 
         <div className="grid items-start gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
           <BookingCalendar selectedDate={selectedDate} onDateChange={handleDateChange} />
           <BookingList
+				resources={resources}
+				availability={availability}
             bookings={bookings}
             loading={loading}
             selectedDate={selectedDate}
-            status={status}
-            search={search}
-            meta={meta}
-            onSearchChange={handleSearchChange}
-            onStatusChange={handleStatusChange}
-            onPageChange={handlePageChange}
           />
         </div>
       </div>

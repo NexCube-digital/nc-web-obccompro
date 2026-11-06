@@ -1,4 +1,5 @@
 import apiClient from "../../../services/api";
+import fallbackImage from "../../../assets/no-image.webp";
 
 export type BookingStatus =
 	| "unpaid"
@@ -53,6 +54,67 @@ export type SportBooking = {
 	latestPayment: { status: string; method: string | null; paidAt: string | null } | null;
 };
 
+export type SportBookingDetails = {
+	id: string;
+	tenant: { id: string; name: string; slug: string };
+	resource: {
+		id: string;
+		name: string;
+		slug: string;
+		resourceType: string;
+		slotMinutes: number;
+		location: { id: string; name: string; city: string } | null;
+	};
+	bookingDate: string;
+	startTime: string;
+	endTime: string;
+	startMinute: number;
+	endMinute: number;
+	durationMinutes: number;
+	sportType: SportType;
+	bookingType: "regular" | "membership" | "event";
+	status: BookingStatus;
+	basePrice: number;
+	discountAmount: number;
+	adminFee: number;
+	totalPrice: number;
+	totalPriceFormatted: string;
+	refundedAmount: number;
+	refundedAmountFormatted: string;
+	priceSnapshot: unknown;
+	notes: string | null;
+	cancellationReason: string | null;
+	source: string;
+	paidAt: string | null;
+	cancelledAt: string | null;
+	completedAt: string | null;
+	createdAt: string;
+	updatedAt: string;
+	customer: { id: string; name: string; email: string; phone: string | null; status: string } | null;
+	staffCreator: { id: string; name: string; email: string; role: string } | null;
+	payments: {
+		id: string;
+		midtransOrderId: string | null;
+		midtransTransactionId: string | null;
+		paymentType: string;
+		method: string | null;
+		amount: number;
+		amountFormatted: string;
+		adminFee: number;
+		totalAmount: number;
+		totalAmountFormatted: string;
+		refundedAmount: number;
+		refundedAmountFormatted: string;
+		status: string;
+		paidAt: string | null;
+		expiredAt: string | null;
+		createdAt: string;
+	}[];
+	slotClaim: { id: string; startMinute: number; endMinute: number; lockId: string | null } | null;
+	activeLock: { id: string; lockStatus: string; lockedUntil: string } | null;
+	membershipSession: { id: string; sessionNumber: number; status: string } | null;
+};
+
 export type SportResource = {
 	id: string;
 	name: string;
@@ -68,6 +130,32 @@ export type SportResource = {
 	tenant: { id: string; name: string; slug: string };
 	location: { id: string; name: string; city: string } | null;
 	schedules: { dayOfWeek: string; openTime: string; closeTime: string; isClosed: boolean }[];
+};
+
+export function getSportResourceImage(resource: Pick<SportResource, "imageUrl">): string {
+	return resource.imageUrl || fallbackImage;
+}
+
+export type ResourceAvailability = {
+	resourceId: string;
+	resourceName: string;
+	date: string;
+	parallelUnits: number;
+	dayOfWeek: string;
+	slotMinutes: number;
+	startIntervalMinutes: number;
+	isClosed: boolean;
+	operatingHours: { openTime: string; closeTime: string } | null;
+	slots: {
+		startTime: string;
+		endTime: string;
+		status: "available" | "booked" | "locked" | "maintenance" | "closed";
+		available: boolean;
+		price: number | null;
+		priceFormatted?: string | null;
+		lockExpiresAt: string | null;
+	}[];
+	counts: { total: number; available: number; booked: number; locked: number };
 };
 
 export type PricingRule = {
@@ -91,7 +179,6 @@ export type PricingPackage = {
 	durationMinutes: number;
 	packagePrice: number;
 	discountPercent: number | null;
-	priority: number;
 	status: ActiveStatus;
 	resource: { id: string; name: string; slug: string } | null;
 };
@@ -113,7 +200,6 @@ export type PricingPackageUpdateInput = {
 	durationMinutes: number;
 	packagePrice: number;
 	discountPercent?: number;
-	priority: number;
 };
 
 export type MembershipPackage = {
@@ -147,7 +233,7 @@ export type MembershipPackageUpdateInput = {
 	discountPercent: number;
 };
 
-type ListParams = { page?: number; limit?: number; status?: string; search?: string; date?: string };
+type ListParams = { page?: number; limit?: number; status?: string; search?: string; date?: string; resourceId?: string };
 
 export type SportResourceInput = {
 	name: string;
@@ -174,6 +260,13 @@ async function getPaginated<T>(url: string, params: ListParams): Promise<Paginat
 export const sportService = {
 	getBookings(params: ListParams & { status?: BookingStatus }): Promise<Paginated<SportBooking>> {
 		return getPaginated("/admin/bookings", params);
+	},
+	getBookingDetails(id: string): Promise<SportBookingDetails> {
+		return apiClient.get<ApiSuccess<SportBookingDetails>>(`/admin/bookings/${id}`).then((response) => response.data.data);
+	},
+	getResourceAvailability(resourceId: string, date: string): Promise<ResourceAvailability> {
+		return apiClient.get<ApiSuccess<ResourceAvailability>>("/sports/availability", { params: { resourceId, date } })
+			.then((response) => response.data.data);
 	},
 	getResources(params: ListParams & { status?: SportResource["status"] }): Promise<Paginated<SportResource>> {
 		return getPaginated("/admin/resources", params);

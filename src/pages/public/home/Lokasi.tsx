@@ -322,7 +322,7 @@ export default function Lokasi() {
 
 		return (
 			<div
-				className={`mt-3 rounded-[6px] border px-3 py-4 transition-colors first:mt-0 md:mt-0 md:rounded-none md:border-0 md:border-t md:px-2 lg:py-[clamp(8px,1.6svh,14px)] ${
+				className={`mt-3 rounded-[6px] border px-3 py-4 transition-colors first:mt-0 md:mt-0 md:rounded-none md:border-0 md:border-t md:px-2 lg:py-[clamp(8px,1.6svh,14px)] [@media(min-width:1024px)_and_(max-height:800px)]:py-1.5 [@media(min-width:1024px)_and_(max-height:800px)]:first:mt-0 ${
 					placeholder ? 'border-[#e5e5e5]' : 'cursor-pointer border-[#e5e5e5] hover:bg-[#CDF17826]'
 				} ${isSelected ? 'bg-[#CDF17833]' : ''}`}
 				key={loc.id || i}
@@ -333,8 +333,8 @@ export default function Lokasi() {
 				}
 			>
 				{/* Alamat + tombol lihat lokasi */}
-				<div className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center md:gap-3">
-					<span className="inline-flex min-w-0 flex-1 items-center gap-2 font-['Montserrat'] text-[17px] font-semibold leading-[22px] tracking-normal text-[#000000] md:text-[15px] md:leading-[20.63px]">
+				<div className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center md:gap-3 [@media(min-width:1024px)_and_(max-height:800px)]:gap-2.5">
+					<span className="inline-flex min-w-0 flex-1 items-center gap-2 font-['Montserrat'] text-[17px] font-semibold leading-[22px] tracking-normal text-[#000000] md:text-[15px] md:leading-[20.63px] [@media(min-width:1024px)_and_(max-height:800px)]:text-[13px] [@media(min-width:1024px)_and_(max-height:800px)]:leading-[17px]">
 						<span className="grid h-8 w-8 shrink-0 place-items-center rounded-[2px] bg-[#EDEDED] lg:h-[clamp(26px,4svh,32px)] lg:w-[clamp(26px,4svh,32px)]">
 							<img src={locationIcon} alt="" aria-hidden="true" className="h-4 w-4 object-contain" />
 						</span>
@@ -373,14 +373,14 @@ export default function Lokasi() {
 						))}
 					</div>
 				) : (
-					<p className="my-2.5 font-heading text-[15px] font-semibold text-[#111111] lg:my-[clamp(4px,1svh,10px)] lg:text-[clamp(13px,1.9svh,15px)]">
+					<p className="my-2.5 font-heading text-[15px] font-semibold text-[#111111] lg:my-[clamp(4px,1svh,10px)] lg:text-[clamp(13px,1.9svh,15px)] [@media(min-width:1024px)_and_(max-height:800px)]:my-1 [@media(min-width:1024px)_and_(max-height:800px)]:text-[12px]">
 						{loc.units[0]}
 					</p>
 				)}
 
 				{/* Info jam / check-in + koordinat geotag */}
 				{loc.info.length > 0 && (
-					<div className="flex flex-wrap gap-2">
+					<div className="flex flex-wrap gap-2 [@media(min-width:1024px)_and_(max-height:800px)]:gap-1.5">
 						{loc.info.map((text) => (
 							<span
 								className="inline-flex min-h-[23px] w-fit max-w-full items-center rounded-[12px] bg-[#EDEDED] px-2 py-[2px] font-['Montserrat'] text-[10px] font-medium leading-[16.5px] tracking-normal text-[#000000]"
@@ -402,9 +402,9 @@ export default function Lokasi() {
 		// Rata tengah vertikal. Karena tinggi daftar dikunci (lihat bagian daftar lokasi),
 		// posisi section tidak bergeser saat pindah kategori.
 		<section
-			className="flex flex-col justify-center overflow-hidden py-10 md:py-12"
+			className="flex flex-col justify-center overflow-hidden py-8 md:py-10 lg:min-h-[calc(100svh-100px)] lg:py-6 [@media(min-width:1024px)_and_(max-height:800px)]:min-h-0 [@media(min-width:1024px)_and_(max-height:800px)]:py-0"
 		>
-			<div className="mx-auto grid w-[calc(100%-40px)] max-w-[1280px] gap-7 md:w-[calc(100%-48px)] md:gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-stretch lg:gap-[clamp(32px,4vw,64px)]">
+			<div className="mx-auto grid w-[calc(100%-40px)] max-w-[1280px] gap-7 md:w-[calc(100%-48px)] md:gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-stretch lg:gap-[clamp(28px,3vw,48px)] [@media(min-width:1024px)_and_(max-height:800px)]:gap-2">
 				{/* Panel kiri */}
 				<div className="min-w-0">
 					<span className="mb-2 block w-full max-w-[856px] font-['Montserrat'] text-[13px] font-semibold uppercase leading-[20px] tracking-[2px] text-[#000000CC] md:text-[16px] md:tracking-[1.4px] lg:mb-[clamp(4px,1svh,10px)] lg:text-[clamp(13px,2.25svh,18px)]">
@@ -454,7 +454,7 @@ export default function Lokasi() {
 				</div>
 
 				{/* Panel kanan: peta. Di lg tinggi mengikuti kolom kiri (stretch) */}
-				<div className="box-border flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[8px] bg-[#EDEDED80] p-[14px] shadow-[0px_1px_2px_0px_#0000000D] md:h-[420px] lg:h-auto lg:min-h-[420px]">
+				<div className="box-border flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[8px] bg-[#EDEDED80] p-1.5 shadow-[0px_1px_2px_0px_#0000000D] md:h-[420px] lg:h-auto lg:min-h-[300px] [@media(min-width:1024px)_and_(max-height:800px)]:p-1 [@media(min-width:1024px)_and_(max-height:800px)]:lg:min-h-[220px]">
 					{/* Header peta */}
 					<div className="flex shrink-0 items-center justify-between gap-2 border-b border-[#e5e5e5] px-4 py-3 max-sm:px-2 lg:py-[clamp(6px,1.5svh,12px)]">
 						<div className="flex min-w-0 items-center gap-2">

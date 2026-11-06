@@ -1,4 +1,5 @@
 import apiClient from "../../../../services/api";
+import fallbackImage from "../../../../assets/no-image.webp";
 
 export interface Portfolio {
 	id: string;
@@ -24,7 +25,7 @@ interface ApiSuccess<T> {
 }
 
 export function getPortfolioImageUrl(imageUrl: string | null): string | null {
-	if (!imageUrl) return null;
+	if (!imageUrl) return fallbackImage;
 	try {
 		const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
 		const apiOrigin = new URL(apiBaseUrl, window.location.origin).origin;

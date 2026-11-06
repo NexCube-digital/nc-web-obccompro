@@ -64,7 +64,7 @@ export default function InvoiceTable({ invoices, loading, counts, onView, onEdit
 		const normalizedQuery = query.trim().toLowerCase();
 		return invoices.filter((invoice) => {
 			const matchesStatus = statusFilter === "all" || displayStatus(invoice.status) === statusFilter;
-			const searchText = [invoice.invoiceNumber, invoice.clientName, invoice.clientEmail, invoice.service]
+			const searchText = [invoice.invoiceNumber, invoice.clientName, invoice.clientEmail, invoice.phone, invoice.service]
 				.filter(Boolean).join(" ").toLowerCase();
 			return matchesStatus && searchText.includes(normalizedQuery);
 		});
@@ -104,7 +104,7 @@ export default function InvoiceTable({ invoices, loading, counts, onView, onEdit
 							return (
 								<tr key={invoice.id} className="border-t border-obc-border transition-colors hover:bg-[#FDFCF7]">
 									<td className="px-5 py-3.5"><p className="font-semibold text-obc-charcoal">{invoice.invoiceNumber}</p><p className="text-[11px] text-obc-muted">Dibuat {formatDate(invoice.createdAt)}</p></td>
-									<td className="px-5 py-3.5"><p className="font-medium">{invoice.clientName}</p><p className="text-[11px] text-obc-muted">{invoice.clientEmail}</p></td>
+									<td className="px-5 py-3.5"><p className="font-medium">{invoice.clientName}</p><p className="text-[11px] text-obc-muted">{invoice.phone || "-"}</p></td>
 									<td className="whitespace-nowrap px-5 py-3.5 font-semibold">{rupiah(invoice.amount)}</td>
 									<td className="px-5 py-3.5"><ThemedSelect label={`Status invoice ${invoice.invoiceNumber}`} value={editableStatus[displayStatus(invoice.status)]} options={[{ value: "draft", label: "Draft" }, { value: "sent", label: "Pending" }, { value: "paid", label: "Success" }, { value: "cancelled", label: "Gagal" }]} onValueChange={(value) => onChangeStatus(invoice, value as InvoiceStatus)} className={`h-8 w-fit max-w-40 rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold ${statusClasses[displayStatus(invoice.status)]}`} /></td>
 									<td className="px-5 py-3.5"><div className="flex justify-end gap-1"><button type="button" onClick={() => onView(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Lihat detail" aria-label={`Lihat ${invoice.invoiceNumber}`}><Eye size={16} /></button><button type="button" onClick={() => onEdit(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Edit" aria-label={`Edit ${invoice.invoiceNumber}`}><Pencil size={16} /></button>{invoice.terms.length > 0 && <button type="button" onClick={() => onRecordPayment(invoice)} className="grid size-9 place-items-center rounded-lg hover:bg-[#F1EFE8]" title="Catat pembayaran" aria-label={`Bayar ${invoice.invoiceNumber}`}><WalletCards size={16} /></button>}<button type="button" onClick={() => onDelete(invoice)} className="grid size-9 place-items-center rounded-lg text-red-600 hover:bg-red-50" title="Hapus" aria-label={`Hapus ${invoice.invoiceNumber}`}><Trash2 size={16} /></button></div></td>

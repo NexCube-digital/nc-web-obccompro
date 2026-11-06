@@ -1,5 +1,6 @@
 import apiClient from '../api'
 import { getMediaUrl } from '../../pages/dashboard/v2/media/mediaService'
+import fallbackImage from '../../assets/no-image.webp'
 
 interface PortfolioRecord {
 	id: string
@@ -22,10 +23,8 @@ export async function getPublicGalleryPhotos(): Promise<GalleryPhoto[]> {
 	const response = await apiClient.get<ApiSuccess<PortfolioRecord[]>>('/public/portfolios')
 
 	return response.data.data.flatMap((portfolio) => {
-		if (!portfolio.imageUrl?.trim()) return []
-
 		return [{
-			src: getMediaUrl(portfolio.imageUrl),
+			src: portfolio.imageUrl?.trim() ? getMediaUrl(portfolio.imageUrl) : fallbackImage,
 			alt: portfolio.title,
 			category: portfolio.category,
 		}]

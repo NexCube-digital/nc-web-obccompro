@@ -1,82 +1,92 @@
-import { CalendarDays, Search } from "lucide-react";
-import Pagination from "../../components/common/Pagination";
-import ThemedSelect from "../../components/common/ThemedSelect";
-import type { BookingStatus, SportBooking } from "../SportService";
+import { useState } from "react";
+import { Clock3, MapPin } from "lucide-react";
+import { sportOptions } from "../court/courtService";
+import type { ResourceAvailability, SportBooking } from "../SportService";
+import type { CourtResource } from "../court/courtService";
+import BookingDetailModal from "./BookingDetailModal";
+
+type SelectedSlot = {
+	resource: CourtResource;
+	slot: ResourceAvailability["slots"][number];
+	bookings: SportBooking[];
+};
 
 type Props = {
+	resources: CourtResource[];
+	availability: Record<string, ResourceAvailability>;
 	bookings: SportBooking[];
 	loading: boolean;
 	selectedDate: string;
-	status: BookingStatus | "all";
-	search: string;
-	meta: { page: number; limit: number; total: number; totalPages: number };
-	onSearchChange: (search: string) => void;
-	onStatusChange: (status: BookingStatus | "all") => void;
-	onPageChange: (page: number) => void;
 };
 
-const bookingStatuses: BookingStatus[] = ["unpaid", "dp_paid", "fully_paid", "completed", "cancelled", "expired", "refund_requested", "refunded"];
-const statusLabels: Record<BookingStatus, string> = {
-	unpaid: "Belum dibayar",
-	dp_paid: "DP dibayar",
-	fully_paid: "Lunas",
-	completed: "Selesai",
-	cancelled: "Dibatalkan",
-	expired: "Kedaluwarsa",
-	refund_requested: "Refund diajukan",
-	refunded: "Direfund",
+const slotStatusLabels: Record<ResourceAvailability["slots"][number]["status"], string> = {
+	available: "Tersedia",
+	booked: "Terisi",
+	locked: "Sedang diproses",
+	maintenance: "Perawatan",
+	closed: "Tutup",
 };
-const statusClasses: Record<BookingStatus, string> = {
-	unpaid: "bg-[#FBF0D3] text-[#8A6100]",
-	dp_paid: "bg-[#EBEEDC] text-[#404F14]",
-	fully_paid: "bg-[#E7F5D0] text-[#1F3320]",
-	completed: "bg-[#CDF178] text-[#1F3320]",
-	cancelled: "bg-[#FDF2F2] text-[#B42318]",
-	expired: "bg-[#F1EFE8] text-obc-muted",
-	refund_requested: "bg-[#FDF2F2] text-[#B42318]",
-	refunded: "bg-[#F1EFE8] text-obc-muted",
-};
-const formatDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-const formatMoney = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 
-export default function BookingList({ bookings, loading, selectedDate, status, search, meta, onSearchChange, onStatusChange, onPageChange }: Props) {
+const toMinutes = (time: string) => {
+	const [hour, minute] = time.split(":").map(Number);
+	return hour * 60 + minute;
+};
+
+const formatDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const sportLabel = (value: string) => sportOptions.find((option) => option.value === value)?.label ?? value.replaceAll("_", " ");
+
+export default function BookingList({ resources, availability, bookings, loading, selectedDate }: Props) {
+	const [selectedSport, setSelectedSport] = useState("");
+	const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
+	const sports = Array.from(new Set(resources.flatMap((resource) => resource.sportTypes))).map((value) => ({ value, label: sportLabel(value) }));
+	const activeSport = sports.find((sport) => sport.value === selectedSport)?.value ?? sports[0]?.value;
+	const sportResources = resources.filter((resource) => activeSport && resource.sportTypes.includes(activeSport));
+
+	const openSlot = (resource: CourtResource, slot: ResourceAvailability["slots"][number]) => {
+		const slotStart = toMinutes(slot.startTime);
+		const slotEnd = toMinutes(slot.endTime);
+		const relatedBookings = bookings.filter((booking) => {
+			if (booking.resource.id !== resource.id || ["cancelled", "expired", "refunded"].includes(booking.status)) return false;
+			return toMinutes(booking.startTime) < slotEnd && toMinutes(booking.endTime) > slotStart;
+		});
+		setSelectedSlot({ resource, slot, bookings: relatedBookings });
+	};
+
 	return (
-		<section className="overflow-hidden rounded-xl border border-obc-border bg-white">
-			<div className="border-b border-obc-border p-4 sm:p-5">
-				<div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-					<div><h2 className="font-heading text-[15px] font-semibold text-obc-charcoal">Daftar booking</h2><p className="mt-0.5 text-[12px] text-obc-muted">{selectedDate ? formatDate(selectedDate) : "Pilih tanggal untuk menampilkan jadwal"}</p></div>
-					{selectedDate && <p className="text-[12px] text-obc-muted">{meta.total.toLocaleString("id-ID")} booking</p>}
+		<>
+			<section className="space-y-4">
+				<div className="flex flex-wrap items-end justify-between gap-3">
+					<div><p className="text-[11px] font-semibold uppercase tracking-wide text-obc-green">Jadwal lapangan</p><h2 className="mt-1 font-heading text-lg font-bold text-obc-charcoal">{selectedDate ? formatDate(selectedDate) : "Pilih tanggal"}</h2></div>
+					{selectedDate && <p className="text-[12px] text-obc-muted">{bookings.length.toLocaleString("id-ID")} booking pada tanggal ini</p>}
 				</div>
-				<div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_190px]">
-					<label className="block text-[12px] font-medium text-obc-charcoal">Cari booking<span className="relative mt-1 block"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" /><input value={search} onChange={(event) => onSearchChange(event.target.value)} disabled={!selectedDate} placeholder={selectedDate ? "Nama, email, catatan..." : "Pilih tanggal terlebih dahulu"} className="h-10 w-full rounded-lg border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-obc-green focus:ring-2 focus:ring-[#CDF178] disabled:cursor-not-allowed disabled:opacity-60" /></span></label>
-					<label className="block text-[12px] font-medium text-obc-charcoal">Status
-						<ThemedSelect
-							label="Filter status booking"
-							value={status}
-							options={[{ value: "all", label: "Semua status" }, ...bookingStatuses.map((item) => ({ value: item, label: statusLabels[item] }))]}
-							onValueChange={(value) => onStatusChange(value as BookingStatus | "all")}
-							disabled={!selectedDate}
-							className="mt-1 h-10 w-full text-[13px]"
-						/>
-					</label>
-				</div>
-			</div>
 
-			{!selectedDate ? <div className="grid min-h-56 place-items-center px-5 py-10 text-center"><div className="max-w-sm"><span className="mx-auto grid size-11 place-items-center rounded-xl bg-obc-ivory text-obc-green"><CalendarDays size={20} /></span><p className="mt-3 text-[13px] font-medium text-obc-charcoal">Jadwal belum dipilih</p><p className="mt-1 text-[12px] leading-5 text-obc-muted">Pilih tanggal di panel sebelah kiri untuk melihat daftar booking.</p></div></div> : <>
-				<div className="overflow-x-auto"><table className="w-full min-w-225 text-left text-[13px]">
-					<thead><tr className="bg-[#FDFCF7] text-[11px] font-semibold uppercase tracking-wide text-obc-muted"><th className="px-4 py-3">Pelanggan</th><th className="px-4 py-3">Lapangan</th><th className="px-4 py-3">Jam</th><th className="px-4 py-3 text-right">Pembayaran</th><th className="px-4 py-3">Status</th></tr></thead>
-					<tbody>
-						{loading ? <tr><td colSpan={5} className="px-4 py-12 text-center text-obc-muted">Memuat booking...</td></tr> : bookings.length ? bookings.map((booking) => <tr key={booking.id} className="border-t border-obc-border align-top transition-colors hover:bg-[#FDFCF7]">
-							<td className="px-4 py-3"><p className="font-semibold text-obc-charcoal">{booking.customer?.name ?? "Walk-in / tanpa akun"}</p><p className="text-[11px] text-obc-muted">{booking.customer?.email ?? booking.staffCreator?.email ?? "-"}</p></td>
-							<td className="px-4 py-3"><p className="font-medium text-obc-charcoal">{booking.resource.name}</p><p className="text-[11px] capitalize text-obc-muted">{booking.sportType.replaceAll("_", " ")} · {booking.bookingType}</p></td>
-							<td className="whitespace-nowrap px-4 py-3"><p className="font-semibold text-obc-charcoal">{booking.startTime}–{booking.endTime}</p><p className="text-[11px] text-obc-muted">{booking.durationMinutes} menit</p></td>
-							<td className="whitespace-nowrap px-4 py-3 text-right"><p className="font-semibold text-obc-charcoal">{booking.totalPriceFormatted || formatMoney(booking.totalPrice)}</p><p className="text-[11px] capitalize text-obc-muted">{booking.latestPayment?.status ?? booking.status}</p></td>
-							<td className="px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusClasses[booking.status]}`}>{statusLabels[booking.status]}</span></td>
-						</tr>) : <tr><td colSpan={5} className="px-4 py-12 text-center text-obc-muted">Tidak ada booking pada tanggal dan filter ini.</td></tr>}
-					</tbody>
-				</table></div>
-				<Pagination page={meta.page} totalPages={meta.totalPages} onPageChange={onPageChange} totalItems={meta.total} pageSize={meta.limit} itemLabel="booking" disabled={loading} className="flex flex-col gap-3 border-t border-obc-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5" />
-			</>}
-		</section>
+				{sports.length > 0 && <div role="tablist" aria-label="Kategori olahraga" className="flex gap-2 overflow-x-auto border-b border-obc-border pb-2">
+					{sports.map((sport) => <button key={sport.value} type="button" role="tab" aria-selected={activeSport === sport.value} onClick={() => setSelectedSport(sport.value)} className={`shrink-0 rounded-lg border px-3 py-2 text-[12px] font-semibold transition-colors ${activeSport === sport.value ? "border-obc-green bg-[#E7F5D0] text-obc-green" : "border-obc-border bg-white text-obc-muted hover:border-obc-green hover:text-obc-charcoal"}`}>{sport.label}</button>)}
+				</div>}
+
+				{loading ? <div role="status" className="rounded-xl border border-obc-border bg-white px-4 py-12 text-center text-[13px] text-obc-muted">Memuat jadwal lapangan...</div> : !selectedDate ? <div className="rounded-xl border border-obc-border bg-white px-4 py-12 text-center text-[13px] text-obc-muted">Pilih tanggal untuk melihat jadwal lapangan.</div> : !sportResources.length ? <div className="rounded-xl border border-obc-border bg-white px-4 py-12 text-center text-[13px] text-obc-muted">Belum ada lapang untuk kategori ini.</div> : <div className="space-y-3">
+					{sportResources.map((resource) => {
+						const schedule = availability[resource.id];
+						const openingMinute = schedule?.operatingHours ? toMinutes(schedule.operatingHours.openTime) : 0;
+						const interval = Math.max(resource.slotMinutes, 15);
+						const slots = schedule?.slots.filter((slot) => (toMinutes(slot.startTime) - openingMinute) % interval === 0) ?? [];
+						return <article key={resource.id} className="overflow-hidden rounded-xl border border-obc-border bg-white">
+							<header className="flex flex-wrap items-center justify-between gap-2 border-b border-obc-border px-4 py-3 sm:px-5">
+								<div className="min-w-0"><h3 className="truncate text-[14px] font-semibold text-obc-charcoal">{resource.name}</h3>{resource.location && <p className="mt-0.5 flex items-center gap-1 text-[11px] text-obc-muted"><MapPin size={12} />{resource.location.name}</p>}</div>
+								{schedule?.operatingHours && <p className="whitespace-nowrap text-[11px] text-obc-muted">Jam operasional {schedule.operatingHours.openTime}–{schedule.operatingHours.closeTime}</p>}
+							</header>
+							<div className="p-4 sm:px-5">
+								{!schedule ? <p className="text-[12px] text-obc-muted">Jadwal lapangan tidak tersedia.</p> : schedule.isClosed || slots.length === 0 ? <p className="text-[12px] text-obc-muted">Tidak ada jadwal pada tanggal ini.</p> : <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
+									{slots.map((slot) => <button key={slot.startTime} type="button" onClick={() => openSlot(resource, slot)} title={`${slotStatusLabels[slot.status]} · ${slot.startTime}–${slot.endTime}`} className={`inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border text-[12px] font-semibold transition-colors ${slot.status === "available" ? "border-obc-border bg-[#F3F8E8] text-obc-green hover:border-obc-green hover:bg-obc-green hover:text-white" : slot.status === "booked" ? "border-[#EBCBC7] bg-[#FDF2F2] text-[#A53B3B] hover:border-[#B42318]" : "border-obc-border bg-[#F1EFE8] text-obc-muted hover:border-obc-green"}`}><Clock3 size={13} />{slot.startTime}</button>)}
+								</div>}
+								{schedule && <div className="mt-3 flex flex-wrap gap-3 border-t border-obc-border pt-3 text-[10px] text-obc-muted"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-sm bg-[#F3F8E8] ring-1 ring-obc-border" />Tersedia</span><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-sm bg-[#FDF2F2] ring-1 ring-[#EBCBC7]" />Terisi</span><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-sm bg-[#F1EFE8] ring-1 ring-obc-border" />Diproses / tutup</span></div>}
+							</div>
+						</article>;
+					})}
+				</div>}
+			</section>
+
+			{selectedSlot && <BookingDetailModal resource={selectedSlot.resource} slot={selectedSlot.slot} bookings={selectedSlot.bookings} date={selectedDate} onClose={() => setSelectedSlot(null)} />}
+		</>
 	);
 }
