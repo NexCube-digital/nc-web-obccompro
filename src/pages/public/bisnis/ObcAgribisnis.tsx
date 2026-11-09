@@ -182,7 +182,7 @@ function AgribisnisPage() {
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24 mb-12">
 						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
-						<WhatsAppCard className="md:!w-full" title={waTitle} description={waDescription} />
+						<WhatsAppCard tenantSlug="agribisnis" className="md:!w-full" title={waTitle} description={waDescription} />
 					</div>
 				</aside>
 			</div>
@@ -293,7 +293,7 @@ function AgribisnisPage() {
 			{/* Card WhatsApp fixed di bawah layar pada mobile dan tablet; desktop memakai sidebar sticky */}
 			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
 				<div className="mx-auto w-full max-w-[720px]">
-					<WhatsAppCard variant="bar" title={waTitle} description={waDescription} />
+						<WhatsAppCard tenantSlug="agribisnis" variant="bar" title={waTitle} description={waDescription} />
 				</div>
 			</div>
 		</div>

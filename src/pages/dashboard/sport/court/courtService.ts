@@ -59,7 +59,7 @@ export function getCourtResourceImage(resource: Pick<CourtResource, "imageUrl">)
 export const courtService = {
   async getResources(tenant = "obc-sport"): Promise<CourtResource[]> {
     const response = await apiClient.get<ApiSuccess<CourtResource[]>>("/sports/resources", {
-      params: { tenant },
+      params: { tenant, _refresh: Date.now() },
     });
     return response.data.data;
   },

@@ -23,6 +23,21 @@ export type SportType =
 	| "event"
 	| "other";
 
+export type AdminBookingCustomer = { id: string; name: string; email: string; phone: string | null };
+
+export type AdminFullDayBookingResult = {
+	bookingId: string;
+	bookingIds: string[];
+	status: string;
+	resource: { id: string; name: string };
+	bookingDate: string;
+	startTime: string;
+	endTime: string;
+	customer: AdminBookingCustomer | null;
+	guest: { name: string; email: string | null; phone: string | null } | null;
+	message: string;
+};
+
 export type ActiveStatus = "active" | "inactive";
 export type StatusUpdate<T extends string> = { id: string; status: T };
 
@@ -50,6 +65,7 @@ export type SportBooking = {
 	createdAt: string;
 	resource: { id: string; name: string; resourceType: string };
 	customer: { id: string; name: string; email: string; phone: string | null } | null;
+	guest: { name: string; email: string | null; phone: string | null } | null;
 	staffCreator: { id: string; name: string; email: string; phone: string | null } | null;
 	latestPayment: { status: string; method: string | null; paidAt: string | null } | null;
 };
@@ -91,6 +107,7 @@ export type SportBookingDetails = {
 	createdAt: string;
 	updatedAt: string;
 	customer: { id: string; name: string; email: string; phone: string | null; status: string } | null;
+	guest: { name: string; email: string | null; phone: string | null } | null;
 	staffCreator: { id: string; name: string; email: string; role: string } | null;
 	payments: {
 		id: string;
@@ -258,6 +275,30 @@ async function getPaginated<T>(url: string, params: ListParams): Promise<Paginat
 }
 
 export const sportService = {
+	async searchAdminCustomers(search: string): Promise<AdminBookingCustomer[]> {
+		const response = await apiClient.get<ApiSuccess<{ items: AdminBookingCustomer[] }>>("/admin/customers", {
+			params: { search, status: "active", limit: 10 },
+		});
+		return response.data.data.items;
+	},
+	async createAdminFullDayBooking(input: {
+		resourceId: string;
+		bookingDate: string;
+		startTime: string;
+		endTime: string;
+		sportType: SportType;
+		customerId?: string;
+		guestName?: string;
+		guestEmail?: string;
+		guestPhone?: string;
+	}): Promise<AdminFullDayBookingResult> {
+		const response = await apiClient.post<ApiSuccess<AdminFullDayBookingResult>>("/sports/bookings", {
+			...input,
+			fullDayAdmin: true,
+			bookingType: "regular",
+		});
+		return response.data.data;
+	},
 	getBookings(params: ListParams & { status?: BookingStatus }): Promise<Paginated<SportBooking>> {
 		return getPaginated("/admin/bookings", params);
 	},

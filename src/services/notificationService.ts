@@ -1,21 +1,11 @@
 import apiClient from "./api";
 
-export type AdminNotificationType = "info" | "promo" | "booking" | "payment" | "membership" | "system";
-
-export interface AdminNotificationPayload {
-	customerId: string | null;
-	title: string;
-	body: string;
-	type: AdminNotificationType;
-	actionUrl: string | null;
-}
-
 export interface AdminNotification {
 	id: string;
 	customerId: string | null;
 	title: string;
 	body: string;
-	type: AdminNotificationType;
+	type: string;
 	actionUrl: string | null;
 	isRead: boolean;
 	createdAt: string;
@@ -23,14 +13,17 @@ export interface AdminNotification {
 
 interface ApiSuccess<T> {
 	data: T;
+	meta?: {
+		total: number;
+		totalPages: number;
+		page: number;
+		limit: number;
+	};
 }
 
-export async function createAdminNotification(
-	payload: AdminNotificationPayload,
-): Promise<AdminNotification> {
-	const response = await apiClient.post<ApiSuccess<AdminNotification>>(
-		"/admin/notifications",
-		payload,
-	);
+export async function getAdminNotifications(limit = 8): Promise<AdminNotification[]> {
+	const response = await apiClient.get<ApiSuccess<AdminNotification[]>>("/admin/notifications", {
+		params: { page: 1, limit },
+	});
 	return response.data.data;
 }

@@ -18,6 +18,7 @@ export default function SportBooking() {
   const [resourcesLoading, setResourcesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(getTodayDateValue);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -59,7 +60,7 @@ export default function SportBooking() {
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [resources, resourcesLoading, selectedDate]);
+  }, [resources, resourcesLoading, selectedDate, refreshKey]);
 
   const handleDateChange = (value: string) => {
     setSelectedDate(value);
@@ -85,6 +86,7 @@ export default function SportBooking() {
             bookings={bookings}
             loading={loading}
             selectedDate={selectedDate}
+            onBookingCreated={() => setRefreshKey((key) => key + 1)}
           />
         </div>
       </div>

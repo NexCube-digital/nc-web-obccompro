@@ -6,23 +6,10 @@ export interface SiteContactContent {
 	section: "site-contact";
 	email: string;
 	whatsapp: string;
-	whatsappPic?: string;
 	instagram: string;
 	tiktok: string;
 	address: string;
 	maps: string;
-}
-
-export interface SiteLocation {
-	address: string;
-	mapUrl: string;
-	units: string[];
-	info: string[];
-}
-
-export interface LocationsContent {
-	section: "locations";
-	locations: SiteLocation[];
 }
 
 async function getContent<T>(section: string): Promise<T> {
@@ -38,6 +25,4 @@ async function saveContent<T>(payload: T): Promise<T> {
 export const siteContentService = {
 	getContact: () => getContent<SiteContactContent>("site-contact"),
 	saveContact: (payload: SiteContactContent) => saveContent(payload),
-	getLocations: () => getContent<LocationsContent>("locations"),
-	saveLocations: (payload: LocationsContent) => saveContent(payload),
 };

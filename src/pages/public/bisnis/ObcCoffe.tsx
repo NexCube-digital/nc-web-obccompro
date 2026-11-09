@@ -204,6 +204,7 @@ function CoffeePage() {
 					<div className="sticky top-24 mb-12">
 						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
+							tenantSlug="coffee"
 							className="lg:!w-full"
 							title={t('units.coffee.whatsappCardTitle')}
 							description={t('units.coffee.whatsappCardDesc')}
@@ -321,6 +322,7 @@ function CoffeePage() {
 			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
 				<div className="mx-auto w-full max-w-[720px]">
 					<WhatsAppCard
+						tenantSlug="coffee"
 						variant="bar"
 						title={t('units.coffee.whatsappCardTitle')}
 						description={t('units.coffee.whatsappCardDesc')}

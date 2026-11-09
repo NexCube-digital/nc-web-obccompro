@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
 import usePublicSiteContact from '../../hooks/usePublicSiteContact'
+import { getPublicBusinessUnit } from '../../services/businessUnitPublicService'
 import { getWhatsAppHref } from '../../services/publicSiteContactService'
 
 interface WhatsAppCardProps {
@@ -8,6 +10,7 @@ interface WhatsAppCardProps {
 	className?: string
 	/** 'card' = kartu penuh (sidebar/section). 'bar' = ringkas untuk bar fixed di bawah layar. */
 	variant?: 'card' | 'bar'
+	tenantSlug?: string
 }
 
 export function WhatsAppCard({
@@ -15,9 +18,21 @@ export function WhatsAppCard({
 	description,
 	className = '',
 	variant = 'card',
+	tenantSlug,
 }: WhatsAppCardProps) {
 	const contact = usePublicSiteContact()
-	const link = getWhatsAppHref(contact.whatsapp)
+	const [tenantWhatsAppUrl, setTenantWhatsAppUrl] = useState('')
+
+	useEffect(() => {
+		if (!tenantSlug) return
+		let active = true
+		getPublicBusinessUnit(tenantSlug)
+			.then((tenant) => { if (active) setTenantWhatsAppUrl(tenant.whatsappUrl ?? '') })
+			.catch(() => { if (active) setTenantWhatsAppUrl('') })
+		return () => { active = false }
+	}, [tenantSlug])
+
+	const link = tenantWhatsAppUrl || getWhatsAppHref(contact.whatsapp)
 
 	if (variant === 'bar') {
 		return (

@@ -7,6 +7,8 @@ export interface BusinessUnit {
 	name: string;
 	slug: string;
 	description: string | null;
+	picName: string | null;
+	picWhatsapp: string | null;
 	tenantType: "sport" | "event" | "fnb" | "other";
 	config: Record<string, unknown>;
 	status: "active" | "inactive";
@@ -18,6 +20,8 @@ export interface BusinessUnitInput {
 	name: string;
 	slug: string;
 	description: string | null;
+	picName?: string | null;
+	picWhatsapp?: string | null;
 	tenantType: BusinessUnit["tenantType"];
 	config: {
 		title?: string;

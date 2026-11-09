@@ -3,7 +3,6 @@ import apiClient from "./api";
 export interface PublicSiteContact {
 	email: string;
 	whatsapp: string;
-	whatsappPic: string;
 	instagram: string;
 	tiktok: string;
 	address: string;
@@ -20,7 +19,7 @@ interface PublicHomeContent {
 	};
 }
 
-export const emptyPublicSiteContact: PublicSiteContact = { email: "", whatsapp: "", whatsappPic: "", instagram: "", tiktok: "", address: "", maps: "" };
+export const emptyPublicSiteContact: PublicSiteContact = { email: "", whatsapp: "", instagram: "", tiktok: "", address: "", maps: "" };
 let cachedContact: PublicSiteContact | null = null;
 let cachedAt = 0;
 let request: Promise<PublicSiteContact> | null = null;
@@ -36,7 +35,6 @@ export function getPublicSiteContact(): Promise<PublicSiteContact> {
 			return {
 				email: readString("email"),
 				whatsapp: readString("whatsapp"),
-				whatsappPic: readString("whatsappPic"),
 				instagram: readString("instagram"),
 				tiktok: readString("tiktok"),
 				address: readString("address"),

@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Bell, ChevronDown, LogOut, Menu, Search, Settings } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bell, ChevronDown, LoaderCircle, LogOut, Menu, Search, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
 import { getProfilePhotoUrl } from "../../../../services/accountService";
-import { createAdminNotification, type AdminNotificationType } from "../../../../services/notificationService";
+import { getAdminNotifications, type AdminNotification } from "../../../../services/notificationService";
 
 type Props = { onToggleSidebar: () => void };
 
@@ -14,12 +13,8 @@ export default function Header({ onToggleSidebar }: Props) {
   const [user, setUser] = useState(() => authService.getCurrentSession()?.user ?? null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notificationTitle, setNotificationTitle] = useState("");
-  const [notificationBody, setNotificationBody] = useState("");
-  const [notificationType, setNotificationType] = useState<AdminNotificationType>("info");
-  const [notificationCustomerId, setNotificationCustomerId] = useState("");
-  const [notificationActionUrl, setNotificationActionUrl] = useState("");
-  const [sendingNotification, setSendingNotification] = useState(false);
+  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
@@ -57,31 +52,27 @@ export default function Header({ onToggleSidebar }: Props) {
     await navigateWithTransition("/login", navigate, { replace: true });
   };
 
-  const handleSendNotification = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!notificationCustomerId.trim() && !window.confirm("Kirim notifikasi ini ke semua pelanggan?")) return;
+  useEffect(() => {
+    if (!notificationsOpen) return;
 
-    setSendingNotification(true);
-    try {
-      await createAdminNotification({
-        customerId: notificationCustomerId.trim() || null,
-        title: notificationTitle.trim(),
-        body: notificationBody.trim(),
-        type: notificationType,
-        actionUrl: notificationActionUrl.trim() || null,
-      });
-      setNotificationTitle("");
-      setNotificationBody("");
-      setNotificationCustomerId("");
-      setNotificationActionUrl("");
-      setNotificationType("info");
-      toast.success("Notifikasi berhasil dikirim.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Gagal mengirim notifikasi.");
-    } finally {
-      setSendingNotification(false);
-    }
-  };
+    let active = true;
+    const loadNotifications = async () => {
+      setNotificationsLoading(true);
+      try {
+        const items = await getAdminNotifications();
+        if (active) setNotifications(items);
+      } finally {
+        if (active) setNotificationsLoading(false);
+      }
+    };
+
+    void loadNotifications();
+    const intervalId = window.setInterval(() => void loadNotifications(), 30_000);
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [notificationsOpen]);
 
   useEffect(() => {
     if (!profileMenuOpen && !notificationsOpen) return;
@@ -90,7 +81,6 @@ export default function Header({ onToggleSidebar }: Props) {
       const target = event.target as Node;
       const insideProfileMenu = profileMenuRef.current?.contains(target);
       const insideNotifications = notificationsRef.current?.contains(target);
-
       if (!insideProfileMenu && !insideNotifications) {
         setProfileMenuOpen(false);
         setNotificationsOpen(false);
@@ -147,55 +137,59 @@ export default function Header({ onToggleSidebar }: Props) {
         <div ref={notificationsRef} className="relative">
           <button
             type="button"
-            aria-label="Notifikasi"
+            aria-label="Notifikasi aktivitas sistem"
             aria-expanded={notificationsOpen}
             onClick={() => {
               setNotificationsOpen((open) => !open);
               setProfileMenuOpen(false);
             }}
-            className="grid h-9 w-9 place-items-center rounded-lg border border-obc-border text-obc-charcoal transition-colors hover:bg-obc-hover-surface"
+            className="relative grid h-9 w-9 place-items-center rounded-lg border border-obc-border text-obc-charcoal transition-colors hover:bg-obc-hover-surface"
           >
             <Bell size={16} />
+            {notifications.some((notification) => !notification.isRead) && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-obc-red" aria-hidden="true" />
+            )}
           </button>
 
           {notificationsOpen && (
             <section
-              aria-label="Notifikasi"
+              aria-label="Notifikasi aktivitas sistem"
               className="absolute right-0 top-full z-30 mt-2 w-[340px] max-w-[calc(100vw-24px)] overflow-hidden rounded-lg border border-obc-border bg-white shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
             >
               <div className="border-b border-obc-border px-4 py-3">
-                <h2 className="font-heading text-[14px] font-semibold text-obc-charcoal">
-                  Kirim notifikasi
-                </h2>
+                <h2 className="font-heading text-[14px] font-semibold text-obc-charcoal">Aktivitas sistem</h2>
               </div>
-              <form onSubmit={handleSendNotification} className="space-y-3 p-4">
-                <label className="block text-[12px] font-medium text-obc-charcoal">Judul
-                  <input required maxLength={255} value={notificationTitle} onChange={(event) => setNotificationTitle(event.target.value)} className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-3 text-[12px] outline-none focus:border-obc-green" />
-                </label>
-                <label className="block text-[12px] font-medium text-obc-charcoal">Isi notifikasi
-                  <textarea required maxLength={2000} rows={3} value={notificationBody} onChange={(event) => setNotificationBody(event.target.value)} className="mt-1 w-full resize-y rounded-lg border border-obc-border bg-obc-ivory px-3 py-2 text-[12px] outline-none focus:border-obc-green" />
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="block text-[12px] font-medium text-obc-charcoal">Jenis
-                    <select value={notificationType} onChange={(event) => setNotificationType(event.target.value as AdminNotificationType)} className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-2 text-[12px] outline-none focus:border-obc-green">
-                      <option value="info">Info</option><option value="promo">Promo</option><option value="booking">Booking</option><option value="payment">Pembayaran</option><option value="membership">Membership</option><option value="system">Sistem</option>
-                    </select>
-                  </label>
-                  <label className="block text-[12px] font-medium text-obc-charcoal">ID pelanggan <span className="font-normal text-obc-muted">(opsional)</span>
-                    <input value={notificationCustomerId} onChange={(event) => setNotificationCustomerId(event.target.value)} pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" title="Masukkan UUID pelanggan yang valid, atau kosongkan untuk broadcast." placeholder="Kosong = semua pelanggan" className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-2 text-[11px] outline-none focus:border-obc-green" />
-                  </label>
-                </div>
-                <label className="block text-[12px] font-medium text-obc-charcoal">URL aksi <span className="font-normal text-obc-muted">(opsional)</span>
-                  <input maxLength={500} value={notificationActionUrl} onChange={(event) => setNotificationActionUrl(event.target.value)} placeholder="/booking atau https://..." className="mt-1 h-9 w-full rounded-lg border border-obc-border bg-obc-ivory px-3 text-[12px] outline-none focus:border-obc-green" />
-                </label>
-                <button type="submit" disabled={sendingNotification} className="h-9 w-full rounded-lg bg-obc-green px-3 text-[12px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:opacity-60">
-                  {sendingNotification ? "Mengirim..." : "Kirim notifikasi"}
-                </button>
-              </form>
+              {notificationsLoading ? (
+                <div className="flex justify-center py-8"><LoaderCircle size={20} className="animate-spin text-obc-green" /></div>
+              ) : notifications.length === 0 ? (
+                <p className="px-4 py-8 text-center text-xs text-obc-muted">Belum ada aktivitas.</p>
+              ) : (
+                <ul className="max-h-[min(60vh,360px)] overflow-y-auto">
+                  {notifications.map((notification) => (
+                    <li key={notification.id} className={`border-b border-obc-border px-4 py-3 last:border-b-0 ${notification.isRead ? "bg-white" : "bg-obc-ivory"}`}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (notification.actionUrl) navigate(notification.actionUrl);
+                          setNotificationsOpen(false);
+                        }}
+                        className="w-full text-left"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <h3 className="font-heading text-xs font-bold text-obc-charcoal">{notification.title}</h3>
+                          <time className="shrink-0 text-[10px] text-obc-muted" dateTime={notification.createdAt}>
+                            {new Date(notification.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                          </time>
+                        </div>
+                        <p className="mt-1 text-xs leading-relaxed text-obc-muted">{notification.body}</p>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           )}
         </div>
-
         <div ref={profileMenuRef} className="relative">
           <button
             type="button"

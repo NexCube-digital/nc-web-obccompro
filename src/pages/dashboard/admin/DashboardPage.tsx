@@ -16,20 +16,36 @@ import DashboardActivity from "./DashboardActivity";
 
 async function getActiveResourceDistribution() {
   const pageSize = 100;
-  const firstPage = await sportService.getResources({ page: 1, limit: pageSize, status: "active" });
-  const remainingPages = await Promise.all(Array.from(
-    { length: Math.max(0, firstPage.meta.totalPages - 1) },
-    (_, index) => sportService.getResources({ page: index + 2, limit: pageSize, status: "active" }),
-  ));
+  const firstPage = await sportService.getResources({
+    page: 1,
+    limit: pageSize,
+    status: "active",
+  });
+  const remainingPages = await Promise.all(
+    Array.from(
+      { length: Math.max(0, firstPage.meta.totalPages - 1) },
+      (_, index) =>
+        sportService.getResources({
+          page: index + 2,
+          limit: pageSize,
+          status: "active",
+        }),
+    ),
+  );
   const resources = [firstPage, ...remainingPages].flatMap((page) => page.data);
   const counts = new Map<string, number>();
 
   for (const resource of resources) {
-    const sportTypes = new Set(resource.sportTypes.length ? resource.sportTypes : ["other"]);
-    for (const sportType of sportTypes) counts.set(sportType, (counts.get(sportType) ?? 0) + 1);
+    const sportTypes = new Set(
+      resource.sportTypes.length ? resource.sportTypes : ["other"],
+    );
+    for (const sportType of sportTypes)
+      counts.set(sportType, (counts.get(sportType) ?? 0) + 1);
   }
 
-  return [...counts].map(([sport, count]) => ({ sport, count })).sort((first, second) => second.count - first.count);
+  return [...counts]
+    .map(([sport, count]) => ({ sport, count }))
+    .sort((first, second) => second.count - first.count);
 }
 
 /* ───────────── Halaman ───────────── */
@@ -37,12 +53,17 @@ export default function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [comproSummary, setComproSummary] = useState<ComproDashboardSummary | null>(null);
+  const [comproSummary, setComproSummary] =
+    useState<ComproDashboardSummary | null>(null);
   const [mediaCount, setMediaCount] = useState<number | null>(null);
   const [customerCount, setCustomerCount] = useState<number | null>(null);
   const [activeStaffCount, setActiveStaffCount] = useState<number | null>(null);
-  const [activeBusinessUnitCount, setActiveBusinessUnitCount] = useState<number | null>(null);
-  const [activeResourceDistribution, setActiveResourceDistribution] = useState<{ sport: string; count: number }[] | null>(null);
+  const [activeBusinessUnitCount, setActiveBusinessUnitCount] = useState<
+    number | null
+  >(null);
+  const [activeResourceDistribution, setActiveResourceDistribution] = useState<
+    { sport: string; count: number }[] | null
+  >(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,14 +81,32 @@ export default function DashboardPage() {
       ]);
       if (cancelled) return;
 
-      const [sport, compro, media, customers, staff, businessUnits, resourceDistribution] = results;
+      const [
+        sport,
+        compro,
+        media,
+        customers,
+        staff,
+        businessUnits,
+        resourceDistribution,
+      ] = results;
       if (sport.status === "fulfilled") setSummary(sport.value);
       if (compro.status === "fulfilled") setComproSummary(compro.value);
       if (media.status === "fulfilled") setMediaCount(media.value.length);
-      if (customers.status === "fulfilled") setCustomerCount(customers.value.pagination.total);
-      if (staff.status === "fulfilled") setActiveStaffCount(staff.value.filter((user) => user.status === "active" && user.role !== "super_admin").length);
-      if (businessUnits.status === "fulfilled") setActiveBusinessUnitCount(businessUnits.value.filter((unit) => unit.status === "active").length);
-      if (resourceDistribution.status === "fulfilled") setActiveResourceDistribution(resourceDistribution.value);
+      if (customers.status === "fulfilled")
+        setCustomerCount(customers.value.pagination.total);
+      if (staff.status === "fulfilled")
+        setActiveStaffCount(
+          staff.value.filter(
+            (user) => user.status === "active" && user.role !== "super_admin",
+          ).length,
+        );
+      if (businessUnits.status === "fulfilled")
+        setActiveBusinessUnitCount(
+          businessUnits.value.filter((unit) => unit.status === "active").length,
+        );
+      if (resourceDistribution.status === "fulfilled")
+        setActiveResourceDistribution(resourceDistribution.value);
       if (results.some((result) => result.status === "rejected")) {
         toast.error("Sebagian data dashboard gagal dimuat");
       }
@@ -118,8 +157,20 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <DashboardOverview summary={summary} comproSummary={comproSummary} mediaCount={mediaCount} customerCount={customerCount} activeStaffCount={activeStaffCount} activeBusinessUnitCount={activeBusinessUnitCount} loading={loading} />
-          <DashboardActivity bookings={summary?.recentBookings ?? []} resourceDistribution={activeResourceDistribution} loading={loading} />
+          <DashboardOverview
+            summary={summary}
+            comproSummary={comproSummary}
+            mediaCount={mediaCount}
+            customerCount={customerCount}
+            activeStaffCount={activeStaffCount}
+            activeBusinessUnitCount={activeBusinessUnitCount}
+            loading={loading}
+          />
+          <DashboardActivity
+            bookings={summary?.recentBookings ?? []}
+            resourceDistribution={activeResourceDistribution}
+            loading={loading}
+          />
         </main>
 
         <Footer />

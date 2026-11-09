@@ -27,7 +27,7 @@ const UNIT_LINKS = [
 ]
 
 type SocialLinks = { whatsapp: string; instagram: string; tiktok: string }
-type ContactDetails = { email: string; address: string; maps: string; whatsapp: string; whatsappPic: string }
+type ContactDetails = { email: string; address: string; maps: string; whatsapp: string }
 type PublicHomeContent = {
 	page?: { sections?: { sectionKey: string; content?: Partial<SocialLinks & ContactDetails> }[] }
 }
@@ -105,7 +105,7 @@ const backTopClass =
 function Footer() {
 	const { t } = useTranslation()
 	const [socialLinks, setSocialLinks] = useState<SocialLinks>({ whatsapp: '', instagram: '', tiktok: '' })
-	const [contactDetails, setContactDetails] = useState<ContactDetails>({ email: '', address: '', maps: '', whatsapp: '', whatsappPic: '' })
+	const [contactDetails, setContactDetails] = useState<ContactDetails>({ email: '', address: '', maps: '', whatsapp: '' })
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	useEffect(() => {
@@ -134,7 +134,6 @@ function Footer() {
 					address: typeof contactContent.address === 'string' ? contactContent.address.trim() : '',
 					maps: typeof contactContent.maps === 'string' ? contactContent.maps.trim() : '',
 					whatsapp: typeof contactContent.whatsapp === 'string' ? contactContent.whatsapp.trim() : '',
-					whatsappPic: typeof contactContent.whatsappPic === 'string' ? contactContent.whatsappPic.trim() : '',
 				})
 			}
 		}).catch(() => undefined)
@@ -277,7 +276,6 @@ function Footer() {
 										{contactDetails.email}
 									</a>
 								</li>
-								{contactDetails.whatsappPic && <li className="flex items-center gap-3 md:gap-2"><img src={whatsappIcon} alt="" aria-hidden="true" className="h-4 w-4 shrink-0 brightness-0 invert" /><a href={whatsappHref(contactDetails.whatsappPic)} target="_blank" rel="noreferrer" className="transition-colors hover:text-[#CDF178]">WhatsApp PIC</a></li>}
 								<li className="flex items-start gap-3 md:gap-2">
 									<MapPin size={15} className="mt-[3px] shrink-0" />
 									<a

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import TransitionLink from '../../components/common/TransitionLink'
 import { useTranslation } from 'react-i18next'
 import {
@@ -20,6 +21,7 @@ import agribusinessLogo from '../../assets/logo/unit bisnis/agribisnis.webp'
 import clockIcon from '../../assets/icon/clock.svg'
 import whatsappIcon from '../../assets/icon/whatsapp2.svg'
 import usePublicSiteContact from '../../hooks/usePublicSiteContact'
+import { getPublicBusinessUnits } from '../../services/businessUnitPublicService'
 import { getWhatsAppHref } from '../../services/publicSiteContactService'
 import guestHouseIcon from '../../assets/icon/iconstack.io - (House Door Fill).svg'
 import villaIcon from '../../assets/icon/iconstack.io - (Ic Fluent Bed 24 Filled).svg'
@@ -133,7 +135,19 @@ const BUSINESS_UNITS: BusinessUnit[] = [
 function BusinessUnitPage() {
 	const { t } = useTranslation()
 	const contact = usePublicSiteContact()
-	const whatsappHref = getWhatsAppHref(contact.whatsapp)
+	const fallbackWhatsappHref = getWhatsAppHref(contact.whatsapp)
+	const [tenantWhatsappUrls, setTenantWhatsappUrls] = useState<Record<string, string>>({})
+
+	useEffect(() => {
+		let active = true
+		getPublicBusinessUnits()
+			.then((units) => {
+				if (!active) return
+				setTenantWhatsappUrls(Object.fromEntries(units.filter((unit) => unit.whatsappUrl).map((unit) => [unit.slug, unit.whatsappUrl as string])))
+			})
+			.catch(() => { if (active) setTenantWhatsappUrls({}) })
+		return () => { active = false }
+	}, [])
 	return (
 		<div className="min-h-screen bg-obc-ivory">
 			<LandingNavbar />
@@ -240,6 +254,7 @@ function BusinessUnitPage() {
 				<div className="-mx-4 flex flex-col gap-5 md:mx-0 md:gap-16">
 					{BUSINESS_UNITS.map((unit, index) => {
 						const isReversed = index % 2 === 1
+						const whatsappHref = tenantWhatsappUrls[unit.slug] || fallbackWhatsappHref
 						const translationKey =
 							unit.slug === 'guest-house' ? 'guestHouse' : unit.slug === 'food-court' ? 'foodCourt' : unit.slug
 
