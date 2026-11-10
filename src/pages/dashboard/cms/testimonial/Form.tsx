@@ -2,8 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, ImagePlus, Save, Star, Trash2 } from "lucide-react";
 import { getTestimonialAvatarUrl } from "../../../../services/Public/Testimonial";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import type { Testimonial } from "./testimonialService";
-import type { TestimonialPayload } from "./testimonialService";
+import type { Testimonial } from "../../services/cms/testimonialService";
+import type { TestimonialPayload } from "../../services/cms/testimonialService";
 
 export type TestimonialFormValues = Omit<
   TestimonialPayload,

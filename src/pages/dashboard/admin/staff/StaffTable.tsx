@@ -17,7 +17,7 @@ import {
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { toast } from "sonner";
-import { accountService, type Staff, type StaffStatus } from "./AccountService";
+import { accountService, type Staff, type StaffStatus } from "../../services/admin/AccountService";
 
 const PAGE_SIZE = 10;
 const statusLabels: Record<StaffStatus, string> = {

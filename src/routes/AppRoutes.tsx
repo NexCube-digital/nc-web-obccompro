@@ -58,9 +58,7 @@ const InvoiceCardPaymentPage = lazyPreload(() => import('../pages/dashboard/admi
 const InvoiceFinalizingPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FinalisasiOrder'))
 const InvoiceSuccessPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/SuccessOrder'))
 const InvoiceFailedPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FailedOrder'))
-const SettingsPage = lazyPreload(() => import('../pages/dashboard/admin/Settings'))
 const StaffPage = lazyPreload(() => import('../pages/dashboard/admin/staff/Management'))
-const ContactsPage = lazyPreload(() => import('../pages/dashboard/cms/contact/Management'))
 const PortfolioPage = lazyPreload(() => import('../pages/dashboard/cms/portfolio/Management'))
 const RolePermissionsPage = lazyPreload(() => import('../pages/dashboard/admin/role/Management'))
 const ReportsPage = LaporanPage
@@ -101,9 +99,7 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/laporan': LaporanPage,
 	'/admin/reports': ReportsPage,
 	'/admin/activities': ActivitiesPage,
-	'/pengaturan': SettingsPage,
 	'/staff': StaffPage,
-	'/admin/contacts': ContactsPage,
 	'/admin/portfolio': PortfolioPage,
 	'/admin/role-permissions': RolePermissionsPage,
 }
@@ -161,10 +157,8 @@ const AppRoutes = (
 		
 		{/* admin */}
 		<Route path="/admin/invoices" element={<RequireAuth><InvoiceManagementPage /></RequireAuth>} />
-		<Route path="/admin/contacts" element={<RequireAuth><ContactsPage /></RequireAuth>} />
 		<Route path="/admin/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
 		<Route path="/admin/role-permissions" element={<RequireAuth><RolePermissionsPage /></RequireAuth>} />
-		<Route path="/pengaturan" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 		<Route path="/staff" element={<RequireAuth><StaffPage /></RequireAuth>} />	</>
 )
 

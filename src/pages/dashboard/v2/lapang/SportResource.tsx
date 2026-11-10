@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
+import { getMediaUrl } from "../media/mediaService";
 import { mediaService } from "../media/mediaService";
-import { unitbisnisService } from "../../cms/unit-bisnis/unitbisnisService";
-import { sportService, type SportResource, type SportResourceInput } from "../../sport/SportService";
+import { unitbisnisService } from "../../services/cms/unitbisnisService";
+import { sportService, type SportResource, type SportResourceInput } from "../../services/sport/SportService";
 import ResourceForm, { type LocationOption } from "./ResourceForm";
 import ResourceTable from "./Table";
 

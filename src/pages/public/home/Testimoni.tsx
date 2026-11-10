@@ -80,25 +80,20 @@ export default function Testimoni() {
 
 		<section className="flex flex-col justify-center overflow-hidden py-6 md:pb-[clamp(8px,calc(100px_+_(100svh_-_800px)_*_0.3),120px)] md:pt-[clamp(44px,calc(72px_+_(100svh_-_800px)_*_0.1),84px)]">
 			<div className="mx-auto flex w-[calc(100%-40px)] max-w-[1280px] flex-col md:block md:w-[calc(100%-48px)]">
-				{/* Header: mobile "contents" supaya anak-anaknya bisa di-order; desktop flex */}
 				<div className="contents md:flex md:flex-wrap md:items-start md:justify-between md:gap-6">
-					{/* Judul: mobile rata tengah */}
 					<div className="order-1 flex w-full flex-col items-center justify-start pt-[4px] text-center md:order-none md:w-auto md:items-start md:text-left">
 						<span className="mb-2 flex items-center gap-2 font-['Montserrat'] text-[14px] font-semibold uppercase tracking-[1px] text-[#000000CC] md:text-[13px] md:tracking-[1.4px]">
 							{t('testimonialsSection.badge')}
 						</span>
-						{/* Di md judul 36px agar muat sebaris dengan deskripsi; 46px mulai lg */}
 						<h2 className="h-auto min-h-[40px] w-full min-w-0 max-w-[520px] gap-1 py-1 whitespace-pre-line font-['Montserrat'] text-[22px] font-bold leading-[30px] tracking-[0px] text-[#000000] md:min-w-[274px] md:text-[clamp(26px,4.5svh,36px)] md:font-medium md:leading-[clamp(30px,5.25svh,42px)] lg:text-[clamp(30px,5.75svh,46px)] lg:leading-[clamp(32px,5.75svh,46px)]">
 							{t('testimonialsSection.title')}
 						</h2>
 					</div>
 
 					<div className="contents md:flex md:flex-col md:items-end md:gap-3 md:text-right">
-						{/* Deskripsi: mobile rata tengah, 13px. Di md lebar dibatasi 320px agar tidak turun ke bawah judul */}
 						<p className="order-2 mt-1 max-w-full text-center font-['Montserrat'] text-[13px] leading-[1.5] text-[#4b5563] md:order-none md:mt-0 md:max-w-[320px] md:text-right md:text-[15px] lg:max-w-[420px]">
 							{t('testimonialsSection.subtitle')}
 						</p>
-						{/* Panah: mobile pindah ke bawah carousel, rata kanan, lebih kecil */}
 						<div className="order-5 mt-3 flex gap-2.5 self-end md:order-none md:mt-0 md:self-auto">
 							<button
 								disabled={testimonials.length < 2}
@@ -122,8 +117,6 @@ export default function Testimoni() {
 					</div>
 				</div>
 
-				{/* Carousel: mobile melebar sampai tepi layar (-mx-5) supaya kartu kiri/kanan terlihat sebagian.
-				    Tinggi mengikuti tinggi layar (svh) di desktop agar seluruh section muat dalam satu layar. */}
 				<div className="relative order-3 -mx-5 mt-6 h-[clamp(430px,58svh,460px)] overflow-hidden md:order-none md:mx-0 md:mt-[clamp(16px,3svh,32px)] md:h-[clamp(320px,calc(400px_+_(100svh_-_800px)_*_1.1),470px)]">
 					{isLoading ? (
 						<div role="status" className="absolute inset-0 grid place-items-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.loading')}</div>
@@ -178,7 +171,6 @@ export default function Testimoni() {
 								</div>
 
 								<Quote className="mt-3 shrink-0 rotate-180 text-[#d1d5db]" width={36} height={26} preserveAspectRatio="none" fill="currentColor" strokeWidth={0} />
-								{/* Teks: mengisi sisa tinggi kartu (flex-1) sehingga logo/bintang selalu menempel di bawah */}
 								<p className="mt-3 min-h-0 w-full flex-1 overflow-hidden font-['Montserrat'] text-[16px] font-normal leading-[27px] tracking-[0px] text-[#000000] md:text-[clamp(14px,2.25svh,18px)] md:leading-[clamp(24px,3.75svh,30px)]">
 									{i18n.resolvedLanguage?.startsWith('en') && item.textEn ? item.textEn : item.text}
 								</p>

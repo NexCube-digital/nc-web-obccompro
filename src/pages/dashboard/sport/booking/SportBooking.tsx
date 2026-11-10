@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { courtService, type CourtResource } from "../court/courtService";
-import { sportService, type ResourceAvailability, type SportBooking } from "../SportService";
+import { courtService, type CourtResource } from "../../services/sport/courtService";
+import { sportService, type ResourceAvailability, type SportBooking } from "../../services/sport/SportService";
 import BookingCalendar from "./BookingCalendar";
 import BookingList from "./BookingList";
 

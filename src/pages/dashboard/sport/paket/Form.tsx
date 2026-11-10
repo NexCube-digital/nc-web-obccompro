@@ -12,7 +12,7 @@ import type {
   PricingPackage,
   PricingPackageUpdateInput,
   SportType,
-} from "../SportService";
+} from "../../services/sport/SportService";
 
 type Props = {
   item: PricingPackage;

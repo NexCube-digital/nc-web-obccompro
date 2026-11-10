@@ -5,7 +5,7 @@ import {
   REPORT_TYPE_LABELS,
   type ReportRecord,
   type ReportType,
-} from "./reportService";
+} from "../../services/admin/reportService";
 
 const PAGE_SIZE = 10;
 

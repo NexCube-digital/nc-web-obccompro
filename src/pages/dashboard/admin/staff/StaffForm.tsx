@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import { accountService, type StaffRole } from "./AccountService";
+import { accountService, type StaffRole } from "../../services/admin/AccountService";
 
 type StaffFormValues = {
   name: string;

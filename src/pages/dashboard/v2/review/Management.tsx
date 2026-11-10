@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
 import ReviewTable from "./Table";
 import ReviewForm from "./Form";
 import { reviewService, type ReviewItem, type ReviewStatus } from "./reviewService";

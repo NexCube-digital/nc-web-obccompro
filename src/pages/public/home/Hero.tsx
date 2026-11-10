@@ -108,14 +108,7 @@ export default function Hero() {
 				aria-hidden="true"
 			/>
 
-			{/* Konten: mobile rata kiri 18px, tablet & desktop di tengah */}
 			<div className="hero-content-enter relative z-10 ml-[18px] w-[calc(100%-56px)] max-w-[1280px] md:mx-auto md:w-[calc(100%-48px)]">
-				{/*
-					Trik "grid stacking": semua judul ditumpuk di 1 sel grid yang sama.
-					Tinggi sel otomatis = judul TERTINGGI, jadi tinggi blok selalu tetap
-					di semua slide dan semua ukuran layar -> teks & tombol tidak naik-turun.
-					Judul yang tidak aktif hanya disembunyikan (invisible), bukan dihapus.
-				*/}
 				<h1 className="grid items-end whitespace-pre-line font-['Montserrat'] text-[34px] font-bold leading-[42px] tracking-[0.5px] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] md:text-[46px] md:leading-[56px] lg:text-[56px] lg:leading-[68px] xl:text-[65px] xl:leading-[80px]">
 					{translatedHeroSlides.map((slide, index) => (
 						<span
@@ -128,7 +121,6 @@ export default function Hero() {
 					))}
 				</h1>
 
-				{/* Deskripsi: cara yang sama, tinggi mengikuti deskripsi terpanjang */}
 				<p className="my-[14px] mb-3 grid max-w-[620px] font-['Montserrat'] text-[11px] font-semibold leading-[14px] tracking-[0.5px] text-white [text-align:justify] [text-shadow:0px_1px_4px_rgba(0,0,0,0.3)] md:mb-5 md:max-w-[560px] md:text-[12px] md:leading-[16px] xl:mb-6 xl:max-w-[620px] xl:leading-[15px]">
 					{translatedHeroSlides.map((slide, index) => (
 						<span
@@ -141,7 +133,6 @@ export default function Hero() {
 					))}
 				</p>
 
-				{/* Tombol: sejajar horizontal (2 tombol + chevron di tengah) */}
 				<div className="flex max-w-[520px] flex-row gap-0 md:gap-1">
 					<a
 						className="inline-flex flex-none items-center justify-center rounded-full border border-white/90 bg-[#27282540] px-[10px] py-[4px] text-center font-heading text-[13px] font-semibold text-white shadow-[0px_4px_12px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all hover:scale-[1.02] hover:border-obc-green hover:bg-obc-green md:flex-1 md:px-6 md:py-[11px]"
@@ -158,7 +149,6 @@ export default function Hero() {
 						{activeHeroSlide.primaryBtn.text}
 					</a>
 
-					{/* Ikon chevron: klik untuk scroll ke footer */}
 					<button
 						type="button"
 						onClick={scrollToFooter}

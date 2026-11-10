@@ -13,7 +13,7 @@ import {
   PERMISSION_LABELS,
   ROLE_LABELS,
   type RolePermission,
-} from "./roleService";
+} from "../../services/admin/roleService";
 
 type Props = {
   roles: RolePermission[];

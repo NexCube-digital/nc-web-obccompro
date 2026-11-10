@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import DeleteModal from "../../components/ui/DeleteModal";
-import { testimonialService, type Testimonial } from "./testimonialService";
+import { testimonialService, type Testimonial } from "../../services/cms/testimonialService";
 import { toast } from "sonner";
 import TestimonialForm, { type TestimonialFormValues } from "./Form";
 import TestimonialTable from "./Table";

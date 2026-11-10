@@ -10,7 +10,7 @@ import {
 	type LucideIcon,
 } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
 
 type Status = "Aktif" | "Menunggu" | "Nonaktif";
 

@@ -30,7 +30,7 @@ import {
   type ReportRecord,
   type ReportPeriod,
   type ReportType,
-} from "./reportService";
+} from "../../services/admin/reportService";
 
 type Props = {
   onGenerated: (report: ReportRecord) => void;

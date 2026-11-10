@@ -7,7 +7,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
-import { getPortfolioImageUrl, type Portfolio } from "./portfolioService";
+import { getPortfolioImageUrl, type Portfolio } from "../../services/cms/portfolioService";
 
 type Props = {
   portfolios: Portfolio[];

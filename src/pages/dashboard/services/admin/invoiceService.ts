@@ -9,6 +9,13 @@ export type PriceBreakdownItem = {
 
 export type InvoicePaymentMethod = "qris" | "gopay" | "shopeepay" | "ovo" | "dana" | "credit_card" | "bca_va" | "bni_va" | "bri_va" | "mandiri_va" | "permata_va" | "alfamart" | "indomaret" | "cod";
 
+export type InvoiceContact = {
+	id: string;
+	name: string;
+	email: string;
+	phone: string | null;
+};
+
 export type Invoice = {
 	id: string;
 	invoiceNumber: string;
@@ -148,6 +155,11 @@ interface ApiSuccess<T> {
 }
 
 export const invoiceService = {
+	async getContacts(): Promise<InvoiceContact[]> {
+		const response = await apiClient.get<ApiSuccess<InvoiceContact[]>>("/admin/contacts");
+		return response.data.data;
+	},
+
 	async getFacilityAvailability(resourceId: string, date: string, sportType?: string): Promise<FacilityAvailability> {
 		const response = await apiClient.get<ApiSuccess<FacilityAvailability>>("/sports/availability", {
 			params: { resourceId, date, ...(sportType ? { sportType } : {}) },

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays, CheckCircle2, Clock3, MapPin } from "lucide-react";
-import { invoiceService, type InvoiceBookingDetails } from "../invoiceService";
+import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 
 const isConfirmed = (booking: InvoiceBookingDetails) =>
   ["fully_paid", "completed"].includes(booking.status) ||

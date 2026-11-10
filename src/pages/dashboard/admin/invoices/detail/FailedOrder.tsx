@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CircleX } from "lucide-react";
-import { invoiceService, type InvoiceBookingDetails } from "../invoiceService";
+import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 
 function FailedOrder() {
   const navigate = useNavigate();

@@ -1,6 +1,3 @@
-import apiClient from "../../../services/api";
-import fallbackImage from "../../../assets/no-image.webp";
-
 export type BookingStatus =
 	| "unpaid"
 	| "dp_paid"
@@ -40,14 +37,8 @@ export type AdminFullDayBookingResult = {
 
 export type ActiveStatus = "active" | "inactive";
 export type StatusUpdate<T extends string> = { id: string; status: T };
-
 export type PageMeta = { page: number; limit: number; total: number; totalPages: number };
 export type Paginated<T> = { data: T[]; meta: PageMeta };
-
-interface ApiSuccess<T> {
-	data: T;
-	meta?: PageMeta;
-}
 
 export type SportBooking = {
 	id: string;
@@ -149,10 +140,6 @@ export type SportResource = {
 	schedules: { dayOfWeek: string; openTime: string; closeTime: string; isClosed: boolean }[];
 };
 
-export function getSportResourceImage(resource: Pick<SportResource, "imageUrl">): string {
-	return resource.imageUrl || fallbackImage;
-}
-
 export type ResourceAvailability = {
 	resourceId: string;
 	resourceName: string;
@@ -250,8 +237,6 @@ export type MembershipPackageUpdateInput = {
 	discountPercent: number;
 };
 
-type ListParams = { page?: number; limit?: number; status?: string; search?: string; date?: string; resourceId?: string };
-
 export type SportResourceInput = {
 	name: string;
 	slug: string;
@@ -264,100 +249,4 @@ export type SportResourceInput = {
 	slotMinutes: number;
 	locationId?: string;
 	status: SportResource["status"];
-};
-
-async function getPaginated<T>(url: string, params: ListParams): Promise<Paginated<T>> {
-	const response = await apiClient.get<ApiSuccess<T[]>>(url, { params });
-	return {
-		data: response.data.data,
-		meta: response.data.meta ?? { page: params.page ?? 1, limit: params.limit ?? 20, total: response.data.data.length, totalPages: 1 },
-	};
-}
-
-export const sportService = {
-	async searchAdminCustomers(search: string): Promise<AdminBookingCustomer[]> {
-		const response = await apiClient.get<ApiSuccess<{ items: AdminBookingCustomer[] }>>("/admin/customers", {
-			params: { search, status: "active", limit: 10 },
-		});
-		return response.data.data.items;
-	},
-	async createAdminFullDayBooking(input: {
-		resourceId: string;
-		bookingDate: string;
-		startTime: string;
-		endTime: string;
-		sportType: SportType;
-		customerId?: string;
-		guestName?: string;
-		guestEmail?: string;
-		guestPhone?: string;
-	}): Promise<AdminFullDayBookingResult> {
-		const response = await apiClient.post<ApiSuccess<AdminFullDayBookingResult>>("/sports/bookings", {
-			...input,
-			fullDayAdmin: true,
-			bookingType: "regular",
-		});
-		return response.data.data;
-	},
-	getBookings(params: ListParams & { status?: BookingStatus }): Promise<Paginated<SportBooking>> {
-		return getPaginated("/admin/bookings", params);
-	},
-	getBookingDetails(id: string): Promise<SportBookingDetails> {
-		return apiClient.get<ApiSuccess<SportBookingDetails>>(`/admin/bookings/${id}`).then((response) => response.data.data);
-	},
-	getResourceAvailability(resourceId: string, date: string): Promise<ResourceAvailability> {
-		return apiClient.get<ApiSuccess<ResourceAvailability>>("/sports/availability", { params: { resourceId, date } })
-			.then((response) => response.data.data);
-	},
-	getResources(params: ListParams & { status?: SportResource["status"] }): Promise<Paginated<SportResource>> {
-		return getPaginated("/admin/resources", params);
-	},
-	createResource(tenantId: string, input: SportResourceInput): Promise<SportResource> {
-		return apiClient.post<ApiSuccess<SportResource>>("/admin/resources", input, { params: { tenantId } }).then((response) => response.data.data);
-	},
-	updateResource(id: string, input: Partial<SportResourceInput>): Promise<SportResource> {
-		return apiClient.put<ApiSuccess<SportResource>>(`/admin/resources/${id}`, input).then((response) => response.data.data);
-	},
-	deleteResource(id: string): Promise<void> {
-		return apiClient.delete(`/admin/resources/${id}`).then(() => undefined);
-	},
-	updateResourceStatus(id: string, status: SportResource["status"]): Promise<StatusUpdate<SportResource["status"]>> {
-		return apiClient.put<ApiSuccess<StatusUpdate<SportResource["status"]>>>(`/admin/resources/${id}`, { status }).then((response) => response.data.data);
-	},
-	getPricingRules(params: ListParams & { status?: ActiveStatus }): Promise<Paginated<PricingRule>> {
-		return getPaginated("/admin/pricing/rules", params);
-	},
-	updatePricingRuleStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
-		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/pricing/rules/${id}`, { status }).then((response) => response.data.data);
-	},
-	updatePricingRule(id: string, input: PricingRuleUpdateInput): Promise<PricingRule> {
-		return apiClient.put<ApiSuccess<PricingRule>>(`/admin/pricing/rules/${id}`, input).then((response) => response.data.data);
-	},
-	deletePricingRule(id: string): Promise<void> {
-		return apiClient.delete(`/admin/pricing/rules/${id}`).then(() => undefined);
-	},
-	getPricingPackages(params: ListParams & { status?: ActiveStatus }): Promise<Paginated<PricingPackage>> {
-		return getPaginated("/admin/pricing/packages", params);
-	},
-	updatePricingPackageStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
-		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/pricing/packages/${id}`, { status }).then((response) => response.data.data);
-	},
-	updatePricingPackage(id: string, input: PricingPackageUpdateInput): Promise<PricingPackage> {
-		return apiClient.put<ApiSuccess<PricingPackage>>(`/admin/pricing/packages/${id}`, input).then((response) => response.data.data);
-	},
-	deletePricingPackage(id: string): Promise<void> {
-		return apiClient.delete(`/admin/pricing/packages/${id}`).then(() => undefined);
-	},
-	getMembershipPackages(params: ListParams & { status?: ActiveStatus }): Promise<Paginated<MembershipPackage>> {
-		return getPaginated("/admin/membership-packages", params);
-	},
-	updateMembershipPackageStatus(id: string, status: ActiveStatus): Promise<StatusUpdate<ActiveStatus>> {
-		return apiClient.put<ApiSuccess<StatusUpdate<ActiveStatus>>>(`/admin/membership-packages/${id}`, { status }).then((response) => response.data.data);
-	},
-	updateMembershipPackage(id: string, input: MembershipPackageUpdateInput): Promise<MembershipPackage> {
-		return apiClient.put<ApiSuccess<MembershipPackage>>(`/admin/membership-packages/${id}`, input).then((response) => response.data.data);
-	},
-	deleteMembershipPackage(id: string): Promise<void> {
-		return apiClient.delete(`/admin/membership-packages/${id}`).then(() => undefined);
-	},
 };

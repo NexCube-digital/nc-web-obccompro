@@ -159,7 +159,6 @@ function BusinessUnitPage() {
 					alt="Papan penunjuk unit bisnis OBC Group"
 					className="hero-background-enter absolute inset-0 h-full w-full object-cover object-[25%_52%] md:object-[center_54%] md:translate-x-20 lg:translate-x-28 xl:translate-x-36 min-[700px]:max-[767px]:!object-[0%_52%] min-[700px]:max-[767px]:!translate-x-0 min-[768px]:max-[1000px]:!object-[left_54%] min-[768px]:max-[900px]:!translate-x-48 min-[901px]:max-[1000px]:!translate-x-36"
 				/>
-				{/* Overlay: mobile vertikal (pekat di bawah), desktop horizontal (pekat di kiri, lebar mengikuti breakpoint dev) */}
 					<div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(0deg,#FAFAF2_0%,rgba(250,250,242,0.9)_45%,rgba(250,250,242,0.592749)_70%,rgba(250,250,242,0)_100%)] md:inset-y-0 md:left-0 md:right-auto md:h-full md:w-[68%] md:bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_38%,rgba(250,250,242,0.98)_46%,rgba(250,250,242,0.92)_54%,rgba(250,250,242,0.80)_64%,rgba(250,250,242,0.62)_74%,rgba(250,250,242,0.40)_84%,rgba(250,250,242,0.20)_92%,rgba(250,250,242,0.06)_97%,rgba(250,250,242,0)_100%)] lg:w-[62%] xl:w-[58%] 2xl:w-[55%]" />				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[70px] pt-24 md:items-center md:pb-12">
 					<div className="hero-content-enter mx-auto w-full max-w-[1246px] px-[30px] md:px-10">
 						<div className="w-full max-w-[440px] text-black">
@@ -168,15 +167,12 @@ function BusinessUnitPage() {
 									{t('businessUnitPage.badge')}
 								</span>
 							</span>
-							{/* H1: tidak tampil di mobile (tidak ada di desain), tetap ada untuk screen reader/SEO */}
 							<h1 className="sr-only font-['Montserrat'] font-bold tracking-[1.5px] text-black md:not-sr-only md:mt-5 md:whitespace-nowrap md:text-[56px] md:leading-[70px]">
 								{t('businessUnitPage.heroTitle')}
 							</h1>
-							{/* Subjudul: mobile tebal 24px, desktop 40px medium */}
 							<p className="mt-4 font-['Montserrat'] text-[24px] font-bold leading-[32px] tracking-normal text-[#000000] sm:text-[30px] md:font-medium md:text-[40px] md:leading-[48px] md:tracking-[-0.8px]">
 								{t('businessUnitPage.heroSubtitle')}
 							</p>
-							{/* Deskripsi: mobile 13px, desktop 18px */}
 							<p className="mt-3 text-justify font-['Montserrat'] text-[13px] font-normal leading-[22px] tracking-[0px] text-[#000000] md:mt-5 md:text-[18px] md:leading-[28px]">
 								{t('businessUnitPage.heroDesc')}
 							</p>
@@ -195,7 +191,6 @@ function BusinessUnitPage() {
 				</div>
 
 				<div className="group relative overflow-hidden rounded-[20px] md:rounded-2xl">
-					{/* Gambar: mobile tinggi 680px (hampir potret), desktop 420px */}
 					<img
 						src={lapangF2Image}
 						alt="OBC Sport Center — lapangan indoor"
@@ -204,7 +199,6 @@ function BusinessUnitPage() {
 					<div className="absolute inset-0 bg-gradient-to-t from-obc-charcoal/85 via-obc-charcoal/10 to-transparent" />
 
 					<div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-[25px] md:p-8">
-						{/* Tag: mobile ditumpuk vertikal, desktop sejajar */}
 						<div className="flex flex-col items-start gap-2 md:flex-row md:flex-wrap">
 							<span className="inline-flex h-[30px] items-center justify-center rounded-full bg-white/15 px-[10px] py-[5px] font-['Montserrat'] text-[15px] font-medium leading-[18px] text-white shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)] backdrop-blur-[2px] md:text-[13px]">
 								{t('businessUnitPage.featuredUnit')}
@@ -215,7 +209,6 @@ function BusinessUnitPage() {
 						</div>
 						<div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
 							<div className="max-w-[520px]">
-								{/* Judul: 24px di mobile */}
 								<h3 className="font-['Montserrat'] text-[24px] font-bold leading-[30px] text-white md:text-[36px] md:leading-[40px]">OBC Sport Center</h3>
 								<p className="mt-1 font-['Montserrat'] text-[15px] font-medium italic leading-[20px] text-[#D4FF32] md:text-[18px]">
 									{t('businessUnitPage.featuredSlogan')}
@@ -227,7 +220,6 @@ function BusinessUnitPage() {
 									{t('businessUnitPage.operationalHours')}
 								</p>
 							</div>
-							{/* Tombol: disembunyikan di mobile (tidak ada di desain), tampil di md ke atas */}
 							<TransitionLink
 								to="/unit-bisnis/sport-center"
 								className="hidden h-[30px] items-center justify-center gap-2 rounded-full bg-white/15 px-[10px] py-[5px] font-['Montserrat'] text-[18px] font-medium leading-[20px] text-white shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25)] backdrop-blur-[2px] md:inline-flex"
@@ -250,7 +242,6 @@ function BusinessUnitPage() {
 					<span className="h-px flex-1 border border-[#004000CC]" style={{ transform: 'rotate(0.16deg)' }} />
 				</div>
 
-				{/* Daftar: mobile melebar 16px ke kiri-kanan (-mx-4) supaya lebih lebar dari judul; jarak antar unit 20px */}
 				<div className="-mx-4 flex flex-col gap-5 md:mx-0 md:gap-16">
 					{BUSINESS_UNITS.map((unit, index) => {
 						const isReversed = index % 2 === 1
@@ -259,7 +250,6 @@ function BusinessUnitPage() {
 							unit.slug === 'guest-house' ? 'guestHouse' : unit.slug === 'food-court' ? 'foodCourt' : unit.slug
 
 						return (
-							// Mobile: tetap 1 baris (gambar & teks berdampingan, selang-seling); desktop sama seperti semula
 							<article
 								key={unit.slug}
 								className={`flex items-center gap-0 md:gap-10 ${
@@ -276,7 +266,6 @@ function BusinessUnitPage() {
 										alt={unit.title}
 										className="h-full w-full object-contain md:w-[calc(100%-40px)]"
 									/>
-									{/* Ikon pojok: mobile lebih kecil & lebih dekat ke tepi */}
 									<img
 										src={unit.icon}
 										alt=""
@@ -292,16 +281,13 @@ function BusinessUnitPage() {
 								<div className="w-1/2">
 									<div className="w-full max-w-[520px]">
 										<div className="flex items-center justify-between">
-											{/* Kategori: mobile 9px, lebar penuh */}
 											<span className="inline-flex h-auto w-full max-w-full font-['Montserrat'] text-[9px] font-semibold leading-4 tracking-normal text-black uppercase md:h-4 md:w-[256px] md:text-[12px] md:tracking-[1.2px]">
 												{t(`units.${translationKey}.category`)}
 											</span>
 										</div>
-										{/* Judul: 20px di mobile, tinggi otomatis */}
 										<h3 className="mt-1 h-auto w-full max-w-full font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-normal text-black md:mt-2 md:h-9 md:w-[280px] md:text-[30px] md:leading-9 md:tracking-[0.6px]">
 											{t(`units.${translationKey}.title`)}
 										</h3>
-										{/* Deskripsi & tag: disembunyikan di mobile (tidak ada di desain) */}
 										<p className="mt-2 hidden max-w-[520px] font-['Montserrat'] text-[16px] font-normal leading-[26px] tracking-normal text-black md:block">
 											{t(`units.${translationKey}.desc`)}
 										</p>

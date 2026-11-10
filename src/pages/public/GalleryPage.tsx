@@ -118,10 +118,8 @@ function GalleryPage() {
 					className="absolute inset-0 h-full w-full origin-top scale-[1.15] object-cover object-top md:origin-center md:scale-100 md:object-center"
 				/>
 
-				{/* Overlay MOBILE: gradient vertikal (transparan di atas → krem di bawah) */}
 				<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(250,250,242,0)_0%,rgba(250,250,242,0)_55%,rgba(250,250,242,0.75)_78%,rgba(250,250,242,0.95)_100%)] md:hidden" />
 
-				{/* Overlay DESKTOP: gradient horizontal, lebar mengikuti breakpoint dev (md dipersempit agar gambar lebih terlihat) */}
 				<div className="absolute inset-y-0 left-0 hidden h-full md:block md:w-[60%] lg:w-[62%] xl:w-[58%] 2xl:w-[52%] bg-[linear-gradient(90deg,#FAFAF2_0%,#FAFAF2_45%,rgba(250,250,242,0.95)_60%,rgba(250,250,242,0.6)_80%,rgba(250,250,242,0)_100%)]" />
 
 				<div className="relative z-10 flex min-h-[100svh] w-full items-end pb-[68px] pt-12 md:items-center md:pb-12 md:pt-24">

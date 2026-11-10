@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
 import whatsappIcon from "../../../../assets/icon/whatsapp2.svg";
-import { siteContentService, type SiteContactContent } from "./siteContentService";
+import { siteContentService, type SiteContactContent } from "../../services/cms/siteContentService";
 import Form from "./Form";
 
 const EMPTY_CONTACT: SiteContactContent = {

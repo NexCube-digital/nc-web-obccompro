@@ -41,13 +41,10 @@ function AboutPage() {
 					alt="Lapangan futsal OBC"
 					className="hero-background-enter absolute inset-0 h-full w-full object-cover"
 				/>
-				{/* Base overlay lembut agar foto tetap jernih & teks kontras */}
 				<div className="absolute inset-0 bg-black/25" />
 
-				{/* Shadow ujung atas */}
 				<div className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-32 md:h-36 bg-gradient-to-b from-black/80 via-black/35 to-transparent" />
 
-				{/* Shadow ujung bawah */}
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
 
 				<div className="hero-content-enter relative z-10 mx-auto max-w-[1136px] px-6 text-center text-white">
@@ -76,7 +73,6 @@ function AboutPage() {
 						</p>
 					</div>
 
-					{/* Galeri 2x2. Desktop: 528px di tinggi 800, mengecil tipis di layar lebih pendek (min 440px) */}
 					<div className="order-first grid grid-cols-2 gap-x-[15px] gap-y-[10px] pb-[25px] md:order-none md:w-[min(100%,max(440px,66svh))] md:justify-self-end md:gap-x-[10px] md:gap-y-[clamp(22px,3.75svh,30px)] md:pb-0">
 						{STORY_IMAGES.map((img, i) => (
 							<div
@@ -147,16 +143,13 @@ function AboutPage() {
 			<ScrollReveal>
 			<section className="mt-10 w-full bg-[linear-gradient(135deg,#FFFFF7_0%,#FFFFFF_100%)] px-6 py-[50px] text-center text-[#000000] md:mt-[40px] md:py-[80px]">
 				<div className="mx-auto max-w-[1280px]">
-					{/* Judul: 24px di mobile, otomatis turun jadi 2 baris */}
 					<h2 className="mx-auto max-w-[340px] font-['Montserrat'] text-[24px] font-semibold leading-[32px] tracking-[0.5px] text-[#000000] md:max-w-[655px] md:text-[36px] md:leading-[40px] md:tracking-[1.5px]">
 						{t('aboutPage.ctaTitle')}
 					</h2>
-					{/* Deskripsi: 15px di mobile, rata kiri-kanan */}
 					<p className="mx-auto mt-4 max-w-[848px] text-justify font-['Montserrat'] text-[15px] font-medium leading-[24px] tracking-[0.4px] text-[#000000CC] md:text-center md:text-[18px]">
 						{t('aboutPage.ctaDesc')}
 					</p>
 
-					{/* Tombol: lebar mengikuti panjang teks agar aman di ID maupun EN */}
 					<a
 						className="group mt-6 inline-flex min-h-[44px] w-fit max-w-full items-center justify-between gap-3 rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] px-3 py-1 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] shadow-none transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mt-8 md:min-h-[67px] md:min-w-[304px] md:gap-4 md:px-4 md:py-2 md:text-[20px]"
 						href="/unit-bisnis"

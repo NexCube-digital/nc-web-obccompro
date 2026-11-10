@@ -8,10 +8,7 @@ import {
 	type LucideIcon,
 } from "lucide-react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import Pagination from "../../../components/common/Pagination";
-import { toast } from "sonner";
-
-type Status = "Aktif" | "Menunggu" | "Nonaktif" | undefined;
+import Pagination from "../../components/common/Pagination";
 
 type Contact = {
 	id?: string;

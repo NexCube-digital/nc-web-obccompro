@@ -6,10 +6,10 @@ import {
   dashboardService,
   type ComproDashboardSummary,
   type DashboardSummary,
-} from "./DashboardService";
-import { accountService } from "./staff/AccountService";
-import { unitbisnisService } from "../cms/unit-bisnis/unitbisnisService";
-import { sportService } from "../sport/SportService";
+} from "../services/admin/DashboardService";
+import { accountService } from "../services/admin/AccountService";
+import { unitbisnisService } from "../services/cms/unitbisnisService";
+import { sportService } from "../services/sport/SportService";
 import { toast } from "sonner";
 import DashboardOverview from "./DashboardOverview";
 import DashboardActivity from "./DashboardActivity";

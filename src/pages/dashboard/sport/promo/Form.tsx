@@ -14,7 +14,7 @@ import type {
   PromoInput,
   PromoSport,
   PromoStatus,
-} from "./promoService";
+} from "../../services/sport/promoService";
 
 type Props = {
   item: Promo | null;

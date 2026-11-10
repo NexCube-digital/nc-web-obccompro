@@ -62,7 +62,7 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 				onMouseEnter={() => setIsHeartHovered(true)}
 				onMouseLeave={() => setIsHeartHovered(false)}
 				onClick={(event) => {
-					e.stopPropagation()
+					event.stopPropagation()
 					onToggleFavorite(unit.name)
 				}}
 				aria-label={t(isFavorite ? 'common.removeFromFavorite' : 'common.addToFavorite', { name: unit.name })}

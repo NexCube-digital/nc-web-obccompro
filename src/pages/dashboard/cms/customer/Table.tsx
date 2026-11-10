@@ -16,7 +16,7 @@ import {
   getCustomerAvatarUrl,
   type CustomerRecord,
   type CustomerStatus,
-} from "./customerService";
+} from "../../services/cms/customerService";
 
 type Props = {
   customers: CustomerRecord[];

@@ -11,7 +11,7 @@ import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import DeleteModal from "../../components/ui/DeleteModal";
 import { getApiErrorMessage } from "../../../../services/api";
-import { portfolioService, type Portfolio } from "./portfolioService";
+import { portfolioService, type Portfolio } from "../../services/cms/portfolioService";
 import PortfolioForm from "./form";
 import PortfolioTable from "./Table";
 

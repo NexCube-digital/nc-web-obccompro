@@ -1,6 +1,6 @@
 import { Building2, Eye, ImageOff } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
-import type { BusinessUnit } from "./unitbisnisService";
+import type { BusinessUnit } from "../../services/cms/unitbisnisService";
 
 type Props = {
   units: BusinessUnit[];

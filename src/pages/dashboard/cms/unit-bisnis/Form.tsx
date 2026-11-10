@@ -1,7 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import {
   Building2,
-  CalendarDays,
   Clock3,
   ExternalLink,
   MapPin,
@@ -13,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
-import type { BusinessUnitDetail } from "./unitbisnisService";
+import type { BusinessUnitDetail } from "../../services/cms/unitbisnisService";
 
 type Props = {
   unit: BusinessUnitDetail;

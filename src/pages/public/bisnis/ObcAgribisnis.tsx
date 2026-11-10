@@ -1,5 +1,4 @@
-import { MapPin, LayoutGrid, ExternalLink } from 'lucide-react'
-import { useState } from 'react'
+import { MapPin, LayoutGrid } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -7,7 +6,8 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
+import UnitLokasi from './UnitLokasi'
+import UnitGallery from './UnitGallery'
 import heroImage from '../../../assets/images/unit-bisnis/agribisnis.webp'
 import agricultureIcon from '../../../assets/icon/iconstack.io - (Agriculture Analytics).svg'
 import galleryImage1 from '../../../assets/images/unit-bisnis/agribisnis/fas1.webp'
@@ -21,8 +21,6 @@ interface Area {
 	location: string
 	size: number
 }
-
-const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8398,107.6195+(OBC+Agribisnis)'
 
 // Tiga area/plot lahan OBC Agribisnis — alamat & luas mengikuti desain
 const AREAS: Area[] = [
@@ -43,17 +41,13 @@ function AgribisnisPage() {
 	const { t } = useTranslation()
 	const waTitle = t('units.agribisnis.whatsappCardTitle')
 	const waDescription = t('units.agribisnis.whatsappCardDesc')
-	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	return (
-		// pb mobile: ruang untuk bar WhatsApp fixed supaya footer tidak tertutup
 		<div className="min-h-screen bg-obc-ivory pb-[180px] md:pb-[100px] lg:pb-0">
 			<LandingNavbar />
 
-			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), desktop mengikuti struktur dev */}
 			<section className="hero-enter relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Agribisnis" className="hero-background-enter absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center" />
-				{/* Overlay: hanya desktop. Lebar bertahap mengikuti dev */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-7 rounded-t-[28px] bg-obc-ivory md:hidden" />
 				<div
@@ -64,7 +58,6 @@ function AgribisnisPage() {
 					}}
 				/>
 
-				{/* Teks hero: hanya desktop, container max-w 1246px, rata kanan */}
 				<div className="hero-content-enter relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10 lg:pr-1">
 						<div className="w-full max-w-[400px] text-black lg:max-w-[472px]">
@@ -178,10 +171,8 @@ function AgribisnisPage() {
 					</section>
 				</div>
 
-				{/* Kolom kanan (lg ke atas): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24 mb-12">
-						{/* md:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard tenantSlug="agribisnis" className="md:!w-full" title={waTitle} description={waDescription} />
 					</div>
 				</aside>
@@ -189,98 +180,22 @@ function AgribisnisPage() {
 			</ScrollReveal>
 			</LazySection>
 
-			{/* Galeri */}
-			<LazySection minHeight={600}>
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<ScrollReveal>
-				<div className="text-center">
-					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
-						{t('gallerySection.badge')}
-					</span>
-					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						{t('gallerySection.momentsFrom', { unit: t('units.agribisnis.title') })}
-					</h2>
-					<div className="mx-auto mt-3 h-[2px] w-full max-w-[396px] rounded-[2px] bg-[#0000004D]" />
-				</div>
-				</ScrollReveal>
+			<UnitGallery
+				images={GALLERY_IMAGES}
+				unitName="OBC Agribisnis"
+				badge={t('gallerySection.badge')}
+				title={t('gallerySection.momentsFrom', { unit: t('units.agribisnis.title') })}
+				variant="agribisnis"
+			/>
 
-				{/* Ukuran item mengikuti grid (bukan lebar tetap) supaya tidak saling menimpa di lebar tablet */}
-				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
-					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<ScrollReveal
-							key={`${image}-${index}`}
-							className={`aspect-[4/3] w-full min-w-0 md:aspect-[280/296] ${
-								index >= 4 ? 'hidden md:block' : ''
-							}`}
-							delay={index * 90}
-							duration={700}
-							distance={16}
-							scale={0.98}
-						>
-							<button
-								type="button"
-								onClick={() => setSelectedGalleryImage(image)}
-								className="group h-full w-full min-w-0 overflow-hidden rounded-[20px] md:rounded-xl"
-								aria-label={`Buka gambar Momen OBC Agribisnis ${index + 1}`}
-							>
-								<img
-									src={image}
-									alt={`Momen OBC Agribisnis ${index + 1}`}
-									loading="lazy"
-									decoding="async"
-									className={`h-full w-full object-cover ${index === 3 ? 'object-left' : 'object-center'} transition-transform duration-500 group-hover:scale-105`}
-								/>
-							</button>
-						</ScrollReveal>
-					))}
-				</div>
-			</section>
-			</LazySection>
-
-			{selectedGalleryImage && (
-				<ImageLightbox
-					src={selectedGalleryImage}
-					alt="Pratinjau galeri OBC Agribisnis"
-					onClose={() => setSelectedGalleryImage(null)}
-				/>
-			)}
-
-			{/* Lokasi */}
-			<LazySection minHeight={500}>
-			<ScrollReveal>
-			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
-				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
-					<div className="order-1 min-w-0 md:order-none">
-						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:min-h-[30px] md:text-[25px]">
-							{t('common.locationOf', { unit: t('units.agribisnis.title') })}
-						</h2>
-						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:min-h-[24px] md:text-[15px]">
-							{t('units.agribisnis.location')}
-						</p>
-					</div>
-					<a
-						href={GOOGLE_MAPS_LINK}
-						target="_blank"
-						rel="noreferrer"
-						className="order-3 mt-4 inline-flex h-[40px] w-full shrink-0 items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:text-[14px]"
-					>
-						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						{t('common.openGoogleMaps')}
-					</a>
-				</div>
-
-				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[420px] md:rounded-2xl">
-					<iframe
-						title={t('common.locationOf', { unit: t('units.agribisnis.title') })}
-						src="https://www.google.com/maps?q=-6.8398,107.6195+(OBC+Agribisnis)&hl=id&z=17&output=embed"
-						className="h-full w-full border-0"
-						loading="lazy"
-						referrerPolicy="no-referrer-when-downgrade"
-					/>
-				</div>
-			</section>
-			</ScrollReveal>
-			</LazySection>
+			<UnitLokasi
+				title={t('common.locationOf', { unit: t('units.agribisnis.title') })}
+				address={t('units.agribisnis.location')}
+				mapLabel="OBC Agribisnis"
+				latitude={-6.842528468240614}
+				longitude={107.61717356691328}
+				variant="agribisnis"
+			/>
 
 			<LazySection minHeight={600}>
 			<ScrollReveal>

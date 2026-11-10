@@ -3,7 +3,7 @@ import { Building2, CircleDollarSign, Clock3, ImageOff, MapPin, Pencil, Search, 
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getMediaUrl, mediaService } from "../../v2/media/mediaService";
-import { courtService, sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "./courtService";
+import { courtService, sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "../../services/sport/courtService";
 import CourtResourceForm from "./Form";
 import ResourceTable from "./Table";
 

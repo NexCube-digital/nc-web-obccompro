@@ -1,6 +1,6 @@
 import { Building2, Eye, ImageOff, MapPin, Pencil } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
-import { sportOptions, tableSportTypes, type CourtResource } from "./courtService";
+import { sportOptions, tableSportTypes, type CourtResource } from "../../services/sport/courtService";
 
 interface Props {
   resources: CourtResource[];

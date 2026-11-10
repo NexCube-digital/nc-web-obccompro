@@ -13,7 +13,7 @@ import {
   type Invoice,
   type InvoiceBookingDetails,
   type InvoiceStatus,
-} from "./invoiceService";
+} from "../../services/admin/invoiceService";
 import { toast } from "sonner";
 import InvoiceForm from "./Form";
 import InvoiceTable from "./Table";

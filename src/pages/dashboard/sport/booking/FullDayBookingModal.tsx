@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { CalendarDays, CheckCircle2, Clock3, MapPin, Search, UserRound, X } from "lucide-react";
-import { sportService, type AdminBookingCustomer, type AdminFullDayBookingResult, type SportType } from "../SportService";
-import type { CourtResource } from "../court/courtService";
+import { sportService, type AdminBookingCustomer, type AdminFullDayBookingResult, type SportType } from "../../services/sport/SportService";
+import type { CourtResource } from "../../services/sport/courtService";
 
 type Props = {
 	resource: CourtResource;

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react'
-import frame1 from '../../../assets/loading-state/Frame1.png'
-import frame2 from '../../../assets/loading-state/Frame2.png'
-import frame3 from '../../../assets/loading-state/Frame3.png'
-import frame4 from '../../../assets/loading-state/Frame4.png'
-import frame5 from '../../../assets/loading-state/Frame5.png'
-import frame6 from '../../../assets/loading-state/Frame6.png'
+import frame1 from '../../../assets/loading-state/Frame1.webp'
+import frame2 from '../../../assets/loading-state/Frame2.webp'
+import frame3 from '../../../assets/loading-state/Frame3.webp'
+import frame4 from '../../../assets/loading-state/Frame4.webp'
+import frame5 from '../../../assets/loading-state/Frame5.webp'
+import frame6 from '../../../assets/loading-state/Frame6.webp'
 import logo from '../../../assets/logo/obclogo.webp'
 
 const CIRCLE = 300 // width/height lingkaran di Figma

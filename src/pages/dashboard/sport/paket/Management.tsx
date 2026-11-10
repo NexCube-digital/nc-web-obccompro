@@ -9,7 +9,7 @@ import {
   type ActiveStatus,
   type PricingPackage,
   type PricingPackageUpdateInput,
-} from "../SportService";
+} from "../../services/sport/SportService";
 import PaketForm from "./Form";
 import PaketTable from "./Table";
 

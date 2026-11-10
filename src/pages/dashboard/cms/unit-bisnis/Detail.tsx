@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
-import type { BusinessUnitDetail } from "./unitbisnisService";
+import type { BusinessUnitDetail } from "../../services/cms/unitbisnisService";
 
 type Props = {
   unit: BusinessUnitDetail;

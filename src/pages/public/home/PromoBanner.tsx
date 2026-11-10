@@ -82,16 +82,12 @@ export default function PromoBanner() {
 	}, [promoIndex, previousPromoIndex])
 
 	return (
-		// PC (md+): padding sama seperti file awal (px-6, py-8)
 		<section className="bg-[#fffff7] py-6 md:px-6 md:py-8" aria-label="Promo OBC">
-			{/* Mobile: lebar penuh dikurangi 40px. PC: w-[calc(100%-32px)] max-w-[1246px] seperti awal */}
 			<div className="mx-auto w-[calc(100%-40px)] max-w-[1246px] md:w-[calc(100%-32px)]">
-				{/* Judul (dari screenshot) */}
 				<h2 className="mb-3 font-['Montserrat'] text-[18px] font-bold leading-[26px] tracking-normal text-black md:mb-4 md:px-[6px] md:text-[28px] md:leading-[38px] lg:text-[36px] lg:leading-[44px]">
 					{t('promoBanner.title')}
 				</h2>
 
-				{/* Banner: mobile 2:1, PC rasio awal 1200/450 */}
 				<div
 					className="group relative aspect-[2/1] w-full overflow-hidden rounded-[20px] bg-[#0c2937] shadow-[0_8px_24px_rgba(0,64,0,0.12)] md:aspect-[1200/450] md:rounded-[22px]"
 					onMouseEnter={() => {
@@ -138,7 +134,6 @@ export default function PromoBanner() {
 											decoding="async"
 										/>
 										<div className="absolute inset-0 bg-gradient-to-b from-[#0c2937]/90 via-[#0c2937]/75 to-[#0c2937]/92" />
-										{/* px-14/px-20 hanya mobile supaya tidak ketutup panah, PC tetap px-4 */}
 										<div className="relative z-10 flex flex-col items-center px-14 text-center sm:px-20 md:px-4">
 											<img
 												src={obcLogoImage}
@@ -164,7 +159,6 @@ export default function PromoBanner() {
 						})}
 					</div>
 
-					{/* Tombol navigasi: ukuran & warna sama seperti awal */}
 					<button
 						className="absolute left-3 top-1/2 z-10 grid h-7 w-7 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-[#fffff7]/90 text-[#404f14] shadow-md backdrop-blur-xs transition-all hover:scale-110 hover:bg-[#fffff7] sm:left-5 sm:h-9 sm:w-9 md:left-7 md:h-10 md:w-10"
 						type="button"

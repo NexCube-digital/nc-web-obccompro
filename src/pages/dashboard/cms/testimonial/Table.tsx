@@ -13,7 +13,7 @@ import {
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { getTestimonialAvatarUrl } from "../../../../services/Public/Testimonial";
-import type { Testimonial } from "./testimonialService";
+import type { Testimonial } from "../../services/cms/testimonialService";
 
 type StatusFilter = "all" | Testimonial["status"];
 const PAGE_SIZE = 8;

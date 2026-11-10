@@ -25,7 +25,7 @@ import {
 import type {
   ComproDashboardSummary,
   DashboardSummary,
-} from "./DashboardService";
+} from "../services/admin/DashboardService";
 
 type Props = {
   summary: DashboardSummary | null;

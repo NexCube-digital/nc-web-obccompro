@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Clock3, CreditCard, FileText, MapPin, UserRound, X } from "lucide-react";
-import { sportService, type BookingStatus, type ResourceAvailability, type SportBooking, type SportBookingDetails } from "../SportService";
-import type { CourtResource } from "../court/courtService";
+import { sportService, type BookingStatus, type ResourceAvailability, type SportBooking, type SportBookingDetails } from "../../services/sport/SportService";
+import type { CourtResource } from "../../services/sport/courtService";
 
 type Props = {
 	resource: CourtResource;
@@ -76,14 +76,14 @@ export default function BookingDetailModal({ resource, slot, bookings, date, onC
 	}, [bookings]);
 
 	return (
-		<div className="fixed inset-0 z-50 grid place-items-center bg-black/45 p-3 sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-			<section role="dialog" aria-modal="true" aria-labelledby="booking-detail-title" className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-xl border border-obc-border bg-white shadow-2xl">
-				<header className="flex items-start justify-between gap-4 border-b border-obc-border px-5 py-4 sm:px-6">
+		<div className="fixed inset-0 z-50 flex justify-center overflow-y-auto bg-black/45 p-3 sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+			<section role="dialog" aria-modal="true" aria-labelledby="booking-detail-title" className="my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-obc-border bg-white shadow-2xl sm:max-h-[calc(100dvh-2.5rem)]">
+				<header className="flex shrink-0 items-start justify-between gap-4 border-b border-obc-border px-5 py-4 sm:px-6">
 					<div className="min-w-0"><p className="text-[11px] font-semibold uppercase tracking-wide text-obc-green">Detail booking</p><h2 id="booking-detail-title" className="mt-1 truncate font-heading text-lg font-bold text-obc-charcoal sm:text-xl">{resource.name}</h2><p className="mt-1 flex items-center gap-1.5 text-[12px] text-obc-muted"><MapPin size={13} />{resource.location?.name ?? "Lokasi belum diatur"}</p></div>
 					<button type="button" aria-label="Tutup detail booking" onClick={onClose} className="grid size-9 shrink-0 place-items-center rounded-lg text-obc-muted transition-colors hover:bg-obc-ivory hover:text-obc-charcoal"><X size={18} /></button>
 				</header>
 
-				<div className="max-h-[calc(92vh-73px)] overflow-y-auto p-5 sm:p-6">
+				<div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6">
 					<div className="grid gap-3 rounded-lg bg-[#F3F8E8] p-4 sm:grid-cols-3">
 						<div className="flex items-start gap-2"><CalendarDays size={15} className="mt-0.5 shrink-0 text-obc-green" /><div><p className="text-[10px] text-obc-muted">Tanggal</p><p className="mt-0.5 text-[12px] font-semibold text-obc-charcoal">{formatDate(date)}</p></div></div>
 						<div className="flex items-start gap-2"><Clock3 size={15} className="mt-0.5 shrink-0 text-obc-green" /><div><p className="text-[10px] text-obc-muted">Waktu</p><p className="mt-0.5 text-[12px] font-semibold text-obc-charcoal">{slot.startTime}–{slot.endTime}</p></div></div>

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
 import TransitionLink from "../../../components/common/TransitionLink";
 import obcLogoLight from "../../../assets/logo/obclogo.webp";
-import obcLogo from "../../../assets/logo/LOGO-OBC.png";
+import obcLogo from "../../../assets/logo/obclogo.webp";
 
 export default function ForgetPasswordPage() {
 	const [email, setEmail] = useState("");

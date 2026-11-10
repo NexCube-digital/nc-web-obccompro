@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
-import type { FinanceReportPeriod, ReportPeriod, ReportRecord } from "./reportService";
+import type { ReportPeriod, ReportRecord } from "./reportService";
 
 export interface FinanceReportSnapshot {
 	period: ReportPeriod;

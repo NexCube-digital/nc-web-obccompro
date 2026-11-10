@@ -1,6 +1,6 @@
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { getMediaUrl } from "../media/mediaService";
-import type { SportResource } from "../../sport/SportService";
+import type { SportResource } from "../../services/sport/SportService";
 
 const statusLabels: Record<SportResource["status"], string> = { active: "Aktif", maintenance: "Pemeliharaan", inactive: "Nonaktif" };
 type Props = { resources: SportResource[]; loading: boolean; onView: (resource: SportResource) => void; onEdit: (resource: SportResource) => void; onDelete: (resource: SportResource) => void };

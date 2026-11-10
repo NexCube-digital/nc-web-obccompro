@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Clock3, MapPin } from "lucide-react";
-import { sportOptions } from "../court/courtService";
-import type { ResourceAvailability, SportBooking, SportType } from "../SportService";
-import type { CourtResource } from "../court/courtService";
+import { sportOptions } from "../../services/sport/courtService";
+import type { ResourceAvailability, SportBooking, SportType } from "../../services/sport/SportService";
+import type { CourtResource } from "../../services/sport/courtService";
 import BookingDetailModal from "./BookingDetailModal";
 import FullDayBookingModal from "./FullDayBookingModal";
 

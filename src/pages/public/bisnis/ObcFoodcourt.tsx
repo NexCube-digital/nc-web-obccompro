@@ -1,7 +1,3 @@
-import {
-	ExternalLink,
-} from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -9,7 +5,8 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
+import UnitLokasi from './UnitLokasi'
+import UnitGallery from './UnitGallery'
 import heroImage from '../../../assets/images/unit-bisnis/foodcourt.webp'
 import foodCourtIcon from '../../../assets/icon/iconstack.io - (Food Fork Drink).svg'
 import clockIcon from '../../../assets/icon/clock.svg'
@@ -39,13 +36,10 @@ interface Blok {
 	facilities: string[]
 }
 
-const GOOGLE_MAPS_LINK = 'https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Food+Court)'
-
 // Daftar area food court untuk kartu info di section "Tentang" (tanda titik ditambahkan saat render)
 const AREA_LIST = ['Blok A&B', 'Blok C', 'Blok D', 'Blok E', 'Blok F']
 
 // Data tiap blok — teks tenant & fasilitas disamakan persis dengan desain.
-// Tenant bertuliskan "Vacant" (belum terisi) ditampilkan dengan gaya miring abu-abu.
 const BLOKS: Blok[] = [
 	{
 		name: 'BLOK A & B',
@@ -162,18 +156,15 @@ function getFacilityIcon(label: string) {
 
 function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 	const { t } = useTranslation()
-	// Tenant dibagi 2 kolom: kolom kiri terisi dulu, lalu kanan (sesuai desain)
 	const half = Math.ceil(blok.tenants.length / 2)
 	const columns = [blok.tenants.slice(0, half), blok.tenants.slice(half)]
 
 	return (
-		// Garis pemisah baru muncul mulai sebelum Blok D (index >= 2)
 		<div
 			className={`py-[19px] sm:py-6 ${
 				index >= 2 ? 'mt-2 border-t border-black/[0.06] pt-[38px] sm:mt-0 sm:pt-6' : ''
 			}`}
 		>
-			{/* Judul blok: titik hitam + nama */}
 			<h3 className="flex items-center gap-2 font-['Montserrat'] text-[20px] font-semibold uppercase leading-[32px] tracking-[-0.6px] text-black sm:text-[24px]">
 				<span className="h-[8px] w-[8px] shrink-0 rounded-full bg-black" />
 				{blok.name}
@@ -189,7 +180,6 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 				{t('common.areaInformation')}
 			</p>
 
-			{/* Card tenant: 1 kolom (<360px), 2 kolom mulai 360px */}
 			<div className="mt-2 w-full rounded-lg border border-[#E2E2E2] bg-white px-3.5 py-3 sm:mt-3 sm:px-4">
 				<div className="grid grid-cols-1 items-start gap-x-2 min-[360px]:grid-cols-2 sm:gap-x-4">
 					{columns.map((column, colIndex) => (
@@ -242,7 +232,6 @@ function BlokSection({ blok, index }: { blok: Blok; index: number }) {
 
 function FoodCourtPage() {
 	const { t } = useTranslation()
-	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	return (
 		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
@@ -252,7 +241,6 @@ function FoodCourtPage() {
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan) */}
 			<section className="hero-enter relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Food Court" className="hero-background-enter absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center" />
-				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-7 rounded-t-[28px] bg-obc-ivory md:hidden" />
 				<div
@@ -263,7 +251,6 @@ function FoodCourtPage() {
 					}}
 				/>
 
-				{/* Teks hero: md+, container max-w 1246px, rata kanan */}
 				<div className="hero-content-enter relative z-10 hidden min-h-[100svh] w-full items-center pb-12 pt-24 md:flex">
 					<div className="mx-auto flex w-full max-w-[1246px] justify-end px-8 md:px-10">
 						<div className="w-full max-w-[472px] text-black md:max-w-[380px] lg:max-w-[440px] xl:max-w-[472px]">
@@ -342,7 +329,6 @@ function FoodCourtPage() {
 				{/* Kolom kanan (lg+): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24 mb-12">
-						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
 							tenantSlug="food-court"
 							className="lg:!w-full"
@@ -355,99 +341,20 @@ function FoodCourtPage() {
 			</ScrollReveal>
 			</LazySection>
 
-			{/* Galeri */}
-			<LazySection minHeight={600}>
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<ScrollReveal>
-				<div className="text-center">
-					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
-						{t('gallerySection.badge')}
-					</span>
-					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						{t('gallerySection.momentsFrom', { unit: t('units.foodCourt.title') })}
-					</h2>
-					<div className="mx-auto mt-3 h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D]" />
-				</div>
-				</ScrollReveal>
+			<UnitGallery
+				images={GALLERY_IMAGES}
+				unitName="OBC Food Court"
+				badge={t('gallerySection.badge')}
+				title={t('gallerySection.momentsFrom', { unit: t('units.foodCourt.title') })}
+			/>
 
-				{/* Foto fleksibel mengikuti lebar kolom (tidak lagi ukuran tetap 280px) */}
-				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
-					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<ScrollReveal
-							key={`${image}-${index}`}
-							className={`aspect-[4/3] w-full md:aspect-[280/296] ${
-								index >= 4 ? 'hidden md:block' : ''
-							}`}
-							delay={index * 90}
-							duration={700}
-							distance={16}
-							scale={0.98}
-						>
-							<button
-								type="button"
-								onClick={() => setSelectedGalleryImage(image)}
-								className="group h-full w-full overflow-hidden rounded-[20px] md:rounded-xl"
-								aria-label={`Buka gambar Momen OBC Food Court ${index + 1}`}
-							>
-								<img
-									src={image}
-									alt={`Momen OBC Food Court ${index + 1}`}
-									loading="lazy"
-									decoding="async"
-									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-								/>
-							</button>
-						</ScrollReveal>
-					))}
-				</div>
-			</section>
-			</LazySection>
-
-			{selectedGalleryImage && (
-				<ImageLightbox
-					src={selectedGalleryImage}
-					alt="Pratinjau galeri OBC Food Court"
-					onClose={() => setSelectedGalleryImage(null)}
-				/>
-			)}
-
-			{/* Lokasi */}
-			<LazySection minHeight={500}>
-			<ScrollReveal>
-			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
-				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
-					<div className="order-1 md:order-none">
-						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
-							{t('common.locationOf', { unit: t('units.foodCourt.title') })}
-						</h2>
-						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
-							Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142
-						</p>
-					</div>
-					<a
-						href={GOOGLE_MAPS_LINK}
-						target="_blank"
-						rel="noreferrer"
-						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
-					>
-						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						{t('common.openGoogleMaps')}
-					</a>
-				</div>
-
-				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
-					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Food Court */}
-					<iframe
-						title={t('common.locationOf', { unit: t('units.foodCourt.title') })}
-						src="https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Food+Court)&hl=id&z=17&output=embed"
-						className="h-full w-full border-0"
-						loading="lazy"
-						referrerPolicy="no-referrer-when-downgrade"
-					/>
-				</div>
-			</section>
-			</ScrollReveal>
-			</LazySection>
+			<UnitLokasi
+				title={t('common.locationOf', { unit: t('units.foodCourt.title') })}
+				address="Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142"
+				mapLabel="OBC Food Court"
+				latitude={-6.87467}
+				longitude={107.60724}
+			/>
 
 			<LazySection minHeight={600}>
 			<ScrollReveal>
@@ -457,7 +364,6 @@ function FoodCourtPage() {
 
 			<LandingFooter />
 
-			{/* Card WhatsApp (mobile & tablet, < lg): fixed di bawah layar, versi ringkas (variant="bar") */}
 			<div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/95 px-4 pb-4 pt-3 shadow-[0px_-4px_12px_0px_rgba(0,0,0,0.08)] backdrop-blur-md lg:hidden">
 				<div className="mx-auto w-full max-w-[720px]">
 					<WhatsAppCard

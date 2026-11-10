@@ -1,5 +1,4 @@
-import { MapPin, ExternalLink } from 'lucide-react'
-import { useState } from 'react'
+import { MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../../components/layouts/LandingNavbar'
 import LandingFooter from '../../../components/layouts/LandingFooter'
@@ -7,7 +6,8 @@ import LazySection from '../../../components/common/LazySectionHome'
 import ScrollReveal from '../../../components/animation/ScrollReveal'
 import { UnitBisnis } from '../../../components/ui/OtherUnitBisnis'
 import { WhatsAppCard } from '../../../components/ui/WhatsAppCard'
-import ImageLightbox from '../../../components/ui/modal/ImageLightbox'
+import UnitLokasi from './UnitLokasi'
+import UnitGallery from './UnitGallery'
 import heroImage from '../../../assets/images/unit-bisnis/coffe.webp'
 import clockIcon from '../../../assets/icon/clock.svg'
 import wifiIcon from '../../../assets/icon/wifi.svg'
@@ -31,9 +31,6 @@ interface Equipment {
 	number: string
 	label: string
 }
-
-const GOOGLE_MAPS_LINK =
-	'https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Coffee)'
 
 const FACILITIES: Facility[] = [
 	{ icon: wifiIcon, label: 'Free Wifi' },
@@ -64,17 +61,14 @@ const GALLERY_IMAGES = [
 
 function CoffeePage() {
 	const { t } = useTranslation()
-	const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null)
 
 	return (
-		// pb: ruang untuk bar WhatsApp fixed (tampil sampai < lg) supaya footer tidak tertutup
 		<div className="min-h-screen bg-obc-ivory pb-[130px] lg:pb-0">
 			<LandingNavbar />
 
 			{/* Hero: mobile hanya foto (teks pindah ke bawah foto), md+ teks di atas foto (rata kanan) */}
 			<section className="hero-enter relative h-[360px] overflow-hidden min-[412px]:max-[767px]:h-[440px] md:h-auto md:min-h-[100svh]">
 				<img src={heroImage} alt="OBC Coffee" className="hero-background-enter absolute inset-0 h-full w-full object-cover object-top min-[412px]:max-[499px]:object-[50%_35%] min-[500px]:max-[767px]:object-[50%_45%] md:object-center lg:inset-y-0 lg:right-0 lg:w-[calc(100%-24px)]" />
-				{/* Overlay: hanya md+. Lebar bertahap mengikuti breakpoint */}
 				<div className="absolute inset-0 hidden bg-gradient-to-t from-obc-charcoal/60 via-obc-charcoal/10 to-transparent md:block" />
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-7 rounded-t-[28px] bg-obc-ivory md:hidden" />
 				<div
@@ -144,12 +138,10 @@ function CoffeePage() {
 					{/* Fasilitas */}
 					<section className="px-5 pb-14 min-[400px]:px-[30px] sm:px-5 md:px-0">
 						<div className="max-w-[633px]">
-							{/* Garis pemisah tipis di atas section */}
 							<div className="border-t border-black/[0.06] pt-8">
 								<h2 className="flex h-auto items-center px-2.5 font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:px-0 sm:text-[25px]">
 									{t('common.facilities')} {t('units.coffee.title')}
 								</h2>
-								{/* 1 kolom (<360px), 2 kolom mulai 360px */}
 								<div className="mt-4 grid max-w-[630px] grid-cols-1 gap-4 min-[360px]:grid-cols-2 sm:mt-6">
 									{FACILITIES.map((facility) => {
 										return (
@@ -177,14 +169,12 @@ function CoffeePage() {
 							<h2 className="flex h-auto w-[619px] max-w-full items-center font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black sm:text-[25px]">
 								Peralatan OBC Coffee
 							</h2>
-							{/* 1 kolom (<360px), 2 kolom (360-479px), 3 kolom mulai 480px */}
 							<div className="mt-8 grid max-w-[633px] grid-cols-1 gap-[10px] min-[360px]:grid-cols-2 min-[480px]:grid-cols-3">
 								{EQUIPMENT.map((equipment) => (
 									<div
 										key={equipment.number}
 										className="flex min-h-[50px] min-w-0 items-center gap-[10px] rounded-xl border border-[#CFC4C54D] bg-[#F9F9F9] p-[10px] sm:min-h-[70px] sm:rounded-2xl"
 									>
-										{/* Badge angka hanya di sm ke atas; di mobile angka menyatu dengan teks */}
 										<span className="hidden h-[47px] w-[47px] shrink-0 items-center justify-center rounded-lg bg-white font-['Montserrat'] text-[12px] font-bold leading-[16px] text-black shadow-[0_1px_3px_rgba(0,0,0,0.06)] sm:flex">
 											{equipment.number}
 										</span>
@@ -199,10 +189,8 @@ function CoffeePage() {
 					</section>
 				</div>
 
-				{/* Kolom kanan (lg+): WhatsApp card sticky, mengikuti scroll sampai sebelum Galeri */}
 				<aside className="hidden lg:block lg:w-1/3 lg:pt-14">
 					<div className="sticky top-24 mb-12">
-						{/* lg:!w-full menimpa md:w-[32%] bawaan WhatsAppCard supaya card memenuhi kolom kanan */}
 						<WhatsAppCard
 							tenantSlug="coffee"
 							className="lg:!w-full"
@@ -215,100 +203,20 @@ function CoffeePage() {
 			</ScrollReveal>
 			</LazySection>
 
-			{/* Galeri */}
-			<LazySection minHeight={600}>
-			<section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-				<ScrollReveal>
-				<div className="text-center">
-					<span className="font-['Montserrat'] text-[16px] font-semibold uppercase leading-[20px] tracking-[1.4px] text-black">
-						{t('gallerySection.badge')}
-					</span>
-					<h2 className="mt-2 font-['Montserrat'] text-[20px] font-semibold leading-[28px] tracking-[-0.5px] text-black">
-						{t('gallerySection.momentsFrom', { unit: t('units.coffee.title') })}
-					</h2>
-					<div className="mx-auto mt-3 h-[2px] w-[396px] max-w-full rounded-[2px] bg-[#0000004D]" />
-				</div>
-				</ScrollReveal>
+			<UnitGallery
+				images={GALLERY_IMAGES}
+				unitName="OBC Coffee"
+				badge={t('gallerySection.badge')}
+				title={t('gallerySection.momentsFrom', { unit: t('units.coffee.title') })}
+			/>
 
-				{/* Foto fleksibel mengikuti lebar kolom (tidak lagi ukuran tetap 280px) */}
-				<div className="mt-6 grid grid-cols-2 gap-[10px] md:mt-8 md:grid-cols-4 md:gap-3">
-					{GALLERY_IMAGES.slice(0, 8).map((image, index) => (
-						<ScrollReveal
-							key={`${image}-${index}`}
-							className={`aspect-[4/3] w-full md:aspect-[280/296] ${
-								index >= 4 ? 'hidden md:block' : ''
-							}`}
-							delay={index * 90}
-							duration={700}
-							distance={16}
-							scale={0.98}
-						>
-							<button
-								type="button"
-								onClick={() => setSelectedGalleryImage(image)}
-								className="group h-full w-full overflow-hidden rounded-[20px] md:rounded-xl"
-								aria-label={`Buka gambar Momen OBC Coffee ${index + 1}`}
-							>
-								<img
-									src={image}
-									alt={`Momen OBC Coffee ${index + 1}`}
-									loading="lazy"
-									decoding="async"
-									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-								/>
-							</button>
-						</ScrollReveal>
-					))}
-				</div>
-			</section>
-			</LazySection>
-
-			{selectedGalleryImage && (
-				<ImageLightbox
-					src={selectedGalleryImage}
-					alt="Pratinjau galeri OBC Coffee"
-					onClose={() => setSelectedGalleryImage(null)}
-				/>
-			)}
-
-			{/* Lokasi */}
-			<LazySection minHeight={500}>
-			<ScrollReveal>
-			<section className="mx-auto flex max-w-[1200px] flex-col px-6 pb-10 md:block md:px-8 md:pb-16">
-				<div className="contents md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
-					<div className="order-1 md:order-none">
-						<h2 className="h-auto w-full max-w-none font-['Montserrat'] text-[20px] font-semibold leading-[100%] tracking-[0%] text-black md:h-auto md:max-w-none md:text-[25px]">
-							{t('common.locationOf', { unit: t('units.coffee.title') })}
-						</h2>
-						<p className="mt-3 h-auto w-full max-w-[845px] font-['Montserrat'] text-[14px] font-normal leading-[24px] tracking-[0.15px] text-black md:mt-1 md:h-auto md:text-[15px]">
-							Area OBC Cafe B2-B3 - Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat
-							40142
-						</p>
-					</div>
-					<a
-						href={GOOGLE_MAPS_LINK}
-						target="_blank"
-						rel="noreferrer"
-						className="order-3 mt-4 inline-flex h-[40px] w-full items-center justify-center gap-[8px] rounded-full bg-[#E9E9E9] px-[20px] py-[12px] font-['Montserrat'] text-[16px] font-semibold leading-[19.6px] tracking-[0.56px] text-[#222022] hover:bg-[#E1E1E1] md:order-none md:mt-0 md:h-[32px] md:w-[229px] md:shrink-0 md:text-[14px]"
-					>
-						<ExternalLink className="h-[16px] w-[16px] text-[#222022] md:h-[13.5px] md:w-[13.5px]" />
-						{t('common.openGoogleMaps')}
-					</a>
-				</div>
-
-				<div className="order-2 mt-4 h-[300px] overflow-hidden rounded-[24px] border border-obc-border md:order-none md:mt-6 md:h-[380px] md:rounded-2xl lg:h-[420px]">
-					{/* Ganti src di bawah dengan embed link Google Maps resmi OBC Coffee */}
-					<iframe
-						title={t('common.locationOf', { unit: t('units.coffee.title') })}
-						src="https://www.google.com/maps?q=-6.8758,107.6083+(OBC+Coffee)&hl=id&z=17&output=embed"
-						className="h-full w-full border-0"
-						loading="lazy"
-						referrerPolicy="no-referrer-when-downgrade"
-					/>
-				</div>
-			</section>
-			</ScrollReveal>
-			</LazySection>
+			<UnitLokasi
+				title={t('common.locationOf', { unit: t('units.coffee.title') })}
+				address="Area OBC Cafe B2-B3 - Jl. Rancabentang 1 No.12, Ciumbuleuit, Kec. Cidadap, Kota Bandung, Jawa Barat 40142"
+				mapLabel="OBC Coffee"
+				latitude={-6.87461}
+				longitude={107.6072}
+			/>
 
 			<LazySection minHeight={600}>
 			<ScrollReveal>

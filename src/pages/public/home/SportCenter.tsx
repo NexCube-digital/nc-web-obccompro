@@ -59,8 +59,7 @@ function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight
 					/>
 				</div>
 
-				{/* Lipatan badge kiri atas (versi asli): disembunyikan di ≤460px,
-				    di sana lipatan dipindah ke dalam badge supaya ikut tinggi badge multi-baris */}
+				
 				<span
 					aria-hidden="true"
 					className="absolute left-[-8px] top-[22px] h-[17px] w-[8px] rounded-bl-[8px] bg-[#7FA52B] max-[460px]:hidden"
@@ -69,27 +68,22 @@ function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight
 
 				<span className="absolute left-[-8px] top-3 max-w-[80%] rounded-full rounded-bl-none bg-[#CDF178] px-[10px] py-[3px] font-['Montserrat'] text-[10px] font-semibold leading-[13px] tracking-[0.3px] text-[#000000] max-[460px]:max-w-[calc(100%-28px)] max-[460px]:!rounded-[10px] max-[460px]:!rounded-bl-none max-[460px]:px-2 max-[460px]:py-[3px] max-[460px]:text-left max-[460px]:leading-[12px] max-[460px]:tracking-[0.2px] sm:max-w-[calc(100%-28px)] md:text-[11px] md:leading-[14px] md:tracking-[0.5px]">
 					{badge}
-					{/* Lipatan baru: menempel di bawah kiri badge, hanya tampil ≤460px */}
 					<span
 						aria-hidden="true"
 						className="absolute left-0 top-full hidden h-2 w-2 rounded-bl-[8px] bg-[#7FA52B] max-[460px]:block"
 					/>
 				</span>
 
-				{/* Ikon bulat kanan atas: mobile 24px */}
 				<span className="absolute right-2 top-3 grid h-6 w-6 place-items-center rounded-full bg-[#CDF178] text-[#1F3320] md:h-[22px] md:w-[22px]">
 					{icon}
 				</span>
 
-				{/* Penanda play untuk kartu video */}
 				{videoUrl && (
 					<span aria-hidden="true" className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-transform group-hover:scale-110">
 						<Play size={18} fill="white" />
 					</span>
 				)}
 
-				{/* Pill harga: hanya muncul saat hover, naik pelan sambil fade-in.
-				    Hanya dirender kalau prop price diisi. */}
 				{price && (
 					<span className="pointer-events-none absolute bottom-3 left-1/2 w-[calc(100%-24px)] -translate-x-1/2 translate-y-2 truncate rounded-full border border-white/70 bg-black/35 px-3 py-1 text-center font-['Montserrat'] text-[10px] font-bold tracking-[0.5px] text-white opacity-0 backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 sm:text-[12px] md:text-[14px] lg:text-[16px]">
 						{t('common.startingFrom')} {price?.replace(/^Mulai dari /, '').replace('/jam', '')} {t('common.perHour')}
@@ -97,8 +91,6 @@ function SportCard({ image, badge, icon, items, videoUrl, onCardClick, imgHeight
 				)}
 			</div>
 
-			{/* List fasilitas: mobile padding 12px, teks 12px, item melebar rata (justify-between);
-			    mulai sm rata kiri supaya item yang wrap di kartu sempit tidak renggang aneh. */}
 			<ul className="flex flex-wrap justify-between gap-x-3 gap-y-1 p-3 sm:justify-start sm:gap-x-4 md:gap-y-1.5 md:p-4">
 				{items.map((item) => (
 					<li

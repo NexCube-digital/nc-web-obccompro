@@ -5,7 +5,7 @@ import {
   ROLE_LABELS,
   ROLE_PERMISSION_OPTIONS,
   type RolePermission,
-} from "./roleService";
+} from "../../services/admin/roleService";
 
 type Props = {
   rolePermission: RolePermission;

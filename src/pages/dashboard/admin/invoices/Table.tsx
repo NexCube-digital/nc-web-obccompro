@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Eye, Pencil, Search, Trash2, WalletCards } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import type { Invoice, InvoiceStatus } from "./invoiceService";
+import type { Invoice, InvoiceStatus } from "../../services/admin/invoiceService";
 
 const PAGE_SIZE = 8;
 type StatusFilter = "all" | "draft" | "pending" | "success" | "failed";

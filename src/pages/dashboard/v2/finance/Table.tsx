@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, Pencil, Search, Trash2 } from "lucide-react";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
 import type { FinanceRecord } from "./financeService";
 
 const PAGE_SIZE = 10;

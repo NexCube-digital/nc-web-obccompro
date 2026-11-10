@@ -1,4 +1,4 @@
-import { unitbisnisService } from "../unit-bisnis/unitbisnisService";
+import { unitbisnisService } from "./unitbisnisService";
 import { mediaService } from "../../v2/media/mediaService";
 
 export async function uploadTestimonialAvatar(file: File): Promise<string> {

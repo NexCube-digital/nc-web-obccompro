@@ -51,7 +51,6 @@ export default function Galeri() {
 			{/* Header: mobile teks di atas, tombol di bawah rata kanan */}
 			<div className="mb-5 flex flex-col items-start justify-between gap-4 md:mb-[clamp(16px,3.5svh,32px)] md:flex-row md:items-center md:gap-6">
 				<div>
-					{/* Label: mobile title case, desktop kapital */}
 					<span className="block font-['Montserrat'] text-[16px] font-semibold normal-case leading-[20px] tracking-normal text-[#333333] md:uppercase md:tracking-[1.6px]">
 						{t('gallerySection.badge')}
 					</span>
@@ -63,7 +62,6 @@ export default function Galeri() {
 					</p>
 				</div>
 
-				{/* Tombol: mobile lebih kecil & rata kanan */}
 				<TransitionLink
 					className="group inline-flex h-[48px] w-fit shrink-0 items-center justify-center gap-2 self-end rounded-[45px] border-[0.67px] border-[#CDF178] bg-[#CDF178] py-1 pl-5 pr-1.5 font-['Montserrat'] text-[15px] font-semibold leading-[17px] tracking-[0px] text-[#1F3320] transition-all duration-300 hover:border-[#004000] hover:bg-[#004000] md:mr-8 md:h-[clamp(60px,9svh,78px)] md:w-fit md:gap-3 md:self-auto md:py-2 md:pl-7 md:pr-2 md:text-[20px]"
 					to="/galeri"
@@ -77,7 +75,6 @@ export default function Galeri() {
 				</TransitionLink>
 			</div>
 
-			{/* Grid: mobile 2x2 (hanya 4 gambar pertama), desktop 4 kolom dengan rasio baris 11 : 4 : 11 (asli 275 / 100 / 275) */}
 			<div className="grid grid-cols-2 gap-[15px] md:h-[clamp(260px,calc(100svh_-_clamp(52px,7svh,80px)_-_clamp(16px,3svh,40px)_-_140px),675px)] md:grid-cols-4 md:grid-rows-[11fr_4fr_11fr] md:gap-[clamp(12px,3svh,25px)] md:px-[27px] [&>*:nth-child(n+5)]:hidden md:[&>*:nth-child(n+5)]:block">
 				{GALLERY_ITEMS.map((item) => (
 					<button
@@ -88,7 +85,6 @@ export default function Galeri() {
 						onClick={() => setSelectedGalleryImage(item.image)}
 					>
 						<img src={item.image} alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
-						{/* Label pil: disembunyikan di mobile, tampil di md ke atas */}
 						<span className="absolute bottom-[6px] left-[8px] z-10 hidden rounded-full bg-white px-[22px] py-[8px] font-['Montserrat'] text-[14px] font-normal leading-[22px] text-[#222222] md:block md:text-[17px]">
 							{item.label}
 						</span>

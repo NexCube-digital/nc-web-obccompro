@@ -19,7 +19,7 @@ import {
   type ReportRecord,
   type ReportPeriod,
   type ReportType,
-} from "./reportService";
+} from "../../services/admin/reportService";
 import {
   downloadFinanceReportExcel,
   downloadFinanceReportPdf,
@@ -27,7 +27,7 @@ import {
   downloadInvoiceReportPdf,
   getFinanceReportSnapshot,
   getInvoiceReportSnapshot,
-} from "./reportDownloads";
+} from "../../services/admin/reportDownloads";
 
 const typeIcons: Record<ReportType, typeof Receipt> = {
   invoices: Receipt,

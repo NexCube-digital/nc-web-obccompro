@@ -13,7 +13,7 @@ import {
   unitbisnisService,
   type BusinessUnit,
   type BusinessUnitInput,
-} from "./unitbisnisService";
+} from "../../services/cms/unitbisnisService";
 
 type Props = {
   unit: BusinessUnit | null;

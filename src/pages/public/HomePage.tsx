@@ -86,7 +86,6 @@ function usePreloadSections() {
 
 /*
  * Membuat gambar di dalam section muncul dengan halus.
- * Gambar yang belum siap disembunyikan, lalu di-fade-in setelah selesai di-decode.
  */
 function SmoothImages({ children }: { children: ReactNode }) {
 	const ref = useRef<HTMLDivElement>(null)

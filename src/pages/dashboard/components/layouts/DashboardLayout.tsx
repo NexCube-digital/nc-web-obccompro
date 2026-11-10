@@ -23,8 +23,7 @@ export default function DashboardLayout({ children }: Props) {
         sidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-[258px]"
       }`}>
         <Header
-          onMenuToggle={() => setSidebarMobileOpen(!sidebarMobileOpen)}
-          onCollapseToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onToggleSidebar={() => setSidebarMobileOpen((open) => !open)}
         />
         <main className="flex-1 overflow-y-auto">
           {children}

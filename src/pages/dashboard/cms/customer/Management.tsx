@@ -6,7 +6,7 @@ import Pagination from "../../components/common/Pagination";
 import { getApiErrorMessage } from "../../../../services/api";
 import CustomerFilters from "./Form";
 import CustomerTable from "./Table";
-import { customerService, type CustomerListResponse } from "./customerService";
+import { customerService, type CustomerListResponse } from "../../services/cms/customerService";
 
 const PAGE_SIZE = 20;
 
@@ -46,7 +46,6 @@ export default function Management() {
   };
 
   const currentPage = data.pagination.page || page;
-  const totalPages = Math.max(1, data.pagination.totalPages);
 
   return (
     <DashboardPageLayout

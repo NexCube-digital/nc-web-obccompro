@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { ImagePlus, Plus, X } from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { getMediaUrl } from "../../v2/media/mediaService";
-import { sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "./courtService";
+import { sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "../../services/sport/courtService";
 
 type Props = {
   resource: CourtResource;

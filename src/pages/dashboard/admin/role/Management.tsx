@@ -3,7 +3,7 @@ import { KeyRound, RotateCcw, ShieldCheck, Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
-import { roleService, ROLE_LABELS, type RolePermission } from "./roleService";
+import { roleService, ROLE_LABELS, type RolePermission } from "../../services/admin/roleService";
 import RolePermissionForm from "./Form";
 import RolePermissionTable from "./Table";
 

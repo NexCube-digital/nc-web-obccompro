@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  ArrowUpRight,
   BadgePercent,
   CalendarDays,
   CirclePlus,
@@ -21,7 +20,7 @@ import {
   type Promo,
   type PromoInput,
   type PromoStatus,
-} from "./promoService";
+} from "../../services/sport/promoService";
 
 const PAGE_SIZE = 8;
 const statuses: Array<PromoStatus | "all"> = ["all", "active", "inactive"];
@@ -248,6 +247,14 @@ export default function PromoManagement() {
             <span className="hidden whitespace-nowrap text-[11px] text-obc-muted lg:inline">
               {total} promo ditemukan
             </span>
+            <button
+              type="button"
+              onClick={openCreate}
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-obc-green px-3 text-[12px] font-semibold text-white transition-colors hover:bg-obc-green-hover"
+            >
+              <CirclePlus size={15} />
+              Tambah promo
+            </button>
           </div>
         </section>
         <PromoTable

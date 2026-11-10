@@ -1,5 +1,5 @@
 import { MapPin, MessageCircle } from "lucide-react";
-import type { SiteContactContent } from "./siteContentService";
+import type { SiteContactContent } from "../../services/cms/siteContentService";
 
 type Props = {
 	contact: SiteContactContent;

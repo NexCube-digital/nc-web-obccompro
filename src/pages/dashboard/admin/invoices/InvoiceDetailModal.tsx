@@ -10,7 +10,7 @@ import type {
   Invoice,
   InvoiceBookingDetails,
   InvoiceStatus,
-} from "./invoiceService";
+} from "../../services/admin/invoiceService";
 
 const statusLabels: Record<InvoiceStatus, string> = {
   draft: "Draft",

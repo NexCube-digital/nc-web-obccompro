@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { LoaderCircle, ShieldCheck } from "lucide-react";
 import creditCardImage from "../../../../../assets/images/payment/creditcard.webp";
-import { invoiceService } from "../invoiceService";
+import { invoiceService } from "../../../services/admin/invoiceService";
 import {
   authenticateMidtransCard,
   tokenizeMidtransCard,

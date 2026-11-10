@@ -1,5 +1,5 @@
 import { LayoutDashboard } from "lucide-react";
-import type { DashboardSummary } from "./DashboardService";
+import type { DashboardSummary } from "../services/admin/DashboardService";
 
 type Props = {
   bookings: DashboardSummary["recentBookings"];

@@ -21,7 +21,7 @@ import {
   portfolioService,
   type Portfolio,
   type PortfolioInput,
-} from "./portfolioService";
+} from "../../services/cms/portfolioService";
 
 type Props = {
   portfolio: Portfolio | null;

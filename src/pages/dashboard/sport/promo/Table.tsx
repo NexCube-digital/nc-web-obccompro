@@ -7,7 +7,7 @@ import {
   Trash2,
 } from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import type { Promo, PromoStatus } from "./promoService";
+import type { Promo, PromoStatus } from "../../services/sport/promoService";
 
 type Props = {
   promos: Promo[];

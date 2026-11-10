@@ -8,7 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import type { ActiveStatus, PricingPackage } from "../SportService";
+import type { ActiveStatus, PricingPackage } from "../../services/sport/SportService";
 
 type Props = {
   packages: PricingPackage[];

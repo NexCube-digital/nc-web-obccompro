@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { getMediaUrl } from "../media/mediaService";
-import type { SportResource, SportResourceInput, SportType } from "../../sport/SportService";
+import type { SportResource, SportResourceInput, SportType } from "../../services/sport/SportService";
 
 export type LocationOption = { id: string; name: string };
 type Props = { resource: SportResource | null; locations: LocationOption[]; onClose: () => void; onSave: (input: SportResourceInput, image?: File) => Promise<void> };

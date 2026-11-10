@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PaymentInstructionCard, {
   type PaymentBookingItem,
 } from "../payment/PaymentInstructionCard";
-import { invoiceService, type InvoiceBookingDetails } from "../invoiceService";
+import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 import { parsePersistedDirectPayment } from "../../../../../services/paymentService";
 
 function FinalisasiOrder() {

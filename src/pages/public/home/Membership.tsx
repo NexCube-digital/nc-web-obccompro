@@ -13,7 +13,6 @@ export default function Membership() {
 	const { t } = useTranslation()
 	return (
 		<section id="membership" className="relative overflow-hidden bg-white py-10">
-			{/* tekstur lapangan samar dari asset untuk memberi nuansa olahraga */}
 			<img
 				className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] mix-blend-multiply"
 				src={member}
@@ -30,7 +29,6 @@ export default function Membership() {
 
 
 			<div className="relative mx-auto grid w-[calc(100%-60px)] max-w-[520px] grid-cols-1 items-center gap-8 md:w-[calc(100%-32px)] md:max-w-[1246px] md:grid-cols-2 md:gap-x-8 md:gap-y-6 md:px-6 xl:grid-cols-[1fr_auto_1fr] xl:gap-8">
-				{/* Kolom kiri: headline & benefit */}
 				<div className="flex min-w-0 flex-col items-start text-left">
 					<span className="mb-1.5 block font-['Montserrat'] text-[12px] font-bold uppercase tracking-[1px] text-[#222222] md:text-[14px] md:font-medium xl:text-[15px]">
 						{t('membershipSection.badge')}
@@ -56,7 +54,6 @@ export default function Membership() {
 					</ul>
 				</div>
 
-				{/* Kartu membership 3D */}
 				<div className="grid min-w-0 place-items-center py-2 md:py-0">
 					<div
 						className="relative flex h-[168px] w-[305px] max-w-full flex-col justify-between rounded-[16px] border border-[#10B9814D] p-5 shadow-[0_0_30px_0_rgba(198,245,42,0.12),-12px_18px_36px_-10px_rgba(0,0,0,0.6)] transition-transform [transform:rotate(3deg)] hover:scale-[1.02] md:h-[196px] md:w-[320px] md:[transform:rotate(2.5deg)] lg:h-[212px] lg:w-[350px] xl:h-[224px] xl:w-[365px] xl:p-6"
@@ -75,7 +72,6 @@ export default function Membership() {
 									SPORT CENTER
 								</span>
 							</div>
-							{/* Chip */}
 							<div
 								className="relative grid h-[19px] w-[26px] place-items-center shadow md:h-[17px] md:w-[24px]"
 								style={{ transform: 'rotate(-2.5deg)' }}
@@ -99,8 +95,6 @@ export default function Membership() {
 					</div>
 				</div>
 
-				{/* Kolom kanan: brand & CTA.
-				    md sampai <xl: baris sendiri selebar 2 kolom, rata tengah. xl ke atas: kolom ketiga rata kanan. */}
 				<div className="flex min-w-0 flex-col items-end gap-1.5 pr-1.5 text-right md:col-span-2 md:items-center md:pr-0 md:text-center xl:col-span-1 xl:items-end xl:gap-2 xl:text-right">
 					<div className="text-center xl:text-right">
 						<strong className="block font-heading text-[40px] font-extrabold leading-none tracking-tight text-[#111111] md:text-[38px] xl:text-[46px]">
@@ -122,11 +116,9 @@ export default function Membership() {
 						target="_blank"
 						rel="noreferrer"
 					>
-						{/* Mobile: tanpa perubahan tracking/weight saat hover agar tidak turun baris */}
 						<span className="min-w-0 text-left leading-[20px] tracking-[0.02em] text-[#1F3320] transition-colors duration-300 group-hover:!text-[#CDF178] md:hidden">
 							{t('membershipSection.ctaMobile')}
 						</span>
-						{/* Desktop/tablet: satu baris, tidak boleh turun */}
 						<span className="hidden whitespace-nowrap text-left leading-[18px] text-[#1F3320] transition-all duration-300 group-hover:font-medium group-hover:tracking-[0.8px] group-hover:!text-[#CDF178] md:inline">
 							{t('membershipSection.ctaDesktop')}
 						</span>

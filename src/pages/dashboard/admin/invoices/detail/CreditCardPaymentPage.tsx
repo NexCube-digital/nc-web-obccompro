@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { invoiceService, type InvoiceBookingDetails } from "../invoiceService";
+import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 import CreditCardPaymentForm from "../payment/CreditCardPaymentForm";
 
 function CreditCardPaymentPage() {

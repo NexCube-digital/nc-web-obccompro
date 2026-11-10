@@ -11,7 +11,7 @@ import {
   type BusinessUnit,
   type BusinessUnitDetail,
   type BusinessUnitInput,
-} from "./unitbisnisService";
+} from "../../services/cms/unitbisnisService";
 
 export default function Management() {
   const [units, setUnits] = useState<BusinessUnit[]>([]);
