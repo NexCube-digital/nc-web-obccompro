@@ -22,9 +22,9 @@ const frames = [
   { src: frame6, cx: 250, rgb: [207, 7, 7] }, // Frame6 - merah
 ]
 
-const STEP_DURATION = 450 // 6 frames x 450ms = 2700ms
-const DISPLAY_DURATION = 2700
-const FADE_DURATION = 300 // total loading time: 3000ms
+const STEP_DURATION = 420 // animasi tetap hidup, tapi lebih cepat
+const DISPLAY_DURATION = 1500
+const FADE_DURATION = 220
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
@@ -91,7 +91,8 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
 
     apply(0)
 
-    // Tunggu semua gambar ter-decode, simpan referensinya agar tidak di-GC
+    // Jangan menunggu semua decode image sebelum animasi dimulai.
+    // Ini menjaga animasi tetap ada, tapi memotong delay startup yang memberatkan.
     const images = [...frames.map((f) => f.src), logo].map((src) => {
       const img = new Image()
       img.src = src
@@ -99,35 +100,28 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
     })
     preloadedRef.current = images
 
-    Promise.all(images.map((img) => img.decode().catch(() => undefined))).then(
-      () => {
-        if (cancelled) return
+    const tick = (now: number) => {
+      if (cancelled) return
 
-        const tick = (now: number) => {
-          if (cancelled) return
+      if (startTime === null) startTime = now
+      const elapsed = now - startTime
 
-          // Start dari timestamp rAF pertama -> tidak pernah negatif
-          if (startTime === null) startTime = now
-          const elapsed = now - startTime
+      apply(elapsed)
 
-          apply(elapsed)
+      if (!exiting && elapsed >= DISPLAY_DURATION) {
+        exiting = true
+        if (rootRef.current) rootRef.current.style.opacity = '0'
+      }
+      if (!finished && elapsed >= DISPLAY_DURATION + FADE_DURATION) {
+        finished = true
+        onCompleteRef.current()
+        return
+      }
 
-          if (!exiting && elapsed >= DISPLAY_DURATION) {
-            exiting = true
-            if (rootRef.current) rootRef.current.style.opacity = '0'
-          }
-          if (!finished && elapsed >= DISPLAY_DURATION + FADE_DURATION) {
-            finished = true
-            onCompleteRef.current()
-            return
-          }
+      rafId = requestAnimationFrame(tick)
+    }
 
-          rafId = requestAnimationFrame(tick)
-        }
-
-        rafId = requestAnimationFrame(tick)
-      },
-    )
+    rafId = requestAnimationFrame(tick)
 
     return () => {
       cancelled = true
@@ -138,7 +132,7 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 z-[9999] grid place-items-center overflow-hidden bg-white"
+      className="fixed inset-0 z-9999 grid place-items-center overflow-hidden bg-white"
       style={{ opacity: 1, transition: `opacity ${FADE_DURATION}ms linear` }}
       role="status"
       aria-label="Memuat OBC Group"
@@ -191,10 +185,10 @@ export default function LoadingState({ onComplete }: LoadingStateProps) {
 
         {/* Disc logo 280px: cincin 10px dari frame tetap terlihat */}
         <div
-          className="absolute z-10 grid place-items-center rounded-full bg-[#fffff7]"
+          className="absolute z-10 grid place-items-center rounded-full bg-obc-ivory"
           style={{ inset: RING }}
         >
-          <img src={logo} alt="" className="h-auto w-[216px] object-contain" />
+          <img src={logo} alt="" className="h-auto w-54 object-contain" />
         </div>
       </div>
     </div>

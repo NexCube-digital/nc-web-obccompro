@@ -67,7 +67,7 @@ export default function Management() {
 		if (!window.confirm(`Hapus transaksi "${finance.category || finance.description || finance.type}"?`)) return;
 		try {
 			await financeService.deleteFinance(finance.id);
-			toast.success("Transaksi berhasil dihapus.");
+			toast.success("Transaksi dipindahkan ke Sampah.");
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

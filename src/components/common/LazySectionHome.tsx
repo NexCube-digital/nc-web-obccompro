@@ -47,7 +47,15 @@ export default function LazySection({
 	}, [rootMargin])
 
 	return (
-		<div ref={ref} className={className} style={shouldRender ? undefined : { minHeight }}>
+		<div
+			ref={ref}
+			className={className}
+			style={{
+				minHeight: shouldRender ? undefined : minHeight,
+				contentVisibility: 'auto',
+				containIntrinsicSize: `${minHeight}px 800px`,
+			}}
+		>
 			{shouldRender ? children : null}
 		</div>
 	)

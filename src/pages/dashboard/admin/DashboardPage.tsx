@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "../components/layouts/Sidebar";
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
 import {
   dashboardService,
-  type ComproDashboardSummary,
-  type DashboardSummary,
 } from "../services/admin/DashboardService";
 import { accountService } from "../services/admin/AccountService";
 import { unitbisnisService } from "../services/cms/unitbisnisService";
 import { sportService } from "../services/sport/SportService";
+import { authService } from "../../../services/auth";
 import { toast } from "sonner";
 import DashboardOverview from "./DashboardOverview";
 import DashboardActivity from "./DashboardActivity";
@@ -21,7 +21,8 @@ async function getActiveResourceDistribution() {
     limit: pageSize,
     status: "active",
   });
-  const remainingPages = await Promise.all(
+
+  const remainingPages = await Promise.allSettled(
     Array.from(
       { length: Math.max(0, firstPage.meta.totalPages - 1) },
       (_, index) =>
@@ -32,92 +33,93 @@ async function getActiveResourceDistribution() {
         }),
     ),
   );
-  const resources = [firstPage, ...remainingPages].flatMap((page) => page.data);
+
+  const pages = [
+    firstPage,
+    ...remainingPages.flatMap((result) => result.status === "fulfilled" ? [result.value] : []),
+  ];
+  const resources = pages.flatMap((page) => page.data);
   const counts = new Map<string, number>();
 
   for (const resource of resources) {
-    const sportTypes = new Set(
-      resource.sportTypes.length ? resource.sportTypes : ["other"],
-    );
-    for (const sportType of sportTypes)
+    const sportTypes =
+      Array.isArray(resource.sportTypes) && resource.sportTypes.length
+        ? resource.sportTypes
+        : ["other"];
+
+    for (const sportType of sportTypes) {
       counts.set(sportType, (counts.get(sportType) ?? 0) + 1);
+    }
   }
 
-  return [...counts]
-    .map(([sport, count]) => ({ sport, count }))
-    .sort((first, second) => second.count - first.count);
+  return {
+    distribution: [...counts]
+      .map(([sport, count]) => ({ sport, count }))
+      .sort((first, second) => second.count - first.count),
+    hasPartialFailure: remainingPages.some((result) => result.status === "rejected"),
+  };
+}
+
+async function loadDashboardData() {
+  const results = await Promise.allSettled([
+    dashboardService.getSummary(),
+    dashboardService.getComproSummary(),
+    dashboardService.getMedia(),
+    dashboardService.getCustomers(),
+    accountService.getStaffList(),
+    unitbisnisService.getUnits(),
+    getActiveResourceDistribution(),
+  ]);
+  const [sport, compro, media, customers, staff, businessUnits, resourceDistribution] = results;
+
+  return {
+    summary: sport.status === "fulfilled" ? sport.value : null,
+    comproSummary: compro.status === "fulfilled" ? compro.value : null,
+    mediaCount: media.status === "fulfilled" ? media.value.length : null,
+    customerCount: customers.status === "fulfilled" ? customers.value.pagination.total : null,
+    activeStaffCount: staff.status === "fulfilled"
+      ? staff.value.filter((user) => user.status === "active" && user.role !== "super_admin").length
+      : null,
+    activeBusinessUnitCount: businessUnits.status === "fulfilled"
+      ? businessUnits.value.filter((unit) => unit.status === "active").length
+      : null,
+    activeResourceDistribution: resourceDistribution.status === "fulfilled"
+      ? resourceDistribution.value.distribution
+      : null,
+    hasPartialFailure: results.some((result) => result.status === "rejected") ||
+      (resourceDistribution.status === "fulfilled" && resourceDistribution.value.hasPartialFailure),
+  };
 }
 
 /* ───────────── Halaman ───────────── */
 export default function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [comproSummary, setComproSummary] =
-    useState<ComproDashboardSummary | null>(null);
-  const [mediaCount, setMediaCount] = useState<number | null>(null);
-  const [customerCount, setCustomerCount] = useState<number | null>(null);
-  const [activeStaffCount, setActiveStaffCount] = useState<number | null>(null);
-  const [activeBusinessUnitCount, setActiveBusinessUnitCount] = useState<
-    number | null
-  >(null);
-  const [activeResourceDistribution, setActiveResourceDistribution] = useState<
-    { sport: string; count: number }[] | null
-  >(null);
-  const [loading, setLoading] = useState(true);
+  const user = authService.getCurrentSession()?.user;
+  const {
+    data: dashboardData,
+    isPending: loading,
+    isFetchedAfterMount,
+  } = useQuery({
+    queryKey: ["admin-dashboard-summary", user?.id ?? null, user?.tenantId ?? null],
+    queryFn: loadDashboardData,
+    enabled: Boolean(user),
+    staleTime: 30_000,
+  });
+
+  const summary = dashboardData?.summary ?? null;
+  const comproSummary = dashboardData?.comproSummary ?? null;
+  const mediaCount = dashboardData?.mediaCount ?? null;
+  const customerCount = dashboardData?.customerCount ?? null;
+  const activeStaffCount = dashboardData?.activeStaffCount ?? null;
+  const activeBusinessUnitCount = dashboardData?.activeBusinessUnitCount ?? null;
+  const activeResourceDistribution = dashboardData?.activeResourceDistribution ?? null;
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const results = await Promise.allSettled([
-        dashboardService.getSummary(),
-        dashboardService.getComproSummary(),
-        dashboardService.getMedia(),
-        dashboardService.getCustomers(),
-        accountService.getStaffList(),
-        unitbisnisService.getUnits(),
-        getActiveResourceDistribution(),
-      ]);
-      if (cancelled) return;
-
-      const [
-        sport,
-        compro,
-        media,
-        customers,
-        staff,
-        businessUnits,
-        resourceDistribution,
-      ] = results;
-      if (sport.status === "fulfilled") setSummary(sport.value);
-      if (compro.status === "fulfilled") setComproSummary(compro.value);
-      if (media.status === "fulfilled") setMediaCount(media.value.length);
-      if (customers.status === "fulfilled")
-        setCustomerCount(customers.value.pagination.total);
-      if (staff.status === "fulfilled")
-        setActiveStaffCount(
-          staff.value.filter(
-            (user) => user.status === "active" && user.role !== "super_admin",
-          ).length,
-        );
-      if (businessUnits.status === "fulfilled")
-        setActiveBusinessUnitCount(
-          businessUnits.value.filter((unit) => unit.status === "active").length,
-        );
-      if (resourceDistribution.status === "fulfilled")
-        setActiveResourceDistribution(resourceDistribution.value);
-      if (results.some((result) => result.status === "rejected")) {
-        toast.error("Sebagian data dashboard gagal dimuat");
-      }
-      setLoading(false);
+    if (dashboardData?.hasPartialFailure && isFetchedAfterMount) {
+      toast.error("Sebagian data dashboard gagal dimuat");
     }
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }, [dashboardData, isFetchedAfterMount]);
 
   const toggleSidebar = () => {
     if (window.innerWidth >= 1024) setCollapsed((v) => !v);

@@ -93,7 +93,7 @@ export default function Management() {
     try {
       await portfolioService.deletePortfolio(deletingPortfolio.id);
       setDeletingPortfolio(null);
-      toast.success("Portfolio berhasil dihapus.");
+      toast.success("Portfolio dipindahkan ke Sampah.");
       refresh();
     } catch (error) {
       toast.error(getApiErrorMessage(error));
@@ -217,7 +217,7 @@ export default function Management() {
       <DeleteModal
         isOpen={Boolean(deletingPortfolio)}
         title="Hapus portfolio?"
-        description="Portfolio yang dihapus tidak dapat dikembalikan."
+        description="Portfolio dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
         itemName={deletingPortfolio?.title}
         isLoading={deleteLoading}
         onClose={closeDeleteModal}

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import InvoiceForm from "./Form";
 import InvoiceTable from "./Table";
 import InvoiceDetailModal from "./InvoiceDetailModal";
+import InvoicePaymentModal from "./InvoicePaymentModal";
 
 const statuses: InvoiceStatus[] = [
   "draft",
@@ -28,31 +29,12 @@ const statuses: InvoiceStatus[] = [
   "partial",
   "cancelled",
 ];
-const statusLabels: Record<InvoiceStatus, string> = {
-  draft: "Draft",
-  sent: "Pending",
-  paid: "Success",
-  overdue: "Pending",
-  expired: "Gagal",
-  partial: "Pending",
-  cancelled: "Gagal",
-};
-
 const rupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(value);
-
-const formatDate = (value: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "-";
 
 function Summary({
   label,
@@ -89,7 +71,6 @@ export default function InvoiceManagement() {
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [detailBooking, setDetailBooking] =
     useState<InvoiceBookingDetails | null>(null);
@@ -192,7 +173,7 @@ export default function InvoiceManagement() {
         current.filter((item) => item.id !== deletingInvoice.id),
       );
       setDeletingInvoice(null);
-      toast.success("Invoice berhasil dihapus.");
+      toast.success("Invoice dipindahkan ke Sampah.");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menghapus invoice.",
@@ -336,7 +317,7 @@ export default function InvoiceManagement() {
       <DeleteModal
         isOpen={Boolean(deletingInvoice)}
         title="Hapus invoice?"
-        description="Invoice yang dihapus tidak dapat dikembalikan."
+        description="Invoice dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
         itemName={deletingInvoice?.invoiceNumber}
         isLoading={deleteLoading}
         onClose={closeDeleteModal}
@@ -350,161 +331,20 @@ export default function InvoiceManagement() {
           onClose={() => setDetailInvoice(null)}
         />
       )}
-      {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-obc-border px-5 py-4">
-              <h2 className="font-heading text-lg font-bold">
-                {selectedInvoice.invoiceNumber}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setSelectedInvoice(null)}
-                className="size-9 rounded-lg text-obc-muted"
-                aria-label="Tutup"
-              >
-                ×
-              </button>
-            </div>
-            <div className="grid gap-4 p-5 sm:grid-cols-2">
-              <div>
-                <p className="text-[12px] text-obc-muted">Klien</p>
-                <p className="font-medium">{selectedInvoice.clientName}</p>
-                <p className="text-[13px] text-obc-muted">
-                  {selectedInvoice.clientEmail}
-                </p>
-              </div>
-              <div>
-                <p className="text-[12px] text-obc-muted">Nominal</p>
-                <p className="font-semibold">
-                  {rupiah(selectedInvoice.amount)}
-                </p>
-              </div>
-              <div>
-                <p className="text-[12px] text-obc-muted">Layanan</p>
-                <p>{selectedInvoice.service || "-"}</p>
-              </div>
-              <div>
-                <p className="text-[12px] text-obc-muted">Status</p>
-                <p>{statusLabels[selectedInvoice.status]}</p>
-              </div>
-              <div>
-                <p className="text-[12px] text-obc-muted">Tanggal terbit</p>
-                <p>{formatDate(selectedInvoice.issueDate)}</p>
-              </div>
-            </div>
-            {selectedInvoice.description && (
-              <p className="border-t border-obc-border px-5 py-4 text-[13px] text-obc-muted">
-                {selectedInvoice.description}
-              </p>
-            )}
-            <div className="border-t border-obc-border px-5 py-4">
-              <h3 className="mb-2 font-heading text-[14px] font-semibold">
-                Termin pembayaran
-              </h3>
-              {selectedInvoice.terms.length ? (
-                selectedInvoice.terms.map((term) => (
-                  <div
-                    key={term.id}
-                    className="flex items-center justify-between border-b border-obc-border py-2 text-[13px] last:border-0"
-                  >
-                    <span>Termin {term.termNumber}</span>
-                    <span>{rupiah(term.amount)}</span>
-                    <span
-                      className={
-                        term.paidAt ? "text-[#1F3320]" : "text-obc-muted"
-                      }
-                    >
-                      {term.paidAt
-                        ? `Lunas ${formatDate(term.paidAt)}`
-                        : "Belum dibayar"}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-[13px] text-obc-muted">
-                  Invoice ini belum memiliki termin.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {payingInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
-            <div className="border-b border-obc-border px-5 py-4">
-              <h2 className="font-heading text-lg font-bold">
-                Catat pembayaran termin
-              </h2>
-              <p className="mt-1 text-[12px] text-obc-muted">
-                {payingInvoice.invoiceNumber}
-              </p>
-            </div>
-            <div className="space-y-4 p-5">
-              <label className="block text-[13px] font-medium">
-                Termin
-                <select
-                  value={paymentTerm}
-                  onChange={(event) => setPaymentTerm(event.target.value)}
-                  className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]"
-                >
-                  {payingInvoice.terms.map((term) => (
-                    <option key={term.id} value={term.termNumber}>
-                      Termin {term.termNumber} - {rupiah(term.amount)}
-                      {term.paidAt ? " (sudah lunas)" : ""}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block text-[13px] font-medium">
-                Metode pembayaran
-                <input
-                  value={paymentMethod}
-                  onChange={(event) => setPaymentMethod(event.target.value)}
-                  placeholder="Transfer bank, QRIS, tunai..."
-                  className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]"
-                />
-              </label>
-              <label className="block text-[13px] font-medium">
-                Tanggal dibayar
-                <input
-                  type="date"
-                  value={paidAt}
-                  onChange={(event) => setPaidAt(event.target.value)}
-                  className="mt-1 h-10 w-full rounded-xl border border-obc-border px-3 text-[13px]"
-                />
-              </label>
-              <label className="block text-[13px] font-medium">
-                Catatan
-                <textarea
-                  rows={3}
-                  value={paymentNotes}
-                  onChange={(event) => setPaymentNotes(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-obc-border p-3 text-[13px]"
-                />
-              </label>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPayingInvoice(null)}
-                  className="rounded-xl border border-obc-border px-4 py-2 text-[13px]"
-                >
-                  Batal
-                </button>
-                <button
-                  type="button"
-                  disabled={paying}
-                  onClick={submitPayment}
-                  className="rounded-xl bg-obc-green px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
-                >
-                  {paying ? "Menyimpan..." : "Simpan pembayaran"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <InvoicePaymentModal
+        invoice={payingInvoice}
+        paymentTerm={paymentTerm}
+        paymentMethod={paymentMethod}
+        paidAt={paidAt}
+        notes={paymentNotes}
+        saving={paying}
+        onTermChange={setPaymentTerm}
+        onMethodChange={setPaymentMethod}
+        onPaidAtChange={setPaidAt}
+        onNotesChange={setPaymentNotes}
+        onClose={() => setPayingInvoice(null)}
+        onSubmit={submitPayment}
+      />
     </DashboardPageLayout>
   );
 }

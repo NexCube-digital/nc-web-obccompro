@@ -56,6 +56,7 @@ export default function Header({ onToggleSidebar }: Props) {
     if (!notificationsOpen) return;
 
     let active = true;
+
     const loadNotifications = async () => {
       setNotificationsLoading(true);
       try {
@@ -67,7 +68,8 @@ export default function Header({ onToggleSidebar }: Props) {
     };
 
     void loadNotifications();
-    const intervalId = window.setInterval(() => void loadNotifications(), 30_000);
+    const intervalId = window.setInterval(() => void loadNotifications(), 60_000);
+
     return () => {
       active = false;
       window.clearInterval(intervalId);
@@ -102,7 +104,7 @@ export default function Header({ onToggleSidebar }: Props) {
   }, [profileMenuOpen, notificationsOpen]);
 
   return (
-    <header className="sticky top-0 z-20 flex h-[60px] items-center gap-3 border-b border-obc-border bg-white px-3 sm:px-6">
+    <header className="sticky top-0 z-20 flex h-15 items-center gap-3 border-b border-obc-border bg-white px-3 sm:px-6">
       <button
         onClick={onToggleSidebar}
         aria-label="Buka/tutup menu"
@@ -154,7 +156,7 @@ export default function Header({ onToggleSidebar }: Props) {
           {notificationsOpen && (
             <section
               aria-label="Notifikasi aktivitas sistem"
-              className="absolute right-0 top-full z-30 mt-2 w-[340px] max-w-[calc(100vw-24px)] overflow-hidden rounded-lg border border-obc-border bg-white shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
+              className="absolute right-0 top-full z-30 mt-2 w-85 max-w-[calc(100vw-24px)] overflow-hidden rounded-lg border border-obc-border bg-white shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
             >
               <div className="border-b border-obc-border px-4 py-3">
                 <h2 className="font-heading text-[14px] font-semibold text-obc-charcoal">Aktivitas sistem</h2>
@@ -204,7 +206,13 @@ export default function Header({ onToggleSidebar }: Props) {
           >
             <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-obc-green font-heading text-[12px] font-semibold text-[#CDF178]">
               {user?.avatarUrl ? (
-                <img src={getProfilePhotoUrl(user.avatarUrl)} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={getProfilePhotoUrl(user.avatarUrl)}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
               ) : accountInitials || "U"}
             </span>
             <span className="hidden leading-tight sm:block">
@@ -220,7 +228,7 @@ export default function Header({ onToggleSidebar }: Props) {
             <div
               role="menu"
               aria-label="Menu akun"
-              className="absolute right-0 top-full z-30 mt-2 w-[190px] overflow-hidden rounded-lg border border-obc-border bg-white py-1 shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
+              className="absolute right-0 top-full z-30 mt-2 w-47.5 overflow-hidden rounded-lg border border-obc-border bg-white py-1 shadow-[0_8px_24px_rgba(52,49,51,0.14)]"
             >
               <TransitionLink
                 role="menuitem"

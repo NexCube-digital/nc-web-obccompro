@@ -28,7 +28,7 @@ export default function BusinessUnitTable({
               key={index}
               className="overflow-hidden rounded-xl border border-obc-border bg-white"
             >
-              <div className="aspect-[4/3] animate-pulse bg-[#ECEFE7]" />
+              <div className="aspect-4/3 animate-pulse bg-[#ECEFE7]" />
               <div className="space-y-2.5 p-3.5">
                 <div className="h-3 w-1/3 animate-pulse rounded bg-[#ECEFE7]" />
                 <div className="h-4 w-2/3 animate-pulse rounded bg-[#ECEFE7]" />
@@ -52,7 +52,7 @@ export default function BusinessUnitTable({
                 key={unit.id}
                 className={`group min-w-0 overflow-hidden rounded-xl border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(52,49,51,0.1)] ${selectedSlug === unit.slug ? "border-obc-green ring-2 ring-[#CDF178]/50" : "border-obc-border hover:border-obc-status-locked-border"}`}
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#ECEFE7]">
+                <div className="relative aspect-4/3 overflow-hidden bg-[#ECEFE7]">
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-[#7C856E]">
                     <ImageOff size={22} strokeWidth={1.5} />
                     <span className="text-[9px] font-semibold uppercase tracking-widest">

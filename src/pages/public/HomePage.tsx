@@ -58,16 +58,18 @@ function usePreloadSections() {
 
 		const schedule = (fn: () => void) => {
 			if (typeof window.requestIdleCallback === 'function') {
-				handle = window.requestIdleCallback(fn, { timeout: 2000 })
+				handle = window.requestIdleCallback(fn, { timeout: 1500 })
 			} else {
-				handle = window.setTimeout(fn, 300)
+				handle = window.setTimeout(fn, 180)
 			}
 		}
 
 		const run = async () => {
-			// Tunggu hero selesai dimuat dulu supaya tidak berebut bandwidth
 			await loadHero().catch(() => {})
-			for (const load of sectionLoaders) {
+
+			// Hanya prefetch section yang paling relevan di awal.
+			// Ini menjaga performa tanpa membebani browser dengan preloading semua section sekaligus.
+			for (const load of sectionLoaders.slice(0, 3)) {
 				if (cancelled) return
 				await new Promise<void>((resolve) => schedule(resolve))
 				await load().catch(() => {})

@@ -20,7 +20,7 @@ export interface Promo {
 	usedCount: number;
 	applicableSports: PromoSport[] | null;
 	bannerUrl: string | null;
-	termsConditions: string[] | null;
+	termsConditions: string[] | string | null;
 	status: PromoStatus;
 	createdAt: string;
 	updatedAt: string;

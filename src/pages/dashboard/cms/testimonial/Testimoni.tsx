@@ -91,7 +91,7 @@ export default function Testimoni() {
         current.filter((testimonial) => testimonial.id !== deletingItem.id),
       );
       setDeletingItem(null);
-      toast.success("Testimoni berhasil dihapus.");
+      toast.success("Testimoni dipindahkan ke Sampah.");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menghapus testimoni.",
@@ -171,7 +171,7 @@ export default function Testimoni() {
       <DeleteModal
         isOpen={Boolean(deletingItem)}
         title="Hapus testimoni?"
-        description="Testimoni yang dihapus tidak dapat dikembalikan."
+        description="Testimoni dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
         itemName={deletingItem?.name}
         isLoading={deleteLoading}
         onClose={closeDeleteModal}

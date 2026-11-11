@@ -4,6 +4,7 @@ import TransitionLink from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
 import obcLogo from "../../../../assets/logo/obclogo.webp";
 import {
+  ArchiveRestore,
   Building2,
   ChevronDown,
   Dumbbell,
@@ -69,6 +70,8 @@ const MENU: MenuItem[] = [
       { label: "Audit Log", to: "/admin/activities", roles: SUPER_ADMIN_ROLE },
     ],
   },
+  { label: "Sampah", category: "KONTEN & ADMINISTRASI", icon: ArchiveRestore, to: "/admin/trash", roles: ADMIN_ROLES },
+
 ];
 
 type Props = {

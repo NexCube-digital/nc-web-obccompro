@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react'
 
@@ -30,28 +31,16 @@ function getCompanyLogo(company: string | null, source: PublicTestimonial['sourc
 
 export default function Testimoni() {
 	const { t, i18n } = useTranslation()
-	const [testimonials, setTestimonials] = useState<PublicTestimonial[]>([])
-	const [isLoading, setIsLoading] = useState(true)
-	const [hasLoadError, setHasLoadError] = useState(false)
 	const [activeTestimonial, setActiveTestimonial] = useState(0)
 	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
-
-	useEffect(() => {
-		let isMounted = true
-		publicTestimonialService.getPublished()
-			.then((data) => {
-				if (isMounted) setTestimonials(data)
-			})
-			.catch(() => {
-				if (isMounted) setHasLoadError(true)
-			})
-			.finally(() => {
-				if (isMounted) setIsLoading(false)
-			})
-		return () => {
-			isMounted = false
-		}
-	}, [])
+	const {
+		data: testimonials = [],
+		isPending: isLoading,
+		isError: hasLoadError,
+	} = useQuery({
+		queryKey: ['public-testimonials', 'all'],
+		queryFn: () => publicTestimonialService.getPublished(),
+	})
 
 	const goToTestimonial = (direction: number) => {
 		if (!testimonials.length) return
@@ -120,7 +109,7 @@ export default function Testimoni() {
 				<div className="relative order-3 -mx-5 mt-6 h-[clamp(430px,58svh,460px)] overflow-hidden md:order-none md:mx-0 md:mt-[clamp(16px,3svh,32px)] md:h-[clamp(320px,calc(400px_+_(100svh_-_800px)_*_1.1),470px)]">
 					{isLoading ? (
 						<div role="status" className="absolute inset-0 grid place-items-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.loading')}</div>
-					) : hasLoadError ? (
+					) : hasLoadError && testimonials.length === 0 ? (
 						<div role="alert" className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.loadError')}</div>
 					) : testimonials.length === 0 ? (
 						<div className="absolute inset-0 grid place-items-center px-6 text-center font-['Montserrat'] text-[14px] text-[#555555]">{t('testimonialsSection.empty')}</div>

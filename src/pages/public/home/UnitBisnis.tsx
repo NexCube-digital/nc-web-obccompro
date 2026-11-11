@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import TransitionLink from '../../../components/common/TransitionLink'
 import { ArrowRight, Heart } from 'lucide-react'
-import { getPublicBusinessUnits } from '../../../services/businessUnitPublicService'
+import { getPublicBusinessUnits, publicBusinessUnitsQueryKey, type PublicBusinessUnit } from '../../../services/businessUnitPublicService'
 import { getMediaUrl } from '../../dashboard/v2/media/mediaService'
 import fallbackImage from '../../../assets/no-image.webp'
 
@@ -22,6 +23,15 @@ const unitNavigation: Record<string, { link: string; isExternal: boolean }> = {
 	'food-court': { link: '/unit-bisnis/food-court', isExternal: false },
 	coffee: { link: '/unit-bisnis/coffee', isExternal: false },
 	agribisnis: { link: '/unit-bisnis/agribisnis', isExternal: false },
+}
+
+function mapPublicBusinessUnits(businessUnits: PublicBusinessUnit[]): Unit[] {
+	return businessUnits.flatMap((unit) => {
+		if (unit.config.showOnCompro === false) return []
+		const imageUrl = typeof unit.config.imageUrl === 'string' ? unit.config.imageUrl : null
+		const navigation = unitNavigation[unit.slug] ?? { link: '/unit-bisnis', isExternal: false }
+		return [{ slug: unit.slug, name: unit.name, image: imageUrl ? getMediaUrl(imageUrl) : null, ...navigation }]
+	})
 }
 
 type UnitCardProps = {
@@ -126,24 +136,14 @@ function UnitCard({ unit, isFavorite, onToggleFavorite, className = '' }: UnitCa
 
 export default function UnitBisnis() {
 	const { t } = useTranslation()
-	const [units, setUnits] = useState<Unit[]>([])
 	const [favorites, setFavorites] = useState<string[]>([])
 
-	useEffect(() => {
-		let active = true
-		getPublicBusinessUnits().then((businessUnits) => {
-			if (!active) return
-			setUnits(businessUnits.flatMap((unit) => {
-				if (unit.config.showOnCompro === false) return []
-				const imageUrl = typeof unit.config.imageUrl === 'string' ? unit.config.imageUrl : null
-				const navigation = unitNavigation[unit.slug] ?? { link: '/unit-bisnis', isExternal: false }
-				return [{ slug: unit.slug, name: unit.name, image: imageUrl ? getMediaUrl(imageUrl) : null, ...navigation }]
-			}))
-		}).catch(() => {
-			if (active) setUnits([])
-		})
-		return () => { active = false }
-	}, [])
+	const { data: units = [] } = useQuery({
+		queryKey: publicBusinessUnitsQueryKey,
+		queryFn: getPublicBusinessUnits,
+		select: mapPublicBusinessUnits,
+		staleTime: 5 * 60 * 1000,
+	})
 
 	const toggleFavorite = (name: string) => {
 		setFavorites((previous) => previous.includes(name) ? previous.filter((item) => item !== name) : [...previous, name])

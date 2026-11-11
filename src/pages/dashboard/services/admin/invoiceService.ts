@@ -204,8 +204,8 @@ export const invoiceService = {
 		return response.data.data;
 	},
 
-	async getBookingDetails(id: string): Promise<InvoiceBookingDetails> {
-		const response = await apiClient.get<ApiSuccess<InvoiceBookingDetails>>(`/sports/bookings/${id}`);
+	async getBookingDetails(id: string, signal?: AbortSignal): Promise<InvoiceBookingDetails> {
+		const response = await apiClient.get<ApiSuccess<InvoiceBookingDetails>>(`/sports/bookings/${id}`, { signal });
 		return response.data.data;
 	},
 

@@ -16,7 +16,7 @@ interface DeleteModalProps {
 function DeleteModal({
 	isOpen,
 	title = 'Hapus item ini?',
-	description = 'Item yang dihapus tidak dapat dikembalikan.',
+	description = 'Data dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari.',
 	itemName,
 	confirmLabel = 'Hapus',
 	cancelLabel = 'Batal',

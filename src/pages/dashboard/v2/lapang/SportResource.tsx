@@ -69,7 +69,7 @@ export default function SportResource() {
 
   const deleteResource = async (resource: SportResource) => {
     if (!window.confirm(`Hapus resource ${resource.name}?`)) return;
-    try { await sportService.deleteResource(resource.id); setReload((value) => value + 1); toast.success("Resource berhasil dinonaktifkan."); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
+    try { await sportService.deleteResource(resource.id); setReload((value) => value + 1); toast.success("Resource dipindahkan ke Sampah."); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
   };
 
   return (

@@ -44,7 +44,7 @@ export default function Management() {
 		if (!window.confirm(`Hapus halaman CMS "${page.title}" beserta section-nya?`)) return;
 		try {
 			await cmsPageService.deletePage(page.id);
-			toast.success("Halaman CMS berhasil dihapus.");
+			toast.success("Halaman CMS dipindahkan ke Sampah.");
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

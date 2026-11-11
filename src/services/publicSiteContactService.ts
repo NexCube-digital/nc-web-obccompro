@@ -20,33 +20,25 @@ interface PublicHomeContent {
 }
 
 export const emptyPublicSiteContact: PublicSiteContact = { email: "", whatsapp: "", instagram: "", tiktok: "", address: "", maps: "" };
-let cachedContact: PublicSiteContact | null = null;
-let cachedAt = 0;
-let request: Promise<PublicSiteContact> | null = null;
 
-export function getPublicSiteContact(): Promise<PublicSiteContact> {
-	if (cachedContact && Date.now() - cachedAt < 60_000) return Promise.resolve(cachedContact);
-	if (!request) {
-		request = apiClient.get<ApiSuccess<PublicHomeContent>>("/public/tenants/obc-barber/content", {
+export async function getPublicSiteContact(): Promise<PublicSiteContact> {
+	try {
+		const { data } = await apiClient.get<ApiSuccess<PublicHomeContent>>("/public/tenants/obc-barber/content", {
 			params: { page: "home", lang: "id" },
-		}).then(({ data }) => {
-			const content = data.data.page?.sections?.find((section) => section.sectionKey === "site-contact")?.content;
-			const readString = (key: keyof PublicSiteContact) => typeof content?.[key] === "string" ? (content[key] as string).trim() : "";
-			return {
-				email: readString("email"),
-				whatsapp: readString("whatsapp"),
-				instagram: readString("instagram"),
-				tiktok: readString("tiktok"),
-				address: readString("address"),
-				maps: readString("maps"),
-			};
-		}).catch(() => emptyPublicSiteContact).then((contact) => {
-			cachedContact = contact;
-			cachedAt = Date.now();
-			return contact;
-		}).finally(() => { request = null; });
+		});
+		const content = data.data.page?.sections?.find((section) => section.sectionKey === "site-contact")?.content;
+		const readString = (key: keyof PublicSiteContact) => typeof content?.[key] === "string" ? (content[key] as string).trim() : "";
+		return {
+			email: readString("email"),
+			whatsapp: readString("whatsapp"),
+			instagram: readString("instagram"),
+			tiktok: readString("tiktok"),
+			address: readString("address"),
+			maps: readString("maps"),
+		};
+	} catch {
+		return emptyPublicSiteContact;
 	}
-	return request;
 }
 
 export function getWhatsAppHref(value: string | null | undefined): string {

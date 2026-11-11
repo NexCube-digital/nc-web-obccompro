@@ -1,13 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
+  ArrowLeft,
   BadgePercent,
   CalendarClock,
+  ImagePlus,
   LoaderCircle,
   Save,
   Tag,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { getMediaUrl, mediaService } from "../../v2/media/mediaService";
 import type {
   Promo,
   PromoDiscountType,
@@ -65,17 +68,23 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
     item?.applicableSports ?? [],
   );
   const [bannerUrl, setBannerUrl] = useState(item?.bannerUrl ?? "");
-  const [terms, setTerms] = useState(item?.termsConditions?.join("\n") ?? "");
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState(item?.bannerUrl ?? "");
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [terms, setTerms] = useState(
+    Array.isArray(item?.termsConditions)
+      ? item.termsConditions.join("\n")
+      : item?.termsConditions ?? "",
+  );
   const [status, setStatus] = useState<PromoStatus>(item?.status ?? "active");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !saving) onClose();
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [onClose, saving]);
+    if (!bannerFile) return;
+    const previewUrl = URL.createObjectURL(bannerFile);
+    setBannerPreview(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [bannerFile]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,6 +98,18 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
     }
     setSaving(true);
     try {
+      let savedBannerUrl = bannerUrl.trim() || null;
+      if (bannerFile) {
+        setUploadingBanner(true);
+        const uploadedMedia = await mediaService.uploadMedia(
+          bannerFile,
+          item?.tenantId ?? undefined,
+        );
+        savedBannerUrl = uploadedMedia.url;
+        setBannerUrl(uploadedMedia.url);
+        setBannerFile(null);
+        setBannerPreview(uploadedMedia.url);
+      }
       await onSave({
         code: code.trim().toUpperCase(),
         name: name.trim(),
@@ -101,7 +122,7 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
         endDate: new Date(endDate).toISOString(),
         quota: quota ? Number(quota) : null,
         applicableSports: applicableSports.length ? applicableSports : null,
-        bannerUrl: bannerUrl.trim() || null,
+        bannerUrl: savedBannerUrl,
         termsConditions: terms
           .split("\n")
           .map((term) => term.trim())
@@ -114,26 +135,19 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
         error instanceof Error ? error.message : "Gagal menyimpan promo.",
       );
     } finally {
+      setUploadingBanner(false);
       setSaving(false);
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#162819]/55 p-4 backdrop-blur-[2px]"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !saving) onClose();
-      }}
-    >
+    <section className="mb-5 overflow-hidden rounded-2xl border border-obc-border bg-white shadow-[0_2px_16px_rgba(31,51,32,0.05)]">
       <form
         onSubmit={submit}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="promo-form-title"
-        className="flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-obc-border bg-white shadow-2xl"
+        className="flex flex-col"
       >
-        <header className="flex shrink-0 items-start justify-between gap-4 bg-[#1F3320] px-5 py-5 text-white sm:px-7">
+        <header className="flex items-start justify-between gap-4 bg-[#1F3320] px-5 py-5 text-white sm:px-7">
           <div className="flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-xl bg-[#CDF178] text-[#1F3320]">
               <BadgePercent size={21} />
@@ -157,13 +171,54 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
             type="button"
             disabled={saving}
             onClick={onClose}
-            aria-label="Tutup"
-            className="grid size-9 place-items-center rounded-lg border border-white/20 text-white/75 hover:bg-white/10 disabled:opacity-50"
+            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-white/25 px-3 text-[12px] font-semibold text-white/90 transition-colors hover:bg-white/10 disabled:opacity-50"
           >
-            <X size={17} />
+            <ArrowLeft size={15} />
+            Kembali
           </button>
         </header>
-        <div className="overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
+        <div className="px-5 py-5 sm:px-7 sm:py-6">
+          <div className="mb-5 grid gap-4 border-b border-obc-border pb-5 sm:grid-cols-2">
+            <label className={labelClass}>
+              Gambar banner promo
+              <input
+                className="mt-1 block w-full text-[12px] text-obc-muted file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-[#E7F5D0] file:px-4 file:text-[12px] file:font-semibold file:text-[#1F3320]"
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  setBannerFile(event.target.files?.[0] ?? null)
+                }
+              />
+            </label>
+            {bannerPreview && (
+              <div className="relative overflow-hidden rounded-lg border border-obc-border bg-[#FDFCF7] sm:col-span-2">
+                <img
+                  src={getMediaUrl(bannerPreview)}
+                  alt={`Banner ${name || "promo"}`}
+                  className="aspect-[16/7] w-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/50 via-transparent to-transparent p-3">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-white">
+                    <ImagePlus size={14} />
+                    Pratinjau banner
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Hapus banner promo"
+                    title="Hapus banner"
+                    onClick={() => {
+                      setBannerFile(null);
+                      setBannerUrl("");
+                      setBannerPreview("");
+                    }}
+                    className="grid size-8 place-items-center rounded-lg bg-white/90 text-obc-charcoal hover:bg-white"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
             <section className="space-y-4">
               <div>
@@ -353,16 +408,6 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
           </div>
           <div className="mt-5 grid gap-4 border-t border-obc-border pt-5 sm:grid-cols-2">
             <label className={labelClass}>
-              Banner URL
-              <input
-                className={inputClass}
-                value={bannerUrl}
-                onChange={(event) => setBannerUrl(event.target.value)}
-                maxLength={500}
-                placeholder="/uploads/promos/weekend.webp"
-              />
-            </label>
-            <label className={labelClass}>
               Syarat & ketentuan
               <textarea
                 className="mt-1 w-full rounded-lg border border-obc-border bg-[#FDFCF7] px-3 py-2.5 text-[13px] outline-none focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]"
@@ -374,7 +419,7 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
             </label>
           </div>
         </div>
-        <footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-obc-border bg-[#FDFCF7] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <footer className="flex flex-col-reverse gap-2 border-t border-obc-border bg-[#FDFCF7] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <p className="text-[10px] text-obc-muted">
             Promo tersimpan akan langsung mengikuti status dan tanggal aktifnya.
           </p>
@@ -398,7 +443,9 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
                 <Save size={15} />
               )}{" "}
               {saving
-                ? "Menyimpan..."
+                ? uploadingBanner
+                  ? "Mengunggah gambar..."
+                  : "Menyimpan..."
                 : item
                   ? "Simpan perubahan"
                   : "Terbitkan promo"}
@@ -406,6 +453,6 @@ export default function PromoForm({ item, onClose, onSave }: Props) {
           </div>
         </footer>
       </form>
-    </div>
+    </section>
   );
 }

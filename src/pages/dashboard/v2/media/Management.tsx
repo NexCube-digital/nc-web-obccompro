@@ -55,12 +55,12 @@ export default function Management() {
 	};
 
 	const removeMedia = async (item: MediaRecord) => {
-		if (!window.confirm(`Hapus file "${item.originalName}"? File akan dihapus permanen.`)) return;
+		if (!window.confirm(`Pindahkan file "${item.originalName}" ke Sampah? File dapat dipulihkan admin selama 30 hari.`)) return;
 		setDeletingId(item.id);
 		try {
 			await mediaService.deleteMedia(item.id);
 			setMedia((current) => current.filter((mediaItem) => mediaItem.id !== item.id));
-			toast.success("Media berhasil dihapus.");
+			toast.success("Media dipindahkan ke Sampah.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
 		} finally {

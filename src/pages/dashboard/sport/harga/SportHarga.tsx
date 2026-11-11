@@ -139,7 +139,7 @@ export default function SportHarga() {
     setDeleteLoading(true);
     try {
       await sportService.deletePricingRule(deletingItem.id);
-      toast.success("Aturan tarif berhasil dinonaktifkan.");
+      toast.success("Aturan tarif dipindahkan ke Sampah.");
       setDeletingItem(null);
       setLoading(true);
       setReload((current) => current + 1);
@@ -265,7 +265,7 @@ export default function SportHarga() {
         <DeleteModal
           isOpen={Boolean(deletingItem)}
           title="Nonaktifkan aturan tarif?"
-          description="Aturan ini tidak akan dihapus permanen dan dapat diaktifkan kembali nanti."
+          description="Aturan harga dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
           itemName={
             deletingItem
               ? `${deletingItem.tierStartTime}–${deletingItem.tierEndTime}`

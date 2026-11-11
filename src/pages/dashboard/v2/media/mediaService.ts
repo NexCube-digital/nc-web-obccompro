@@ -48,10 +48,10 @@ export const mediaService = {
 		return response.data.data;
 	},
 
-	async uploadMedia(file: File, tenantId: string): Promise<MediaRecord> {
+	async uploadMedia(file: File, tenantId?: string): Promise<MediaRecord> {
 		const formData = new FormData();
 		formData.append("file", file);
-		formData.append("tenantId", tenantId);
+		if (tenantId) formData.append("tenantId", tenantId);
 		const response = await apiClient.post<ApiSuccess<MediaRecord>>(
 			"/admin/media/upload",
 			formData,

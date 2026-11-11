@@ -1,23 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
-  BriefcaseBusiness,
   CalendarDays,
-  Clock3,
   Eye,
   Mail,
-  Phone,
   Search,
   ShieldAlert,
-  ShieldCheck,
   UserRound,
   Users,
-  X,
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { toast } from "sonner";
 import { accountService, type Staff, type StaffStatus } from "../../services/admin/AccountService";
+import StaffModal from "./StaffModal";
 
 const PAGE_SIZE = 10;
 const statusLabels: Record<StaffStatus, string> = {
@@ -72,15 +68,6 @@ export default function StaffTable() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | StaffStatus>("all");
   const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    if (!selectedStaff) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedStaff(null);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedStaff]);
 
   useEffect(() => {
     let cancelled = false;
@@ -390,161 +377,10 @@ export default function StaffTable() {
           className="flex flex-col gap-3 border-t border-obc-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
         />
       </section>
-      {selectedStaff && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-[2px]"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setSelectedStaff(null);
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="staff-detail-title"
-            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-obc-border bg-white shadow-2xl"
-          >
-            <header className="flex items-start justify-between gap-4 border-b border-obc-border bg-[#FDFCF7] px-5 py-4 sm:px-6">
-              <div className="flex min-w-0 items-center gap-3">
-                {avatar(selectedStaff, "size-14")}
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-obc-green">
-                    Profil staff
-                  </p>
-                  <h2
-                    id="staff-detail-title"
-                    className="mt-1 truncate font-heading text-lg font-bold text-obc-charcoal"
-                  >
-                    {selectedStaff.name}
-                  </h2>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    <span className="rounded-full bg-[#F3F8E8] px-2.5 py-1 text-[10px] font-bold text-[#1F3320]">
-                      {roleLabels[selectedStaff.role]}
-                    </span>
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${statusClasses[selectedStaff.status]}`}
-                    >
-                      {statusLabels[selectedStaff.status]}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedStaff(null)}
-                aria-label="Tutup detail staff"
-                className="grid size-9 shrink-0 place-items-center rounded-lg border border-obc-border bg-white text-obc-muted transition-colors hover:bg-obc-ivory hover:text-obc-charcoal"
-              >
-                <X size={17} />
-              </button>
-            </header>
-            <div className="space-y-5 p-5 sm:p-6">
-              <section>
-                <h3 className="flex items-center gap-2 font-heading text-[13px] font-semibold text-obc-charcoal">
-                  <UserRound size={15} className="text-obc-green" />
-                  Informasi akun
-                </h3>
-                <dl className="mt-3 grid gap-x-6 gap-y-4 border-t border-obc-border pt-4 text-[12px] sm:grid-cols-2">
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Email
-                    </dt>
-                    <dd className="mt-1 flex items-start gap-2 break-all font-medium text-obc-charcoal">
-                      <Mail
-                        size={13}
-                        className="mt-0.5 shrink-0 text-obc-green"
-                      />
-                      {selectedStaff.email}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Telepon
-                    </dt>
-                    <dd className="mt-1 flex items-start gap-2 font-medium text-obc-charcoal">
-                      <Phone
-                        size={13}
-                        className="mt-0.5 shrink-0 text-obc-green"
-                      />
-                      {selectedStaff.phone || "Belum ditambahkan"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Bergabung
-                    </dt>
-                    <dd className="mt-1 flex items-center gap-2 font-medium text-obc-charcoal">
-                      <CalendarDays size={13} className="text-obc-green" />
-                      {formatDate(selectedStaff.createdAt, true)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Login terakhir
-                    </dt>
-                    <dd className="mt-1 flex items-center gap-2 font-medium text-obc-charcoal">
-                      <Clock3 size={13} className="text-obc-green" />
-                      {formatDate(selectedStaff.lastLoginAt, true)}
-                    </dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      ID staff
-                    </dt>
-                    <dd className="mt-1 break-all font-mono text-[11px] text-obc-muted">
-                      {selectedStaff.id}
-                    </dd>
-                  </div>
-                </dl>
-              </section>
-              <section>
-                <h3 className="flex items-center gap-2 font-heading text-[13px] font-semibold text-obc-charcoal">
-                  <BriefcaseBusiness size={15} className="text-obc-green" />
-                  Profil tim
-                </h3>
-                <dl className="mt-3 grid gap-x-6 gap-y-4 border-t border-obc-border pt-4 text-[12px] sm:grid-cols-2">
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Posisi
-                    </dt>
-                    <dd className="mt-1 font-medium text-obc-charcoal">
-                      {selectedStaff.teamProfile?.position || "Belum diisi"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Keahlian
-                    </dt>
-                    <dd className="mt-1 font-medium text-obc-charcoal">
-                      {selectedStaff.teamProfile?.expertise || "Belum diisi"}
-                    </dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-                      Bio
-                    </dt>
-                    <dd className="mt-1 whitespace-pre-line leading-5 text-obc-charcoal">
-                      {selectedStaff.bio || "Belum ada bio."}
-                    </dd>
-                  </div>
-                </dl>
-              </section>
-              <div className="flex items-start gap-2 rounded-lg bg-[#F3F8E8] p-3 text-[11px] text-obc-muted">
-                <ShieldCheck
-                  size={14}
-                  className="mt-0.5 shrink-0 text-obc-green"
-                />
-                <span>
-                  Status akun saat ini:{" "}
-                  <strong className="font-semibold text-obc-charcoal">
-                    {statusLabels[selectedStaff.status]}
-                  </strong>
-                </span>
-              </div>
-            </div>
-          </section>
-        </div>
-      )}
+      <StaffModal
+        staff={selectedStaff}
+        onClose={() => setSelectedStaff(null)}
+      />
     </>
   );
 }

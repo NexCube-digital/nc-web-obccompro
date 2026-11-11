@@ -3,8 +3,8 @@ import { Building2, CircleCheck, MapPin, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
-import BusinessUnitDetails from "./Detail";
-import BusinessUnitEditor from "./Editor";
+import BusinessUnitDetails from "./ModalDetail";
+import BusinessUnitEditor from "./Form";
 import BusinessUnitTable from "./Table";
 import {
   unitbisnisService,
@@ -91,7 +91,7 @@ export default function Management() {
     if (!window.confirm(`Nonaktifkan unit bisnis ${unit.name}?`)) return false;
     try {
       await unitbisnisService.deleteUnit(unit.id);
-      toast.success("Unit bisnis berhasil dinonaktifkan.");
+      toast.success("Unit bisnis dipindahkan ke Sampah.");
       setReload((value) => value + 1);
       return true;
     } catch (error) {

@@ -129,7 +129,7 @@ export default function PaketManagement() {
     setDeleteLoading(true);
     try {
       await sportService.deletePricingPackage(deletingItem.id);
-      toast.success("Paket durasi berhasil dinonaktifkan.");
+      toast.success("Paket durasi dipindahkan ke Sampah.");
       setDeletingItem(null);
       setReload((current) => current + 1);
     } catch (error) {
@@ -250,7 +250,7 @@ export default function PaketManagement() {
         <DeleteModal
           isOpen={Boolean(deletingItem)}
           title="Nonaktifkan paket durasi?"
-          description="Paket ini tidak akan dihapus permanen dan dapat diaktifkan kembali nanti."
+          description="Paket harga dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
           itemName={deletingItem?.name}
           confirmLabel="Nonaktifkan"
           isLoading={deleteLoading}

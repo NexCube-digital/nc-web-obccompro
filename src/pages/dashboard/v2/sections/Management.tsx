@@ -53,7 +53,7 @@ export default function Management() {
 		if (!window.confirm(`Hapus section "${section.title}" beserta terjemahannya?`)) return;
 		try {
 			await cmsSectionService.deleteSection(section.id);
-			toast.success("Section berhasil dihapus.");
+			toast.success("Section dipindahkan ke Sampah.");
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

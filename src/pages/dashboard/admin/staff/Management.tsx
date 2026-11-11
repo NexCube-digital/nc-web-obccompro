@@ -9,9 +9,7 @@ export default function Management() {
 
   return (
     <DashboardPageLayout
-      breadcrumb="Staff"
-      title="Manajemen staff"
-      description="Kelola akun staff, role, status, dan profil tim."
+      showPageHeader={false}
     >
       <div className="mb-5 flex justify-end">
         {!showForm && (

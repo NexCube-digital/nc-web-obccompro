@@ -59,6 +59,7 @@ const InvoiceFinalizingPage = lazyPreload(() => import('../pages/dashboard/admin
 const InvoiceSuccessPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/SuccessOrder'))
 const InvoiceFailedPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FailedOrder'))
 const StaffPage = lazyPreload(() => import('../pages/dashboard/admin/staff/Management'))
+const TrashManagementPage = lazyPreload(() => import('../pages/dashboard/admin/trash/Management'))
 const PortfolioPage = lazyPreload(() => import('../pages/dashboard/cms/portfolio/Management'))
 const RolePermissionsPage = lazyPreload(() => import('../pages/dashboard/admin/role/Management'))
 const ReportsPage = LaporanPage
@@ -100,6 +101,7 @@ const routeComponents: Record<string, PreloadablePage<ComponentType>> = {
 	'/admin/reports': ReportsPage,
 	'/admin/activities': ActivitiesPage,
 	'/staff': StaffPage,
+	'/admin/trash': TrashManagementPage,
 	'/admin/portfolio': PortfolioPage,
 	'/admin/role-permissions': RolePermissionsPage,
 }
@@ -159,7 +161,8 @@ const AppRoutes = (
 		<Route path="/admin/invoices" element={<RequireAuth><InvoiceManagementPage /></RequireAuth>} />
 		<Route path="/admin/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
 		<Route path="/admin/role-permissions" element={<RequireAuth><RolePermissionsPage /></RequireAuth>} />
-		<Route path="/staff" element={<RequireAuth><StaffPage /></RequireAuth>} />	</>
+		<Route path="/staff" element={<RequireAuth><StaffPage /></RequireAuth>} />
+		<Route path="/admin/trash" element={<RequireAuth><TrashManagementPage /></RequireAuth>} />	</>
 )
 
 export default AppRoutes

@@ -44,7 +44,7 @@ export default function Management() {
 		if (!window.confirm(`Hapus anggota tim "${team.name}"?`)) return;
 		try {
 			await teamService.deleteTeam(team.id);
-			toast.success("Anggota tim berhasil dihapus.");
+			toast.success("Anggota tim dipindahkan ke Sampah.");
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

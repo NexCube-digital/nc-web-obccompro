@@ -52,7 +52,7 @@ export default function Management() {
 		if (!window.confirm(`Hapus paket "${packageItem.name}"?`)) return;
 		try {
 			await packageService.deletePackage(packageItem.id);
-			toast.success("Paket berhasil dihapus.");
+			toast.success("Paket dipindahkan ke Sampah.");
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

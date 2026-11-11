@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaymentInstructionCard, {
   type PaymentBookingItem,
@@ -6,69 +7,52 @@ import PaymentInstructionCard, {
 import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 import { parsePersistedDirectPayment } from "../../../../../services/paymentService";
 
+function isFinalPaymentStatus(details: InvoiceBookingDetails): boolean {
+  const paymentStatus = details.payments[0]?.status ?? "";
+  return (
+    ["fully_paid", "completed", "cancelled", "expired", "refunded"].includes(details.status) ||
+    ["paid", "settlement", "capture", "failed", "expired", "refunded"].includes(paymentStatus)
+  );
+}
+
 function FinalisasiOrder() {
   const navigate = useNavigate();
   const location = useLocation();
   const bookingId = new URLSearchParams(location.search).get("bookingId") ?? "";
-  const [booking, setBooking] = useState<InvoiceBookingDetails | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isChecking, setIsChecking] = useState(false);
+  const {
+    data: booking,
+    error,
+    isFetching: isChecking,
+    refetch,
+  } = useQuery({
+    queryKey: ["invoice-booking-details", bookingId],
+    queryFn: ({ signal }) => invoiceService.getBookingDetails(bookingId, signal),
+    enabled: Boolean(bookingId),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchInterval: (query) =>
+      query.state.data && isFinalPaymentStatus(query.state.data) ? false : 4000,
+  });
 
   useEffect(() => {
     if (!bookingId) {
       navigate("/admin/invoices", { replace: true });
-      return;
     }
-    let active = true;
-    const refreshStatus = async () => {
-      setIsChecking(true);
-      try {
-        const details = await invoiceService.getBookingDetails(bookingId);
-        if (!active) return;
-        const payment = details.payments[0];
-        if (
-          ["fully_paid", "completed"].includes(details.status) ||
-          ["paid", "settlement", "capture"].includes(payment?.status ?? "")
-        ) {
-          navigate(
-            `/invoice-payment/success?bookingId=${encodeURIComponent(bookingId)}`,
-            { replace: true },
-          );
-          return;
-        }
-        if (
-          ["cancelled", "expired", "refunded"].includes(details.status) ||
-          ["failed", "expired", "refunded"].includes(payment?.status ?? "")
-        ) {
-          navigate(
-            `/invoice-payment/failed?bookingId=${encodeURIComponent(bookingId)}`,
-            { replace: true },
-          );
-          return;
-        }
-        setBooking(details);
-        setErrorMessage("");
-      } catch (error) {
-        if (active)
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "Status pembayaran belum dapat dimuat.",
-          );
-      } finally {
-        if (active) setIsChecking(false);
-      }
-    };
+    if (!booking) return;
 
-    void refreshStatus();
-    const interval = window.setInterval(() => {
-      void refreshStatus();
-    }, 4000);
-    return () => {
-      active = false;
-      window.clearInterval(interval);
-    };
-  }, [bookingId, navigate]);
+    const paymentStatus = booking.payments[0]?.status ?? "";
+    if (["fully_paid", "completed"].includes(booking.status) || ["paid", "settlement", "capture"].includes(paymentStatus)) {
+      navigate(`/invoice-payment/success?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+    } else if (["cancelled", "expired", "refunded"].includes(booking.status) || ["failed", "expired", "refunded"].includes(paymentStatus)) {
+      navigate(`/invoice-payment/failed?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+    }
+  }, [booking, bookingId, navigate]);
+
+  const errorMessage = error instanceof Error
+    ? error.message
+    : error
+      ? "Status pembayaran belum dapat dimuat."
+      : "";
 
   const payment = booking?.payments[0];
   const paymentDetails = payment?.paymentDetails;
@@ -112,16 +96,7 @@ function FinalisasiOrder() {
             channelLabel={paymentChannel}
             bookings={bookings}
             onCheckStatus={() => {
-              void invoiceService
-                .getBookingDetails(bookingId)
-                .then(setBooking)
-                .catch((error: unknown) =>
-                  setErrorMessage(
-                    error instanceof Error
-                      ? error.message
-                      : "Gagal memeriksa status.",
-                  ),
-                );
+              void refetch();
             }}
           />
         )}

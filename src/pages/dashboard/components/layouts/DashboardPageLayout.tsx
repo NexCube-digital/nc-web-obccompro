@@ -4,9 +4,10 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 type Props = {
-  breadcrumb: string;
-  title: string;
-  description: string;
+  breadcrumb?: string;
+  title?: string;
+  description?: string;
+  showPageHeader?: boolean;
   children: ReactNode;
 };
 
@@ -14,6 +15,7 @@ export default function DashboardPageLayout({
   breadcrumb,
   title,
   description,
+  showPageHeader = true,
   children,
 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
@@ -39,18 +41,20 @@ export default function DashboardPageLayout({
       >
         <Header onToggleSidebar={toggleSidebar} />
         <main className="min-w-0 flex-1 px-3 py-5 sm:px-6 sm:py-6">
-          <div className="mb-6">
-            <p className="font-body text-[13px] text-obc-muted">
-              Dashboard <span className="mx-1">/</span>
-              <span className="font-medium text-obc-charcoal">{breadcrumb}</span>
-            </p>
-            <h1 className="mt-2 font-heading text-[24px] font-semibold text-obc-charcoal sm:text-[32px]">
-              {title}
-            </h1>
-            <p className="mt-1 font-body text-[14px] text-obc-muted">
-              {description}
-            </p>
-          </div>
+          {showPageHeader && (
+            <div className="mb-6">
+              <p className="font-body text-[13px] text-obc-muted">
+                Dashboard <span className="mx-1">/</span>
+                <span className="font-medium text-obc-charcoal">{breadcrumb}</span>
+              </p>
+              <h1 className="mt-2 font-heading text-[24px] font-semibold text-obc-charcoal sm:text-[32px]">
+                {title}
+              </h1>
+              <p className="mt-1 font-body text-[14px] text-obc-muted">
+                {description}
+              </p>
+            </div>
+          )}
           {children}
         </main>
         <Footer />

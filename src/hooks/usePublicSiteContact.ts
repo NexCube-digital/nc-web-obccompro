@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { emptyPublicSiteContact, getPublicSiteContact } from "../services/publicSiteContactService";
 
 export default function usePublicSiteContact(enabled = true) {
-	const [contact, setContact] = useState(emptyPublicSiteContact);
+	const { data = emptyPublicSiteContact } = useQuery({
+		queryKey: ["public-site-contact"],
+		queryFn: getPublicSiteContact,
+		enabled,
+		staleTime: 60_000,
+	});
 
-	useEffect(() => {
-		if (!enabled) return;
-		let active = true;
-		getPublicSiteContact().then((value) => { if (active) setContact(value); });
-		return () => { active = false; };
-	}, [enabled]);
-
-	return contact;
+	return enabled ? data : emptyPublicSiteContact;
 }

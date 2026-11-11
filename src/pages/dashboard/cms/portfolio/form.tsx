@@ -7,10 +7,8 @@ import {
 } from "react";
 import {
   BriefcaseBusiness,
-  ImagePlus,
   LoaderCircle,
   Save,
-  Trash2,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +20,7 @@ import {
   type Portfolio,
   type PortfolioInput,
 } from "../../services/cms/portfolioService";
+import PortfolioImagePanel from "./PortfolioImagePanel";
 
 type Props = {
   portfolio: Portfolio | null;
@@ -52,8 +51,6 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
   const [saving, setSaving] = useState(false);
   const dialogRef = useRef<HTMLFormElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const savingRef = useRef(saving);
-  savingRef.current = saving;
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -65,7 +62,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
     titleInputRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !savingRef.current) {
+      if (event.key === "Escape" && !saving) {
         onCancel();
         return;
       }
@@ -92,7 +89,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
       document.removeEventListener("keydown", handleKeyDown);
       if (previousActiveElement?.isConnected) previousActiveElement.focus();
     };
-  }, [onCancel]);
+  }, [onCancel, saving]);
 
   useEffect(
     () => () => {
@@ -109,7 +106,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("Ukuran gambar maksimal 10 MB.");
+      toast.error("Ukuran gambar maksimal 1 MB.");
       return;
     }
     setImage(file);
@@ -149,7 +146,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] grid place-items-center bg-obc-charcoal/65 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-70 grid place-items-center bg-obc-charcoal/65 p-3 backdrop-blur-sm sm:p-6"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !saving) onCancel();
@@ -172,7 +169,7 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
             </span>
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-widest text-obc-olive">
-                Portfolio / CMS
+                Portfolio
               </p>
               <h2
                 id="portfolio-form-title"
@@ -271,74 +268,15 @@ export default function PortfolioForm({ portfolio, onCancel, onSaved }: Props) {
             </div>
           </section>
 
-          <section className="border-t border-obc-border bg-[#FCFCFA] p-5 sm:p-7 lg:border-l lg:border-t-0">
-            <div className="mb-3 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-obc-muted">
-                  Preview sampul
-                </p>
-                <p className="mt-1 text-[11px] text-obc-muted">
-                  Rasio tampilan 4:3
-                </p>
-              </div>
-              {image && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImage(null);
-                    setPreview(
-                      getPortfolioImageUrl(portfolio?.imageUrl ?? null),
-                    );
-                  }}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] font-semibold text-obc-red transition hover:bg-[#FDE8E8]"
-                >
-                  <Trash2 size={13} />
-                  Hapus gambar baru
-                </button>
-              )}
-            </div>
-            <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-obc-border bg-[#E8ECE3] shadow-inner">
-              {preview ? (
-                <img
-                  src={preview}
-                  alt="Pratinjau sampul portfolio"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-5 text-center text-[#737D67]">
-                  <span className="grid size-14 place-items-center rounded-2xl bg-white/80 text-obc-olive shadow-sm">
-                    <ImagePlus size={25} />
-                  </span>
-                  <p className="mt-3 font-heading text-[13px] font-semibold text-obc-charcoal">
-                    Pilih gambar sampul
-                  </p>
-                  <p className="mt-1 max-w-xs text-[11px] leading-5">
-                    Preview gambar akan tampil di area ini.
-                  </p>
-                </div>
-              )}
-              <label className="absolute inset-x-3 bottom-3 flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/70 bg-white/95 px-3 text-[12px] font-semibold text-obc-charcoal shadow-sm transition hover:bg-white">
-                {preview ? (
-                  <>
-                    <ImagePlus size={15} />
-                    Ganti gambar
-                  </>
-                ) : (
-                  <>
-                    <ImagePlus size={15} />
-                    Pilih gambar
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleImageChange}
-                  tabIndex={-1}
-                  className="sr-only"
-                />
-              </label>
-            </div>
-          </section>
+          <PortfolioImagePanel
+            image={image}
+            preview={preview}
+            onImageChange={handleImageChange}
+            onRemoveImage={() => {
+              setImage(null);
+              setPreview(getPortfolioImageUrl(portfolio?.imageUrl ?? null));
+            }}
+          />
         </div>
 
         <footer className="flex flex-col-reverse gap-2 border-t border-obc-border bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-7">

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Home } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { navigateWithTransition } from "../../../components/common/TransitionLink";
 import obcLogoLight from "../../../assets/logo/obclogo.webp";
@@ -81,7 +81,15 @@ export default function LoginPage() {
       </aside>
 
       {/* ── Panel kanan: formulir ── */}
-      <main className="flex min-h-0 flex-1 items-center justify-center overflow-hidden px-5 py-10 [@media(max-height:760px)]:py-5 [@media(max-height:640px)]:py-3 sm:px-10">
+      <main className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-5 py-10 [@media(max-height:760px)]:py-5 [@media(max-height:640px)]:py-3 sm:px-10">
+        <Link
+          to="/"
+          aria-label="Kembali ke beranda"
+          title="Beranda"
+          className="absolute right-5 top-5 z-10 grid h-10 w-10 place-items-center rounded-lg border border-obc-border bg-white text-obc-muted transition-colors hover:bg-obc-hover-surface hover:text-obc-charcoal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-obc-green sm:right-10 sm:top-8"
+        >
+          <Home size={18} aria-hidden="true" />
+        </Link>
         <div className="w-full max-w-[380px]">
           {/* Logo versi mobile */}
           <div className="mb-8 flex items-center gap-2.5 [@media(max-height:760px)]:mb-5 [@media(max-height:640px)]:mb-3 lg:hidden">

@@ -138,7 +138,7 @@ export default function PromoManagement() {
     setDeleteLoading(true);
     try {
       await deletePromo(deletingItem.id);
-      toast.success("Promo berhasil dihapus.");
+      toast.success("Promo dipindahkan ke Sampah.");
       setDeletingItem(null);
       setReload((value) => value + 1);
     } catch (error) {
@@ -174,8 +174,16 @@ export default function PromoManagement() {
   return (
     <DashboardLayout>
       <div className="mx-auto max-w-screen-2xl px-3 py-5 sm:px-6 sm:py-7">
-       
-        <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {formOpen ? (
+          <PromoForm
+            key={editingItem?.id ?? "new"}
+            item={editingItem}
+            onClose={closeForm}
+            onSave={savePromo}
+          />
+        ) : (
+          <>
+            <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Metric
             icon={BadgePercent}
             label="Total promo"
@@ -277,18 +285,12 @@ export default function PromoManagement() {
           disabled={loading}
           className="mt-3 flex flex-col gap-3 rounded-xl border border-obc-border bg-white px-4 py-4 shadow-[0_1px_4px_rgba(31,51,32,0.04)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
         />
-        {formOpen && (
-          <PromoForm
-            key={editingItem?.id ?? "new"}
-            item={editingItem}
-            onClose={closeForm}
-            onSave={savePromo}
-          />
+          </>
         )}
         <DeleteModal
           isOpen={Boolean(deletingItem)}
           title="Hapus promo?"
-          description="Promo akan dihapus permanen dan tidak dapat digunakan lagi."
+          description="Promo dipindahkan ke Sampah dan dapat dipulihkan admin selama 30 hari."
           itemName={deletingItem?.code}
           confirmLabel="Hapus promo"
           isLoading={deleteLoading}

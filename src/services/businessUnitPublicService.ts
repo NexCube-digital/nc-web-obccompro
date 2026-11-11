@@ -14,6 +14,8 @@ export interface PublicBusinessUnit {
 
 interface ApiSuccess<T> { data: T }
 
+export const publicBusinessUnitsQueryKey = ["public-business-units"] as const;
+
 export async function getPublicBusinessUnits(): Promise<PublicBusinessUnit[]> {
   const response = await apiClient.get<ApiSuccess<PublicBusinessUnit[]>>("/public/tenants");
   return response.data.data;
