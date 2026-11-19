@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarRange, CircleDollarSign, Clock3 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
@@ -18,6 +19,9 @@ import PricingRuleDetailModal from "./PricingRuleDetailModal";
 const FETCH_LIMIT = 100;
 type PricingUpdate = PricingRuleUpdateInput;
 type PricingDetail = { rule: PricingRule; rateUnitLabel: "jam" | "2 jam" };
+type PricingData = [CourtResource[], PricingRule[]];
+
+const pricingQueryKey = ["sport-pricing-data"] as const;
 
 function SummaryMetric({
   label,
@@ -51,71 +55,49 @@ function SummaryMetric({
 }
 
 export default function SportHarga() {
-  const [resources, setResources] = useState<CourtResource[]>([]);
-  const [rules, setRules] = useState<PricingRule[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<ActiveStatus | "all">("all");
-  const [reload, setReload] = useState(0);
   const [editingItem, setEditingItem] = useState<PricingRule | null>(null);
   const [detailItem, setDetailItem] = useState<PricingDetail | null>(null);
   const [editingRateUnitLabel, setEditingRateUnitLabel] =
     useState<PricingDetail["rateUnitLabel"]>("jam");
   const [deletingItem, setDeletingItem] = useState<PricingRule | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const pricingQuery = useQuery({
+    queryKey: pricingQueryKey,
+    queryFn: async (): Promise<PricingData> => {
+      const loadAllRules = async () => {
+        const firstPage = await sportService.getPricingRules({ page: 1, limit: FETCH_LIMIT });
+        const remainingPages = await Promise.all(
+          Array.from(
+            { length: Math.max(0, firstPage.meta.totalPages - 1) },
+            (_, index) => sportService.getPricingRules({ page: index + 2, limit: FETCH_LIMIT }),
+          ),
+        );
+        return [...firstPage.data, ...remainingPages.flatMap((result) => result.data)];
+      };
+      return Promise.all([courtService.getResources(), loadAllRules()]);
+    },
+  });
+  const resources = pricingQuery.data?.[0] ?? [];
+  const rules = pricingQuery.data?.[1] ?? [];
+  const loading = pricingQuery.isPending;
 
   useEffect(() => {
-    let cancelled = false;
-    const loadAllRules = async () => {
-      const firstPage = await sportService.getPricingRules({
-        page: 1,
-        limit: FETCH_LIMIT,
-        ...(status === "all" ? {} : { status }),
-      });
-      const remainingPages = await Promise.all(
-        Array.from(
-          { length: Math.max(0, firstPage.meta.totalPages - 1) },
-          (_, index) =>
-            sportService.getPricingRules({
-              page: index + 2,
-              limit: FETCH_LIMIT,
-              ...(status === "all" ? {} : { status }),
-            }),
-        ),
+    if (pricingQuery.error) {
+      toast.error(
+        pricingQuery.error instanceof Error
+          ? pricingQuery.error.message
+          : "Gagal memuat data tarif dan lapang.",
       );
-      return [
-        ...firstPage.data,
-        ...remainingPages.flatMap((result) => result.data),
-      ];
-    };
-    Promise.all([courtService.getResources(), loadAllRules()])
-      .then(([resourceItems, ruleItems]) => {
-        if (cancelled) return;
-        setResources(resourceItems);
-        setRules(ruleItems);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled)
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Gagal memuat data tarif dan lapang.",
-          );
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [reload, status]);
+    }
+  }, [pricingQuery.error]);
 
   const changeStatus = async (item: PricingRule, nextStatus: ActiveStatus) => {
     try {
       await sportService.updatePricingRuleStatus(item.id, nextStatus);
-      setRules((current) =>
-        current.map((rule) =>
-          rule.id === item.id ? { ...rule, status: nextStatus } : rule,
-        ),
+      queryClient.setQueryData<PricingData>(pricingQueryKey, (current) =>
+        current ? [current[0], current[1].map((rule) => rule.id === item.id ? { ...rule, status: nextStatus } : rule)] : current,
       );
       toast.success("Status harga berhasil diperbarui.");
     } catch (error) {
@@ -128,10 +110,11 @@ export default function SportHarga() {
   };
 
   const saveItem = async (item: PricingRule, payload: PricingUpdate) => {
-    await sportService.updatePricingRule(item.id, payload);
+    const updated = await sportService.updatePricingRule(item.id, payload);
+    queryClient.setQueryData<PricingData>(pricingQueryKey, (current) =>
+      current ? [current[0], current[1].map((rule) => rule.id === updated.id ? updated : rule)] : current,
+    );
     toast.success("Item harga berhasil diperbarui.");
-    setLoading(true);
-    setReload((current) => current + 1);
   };
 
   const confirmDeactivate = async () => {
@@ -139,10 +122,11 @@ export default function SportHarga() {
     setDeleteLoading(true);
     try {
       await sportService.deletePricingRule(deletingItem.id);
+      queryClient.setQueryData<PricingData>(pricingQueryKey, (current) =>
+        current ? [current[0], current[1].filter((rule) => rule.id !== deletingItem.id)] : current,
+      );
       toast.success("Aturan tarif dipindahkan ke Sampah.");
       setDeletingItem(null);
-      setLoading(true);
-      setReload((current) => current + 1);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -154,7 +138,8 @@ export default function SportHarga() {
     }
   };
 
-  const activeCount = rules.filter((item) => item.status === "active").length;
+  const visibleRules = status === "all" ? rules : rules.filter((item) => item.status === status);
+  const activeCount = visibleRules.filter((item) => item.status === "active").length;
 
   return (
     <DashboardLayout>
@@ -173,7 +158,7 @@ export default function SportHarga() {
         <section className="mb-5 grid gap-3 sm:grid-cols-3">
           <SummaryMetric
             label="Aturan tarif"
-            value={rules.length.toLocaleString("id-ID")}
+            value={visibleRules.length.toLocaleString("id-ID")}
             note="Sesuai status yang dipilih"
             icon={CircleDollarSign}
             tone="bg-[#E7F5D0] text-obc-green"
@@ -181,7 +166,7 @@ export default function SportHarga() {
           <SummaryMetric
             label="Aktif di halaman ini"
             value={activeCount.toLocaleString("id-ID")}
-            note={`Dari ${rules.length} item yang dimuat`}
+            note={`Dari ${visibleRules.length} item yang dimuat`}
             icon={Clock3}
             tone="bg-[#EAF4F0] text-[#296049]"
           />
@@ -214,7 +199,6 @@ export default function SportHarga() {
                   { value: "inactive", label: "Nonaktif" },
                 ]}
                 onValueChange={(value) => {
-                  setLoading(true);
                   setStatus(value as ActiveStatus | "all");
                 }}
                 className="h-10 min-w-36"
@@ -224,7 +208,7 @@ export default function SportHarga() {
         </section>
         <PricingTable
           resources={resources}
-          rules={rules}
+          rules={visibleRules}
           loading={loading}
           onStatusChange={changeStatus}
           onView={(rule, resource) =>

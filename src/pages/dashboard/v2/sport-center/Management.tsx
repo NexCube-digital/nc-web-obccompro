@@ -1,32 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dumbbell, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import SportCenterForm from "./Form";
 import SportCenterTable from "./Table";
 import { sportCenterService, type SportCenterCard, type SportCenterContent } from "./sportcenterService";
 
 export default function SportCenterManagement() {
+	const queryClient = useQueryClient();
 	const [content, setContent] = useState<SportCenterContent>({ section: "sport-center", title: "", subtitle: "", cards: [] });
-	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [showForm, setShowForm] = useState(false);
 	const [editing, setEditing] = useState<{ card: SportCenterCard; index: number } | null>(null);
+	const contentQuery = useQuery({
+		queryKey: ["v2-sport-center-content"],
+		queryFn: async () => (await sportCenterService.getContent()) as SportCenterContent | null,
+	});
+	const loading = contentQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		sportCenterService.getContent().then((data) => { if (active && data) setContent(data as SportCenterContent); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, []);
+		if (contentQuery.data) setContent(contentQuery.data);
+		if (contentQuery.error) toast.error(getApiErrorMessage(contentQuery.error));
+	}, [contentQuery.data, contentQuery.error]);
 
 	const filteredCards = useMemo(() => {
-		const normalized = query.trim().toLowerCase();
+		const normalized = debouncedQuery.trim().toLowerCase();
 		return content.cards.filter((card) => [card.badge, card.icon, card.items.join(" "), card.price ?? ""].join(" ").toLowerCase().includes(normalized));
-	}, [content.cards, query]);
+	}, [content.cards, debouncedQuery]);
 
 	const saveCard = (card: SportCenterCard) => {
 		setContent((current) => editing
@@ -38,7 +43,11 @@ export default function SportCenterManagement() {
 
 	const saveContent = async () => {
 		setSaving(true);
-		try { await sportCenterService.saveContent(content); toast.success("Sport Center berhasil disimpan."); }
+		try {
+			await sportCenterService.saveContent(content);
+			queryClient.setQueryData(["v2-sport-center-content"], content);
+			toast.success("Sport Center berhasil disimpan.");
+		}
 		catch (error) { toast.error(getApiErrorMessage(error)); }
 		finally { setSaving(false); }
 	};

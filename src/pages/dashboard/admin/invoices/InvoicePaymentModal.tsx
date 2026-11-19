@@ -1,4 +1,5 @@
 import type { Invoice } from "../../services/admin/invoiceService";
+import { formatIdr as money } from "../../../../utils/formatters";
 
 type Props = {
   invoice: Invoice | null;
@@ -30,13 +31,6 @@ export default function InvoicePaymentModal({
   onSubmit,
 }: Props) {
   if (!invoice) return null;
-
-  const money = (value: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(value);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

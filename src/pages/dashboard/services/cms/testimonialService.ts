@@ -15,6 +15,17 @@ export type Testimonial = {
 
 export type TestimonialPayload = Pick<Testimonial, "name" | "company" | "text" | "textEn" | "rating" | "avatar" | "status">;
 
+export interface TestimonialListResponse {
+	items: Testimonial[];
+	pagination: { total: number; page: number; limit: number; totalPages: number };
+	summary: {
+		total: number;
+		publishedCount: number;
+		averageRating: number;
+		statusCounts: Record<Testimonial["status"], number>;
+	};
+}
+
 interface ApiSuccess<T> {
 	data: T;
 }
@@ -31,9 +42,18 @@ function testimonialFormData(payload: Partial<TestimonialPayload>, avatar?: File
 }
 
 export const testimonialService = {
-	async getTestimonials(params?: { status?: "all" | Testimonial["status"]; rating?: number }): Promise<Testimonial[]> {
-		const response = await apiClient.get<ApiSuccess<Testimonial[]>>("/admin/testimonials", {
+	async getTestimonials(params: {
+		page: number;
+		limit: number;
+		search?: string;
+		status?: "all" | Testimonial["status"];
+		rating?: number;
+	}): Promise<TestimonialListResponse> {
+		const response = await apiClient.get<ApiSuccess<TestimonialListResponse>>("/admin/testimonials", {
 			params: {
+				page: params.page,
+				limit: params.limit,
+				...(params.search ? { search: params.search } : {}),
 				...(params?.status && params.status !== "all" ? { status: params.status } : {}),
 				...(params?.rating ? { rating: params.rating } : {}),
 			},

@@ -1,35 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Files, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../../../../services/auth";
 import { getApiErrorMessage } from "../../../../services/api";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import MediaForm from "./Form";
 import MediaTable from "./Table";
 import { mediaService, type MediaRecord, type MediaType } from "./mediaService";
 
 export default function Management() {
-	const [media, setMedia] = useState<MediaRecord[]>([]);
+	const queryClient = useQueryClient();
 	const [tenantId, setTenantId] = useState(() => authService.getCurrentSession()?.user.tenantId ?? "");
 	const [typeFilter, setTypeFilter] = useState<MediaType | "all">("all");
 	const [query, setQuery] = useState("");
-	const [loading, setLoading] = useState(true);
+	const debouncedQuery = useDebouncedValue(query);
 	const [uploading, setUploading] = useState(false);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
-	const [reload, setReload] = useState(0);
+	const sessionTenantId = authService.getCurrentSession()?.user.tenantId ?? "";
+	const mediaQuery = useQuery({
+		queryKey: ["v2-media", sessionTenantId],
+		queryFn: () => mediaService.getMedia(),
+	});
+	const media = mediaQuery.data ?? [];
+	const loading = mediaQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		mediaService.getMedia()
-			.then((data) => { if (active) setMedia(data); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [reload]);
+		if (mediaQuery.error) toast.error(getApiErrorMessage(mediaQuery.error));
+	}, [mediaQuery.error]);
 
 	const filteredMedia = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return media.filter((item) => {
 			const typeMatches = typeFilter === "all" || item.mediaType === typeFilter;
 			const queryMatches = [item.originalName, item.filename, item.mimeType, item.altText]
@@ -39,14 +41,14 @@ export default function Management() {
 				.includes(normalizedQuery);
 			return typeMatches && queryMatches;
 		});
-	}, [media, query, typeFilter]);
+	}, [media, debouncedQuery, typeFilter]);
 
 	const upload = async (file: File) => {
 		setUploading(true);
 		try {
 			await mediaService.uploadMedia(file, tenantId.trim());
 			toast.success("Media berhasil diunggah.");
-			setReload((value) => value + 1);
+			void queryClient.invalidateQueries({ queryKey: ["v2-media"] });
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
 		} finally {
@@ -59,7 +61,7 @@ export default function Management() {
 		setDeletingId(item.id);
 		try {
 			await mediaService.deleteMedia(item.id);
-			setMedia((current) => current.filter((mediaItem) => mediaItem.id !== item.id));
+			void queryClient.invalidateQueries({ queryKey: ["v2-media"] });
 			toast.success("Media dipindahkan ke Sampah.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { KeyRound, RotateCcw, ShieldCheck, Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
@@ -8,26 +9,23 @@ import RolePermissionForm from "./Form";
 import RolePermissionTable from "./Table";
 
 export default function Management() {
-  const [roles, setRoles] = useState<RolePermission[]>([]);
-  const [loading, setLoading] = useState(true);
   const [editingRole, setEditingRole] = useState<RolePermission | null>(null);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
-
-  const loadRoles = async () => {
-    try {
-      setLoading(true);
-      setRoles(await roleService.getRolePermissions());
-    } catch (error) {
-      toast.error(getApiErrorMessage(error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const queryClient = useQueryClient();
+  const rolesQuery = useQuery({
+    queryKey: ["admin-role-permissions"],
+    queryFn: roleService.getRolePermissions,
+    staleTime: 60_000,
+  });
+  const roles = rolesQuery.data ?? [];
+  const loading = rolesQuery.isPending;
 
   useEffect(() => {
-    void loadRoles();
-  }, []);
+    if (rolesQuery.error) {
+      toast.error(getApiErrorMessage(rolesQuery.error));
+    }
+  }, [rolesQuery.error]);
 
   const saveRolePermissions = async (permissions: string[]) => {
     if (!editingRole) return;
@@ -37,7 +35,7 @@ export default function Management() {
         editingRole.role,
         permissions,
       );
-      setRoles((current) =>
+      queryClient.setQueryData<RolePermission[]>(["admin-role-permissions"], (current = []) =>
         current.map((item) => (item.role === updated.role ? updated : item)),
       );
       setEditingRole(null);
@@ -60,7 +58,10 @@ export default function Management() {
       return;
     setResetting(true);
     try {
-      setRoles(await roleService.resetRolePermissions());
+      queryClient.setQueryData(
+        ["admin-role-permissions"],
+        await roleService.resetRolePermissions(),
+      );
       setEditingRole(null);
       toast.success("Permission semua role dikembalikan ke default.");
     } catch (error) {

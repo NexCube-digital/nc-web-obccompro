@@ -61,6 +61,14 @@ export type SportBooking = {
 	latestPayment: { status: string; method: string | null; paidAt: string | null } | null;
 };
 
+export type BookingCalendarItem = {
+	id: string;
+	startTime: string;
+	endTime: string;
+	status: BookingStatus;
+	resource: { id: string; name: string };
+};
+
 export type SportBookingDetails = {
 	id: string;
 	tenant: { id: string; name: string; slug: string };
@@ -250,3 +258,4 @@ export type SportResourceInput = {
 	locationId?: string;
 	status: SportResource["status"];
 };
+

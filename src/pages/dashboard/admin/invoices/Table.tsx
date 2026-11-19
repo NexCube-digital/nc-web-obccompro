@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { Eye, Pencil, Search, Trash2, WalletCards } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import type { Invoice, InvoiceStatus } from "../../services/admin/invoiceService";
+import { formatIdr as rupiah, formatShortIdDate as formatDate } from "../../../../utils/formatters";
 
 const PAGE_SIZE = 8;
 type StatusFilter = "all" | "draft" | "pending" | "success" | "failed";
@@ -35,22 +37,6 @@ const editableStatus: Record<Exclude<StatusFilter, "all">, InvoiceStatus> = {
   failed: "cancelled",
 };
 
-const rupiah = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-const formatDate = (value: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "-";
-
 interface InvoiceTableProps {
   invoices: Invoice[];
   loading: boolean;
@@ -73,10 +59,11 @@ export default function InvoiceTable({
   onChangeStatus,
 }: InvoiceTableProps) {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [page, setPage] = useState(1);
   const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = debouncedQuery.trim().toLowerCase();
     return invoices.filter((invoice) => {
       const matchesStatus =
         statusFilter === "all" ||
@@ -93,7 +80,7 @@ export default function InvoiceTable({
         .toLowerCase();
       return matchesStatus && searchText.includes(normalizedQuery);
     });
-  }, [invoices, query, statusFilter]);
+  }, [invoices, debouncedQuery, statusFilter]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const rows = filtered.slice(

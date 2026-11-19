@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Star } from "lucide-react";
 import { toast } from "sonner";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Pagination from "../../components/common/Pagination";
 import ReviewTable from "./Table";
@@ -8,29 +10,34 @@ import ReviewForm from "./Form";
 import { reviewService, type ReviewItem, type ReviewStatus } from "./reviewService";
 
 export default function ReviewManagement() {
-	const [reviews, setReviews] = useState<ReviewItem[]>([]);
+	const queryClient = useQueryClient();
 	const [page, setPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
-	const [total, setTotal] = useState(0);
 	const [status, setStatus] = useState<ReviewStatus | "all">("all");
 	const [query, setQuery] = useState("");
-	const [loading, setLoading] = useState(true);
+	const debouncedQuery = useDebouncedValue(query);
 	const [selected, setSelected] = useState<ReviewItem | null>(null);
+	const reviewsQuery = useQuery({
+		queryKey: ["v2-reviews", page, status],
+		queryFn: () => reviewService.getReviews({ page, limit: 20, ...(status !== "all" ? { status } : {}) }),
+	});
+	const reviews = reviewsQuery.data?.items ?? [];
+	const totalPages = reviewsQuery.data?.pagination.totalPages ?? 1;
+	const total = reviewsQuery.data?.pagination.total ?? 0;
+	const loading = reviewsQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		queueMicrotask(() => { if (active) setLoading(true); });
-		reviewService.getReviews({ page, limit: 20, ...(status !== "all" ? { status } : {}) })
-			.then((result) => { if (!active) return; setReviews(result.items); setPage(result.pagination.page); setTotalPages(result.pagination.totalPages); setTotal(result.pagination.total); })
-			.catch((error: unknown) => { if (active) toast.error(error instanceof Error ? error.message : "Gagal memuat review."); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [page, status]);
+		if (reviewsQuery.error) {
+			toast.error(reviewsQuery.error instanceof Error ? reviewsQuery.error.message : "Gagal memuat review.");
+		}
+		if (reviewsQuery.data && reviewsQuery.data.pagination.page !== page) {
+			setPage(reviewsQuery.data.pagination.page);
+		}
+	}, [page, reviewsQuery.data, reviewsQuery.error]);
 
 	const changeStatus = async (review: ReviewItem, nextStatus: ReviewStatus) => {
 		try {
 			const updated = await reviewService.updateStatus(review.id, nextStatus);
-			setReviews((items) => items.map((item) => item.id === updated.id ? updated : item));
+			void queryClient.invalidateQueries({ queryKey: ["v2-reviews"] });
 			if (selected?.id === updated.id) setSelected(updated);
 			toast.success("Status review diperbarui.");
 		} catch (error) {
@@ -38,7 +45,10 @@ export default function ReviewManagement() {
 		}
 	};
 
-	const filtered = reviews.filter((review) => `${review.customer?.name ?? ""} ${review.customer?.email ?? ""} ${review.resource?.name ?? ""} ${review.comment}`.toLowerCase().includes(query.toLowerCase()));
+	const filtered = useMemo(
+		() => reviews.filter((review) => `${review.customer?.name ?? ""} ${review.customer?.email ?? ""} ${review.resource?.name ?? ""} ${review.comment}`.toLowerCase().includes(debouncedQuery.toLowerCase())),
+		[reviews, debouncedQuery],
+	);
 
 	return (
 		<DashboardLayout>

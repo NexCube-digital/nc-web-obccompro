@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import StaffForm from "./StaffForm";
@@ -6,6 +7,12 @@ import StaffTable from "./StaffTable";
 
 export default function Management() {
   const [showForm, setShowForm] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleStaffCreated = () => {
+    void queryClient.invalidateQueries({ queryKey: ["admin-staff"] });
+    setShowForm(false);
+  };
 
   return (
     <DashboardPageLayout
@@ -38,7 +45,7 @@ export default function Management() {
                 Batal
               </button>
             </div>
-            <StaffForm onCreated={() => setShowForm(false)} />
+            <StaffForm onCreated={handleStaffCreated} />
           </div>
         )}
 

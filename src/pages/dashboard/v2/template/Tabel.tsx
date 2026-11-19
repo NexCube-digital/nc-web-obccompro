@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import Pagination from "../../components/common/Pagination";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
+import { formatIdr as rupiah, formatShortIdDate as formatDate, getInitials as initials } from "../../../../utils/formatters";
 
 type Status = "Aktif" | "Menunggu" | "Nonaktif";
 
@@ -56,20 +58,6 @@ const avatarGradients = [
 	"from-[#343133] to-[#404F14]",
 ];
 
-const rupiah = (value: number) =>
-	new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
-
-const formatDate = (iso: string) =>
-	new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-
-const initials = (name: string) =>
-	name
-		.split(" ")
-		.slice(0, 2)
-		.map((part) => part[0])
-		.join("")
-		.toUpperCase();
-
 type StatCardProps = {
 	icon: LucideIcon;
 	label: string;
@@ -105,6 +93,7 @@ function StatCard({ icon: Icon, label, value, trend, iconClass }: StatCardProps)
 
 export default function Tabel() {
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [tab, setTab] = useState<Tab>("Semua");
 	const [page, setPage] = useState(1);
 
@@ -129,13 +118,13 @@ export default function Tabel() {
 	}, []);
 
 	const filtered = useMemo(() => {
-		const q = query.trim().toLowerCase();
+		const q = debouncedQuery.trim().toLowerCase();
 		return customers.filter((c) => {
 			const matchTab = tab === "Semua" || c.status === tab;
 			const matchQuery = `${c.name} ${c.email} ${c.category}`.toLowerCase().includes(q);
 			return matchTab && matchQuery;
 		});
-	}, [query, tab]);
+	}, [debouncedQuery, tab]);
 
 	const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 	const currentPage = Math.min(page, totalPages);

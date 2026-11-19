@@ -22,6 +22,7 @@ import {
   getFinanceReportSnapshot,
   getInvoiceReportSnapshot,
 } from "../../services/admin/reportDownloads";
+import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 type Props = {
   report: ReportRecord | null;
@@ -39,13 +40,6 @@ const typeIcons: Record<ReportType, typeof Receipt> = {
   invoices: Receipt,
   finance: Wallet,
 };
-const rupiah = (amount: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(amount);
-
 export default function ReportDetailModal({ report, onClose }: Props) {
   const [detailPage, setDetailPage] = useState(1);
   if (!report) return null;

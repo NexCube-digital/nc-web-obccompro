@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bell, ChevronDown, LoaderCircle, LogOut, Menu, Search, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
@@ -10,6 +11,7 @@ type Props = { onToggleSidebar: () => void };
 
 export default function Header({ onToggleSidebar }: Props) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(() => authService.getCurrentSession()?.user ?? null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -48,6 +50,7 @@ export default function Header({ onToggleSidebar }: Props) {
     } catch {
       // Clear the local session and leave the dashboard even if the API is unavailable.
     }
+    queryClient.clear();
     setUser(null);
     await navigateWithTransition("/login", navigate, { replace: true });
   };

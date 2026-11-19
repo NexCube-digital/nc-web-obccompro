@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
@@ -11,33 +12,24 @@ import { customerService, type CustomerListResponse } from "../../services/cms/c
 const PAGE_SIZE = 20;
 
 export default function Management() {
-  const [data, setData] = useState<CustomerListResponse>({
-    items: [],
-    pagination: { total: 0, page: 1, limit: PAGE_SIZE, totalPages: 0 },
-  });
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const customersQuery = useQuery({
+    queryKey: ["cms-customers", page, PAGE_SIZE, search],
+    queryFn: () => customerService.getCustomers({ page, limit: PAGE_SIZE, search }),
+  });
+  const data = customersQuery.data ?? {
+    items: [],
+    pagination: { total: 0, page: 1, limit: PAGE_SIZE, totalPages: 0 },
+  } satisfies CustomerListResponse;
+  const loading = customersQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    customerService
-      .getCustomers({ page, limit: PAGE_SIZE, search })
-      .then((response) => {
-        if (active) setData(response);
-      })
-      .catch((error: unknown) => {
-        if (active) toast.error(getApiErrorMessage(error));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [page, search]);
+    if (customersQuery.error) {
+      toast.error(getApiErrorMessage(customersQuery.error));
+    }
+  }, [customersQuery.error]);
 
   const applyFilters = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

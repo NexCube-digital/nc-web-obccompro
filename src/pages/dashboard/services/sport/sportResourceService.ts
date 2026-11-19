@@ -14,8 +14,8 @@ export function getSportResourceImage(resource: Pick<SportResource, "imageUrl">)
 }
 
 export const sportResourceService = {
-	getResourceAvailability(resourceId: string, date: string): Promise<ResourceAvailability> {
-		return apiClient.get<ApiSuccess<ResourceAvailability>>("/sports/availability", { params: { resourceId, date } })
+	getResourceAvailability(resourceId: string, date: string, includePrices = true): Promise<ResourceAvailability> {
+		return apiClient.get<ApiSuccess<ResourceAvailability>>("/sports/availability", { params: { resourceId, date, ...(includePrices ? {} : { includePrices: false }) } })
 			.then((response) => response.data.data);
 	},
 	getResources(params: ListParams & { status?: SportResource["status"] }): Promise<Paginated<SportResource>> {

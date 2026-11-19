@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
 import { toast } from "sonner";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Pagination from "../../components/common/Pagination";
 import { getMediaUrl } from "../media/mediaService";
@@ -14,43 +16,51 @@ const resourceStatuses: SportResource["status"][] = ["active", "maintenance", "i
 const statusLabels: Record<SportResource["status"], string> = { active: "Aktif", maintenance: "Pemeliharaan", inactive: "Nonaktif" };
 
 export default function SportResource() {
-  const [resources, setResources] = useState<SportResource[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [status, setStatus] = useState<SportResource["status"] | "all">("all");
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [tenantId, setTenantId] = useState("");
-  const [locations, setLocations] = useState<LocationOption[]>([]);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorResource, setEditorResource] = useState<SportResource | null>(null);
   const [selectedResource, setSelectedResource] = useState<SportResource | null>(null);
-  const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    sportService.getResources({ page, limit: 10, ...(status === "all" ? {} : { status }), ...(search.trim() ? { search: search.trim() } : {}) })
-      .then((result) => {
-        if (!cancelled) {
-          setResources(result.data);
-          setTotal(result.meta.total);
-          setTotalPages(result.meta.totalPages);
-        }
-      })
-      .catch((error: unknown) => { if (!cancelled) toast.error(error instanceof Error ? error.message : "Gagal memuat resource."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [page, search, status, reload]);
-
-  useEffect(() => {
-    unitbisnisService.getUnits().then((units) => {
+  const resourcesQuery = useQuery({
+    queryKey: ["v2-sport-resources", page, status, debouncedSearch],
+    queryFn: () => sportService.getResources({
+      page,
+      limit: 10,
+      ...(status === "all" ? {} : { status }),
+      ...(debouncedSearch.trim() ? { search: debouncedSearch.trim() } : {}),
+    }),
+  });
+  const resources = resourcesQuery.data?.data ?? [];
+  const total = resourcesQuery.data?.meta.total ?? 0;
+  const totalPages = resourcesQuery.data?.meta.totalPages ?? 1;
+  const loading = resourcesQuery.isPending;
+  const tenantQuery = useQuery({
+    queryKey: ["v2-sport-tenant-locations"],
+    queryFn: async () => {
+      const units = await unitbisnisService.getUnits();
       const sportUnit = units.find((unit) => unit.slug === "obc-sport") ?? units.find((unit) => unit.tenantType === "sport");
-      if (!sportUnit) return;
-      setTenantId(sportUnit.id);
-      unitbisnisService.getUnit(sportUnit.slug).then((detail) => setLocations(detail.locations.map((location) => ({ id: location.id, name: location.name }))));
-    }).catch((error: unknown) => toast.error(error instanceof Error ? error.message : "Gagal memuat tenant olahraga."));
-  }, []);
+      if (!sportUnit) return { id: "", locations: [] as LocationOption[] };
+      const detail = await unitbisnisService.getUnit(sportUnit.slug);
+      return {
+        id: sportUnit.id,
+        locations: detail.locations.map((location) => ({ id: location.id, name: location.name })),
+      };
+    },
+  });
+  const tenantId = tenantQuery.data?.id ?? "";
+  const locations = tenantQuery.data?.locations ?? [];
+
+  useEffect(() => {
+    if (resourcesQuery.error) {
+      toast.error(resourcesQuery.error instanceof Error ? resourcesQuery.error.message : "Gagal memuat resource.");
+    }
+    if (tenantQuery.error) {
+      toast.error(tenantQuery.error instanceof Error ? tenantQuery.error.message : "Gagal memuat tenant olahraga.");
+    }
+  }, [resourcesQuery.error, tenantQuery.error]);
 
   const saveResource = async (input: SportResourceInput, image?: File) => {
     if (!tenantId && !editorResource) throw new Error("Tenant OBC Sport Center belum ditemukan.");
@@ -62,14 +72,14 @@ export default function SportResource() {
         const media = await mediaService.uploadMedia(image, saved.tenant.id);
         await sportService.updateResource(saved.id, { imageUrl: media.url });
       }
-      setReload((value) => value + 1);
+      void queryClient.invalidateQueries({ queryKey: ["v2-sport-resources"] });
       toast.success(editorResource ? "Resource berhasil diperbarui." : "Resource berhasil ditambahkan.");
     } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menyimpan resource."); throw error; }
   };
 
   const deleteResource = async (resource: SportResource) => {
     if (!window.confirm(`Hapus resource ${resource.name}?`)) return;
-    try { await sportService.deleteResource(resource.id); setReload((value) => value + 1); toast.success("Resource dipindahkan ke Sampah."); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
+    try { await sportService.deleteResource(resource.id); void queryClient.invalidateQueries({ queryKey: ["v2-sport-resources"] }); toast.success("Resource dipindahkan ke Sampah."); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
   };
 
   return (
@@ -77,11 +87,11 @@ export default function SportResource() {
       <div className="px-3 py-5 sm:px-6 sm:py-6">
         <header className="mb-5 flex items-start justify-between gap-3"><div><p className="text-[13px] text-obc-muted">OBC Sport / Resource</p><h1 className="mt-1 font-heading text-[26px] font-bold text-obc-charcoal">Resource & lapangan</h1><p className="mt-1 text-[13px] text-obc-muted">Kelola data, gambar, jadwal, dan status lapangan dari backend.</p></div><button type="button" onClick={() => { setEditorResource(null); setEditorOpen(true); }} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#1F3320] px-4 text-[13px] font-medium text-white"><Plus size={16}/>Tambah resource</button></header>
         <section className="mb-4 rounded-xl border border-obc-border bg-white p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-[13px] text-obc-muted">{total.toLocaleString("id-ID")} resource ditemukan</p><div className="flex flex-col gap-2 sm:flex-row"><label className="relative"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" /><input value={search} onChange={(event) => { setLoading(true); setSearch(event.target.value); setPage(1); }} placeholder="Cari nama atau deskripsi..." className="h-10 w-full rounded-lg border border-obc-border pl-9 pr-3 text-[13px] outline-none focus:border-obc-olive sm:w-72" /></label><select aria-label="Filter status resource" value={status} onChange={(event) => { setLoading(true); setStatus(event.target.value as SportResource["status"] | "all"); setPage(1); }} className="h-10 rounded-lg border border-obc-border bg-white px-3 text-[13px]"><option value="all">Semua status</option>{resourceStatuses.map((item) => <option key={item} value={item}>{statusLabels[item]}</option>)}</select></div></div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-[13px] text-obc-muted">{total.toLocaleString("id-ID")} resource ditemukan</p><div className="flex flex-col gap-2 sm:flex-row"><label className="relative"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Cari nama atau deskripsi..." className="h-10 w-full rounded-lg border border-obc-border pl-9 pr-3 text-[13px] outline-none focus:border-obc-olive sm:w-72" /></label><select aria-label="Filter status resource" value={status} onChange={(event) => { setStatus(event.target.value as SportResource["status"] | "all"); setPage(1); }} className="h-10 rounded-lg border border-obc-border bg-white px-3 text-[13px]"><option value="all">Semua status</option>{resourceStatuses.map((item) => <option key={item} value={item}>{statusLabels[item]}</option>)}</select></div></div>
         </section>
         <section className="overflow-hidden rounded-xl border border-obc-border bg-white">
           <ResourceTable resources={resources} loading={loading} onView={setSelectedResource} onEdit={(resource) => { setEditorResource(resource); setEditorOpen(true); }} onDelete={deleteResource}/>
-          <Pagination page={page} totalPages={totalPages} onPageChange={(nextPage) => { setLoading(true); setPage(nextPage); }} totalItems={total} pageSize={10} itemLabel="resource" disabled={loading} />
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={total} pageSize={10} itemLabel="resource" disabled={loading} />
         </section>
         {selectedResource && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedResource(null); }}>

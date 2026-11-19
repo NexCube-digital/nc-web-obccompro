@@ -17,6 +17,7 @@ import { id } from "date-fns/locale";
 import "react-day-picker/style.css";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import type { FinanceReportPeriod } from "../../services/admin/reportService";
+import { toLocalDateKey as toDateKey } from "../../../../utils/formatters";
 
 type Props = {
   period: FinanceReportPeriod;
@@ -33,10 +34,6 @@ const reportMonthOptions = reportMonths.map((label, month) => ({
   value: String(month),
   label,
 }));
-
-function toDateKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
 
 function YearStepper({
   value,

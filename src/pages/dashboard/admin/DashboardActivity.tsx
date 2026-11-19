@@ -1,4 +1,5 @@
 import { LayoutDashboard } from "lucide-react";
+import { formatRupiah as rupiah, formatShortIdDate as dateLabel } from "../../../utils/formatters";
 import type { DashboardSummary } from "../services/admin/DashboardService";
 
 type Props = {
@@ -9,14 +10,6 @@ type Props = {
 
 const cardClass =
   "rounded-2xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)]";
-const rupiah = (value: number) =>
-  `Rp${new Intl.NumberFormat("id-ID").format(value)}`;
-const dateLabel = (value: string) =>
-  new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
 const statusLabel = (value: string) =>
   value
     .split("_")

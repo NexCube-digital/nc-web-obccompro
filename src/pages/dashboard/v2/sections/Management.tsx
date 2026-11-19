@@ -1,43 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Layers, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { authService } from "../../../../services/auth";
 import { getApiErrorMessage } from "../../../../services/api";
-import { cmsPageService, type CmsPage } from "../pages/pageService";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
+import { cmsPageService } from "../pages/pageService";
 import CmsSectionForm, { CmsTranslationForm } from "./Form";
 import CmsSectionTable from "./Table";
 import { cmsSectionService, type CmsLanguage, type CmsSection, type CmsSectionStatus } from "./sectionService";
 
 export default function Management() {
 	const tenantId = authService.getCurrentSession()?.user.tenantId ?? "";
-	const [pages, setPages] = useState<CmsPage[]>([]);
-	const [sections, setSections] = useState<CmsSection[]>([]);
-	const [loading, setLoading] = useState(true);
+	const queryClient = useQueryClient();
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [pageFilter, setPageFilter] = useState("all");
 	const [showForm, setShowForm] = useState(false);
 	const [editingSection, setEditingSection] = useState<CmsSection | null>(null);
 	const [translationTarget, setTranslationTarget] = useState<{ section: CmsSection; language: CmsLanguage } | null>(null);
 	const [updatingId, setUpdatingId] = useState<string | null>(null);
-	const [reload, setReload] = useState(0);
+	const cmsDataQuery = useQuery({
+		queryKey: ["v2-cms-sections", tenantId],
+		queryFn: () => Promise.all([
+			cmsPageService.getPages(tenantId || undefined),
+			cmsSectionService.getSections(tenantId || undefined),
+		]),
+	});
+	const pages = cmsDataQuery.data?.[0] ?? [];
+	const sections = cmsDataQuery.data?.[1] ?? [];
+	const loading = cmsDataQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		Promise.all([cmsPageService.getPages(tenantId || undefined), cmsSectionService.getSections(tenantId || undefined)])
-			.then(([pageData, sectionData]) => {
-				if (!active) return;
-				setPages(pageData);
-				setSections(sectionData);
-			})
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [reload, tenantId]);
+		if (cmsDataQuery.error) toast.error(getApiErrorMessage(cmsDataQuery.error));
+	}, [cmsDataQuery.error]);
 
 	const filteredSections = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return sections.filter((section) => {
 			const pageMatches = pageFilter === "all" || section.pageId === pageFilter;
 			const searchMatches = [section.title, section.sectionKey, section.sectionType, section.page.title, section.page.slug]
@@ -46,8 +46,10 @@ export default function Management() {
 				.includes(normalizedQuery);
 			return pageMatches && searchMatches;
 		});
-	}, [pageFilter, query, sections]);
-	const refresh = () => setReload((value) => value + 1);
+	}, [pageFilter, debouncedQuery, sections]);
+	const refresh = () => {
+		void queryClient.invalidateQueries({ queryKey: ["v2-cms-sections"] });
+	};
 
 	const deleteSection = async (section: CmsSection) => {
 		if (!window.confirm(`Hapus section "${section.title}" beserta terjemahannya?`)) return;
@@ -64,8 +66,8 @@ export default function Management() {
 		if (status === section.status) return;
 		setUpdatingId(section.id);
 		try {
-			const updated = await cmsSectionService.updateSection(section.id, { status });
-			setSections((current) => current.map((item) => item.id === updated.id ? { ...item, status: updated.status } : item));
+			await cmsSectionService.updateSection(section.id, { status });
+			refresh();
 			toast.success("Status section berhasil diperbarui.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
@@ -74,10 +76,8 @@ export default function Management() {
 		}
 	};
 
-	const saveTranslation = (translation: { id: string; sectionId: string; language: CmsLanguage; title: string; content: unknown; createdAt: string; updatedAt: string }) => {
-		setSections((current) => current.map((item) => item.id === translation.sectionId
-			? { ...item, translations: [...item.translations.filter((entry) => entry.language !== translation.language), translation] }
-			: item));
+	const saveTranslation = () => {
+		refresh();
 		setTranslationTarget(null);
 	};
 

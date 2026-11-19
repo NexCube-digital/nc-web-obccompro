@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AtSign,
   Camera,
@@ -26,34 +27,28 @@ const EMPTY_CONTACT: SiteContactContent = {
 };
 
 export default function SiteContactManagement() {
+  const queryClient = useQueryClient();
   const [contact, setContact] = useState<SiteContactContent>(EMPTY_CONTACT);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const contactQuery = useQuery({
+    queryKey: ["cms-site-contact"],
+    queryFn: () => siteContentService.getContact(),
+  });
+  const loading = contactQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    siteContentService.getContact()
-      .then((contactData) => {
-        if (!active) return;
-        setContact(contactData);
-      })
-      .catch((error) => {
-        if (active)
-          toast.error(`Gagal memuat data: ${getApiErrorMessage(error)}`);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+    if (contactQuery.data) setContact(contactQuery.data);
+    if (contactQuery.error) {
+      toast.error(`Gagal memuat data: ${getApiErrorMessage(contactQuery.error)}`);
+    }
+  }, [contactQuery.data, contactQuery.error]);
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setSaving(true);
     try {
       await siteContentService.saveContact(contact);
+      queryClient.setQueryData(["cms-site-contact"], contact);
       toast.success("Kontak berhasil disimpan.");
     } catch (error) {
       toast.error(getApiErrorMessage(error));

@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Clock3, CreditCard, FileText, MapPin, UserRound, X } from "lucide-react";
-import { sportService, type BookingStatus, type ResourceAvailability, type SportBooking, type SportBookingDetails } from "../../services/sport/SportService";
+import { sportService, type BookingCalendarItem, type BookingStatus, type ResourceAvailability, type SportBookingDetails } from "../../services/sport/SportService";
 import type { CourtResource } from "../../services/sport/courtService";
+import { formatBookingDate as formatDate, formatIdDateTime as formatDateTime, formatIdr as formatMoney } from "../../../../utils/formatters";
 
 type Props = {
 	resource: CourtResource;
 	slot: ResourceAvailability["slots"][number];
-	bookings: SportBooking[];
+	bookings: BookingCalendarItem[];
 	date: string;
 	onClose: () => void;
 };
 
 type BookingDetailResult = {
-	booking: SportBooking;
+	booking: BookingCalendarItem;
 	detail: SportBookingDetails | null;
 	error: string | null;
 };
@@ -47,9 +48,6 @@ const slotStatusLabels: Record<ResourceAvailability["slots"][number]["status"], 
 	closed: "Tutup",
 };
 
-const formatDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-const formatDateTime = (value: string | null) => value ? new Date(value).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }) : "-";
-const formatMoney = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 const humanize = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 export default function BookingDetailModal({ resource, slot, bookings, date, onClose }: Props) {
@@ -93,7 +91,7 @@ export default function BookingDetailModal({ resource, slot, bookings, date, onC
 					{loading ? <p role="status" className="py-10 text-center text-[13px] text-obc-muted">Memuat rincian booking dan pembayaran...</p> : details.length === 0 ? <div className="mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-4"><p className="text-[13px] font-semibold text-obc-charcoal">{slotStatusLabels[slot.status]}</p><p className="mt-1 text-[12px] text-obc-muted">{slot.status === "available" ? "Belum ada booking pada jam ini." : slot.status === "locked" ? "Slot sedang diproses oleh pelanggan lain." : "Tidak ada detail booking yang tersedia untuk slot ini."}</p></div> : <div className="mt-5 space-y-6">
 						{details.map(({ booking, detail, error }) => <article key={booking.id} className="space-y-4 border-b border-obc-border pb-5 last:border-0 last:pb-0">
 							<div className="flex flex-wrap items-start justify-between gap-3">
-								<div className="flex min-w-0 items-start gap-2.5"><span className="grid size-9 shrink-0 place-items-center rounded-lg bg-obc-ivory text-obc-green"><UserRound size={17} /></span><div className="min-w-0"><h3 className="truncate text-[14px] font-semibold text-obc-charcoal">{detail?.customer?.name ?? booking.customer?.name ?? detail?.guest?.name ?? booking.guest?.name ?? detail?.staffCreator?.name ?? booking.staffCreator?.name ?? "Walk-in / tanpa akun"}</h3><p className="mt-0.5 text-[11px] text-obc-muted">ID booking · {booking.id}</p></div></div>
+								<div className="flex min-w-0 items-start gap-2.5"><span className="grid size-9 shrink-0 place-items-center rounded-lg bg-obc-ivory text-obc-green"><UserRound size={17} /></span><div className="min-w-0"><h3 className="truncate text-[14px] font-semibold text-obc-charcoal">{detail?.customer?.name ?? detail?.guest?.name ?? detail?.staffCreator?.name ?? "Walk-in / tanpa akun"}</h3><p className="mt-0.5 text-[11px] text-obc-muted">ID booking · {booking.id}</p></div></div>
 								<span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${bookingStatusClasses[detail?.status ?? booking.status]}`}>{bookingStatusLabels[detail?.status ?? booking.status]}</span>
 							</div>
 
@@ -102,10 +100,10 @@ export default function BookingDetailModal({ resource, slot, bookings, date, onC
 							<section>
 								<h4 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-obc-muted"><UserRound size={13} />Data pelanggan</h4>
 									<dl className="mt-2 grid gap-x-4 gap-y-3 rounded-lg border border-obc-border p-3 text-[12px] sm:grid-cols-2">
-										<div><dt className="text-[10px] text-obc-muted">Email</dt><dd className="mt-0.5 break-all font-medium text-obc-charcoal">{detail?.customer?.email ?? booking.customer?.email ?? detail?.guest?.email ?? booking.guest?.email ?? detail?.staffCreator?.email ?? booking.staffCreator?.email ?? "-"}</dd></div>
-										<div><dt className="text-[10px] text-obc-muted">Telepon</dt><dd className="mt-0.5 font-medium text-obc-charcoal">{detail?.customer?.phone ?? booking.customer?.phone ?? detail?.guest?.phone ?? booking.guest?.phone ?? booking.staffCreator?.phone ?? "-"}</dd></div>
-									<div><dt className="text-[10px] text-obc-muted">Dibuat oleh</dt><dd className="mt-0.5 font-medium text-obc-charcoal">{detail?.staffCreator?.name ?? booking.staffCreator?.name ?? "Pelanggan"}</dd></div>
-									<div><dt className="text-[10px] text-obc-muted">Jenis booking</dt><dd className="mt-0.5 capitalize font-medium text-obc-charcoal">{humanize(detail?.sportType ?? booking.sportType)} · {humanize(detail?.bookingType ?? booking.bookingType)}</dd></div>
+										<div><dt className="text-[10px] text-obc-muted">Email</dt><dd className="mt-0.5 break-all font-medium text-obc-charcoal">{detail?.customer?.email ?? detail?.guest?.email ?? detail?.staffCreator?.email ?? "-"}</dd></div>
+										<div><dt className="text-[10px] text-obc-muted">Telepon</dt><dd className="mt-0.5 font-medium text-obc-charcoal">{detail?.customer?.phone ?? detail?.guest?.phone ?? "-"}</dd></div>
+									<div><dt className="text-[10px] text-obc-muted">Dibuat oleh</dt><dd className="mt-0.5 font-medium text-obc-charcoal">{detail?.staffCreator?.name ?? "Pelanggan"}</dd></div>
+									<div><dt className="text-[10px] text-obc-muted">Jenis booking</dt><dd className="mt-0.5 capitalize font-medium text-obc-charcoal">{detail ? `${humanize(detail.sportType)} · ${humanize(detail.bookingType)}` : "-"}</dd></div>
 								</dl>
 							</section>
 

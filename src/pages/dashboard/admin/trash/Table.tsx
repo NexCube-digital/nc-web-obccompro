@@ -9,6 +9,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import type { TrashItem } from "../../services/admin/trashService";
 
 type Props = {
@@ -64,13 +65,14 @@ export default function TrashTable({
 	onDelete,
 }: Props) {
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [entityFilter, setEntityFilter] = useState("all");
 	const entityTypes = useMemo(
 		() => [...new Set(items.map((item) => item.entityType))].sort(),
 		[items],
 	);
 	const filteredItems = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return items.filter((item) => {
 			const matchesType = entityFilter === "all" || item.entityType === entityFilter;
 			const matchesQuery = `${item.title} ${ENTITY_LABELS[item.entityType] ?? item.entityType}`
@@ -78,7 +80,7 @@ export default function TrashTable({
 				.includes(normalizedQuery);
 			return matchesType && matchesQuery;
 		});
-	}, [entityFilter, items, query]);
+	}, [debouncedQuery, entityFilter, items]);
 
 	return (
 		<section className="overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_3px_14px_rgba(31,51,32,0.05)]">

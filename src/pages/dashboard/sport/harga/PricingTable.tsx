@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { Clock3, Eye, Search, Trash2 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import type { ActiveStatus, PricingRule } from "../../services/sport/SportService";
 import type { CourtResource } from "../../services/sport/courtService";
+import { formatIdr } from "../../../../utils/formatters";
 
 type Props = {
   resources: CourtResource[];
@@ -46,11 +48,7 @@ const timePeriods = [
 const money = (value: number | null) =>
   value == null
     ? "-"
-    : new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        maximumFractionDigits: 0,
-      }).format(value);
+    : formatIdr(value);
 const toMinutes = (time: string) =>
   Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
 
@@ -58,6 +56,26 @@ const getTimePeriods = (rule: PricingRule) => {
   const start = toMinutes(rule.tierStartTime);
   const end = toMinutes(rule.tierEndTime);
   return timePeriods.filter((period) => start < period.to && end > period.from);
+};
+
+const formatDuration = (minutes: number) => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${minutes} menit`;
+  return remainingMinutes === 0
+    ? `${hours} jam`
+    : `${hours} jam ${remainingMinutes} menit`;
+};
+
+const getMinimumBookingLabel = (
+  rule: PricingRule,
+  rateUnitLabel: "jam" | "2 jam",
+) => {
+  const minutes = Math.max(
+    rule.minDurationMinutes ?? 0,
+    rateUnitLabel === "2 jam" ? 120 : 60,
+  );
+  return `Min. booking ${formatDuration(minutes)} (${minutes} menit)`;
 };
 
 export default function PricingTable({
@@ -70,6 +88,7 @@ export default function PricingTable({
 }: Props) {
   const [selectedResourceId, setSelectedResourceId] = useState("");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [page, setPage] = useState(1);
   const selectedResource =
     resources.find((resource) => resource.id === selectedResourceId) ??
@@ -88,7 +107,7 @@ export default function PricingTable({
     [rules, selectedResource?.id],
   );
   const filteredRules = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = debouncedSearch.trim().toLowerCase();
     return resourceRules.filter(
       (rule) =>
         !query ||
@@ -106,7 +125,7 @@ export default function PricingTable({
           .toLowerCase()
           .includes(query),
     );
-  }, [resourceRules, search]);
+  }, [resourceRules, debouncedSearch]);
   const totalPages = Math.max(1, Math.ceil(filteredRules.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const rows = filteredRules.slice(
@@ -251,16 +270,16 @@ export default function PricingTable({
                       </p>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="font-medium text-obc-charcoal">
-                        {rule.minBookingPrice == null
-                          ? "Tanpa minimum"
-                          : `Min. ${money(rule.minBookingPrice)}`}
-                      </p>
-                      <p className="mt-1 text-[10px] text-obc-muted">
-                        Durasi{" "}
-                        {rule.minDurationMinutes == null
-                          ? "bebas"
-                          : `${rule.minDurationMinutes} menit`}
+                      {rule.minBookingPrice != null && (
+                        <p className="font-medium text-obc-charcoal">
+                          Minimum harga {money(rule.minBookingPrice)}
+                        </p>
+                      )}
+                      <p className="mt-1">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-[#E7F5D0] px-2 py-1 text-[10px] font-semibold text-[#1F3320]">
+                          <Clock3 size={12} aria-hidden="true" />
+                          {getMinimumBookingLabel(rule, rateUnitLabel)}
+                        </span>
                       </p>
                     </td>
                     <td className="px-4 py-4">{statusSelect(rule)}</td>

@@ -10,6 +10,7 @@ import fallbackImage from '../../assets/no-image.webp'
 import { getPublicGalleryPhotos, type GalleryPhoto } from '../../services/Public/GalleryService'
 
 const CATEGORIES = ['all', 'sports', 'hospitality', 'laundry', 'foodCourt', 'coffee', 'agribusiness'] as const
+const PAGE_SIZE = 12
 
 const FADE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'
 
@@ -68,6 +69,7 @@ function FadeImage({ className, style, ...props }: ImgHTMLAttributes<HTMLImageEl
 function GalleryPage() {
 	const { t } = useTranslation()
 	const [activeCategory, setActiveCategory] = useState<(typeof CATEGORIES)[number]>('all')
+	const [visiblePhotoCount, setVisiblePhotoCount] = useState(PAGE_SIZE)
 	const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([])
 	const [isLoadingGallery, setIsLoadingGallery] = useState(true)
 	const [galleryLoadFailed, setGalleryLoadFailed] = useState(false)
@@ -148,7 +150,10 @@ function GalleryPage() {
 							<button
 								key={category}
 								type="button"
-								onClick={() => setActiveCategory(category)}
+								onClick={() => {
+									setActiveCategory(category)
+									setVisiblePhotoCount(PAGE_SIZE)
+								}}
 								className={`flex h-[33px] w-auto shrink-0 items-center justify-center rounded-[20px] border px-[10px] font-['Montserrat'] text-[14px] font-normal leading-none whitespace-nowrap transition-colors md:h-[36px] md:px-3 md:text-[16px] xl:h-[33px] xl:px-[10px] xl:text-[18px] ${
 									isActive
 										? 'border-black bg-black text-white'
@@ -188,8 +193,9 @@ function GalleryPage() {
 						</button>
 					</div>
 				) : visiblePhotos.length > 0 ? (
-					<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-						{visiblePhotos.map((photo, index) => (
+					<>
+					<div id="gallery-grid" className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+						{visiblePhotos.slice(0, visiblePhotoCount).map((photo, index) => (
 							<ScrollReveal
 								key={photo.src}
 								className="aspect-square w-full"
@@ -216,6 +222,19 @@ function GalleryPage() {
 							</ScrollReveal>
 						))}
 					</div>
+					{visiblePhotoCount < visiblePhotos.length && (
+						<div className="mt-8 flex justify-center">
+							<button
+								type="button"
+								onClick={() => setVisiblePhotoCount((count) => count + PAGE_SIZE)}
+								aria-controls="gallery-grid"
+								className="rounded-full border border-black px-5 py-2.5 font-['Montserrat'] text-sm font-medium text-black transition-colors hover:bg-black hover:text-white"
+							>
+								{t('gallerySection.loadMore')}
+							</button>
+						</div>
+					)}
+					</>
 				) : (
 					<p className="py-10 text-center font-['Montserrat'] text-sm text-black">
 						{t('errorStates.emptyState.description')}

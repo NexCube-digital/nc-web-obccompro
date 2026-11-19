@@ -8,8 +8,10 @@ import { Toaster } from 'sonner'
 
 function App() {
   const [isLoading, setIsLoading] = useState(true)
+
   return (
     <BrowserRouter>
+      {isLoading && <LoadingState onComplete={() => setIsLoading(false)} />}
       <ScrollToTop />
       <Suspense fallback={null}>
         <Routes>
@@ -18,7 +20,6 @@ function App() {
         </Routes>
       </Suspense>
       <WhatsAppIcon />
-      {isLoading && <LoadingState onComplete={() => setIsLoading(false)} />}
       <Toaster position="top-right" richColors duration={3000} closeButton />
     </BrowserRouter>
   )

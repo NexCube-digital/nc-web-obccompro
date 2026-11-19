@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BriefcaseBusiness,
   FolderKanban,
@@ -14,11 +15,12 @@ import { getApiErrorMessage } from "../../../../services/api";
 import { portfolioService, type Portfolio } from "../../services/cms/portfolioService";
 import PortfolioForm from "./form";
 import PortfolioTable from "./Table";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 
 export default function Management() {
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query);
   const [categoryFilter, setCategoryFilter] = useState("all");
 
   const [showForm, setShowForm] = useState(false);
@@ -29,29 +31,21 @@ export default function Management() {
     null,
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [reload, setReload] = useState(0);
   const closeDeleteModal = useCallback(() => setDeletingPortfolio(null), []);
+  const portfoliosQuery = useQuery({
+    queryKey: ["cms-portfolios", categoryFilter],
+    queryFn: () => portfolioService.getPortfolios({
+      category: categoryFilter === "all" ? undefined : categoryFilter,
+    }),
+  });
+  const portfolios = portfoliosQuery.data ?? [];
+  const loading = portfoliosQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    portfolioService
-      .getPortfolios({
-        category: categoryFilter === "all" ? undefined : categoryFilter,
-      })
-      .then((data) => {
-        if (active) setPortfolios(data);
-      })
-      .catch((error: unknown) => {
-        if (active) toast.error(getApiErrorMessage(error));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [categoryFilter, reload]);
+    if (portfoliosQuery.error) {
+      toast.error(getApiErrorMessage(portfoliosQuery.error));
+    }
+  }, [portfoliosQuery.error]);
 
   const categories = useMemo(
     () => Array.from(new Set(portfolios.map((item) => item.category))).sort(),
@@ -59,7 +53,7 @@ export default function Management() {
   );
   const imageCount = portfolios.filter((item) => item.imageUrl).length;
   const filteredPortfolios = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = debouncedQuery.trim().toLowerCase();
     return portfolios.filter((item) =>
       [item.title, item.category]
         .filter(Boolean)
@@ -67,8 +61,10 @@ export default function Management() {
         .toLowerCase()
         .includes(normalizedQuery),
     );
-  }, [portfolios, query]);
-  const refresh = () => setReload((value) => value + 1);
+  }, [portfolios, debouncedQuery]);
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["cms-portfolios"] });
+  };
   const closePortfolioForm = useCallback(() => {
     setShowForm(false);
     setEditingPortfolio(null);
@@ -207,7 +203,6 @@ export default function Management() {
         />
       )}
       <PortfolioTable
-        key={`${categoryFilter}:${query}:${reload}`}
         portfolios={filteredPortfolios}
         loading={loading}
         onCreate={openCreate}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
@@ -14,23 +15,28 @@ const EMPTY_CONTENT: SocialMediaContent = {
 };
 
 export default function Management() {
+	const queryClient = useQueryClient();
 	const [content, setContent] = useState<SocialMediaContent>(EMPTY_CONTENT);
-	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const contentQuery = useQuery({
+		queryKey: ["v2-social-content"],
+		queryFn: () => sosmedService.getContent(),
+	});
+	const loading = contentQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		sosmedService.getContent()
-			.then((data) => { if (active) setContent(data); })
-			.catch((error) => { if (active) toast.error(`Gagal memuat sosial media: ${getApiErrorMessage(error)}`); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, []);
+		if (contentQuery.data) setContent(contentQuery.data);
+		if (contentQuery.error) {
+			toast.error(`Gagal memuat sosial media: ${getApiErrorMessage(contentQuery.error)}`);
+		}
+	}, [contentQuery.data, contentQuery.error]);
 
 	const save = async () => {
 		setSaving(true);
 		try {
-			setContent(await sosmedService.saveContent(content));
+			const savedContent = await sosmedService.saveContent(content);
+			setContent(savedContent);
+			queryClient.setQueryData(["v2-social-content"], savedContent);
 			toast.success("Sosial media berhasil diperbarui.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

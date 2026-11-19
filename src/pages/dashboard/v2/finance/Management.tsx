@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDownToLine, ArrowUpFromLine, Banknote, Plus, RefreshCw, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
-import { financeService, type FinanceRecord, type FinanceSummary, type FinanceType } from "./financeService";
+import { financeService, type FinanceRecord, type FinanceType } from "./financeService";
 import FinanceForm from "./form";
 import FinanceTable from "./Table";
-
-const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
-	style: "currency",
-	currency: "IDR",
-	maximumFractionDigits: 0,
-}).format(amount);
+import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 function SummaryCard({ label, value, icon: Icon, tone }: { label: string; value: string; icon: typeof Wallet; tone: string }) {
 	return <div className="rounded-xl border border-obc-border bg-white p-4">
@@ -20,43 +16,41 @@ function SummaryCard({ label, value, icon: Icon, tone }: { label: string; value:
 }
 
 export default function Management() {
-	const [finances, setFinances] = useState<FinanceRecord[]>([]);
-	const [summary, setSummary] = useState<FinanceSummary | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [loadingSummary, setLoadingSummary] = useState(true);
+	const queryClient = useQueryClient();
 	const [showForm, setShowForm] = useState(false);
 	const [editingFinance, setEditingFinance] = useState<FinanceRecord | null>(null);
 	const [divisionInput, setDivisionInput] = useState("");
 	const [divisionFilter, setDivisionFilter] = useState("");
 	const [typeFilter, setTypeFilter] = useState<"all" | FinanceType>("all");
 	const [statusFilter, setStatusFilter] = useState("");
-	const [reload, setReload] = useState(0);
-
-	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		financeService.getFinances({
+	const financesQuery = useQuery({
+		queryKey: ["v2-finances", divisionFilter, typeFilter, statusFilter],
+		queryFn: () => financeService.getFinances({
 			division: divisionFilter || undefined,
 			type: typeFilter === "all" ? undefined : typeFilter,
 			status: statusFilter || undefined,
-		})
-			.then((data) => { if (active) setFinances(data); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [divisionFilter, reload, statusFilter, typeFilter]);
+		}),
+		staleTime: 30_000,
+	});
+	const summaryQuery = useQuery({
+		queryKey: ["v2-finance-summary"],
+		queryFn: () => financeService.getSummary(),
+		staleTime: 30_000,
+	});
+	const finances = financesQuery.data ?? [];
+	const summary = summaryQuery.data ?? null;
+	const loading = financesQuery.isPending;
+	const loadingSummary = summaryQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoadingSummary(true);
-		financeService.getSummary()
-			.then((data) => { if (active) setSummary(data); })
-			.catch((error: unknown) => { if (active) toast.error(`Gagal memuat ringkasan: ${getApiErrorMessage(error)}`); })
-			.finally(() => { if (active) setLoadingSummary(false); });
-		return () => { active = false; };
-	}, [reload]);
+		if (financesQuery.error) toast.error(getApiErrorMessage(financesQuery.error));
+		if (summaryQuery.error) toast.error(`Gagal memuat ringkasan: ${getApiErrorMessage(summaryQuery.error)}`);
+	}, [financesQuery.error, summaryQuery.error]);
 
-	const refresh = () => setReload((value) => value + 1);
+	const refresh = () => {
+		void queryClient.invalidateQueries({ queryKey: ["v2-finances"] });
+		void queryClient.invalidateQueries({ queryKey: ["v2-finance-summary"] });
+	};
 
 	const editFinance = (finance: FinanceRecord) => {
 		setEditingFinance(finance);

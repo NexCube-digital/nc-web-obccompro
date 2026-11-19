@@ -1,5 +1,6 @@
 import { CalendarDays, Clock3, Pencil, X } from "lucide-react";
 import type { PricingRule } from "../../services/sport/SportService";
+import { formatIdr } from "../../../../utils/formatters";
 
 type Props = {
   rule: PricingRule;
@@ -17,11 +18,7 @@ const dayLabels: Record<PricingRule["dayType"], string> = {
 const money = (value: number | null) =>
   value == null
     ? "Tidak ditentukan"
-    : new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        maximumFractionDigits: 0,
-      }).format(value);
+    : formatIdr(value);
 
 const getPeriods = (rule: PricingRule) => {
   const start =

@@ -1,35 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Package, Plus, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import { packageService, type PackageStatus, type ServicePackage } from "./packageService";
 import PackageForm from "./form";
 import PackageTable from "./Table";
 
 export default function Management() {
-	const [packages, setPackages] = useState<ServicePackage[]>([]);
-	const [loading, setLoading] = useState(true);
+	const queryClient = useQueryClient();
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [typeFilter, setTypeFilter] = useState("all");
 	const [statusFilter, setStatusFilter] = useState<"all" | PackageStatus>("all");
 	const [showForm, setShowForm] = useState(false);
 	const [editingPackage, setEditingPackage] = useState<ServicePackage | null>(null);
-	const [reload, setReload] = useState(0);
+	const packagesQuery = useQuery({
+		queryKey: ["v2-service-packages"],
+		queryFn: () => packageService.getPackages(),
+	});
+	const packages = packagesQuery.data ?? [];
+	const loading = packagesQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		packageService.getPackages()
-			.then((data) => { if (active) setPackages(data); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [reload]);
+		if (packagesQuery.error) toast.error(getApiErrorMessage(packagesQuery.error));
+	}, [packagesQuery.error]);
 
 	const types = useMemo(() => Array.from(new Set(packages.map((item) => item.type))).sort(), [packages]);
 	const filteredPackages = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return packages.filter((item) => {
 			const typeMatches = typeFilter === "all" || item.type === typeFilter;
 			const statusMatches = statusFilter === "all" || item.status === statusFilter;
@@ -40,8 +41,10 @@ export default function Management() {
 				.includes(normalizedQuery);
 			return typeMatches && statusMatches && searchMatches;
 		});
-	}, [packages, query, statusFilter, typeFilter]);
-	const refresh = () => setReload((value) => value + 1);
+	}, [packages, debouncedQuery, statusFilter, typeFilter]);
+	const refresh = () => {
+		void queryClient.invalidateQueries({ queryKey: ["v2-service-packages"] });
+	};
 
 	const editPackage = (packageItem: ServicePackage) => {
 		setEditingPackage(packageItem);

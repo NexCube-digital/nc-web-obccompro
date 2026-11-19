@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { formatCompactIdr as compactRupiah, formatRupiah as rupiah } from "../../../utils/formatters";
 import {
   Area,
   AreaChart,
@@ -40,18 +41,6 @@ type Props = {
 const cardClass =
   "rounded-2xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)]";
 const chartColors = ["#004000", "#7FA52B", "#E0A526", "#BF0021", "#404F14"];
-const rupiah = (value: number) =>
-  `Rp${new Intl.NumberFormat("id-ID").format(value)}`;
-const compactRupiah = (value?: number) =>
-  value === undefined
-    ? "—"
-    : new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        notation: "compact",
-        maximumFractionDigits: 1,
-      }).format(value);
-
 function IconTile({
   icon: Icon,
   bg,

@@ -3,6 +3,7 @@ import { ImagePlus, Plus, X } from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { getMediaUrl } from "../../v2/media/mediaService";
 import { sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "../../services/sport/courtService";
+import CourtImage from "./CourtImage";
 
 type Props = {
   resource: CourtResource;
@@ -81,7 +82,7 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
         <div className="grid gap-4 rounded-xl border border-obc-border bg-white p-4 sm:grid-cols-2 sm:p-5">
           <div className="grid gap-3 rounded-lg border border-obc-border bg-[#FDFCF7] p-3 sm:col-span-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center">
             <div className="relative aspect-[4/3] w-full max-w-[160px] overflow-hidden rounded-lg border border-obc-border bg-[#ECEFE7]">
-              {preview ? <img src={preview} alt="Pratinjau gambar lapangan" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" /> : <div className="absolute inset-0 grid place-items-center text-obc-muted"><ImagePlus size={22} /></div>}
+              <CourtImage src={preview || null} alt="Pratinjau gambar lapangan" className="absolute inset-0" />
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-obc-charcoal">Gambar lapangan</p>

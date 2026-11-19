@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, CircleCheck, MapPin, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
@@ -12,50 +13,44 @@ import {
   type BusinessUnitDetail,
   type BusinessUnitInput,
 } from "../../services/cms/unitbisnisService";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 
 export default function Management() {
-  const [units, setUnits] = useState<BusinessUnit[]>([]);
+  const queryClient = useQueryClient();
   const [selectedUnit, setSelectedUnit] = useState<BusinessUnitDetail | null>(
     null,
   );
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  const debouncedQuery = useDebouncedValue(query);
   const [detailLoading, setDetailLoading] = useState(false);
   const [editorUnit, setEditorUnit] = useState<BusinessUnit | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
-  const [reload, setReload] = useState(0);
+  const unitsQuery = useQuery({
+    queryKey: ["cms-business-units"],
+    queryFn: () => unitbisnisService.getUnits(),
+  });
+  const units = unitsQuery.data ?? [];
+  const loading = unitsQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    queueMicrotask(() => {
-      if (active) setLoading(true);
-    });
-    unitbisnisService
-      .getUnits()
-      .then((data) => {
-        if (active) setUnits(data);
-      })
-      .catch((error: unknown) => {
-        if (active)
-          toast.error(`Gagal memuat unit bisnis: ${getApiErrorMessage(error)}`);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [reload]);
+    if (unitsQuery.error) {
+      toast.error(`Gagal memuat unit bisnis: ${getApiErrorMessage(unitsQuery.error)}`);
+    }
+  }, [unitsQuery.error]);
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["cms-business-units"] });
+  };
 
   const filteredUnits = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
+    const normalizedQuery = debouncedQuery.trim().toLocaleLowerCase("id-ID");
     return units.filter((unit) =>
       [unit.name, unit.slug, unit.description ?? "", unit.tenantType]
         .join(" ")
         .toLocaleLowerCase("id-ID")
         .includes(normalizedQuery),
     );
-  }, [query, units]);
+  }, [debouncedQuery, units]);
   const activeUnitCount = units.filter(
     (unit) => unit.status === "active",
   ).length;
@@ -79,7 +74,7 @@ export default function Management() {
           ? "Unit bisnis berhasil diperbarui."
           : "Unit bisnis berhasil ditambahkan.",
       );
-      setReload((value) => value + 1);
+      refresh();
       return savedUnit;
     } catch (error) {
       toast.error(getApiErrorMessage(error));
@@ -92,7 +87,7 @@ export default function Management() {
     try {
       await unitbisnisService.deleteUnit(unit.id);
       toast.success("Unit bisnis dipindahkan ke Sampah.");
-      setReload((value) => value + 1);
+      refresh();
       return true;
     } catch (error) {
       toast.error(getApiErrorMessage(error));
@@ -104,7 +99,7 @@ export default function Management() {
     try {
       await unitbisnisService.updateUnit(unit.id, { status: "active" });
       toast.success("Unit bisnis berhasil diaktifkan.");
-      setReload((value) => value + 1);
+      refresh();
       return true;
     } catch (error) {
       toast.error(getApiErrorMessage(error));

@@ -3,6 +3,7 @@ import { getPaginated, type ApiSuccess, type ListParams } from "./sportServiceUt
 import type {
 	AdminBookingCustomer,
 	AdminFullDayBookingResult,
+	BookingCalendarItem,
 	BookingStatus,
 	Paginated,
 	SportBooking,
@@ -37,6 +38,10 @@ export const sportBookingService = {
 	},
 	getBookings(params: ListParams & { status?: BookingStatus }): Promise<Paginated<SportBooking>> {
 		return getPaginated("/admin/bookings", params);
+	},
+	getBookingCalendar(date: string): Promise<BookingCalendarItem[]> {
+		return apiClient.get<ApiSuccess<BookingCalendarItem[]>>("/admin/bookings/calendar", { params: { date } })
+			.then((response) => response.data.data);
 	},
 	getBookingDetails(id: string): Promise<SportBookingDetails> {
 		return apiClient.get<ApiSuccess<SportBookingDetails>>(`/admin/bookings/${id}`).then((response) => response.data.data);

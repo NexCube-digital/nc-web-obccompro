@@ -12,6 +12,7 @@ import {
   type CustomerRecord,
 } from "../../services/cms/customerService";
 import CustomerDetailModal from "./ModalDetail";
+import { formatProfileDate as formatDate, getInitials as initialsFor } from "../../../../utils/formatters";
 
 type Props = {
   customers: CustomerRecord[];
@@ -22,29 +23,6 @@ export default function CustomerTable({ customers, loading }: Props) {
   const [selectedCustomer, setSelectedCustomer] =
     useState<CustomerRecord | null>(null);
 
-  const initialsFor = (name: string) =>
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  const formatDate = (value: string | null, withTime = false) =>
-    value
-      ? new Date(value).toLocaleDateString(
-          "id-ID",
-          withTime
-            ? {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            : { day: "numeric", month: "short", year: "numeric" },
-        )
-      : "Belum pernah";
   const avatar = (customer: CustomerRecord, size = "size-11") => {
     const avatarUrl = getCustomerAvatarUrl(customer.avatarUrl);
     return avatarUrl ? (

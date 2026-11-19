@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
-import { Building2, CircleDollarSign, Clock3, ImageOff, MapPin, Pencil, Search, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Building2, CircleDollarSign, Clock3, MapPin, Pencil, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getMediaUrl, mediaService } from "../../v2/media/mediaService";
 import { courtService, sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "../../services/sport/courtService";
 import CourtResourceForm from "./Form";
 import ResourceTable from "./Table";
+import CourtImage from "./CourtImage";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 
 function ResourceDetailModal({ resource, onClose, onEdit }: { resource: CourtResource; onClose: () => void; onEdit: () => void }) {
-  const image = resource.imageUrl ?? resource.gallery?.[0] ?? null;
+  const image = resource.imageUrl || resource.gallery?.[0] || null;
   const hasTables = resource.sportTypes.some((sport) => tableSportTypes.includes(sport));
 
   return (
@@ -22,7 +25,7 @@ function ResourceDetailModal({ resource, onClose, onEdit }: { resource: CourtRes
         <div className="grid gap-0 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
           <div className="min-w-0 border-b border-obc-border p-4 sm:p-6 lg:border-b-0 lg:border-r">
             <div className="relative grid aspect-16/10 place-items-center overflow-hidden rounded-lg bg-[#F1EFE8]">
-              {image ? <img src={getMediaUrl(image)} alt={resource.name} fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" /> : <div className="flex flex-col items-center gap-2 text-obc-muted"><ImageOff size={30} /><span className="text-[12px]">Belum ada gambar lapang</span></div>}
+              <CourtImage src={image ? getMediaUrl(image) : null} alt={resource.name} fetchPriority="high" loading="eager" className="absolute inset-0" />
             </div>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <div><p className="text-[10px] font-semibold uppercase tracking-wider text-obc-muted">Jenis olahraga</p><div className="mt-2 flex flex-wrap gap-2">{resource.sportTypes.map((sport) => <span key={sport} className="rounded-md bg-[#E7F5D0] px-2.5 py-1.5 text-[11px] font-semibold text-[#1F3320]">{sportOptions.find((option) => option.value === sport)?.label ?? sport}</span>)}</div></div>
@@ -59,23 +62,27 @@ function ResourceDetailModal({ resource, onClose, onEdit }: { resource: CourtRes
 }
 
 export default function CourtManagement() {
-  const [resources, setResources] = useState<CourtResource[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [selectedResource, setSelectedResource] = useState<CourtResource | null>(null);
   const [editorResource, setEditorResource] = useState<CourtResource | null>(null);
-  const [reload, setReload] = useState(0);
+  const resourcesQuery = useQuery({
+    queryKey: ["sport-court-resources"],
+    queryFn: () => courtService.getResources(),
+  });
+  const resources = resourcesQuery.data ?? [];
+  const loading = resourcesQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    courtService.getResources()
-      .then((items) => { if (active) setResources(items); })
-      .catch((error: unknown) => {
-        if (active) toast.error(error instanceof Error ? error.message : "Data lapang gagal dimuat.");
-      })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
-  }, [reload]);
+    if (resourcesQuery.error) {
+      toast.error(resourcesQuery.error instanceof Error ? resourcesQuery.error.message : "Data lapang gagal dimuat.");
+    }
+  }, [resourcesQuery.error]);
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["sport-court-resources"] });
+  };
 
   const saveResource = async (input: CourtResourceUpdateInput, image?: File) => {
     if (!editorResource) return;
@@ -85,7 +92,7 @@ export default function CourtManagement() {
         const media = await mediaService.uploadMedia(image, editorResource.tenant.id);
         await courtService.updateResource(saved.id, { ...input, imageUrl: media.url });
       }
-      setReload((current) => current + 1);
+      refresh();
       toast.success("Data lapangan berhasil diperbarui.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Gagal memperbarui data lapangan.");
@@ -93,8 +100,11 @@ export default function CourtManagement() {
     }
   };
 
-  const filtered = resources.filter((resource) =>
-    `${resource.name} ${resource.description ?? ""} ${resource.sportTypes.join(" ")}`.toLowerCase().includes(search.toLowerCase()),
+  const filtered = useMemo(
+    () => resources.filter((resource) =>
+      `${resource.name} ${resource.description ?? ""} ${resource.sportTypes.join(" ")}`.toLowerCase().includes(debouncedSearch.toLowerCase()),
+    ),
+    [resources, debouncedSearch],
   );
 
   return (

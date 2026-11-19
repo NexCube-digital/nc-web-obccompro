@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Eye,
   MessageSquareQuote,
@@ -10,15 +10,21 @@ import {
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { getTestimonialAvatarUrl } from "../../../../services/Public/Testimonial";
-import type { Testimonial } from "../../services/cms/testimonialService";
+import type { Testimonial, TestimonialListResponse } from "../../services/cms/testimonialService";
 import TestimonialDetailModal from "./ModalDetail";
 
 type StatusFilter = "all" | Testimonial["status"];
-const PAGE_SIZE = 8;
-
 interface TestimonialTableProps {
   testimonials: Testimonial[];
   loading: boolean;
+  summary: TestimonialListResponse["summary"];
+  pagination: TestimonialListResponse["pagination"];
+  page: number;
+  query: string;
+  statusFilter: StatusFilter;
+  onQueryChange: (query: string) => void;
+  onStatusFilterChange: (status: StatusFilter) => void;
+  onPageChange: (page: number) => void;
   onCreate: () => void;
   onEdit: (testimonial: Testimonial) => void;
   onDelete: (testimonial: Testimonial) => void;
@@ -71,48 +77,22 @@ function Metric({
 export default function TestimonialTable({
   testimonials,
   loading,
+  summary,
+  pagination,
+  page,
+  query,
+  statusFilter,
+  onQueryChange,
+  onStatusFilterChange,
+  onPageChange,
   onCreate,
   onEdit,
   onDelete,
   onStatusChange,
 }: TestimonialTableProps) {
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [page, setPage] = useState(1);
   const [selectedTestimonial, setSelectedTestimonial] =
     useState<Testimonial | null>(null);
-  const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    return testimonials.filter((testimonial) => {
-      const matchesStatus =
-        statusFilter === "all" || testimonial.status === statusFilter;
-      const searchableText = [
-        testimonial.name,
-        testimonial.company,
-        testimonial.text,
-        testimonial.textEn,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return matchesStatus && searchableText.includes(normalizedQuery);
-    });
-  }, [query, statusFilter, testimonials]);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
-  const publishedCount = testimonials.filter(
-    (testimonial) => testimonial.status === "published",
-  ).length;
-  const averageRating = testimonials.length
-    ? testimonials.reduce(
-        (total, testimonial) => total + testimonial.rating,
-        0,
-      ) / testimonials.length
-    : 0;
+  const pageItems = testimonials;
   const filters: { value: StatusFilter; label: string }[] = [
     { value: "all", label: "Semua" },
     { value: "published", label: "Published" },
@@ -128,19 +108,19 @@ export default function TestimonialTable({
       >
         <Metric
           label="Total testimoni"
-          value={testimonials.length.toLocaleString("id-ID")}
+          value={summary.total.toLocaleString("id-ID")}
           icon={MessageSquareQuote}
           tone="bg-[#E7F5D0] text-obc-green"
         />
         <Metric
           label="Tayang di situs"
-          value={publishedCount.toLocaleString("id-ID")}
+          value={summary.publishedCount.toLocaleString("id-ID")}
           icon={ToggleRight}
           tone="bg-[#E9F1D8] text-[#404F14]"
         />
         <Metric
           label="Rating rata-rata"
-          value={testimonials.length ? `${averageRating.toFixed(1)} / 5` : "-"}
+          value={summary.total ? `${summary.averageRating.toFixed(1)} / 5` : "-"}
           icon={Star}
           tone="bg-[#FBF0D3] text-amber-600"
         />
@@ -154,8 +134,8 @@ export default function TestimonialTable({
                 Daftar testimoni
               </h2>
               <p className="mt-0.5 text-[12px] text-obc-muted">
-                {filtered.length.toLocaleString("id-ID")} dari{" "}
-                {testimonials.length.toLocaleString("id-ID")} testimoni
+                {pagination.total.toLocaleString("id-ID")} dari{" "}
+                {summary.total.toLocaleString("id-ID")} testimoni
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -168,8 +148,7 @@ export default function TestimonialTable({
                   type="search"
                   value={query}
                   onChange={(event) => {
-                    setQuery(event.target.value);
-                    setPage(1);
+                    onQueryChange(event.target.value);
                   }}
                   placeholder="Cari nama atau isi ulasan..."
                   className="h-10 w-full rounded-lg border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[12px] outline-none transition focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]/60"
@@ -193,10 +172,8 @@ export default function TestimonialTable({
             {filters.map((filter) => {
               const count =
                 filter.value === "all"
-                  ? testimonials.length
-                  : testimonials.filter(
-                      (testimonial) => testimonial.status === filter.value,
-                    ).length;
+                  ? summary.total
+                  : summary.statusCounts[filter.value];
               return (
                 <button
                   key={filter.value}
@@ -204,8 +181,7 @@ export default function TestimonialTable({
                   role="tab"
                   aria-selected={statusFilter === filter.value}
                   onClick={() => {
-                    setStatusFilter(filter.value);
-                    setPage(1);
+                    onStatusFilterChange(filter.value);
                   }}
                   className={`shrink-0 rounded-lg border px-3 py-2 text-[11px] font-semibold transition-colors ${statusFilter === filter.value ? "border-[#D9E7BB] bg-[#F3F8E8] text-obc-green" : "border-transparent text-obc-muted hover:border-obc-border hover:bg-[#FDFCF7]"}`}
                 >
@@ -343,16 +319,16 @@ export default function TestimonialTable({
                       <MessageSquareQuote size={20} />
                     </div>
                     <p className="mt-3 font-semibold text-obc-charcoal">
-                      {testimonials.length
+                      {summary.total
                         ? "Testimoni tidak ditemukan"
                         : "Belum ada testimoni"}
                     </p>
                     <p className="mt-1 text-[12px] text-obc-muted">
-                      {testimonials.length
+                      {summary.total
                         ? "Coba ubah kata kunci atau filter status."
                         : "Tambahkan cerita pelanggan pertama untuk ditampilkan di situs."}
                     </p>
-                    {!testimonials.length && (
+                    {!summary.total && (
                       <button
                         type="button"
                         onClick={onCreate}
@@ -369,11 +345,11 @@ export default function TestimonialTable({
           </table>
         </div>
         <Pagination
-          page={currentPage}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          totalItems={filtered.length}
-          pageSize={PAGE_SIZE}
+          page={page}
+          totalPages={pagination.totalPages}
+          onPageChange={onPageChange}
+          totalItems={pagination.total}
+          pageSize={pagination.limit}
           itemLabel="testimoni"
           className="flex flex-col gap-3 border-t border-obc-border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5"
         />

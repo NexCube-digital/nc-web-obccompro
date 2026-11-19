@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BadgeCheck,
   CircleDollarSign,
@@ -19,6 +20,7 @@ import InvoiceForm from "./Form";
 import InvoiceTable from "./Table";
 import InvoiceDetailModal from "./InvoiceDetailModal";
 import InvoicePaymentModal from "./InvoicePaymentModal";
+import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 const statuses: InvoiceStatus[] = [
   "draft",
@@ -29,13 +31,6 @@ const statuses: InvoiceStatus[] = [
   "partial",
   "cancelled",
 ];
-const rupiah = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
 function Summary({
   label,
   value,
@@ -67,8 +62,14 @@ function Summary({
 }
 
 export default function InvoiceManagement() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const invoiceQuery = useQuery({
+    queryKey: ["admin-invoices"],
+    queryFn: () => invoiceService.getInvoiceList(),
+    staleTime: 15_000,
+  });
+  const invoices = invoiceQuery.data ?? [];
+  const loading = invoiceQuery.isPending;
   const [formOpen, setFormOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
@@ -86,27 +87,14 @@ export default function InvoiceManagement() {
   const closeDeleteModal = useCallback(() => setDeletingInvoice(null), []);
 
   useEffect(() => {
-    let cancelled = false;
-    invoiceService
-      .getInvoiceList()
-      .then((data) => {
-        if (!cancelled) setInvoices(data);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setInvoices([]);
-          toast.error(
-            error instanceof Error ? error.message : "Gagal memuat invoice.",
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (invoiceQuery.error) {
+      toast.error(
+        invoiceQuery.error instanceof Error
+          ? invoiceQuery.error.message
+          : "Gagal memuat invoice.",
+      );
+    }
+  }, [invoiceQuery.error]);
 
   const counts = useMemo(
     () =>
@@ -155,7 +143,7 @@ export default function InvoiceManagement() {
   };
 
   const handleSaved = (saved: Invoice) => {
-    setInvoices((current) =>
+    queryClient.setQueryData<Invoice[]>(["admin-invoices"], (current = []) =>
       editingInvoice
         ? current.map((invoice) => (invoice.id === saved.id ? saved : invoice))
         : [saved, ...current],
@@ -169,7 +157,7 @@ export default function InvoiceManagement() {
     setDeleteLoading(true);
     try {
       await invoiceService.deleteInvoice(deletingInvoice.id);
-      setInvoices((current) =>
+      queryClient.setQueryData<Invoice[]>(["admin-invoices"], (current = []) =>
         current.filter((item) => item.id !== deletingInvoice.id),
       );
       setDeletingInvoice(null);
@@ -205,7 +193,7 @@ export default function InvoiceManagement() {
         paidAt: paidAt || undefined,
         notes: paymentNotes || undefined,
       });
-      setInvoices((current) =>
+      queryClient.setQueryData<Invoice[]>(["admin-invoices"], (current = []) =>
         current.map((invoice) =>
           invoice.id === updated.id ? updated : invoice,
         ),
@@ -229,7 +217,7 @@ export default function InvoiceManagement() {
         invoice.id,
         status,
       );
-      setInvoices((current) =>
+      queryClient.setQueryData<Invoice[]>(["admin-invoices"], (current = []) =>
         current.map((item) =>
           item.id === updated.id
             ? { ...item, status: updated.status, paidAt: updated.paidAt }

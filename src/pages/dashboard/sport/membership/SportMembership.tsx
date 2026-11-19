@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, CalendarRange, Package } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
@@ -51,13 +52,9 @@ function SummaryMetric({
 }
 
 export default function SportMembership() {
-  const [packages, setPackages] = useState<MembershipPackage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<ActiveStatus | "all">("all");
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [reload, setReload] = useState(0);
   const [editingItem, setEditingItem] = useState<MembershipPackage | null>(
     null,
   );
@@ -66,37 +63,28 @@ export default function SportMembership() {
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
   const closeDeleteModal = useCallback(() => setDeletingItem(null), []);
+  const packagesQuery = useQuery({
+    queryKey: ["sport-membership-packages", page, status],
+    queryFn: () => sportService.getMembershipPackages({
+      page,
+      limit: 10,
+      ...(status === "all" ? {} : { status }),
+    }),
+  });
+  const packages = packagesQuery.data?.data ?? [];
+  const total = packagesQuery.data?.meta.total ?? 0;
+  const totalPages = packagesQuery.data?.meta.totalPages ?? 1;
+  const loading = packagesQuery.isPending;
 
   useEffect(() => {
-    let cancelled = false;
-    sportService
-      .getMembershipPackages({
-        page,
-        limit: 10,
-        ...(status === "all" ? {} : { status }),
-      })
-      .then((result) => {
-        if (!cancelled) {
-          setPackages(result.data);
-          setTotal(result.meta.total);
-          setTotalPages(result.meta.totalPages);
-        }
-      })
-      .catch((error: unknown) => {
-        if (!cancelled)
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Gagal memuat paket membership.",
-          );
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [page, reload, status]);
+    if (packagesQuery.error) {
+      toast.error(
+        packagesQuery.error instanceof Error
+          ? packagesQuery.error.message
+          : "Gagal memuat paket membership.",
+      );
+    }
+  }, [packagesQuery.error]);
 
   const updateStatus = async (
     item: MembershipPackage,
@@ -104,13 +92,7 @@ export default function SportMembership() {
   ) => {
     try {
       await sportService.updateMembershipPackageStatus(item.id, nextStatus);
-      setPackages((current) =>
-        current.map((membershipPackage) =>
-          membershipPackage.id === item.id
-            ? { ...membershipPackage, status: nextStatus }
-            : membershipPackage,
-        ),
-      );
+      void queryClient.invalidateQueries({ queryKey: ["sport-membership-packages"] });
       toast.success("Status paket membership diperbarui.");
     } catch (error) {
       toast.error(
@@ -127,7 +109,7 @@ export default function SportMembership() {
   ) => {
     await sportService.updateMembershipPackage(item.id, payload);
     toast.success("Paket membership berhasil diperbarui.");
-    setReload((current) => current + 1);
+    void queryClient.invalidateQueries({ queryKey: ["sport-membership-packages"] });
   };
 
   const deactivateItem = (item: MembershipPackage) => setDeletingItem(item);
@@ -139,7 +121,7 @@ export default function SportMembership() {
       await sportService.deleteMembershipPackage(deletingItem.id);
       toast.success("Paket membership dipindahkan ke Sampah.");
       setDeletingItem(null);
-      setReload((current) => current + 1);
+      void queryClient.invalidateQueries({ queryKey: ["sport-membership-packages"] });
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -209,7 +191,6 @@ export default function SportMembership() {
                   role="tab"
                   aria-selected={selected}
                   onClick={() => {
-                    setLoading(true);
                     setStatus(filterStatus);
                     setPage(1);
                   }}
@@ -238,7 +219,6 @@ export default function SportMembership() {
             page={page}
             totalPages={totalPages}
             onPageChange={(nextPage) => {
-              setLoading(true);
               setPage(nextPage);
             }}
             totalItems={total}

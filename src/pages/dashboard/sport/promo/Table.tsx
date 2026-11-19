@@ -1,3 +1,5 @@
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
+import { formatIdr as money, formatShortIdDate as dateLabel } from "../../../../utils/formatters";
 import { useMemo, useState } from "react";
 import {
   CalendarDays,
@@ -16,18 +18,6 @@ type Props = {
   onEdit: (item: Promo) => void;
   onDelete: (item: Promo) => void;
 };
-const money = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-const dateLabel = (value: string) =>
-  new Date(value).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 const statuses: PromoStatus[] = ["active", "inactive"];
 
 export default function PromoTable({
@@ -38,8 +28,9 @@ export default function PromoTable({
   onDelete,
 }: Props) {
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const visiblePromos = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = debouncedSearch.trim().toLowerCase();
     return promos.filter(
       (item) =>
         !query ||
@@ -54,7 +45,7 @@ export default function PromoTable({
           .toLowerCase()
           .includes(query),
     );
-  }, [promos, search]);
+  }, [promos, debouncedSearch]);
   return (
     <section className="overflow-hidden rounded-2xl border border-obc-border bg-white shadow-[0_2px_16px_rgba(31,51,32,0.05)]">
       <header className="flex flex-col gap-3 border-b border-obc-border bg-[#FDFCF7] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
@@ -63,7 +54,7 @@ export default function PromoTable({
             Katalog promo
           </h2>
           <p className="mt-0.5 text-[11px] text-obc-muted">
-            {search.trim()
+            {debouncedSearch.trim()
               ? `${visiblePromos.length} hasil dari ${promos.length} promo`
               : `${promos.length} promo di halaman ini`}
           </p>

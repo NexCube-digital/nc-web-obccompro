@@ -1,3 +1,5 @@
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
+import { formatIdr as money } from "../../../../utils/formatters";
 import { useMemo, useState } from "react";
 import {
   CalendarDays,
@@ -27,12 +29,6 @@ const statusClasses: Record<ActiveStatus, string> = {
   active: "!bg-[#E7F5D0] !text-[#1F3320]",
   inactive: "!bg-[#F1EFE8] !text-obc-muted",
 };
-const money = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
 const durationLabel = (minutes: number) =>
   `${(minutes / 60).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jam`;
 
@@ -44,8 +40,9 @@ export default function PaketTable({
   onDeactivate,
 }: Props) {
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const visiblePackages = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = debouncedSearch.trim().toLowerCase();
     return packages.filter(
       (item) =>
         !query ||
@@ -64,7 +61,7 @@ export default function PaketTable({
           .toLowerCase()
           .includes(query),
     );
-  }, [packages, search]);
+  }, [packages, debouncedSearch]);
 
   return (
     <section className="overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_2px_12px_rgba(31,51,32,0.04)]">
@@ -74,7 +71,7 @@ export default function PaketTable({
             Daftar paket durasi
           </h2>
           <p className="mt-0.5 text-[11px] text-obc-muted">
-            {search.trim()
+            {debouncedSearch.trim()
               ? `${visiblePackages.length} hasil dari ${packages.length} paket pada halaman ini`
               : `${packages.length} paket pada halaman ini`}
           </p>

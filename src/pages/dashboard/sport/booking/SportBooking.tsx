@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { courtService, type CourtResource } from "../../services/sport/courtService";
-import { sportService, type ResourceAvailability, type SportBooking } from "../../services/sport/SportService";
+import { sportService } from "../../services/sport/SportService";
 import BookingCalendar from "./BookingCalendar";
 import BookingList from "./BookingList";
 
@@ -13,12 +14,8 @@ const getTodayDateValue = () => {
 
 export default function SportBooking() {
   const [resources, setResources] = useState<CourtResource[]>([]);
-  const [bookings, setBookings] = useState<SportBooking[]>([]);
-  const [availability, setAvailability] = useState<Record<string, ResourceAvailability>>({});
   const [resourcesLoading, setResourcesLoading] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(getTodayDateValue);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -29,42 +26,37 @@ export default function SportBooking() {
     return () => { active = false; };
   }, []);
 
+  const resourceKey = resources.map((resource) => resource.id).sort().join(",");
+  const dayQuery = useQuery({
+    queryKey: ["sport-booking-day", selectedDate, resourceKey],
+    queryFn: async () => {
+      const [bookings, availabilityItems] = await Promise.all([
+        sportService.getBookingCalendar(selectedDate),
+        Promise.all(resources.map((resource) =>
+          sportService.getResourceAvailability(resource.id, selectedDate, false),
+        )),
+      ]);
+      return {
+        bookings,
+        availability: Object.fromEntries(availabilityItems.map((item) => [item.resourceId, item])),
+      };
+    },
+    enabled: !resourcesLoading && Boolean(selectedDate) && resources.length > 0,
+    staleTime: 30_000,
+  });
+
   useEffect(() => {
-    if (resourcesLoading) return;
-    if (!selectedDate || resources.length === 0) {
-      setBookings([]);
-      setAvailability({});
-      setLoading(false);
-      return;
+    if (dayQuery.error) {
+      toast.error(dayQuery.error instanceof Error ? dayQuery.error.message : "Jadwal booking gagal dimuat.");
     }
-    let active = true;
-    setLoading(true);
-    const loadBookings = async () => {
-      const firstPage = await sportService.getBookings({ page: 1, limit: 100, date: selectedDate });
-      const remainingPages = await Promise.all(Array.from({ length: Math.max(0, firstPage.meta.totalPages - 1) }, (_, index) =>
-        sportService.getBookings({ page: index + 2, limit: 100, date: selectedDate }),
-      ));
-      return [...firstPage.data, ...remainingPages.flatMap((page) => page.data)];
-    };
-    Promise.all([
-      loadBookings(),
-      Promise.all(resources.map((resource) => sportService.getResourceAvailability(resource.id, selectedDate))),
-    ])
-      .then(([bookingItems, availabilityItems]) => {
-        if (!active) return;
-        setBookings(bookingItems);
-        setAvailability(Object.fromEntries(availabilityItems.map((item) => [item.resourceId, item])));
-      })
-      .catch((error: unknown) => {
-        if (active) toast.error(error instanceof Error ? error.message : "Jadwal booking gagal dimuat.");
-      })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
-  }, [resources, resourcesLoading, selectedDate, refreshKey]);
+  }, [dayQuery.error]);
+
+  const bookings = dayQuery.data?.bookings ?? [];
+  const availability = dayQuery.data?.availability ?? {};
+  const loading = resourcesLoading || (Boolean(selectedDate) && resources.length > 0 && dayQuery.isPending);
 
   const handleDateChange = (value: string) => {
     setSelectedDate(value);
-    setLoading(Boolean(value));
   };
 
   return (
@@ -86,7 +78,7 @@ export default function SportBooking() {
             bookings={bookings}
             loading={loading}
             selectedDate={selectedDate}
-            onBookingCreated={() => setRefreshKey((key) => key + 1)}
+            onBookingCreated={() => { void dayQuery.refetch(); }}
           />
         </div>
       </div>

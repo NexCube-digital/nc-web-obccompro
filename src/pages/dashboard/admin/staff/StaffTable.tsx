@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BadgeCheck,
   CalendarDays,
@@ -10,12 +11,15 @@ import {
   Users,
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { toast } from "sonner";
 import { accountService, type Staff, type StaffStatus } from "../../services/admin/AccountService";
 import StaffModal from "./StaffModal";
+import { formatProfileDate as formatDate, getInitials as initialsFor } from "../../../../utils/formatters";
 
 const PAGE_SIZE = 10;
+const EMPTY_STAFF: Staff[] = [];
 const statusLabels: Record<StaffStatus, string> = {
   active: "Aktif",
   inactive: "Nonaktif",
@@ -62,35 +66,29 @@ function Summary({
 }
 
 export default function StaffTable() {
-  const [staff, setStaff] = useState<Staff[]>([]);
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
-  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query);
   const [statusFilter, setStatusFilter] = useState<"all" | StaffStatus>("all");
   const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
+  const staffQuery = useQuery({
+    queryKey: ["admin-staff"],
+    queryFn: accountService.getStaffList,
+    staleTime: 60_000,
+  });
+  const staff = staffQuery.data ?? EMPTY_STAFF;
+  const loading = staffQuery.isPending;
 
   useEffect(() => {
-    let cancelled = false;
-    accountService
-      .getStaffList()
-      .then((data) => {
-        if (!cancelled) setStaff(data);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setStaff([]);
-          toast.error(
-            error instanceof Error ? error.message : "Gagal memuat data staff.",
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (staffQuery.error) {
+      toast.error(
+        staffQuery.error instanceof Error
+          ? staffQuery.error.message
+          : "Gagal memuat data staff.",
+      );
+    }
+  }, [staffQuery.error]);
 
   const visibleStaff = useMemo(
     () => staff.filter((user) => user.role !== "super_admin"),
@@ -110,7 +108,7 @@ export default function StaffTable() {
   );
 
   const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = debouncedQuery.trim().toLowerCase();
     return visibleStaff.filter((user) => {
       const matchesStatus =
         statusFilter === "all" || user.status === statusFilter;
@@ -120,7 +118,7 @@ export default function StaffTable() {
         .toLowerCase();
       return matchesStatus && searchable.includes(normalizedQuery);
     });
-  }, [query, statusFilter, visibleStaff]);
+  }, [debouncedQuery, statusFilter, visibleStaff]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -128,29 +126,6 @@ export default function StaffTable() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
-  const initialsFor = (name: string) =>
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  const formatDate = (value: string | null, withTime = false) =>
-    value
-      ? new Date(value).toLocaleDateString(
-          "id-ID",
-          withTime
-            ? {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            : { day: "numeric", month: "short", year: "numeric" },
-        )
-      : "Belum pernah";
   const avatar = (user: Staff, size = "size-11") =>
     user.avatarUrl ? (
       <img
@@ -169,7 +144,7 @@ export default function StaffTable() {
   const updateStatus = async (user: Staff, status: StaffStatus) => {
     try {
       const updated = await accountService.updateStaff(user.id, { status });
-      setStaff((current) =>
+      queryClient.setQueryData<Staff[]>(["admin-staff"], (current = []) =>
         current.map((item) =>
           item.id === updated.id ? { ...item, status: updated.status } : item,
         ),

@@ -1,5 +1,6 @@
 import { Pencil, Star, Trash2 } from "lucide-react";
 import { getPackageImageUrl, type ServicePackage } from "./packageService";
+import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 type Props = {
 	packages: ServicePackage[];
@@ -9,12 +10,6 @@ type Props = {
 	onTogglePopular: (packageItem: ServicePackage) => void;
 	onToggleStatus: (packageItem: ServicePackage) => void;
 };
-
-const rupiah = (price: number) => new Intl.NumberFormat("id-ID", {
-	style: "currency",
-	currency: "IDR",
-	maximumFractionDigits: 0,
-}).format(price);
 
 export default function PackageTable({ packages, loading, onEdit, onDelete, onTogglePopular, onToggleStatus }: Props) {
 	return (

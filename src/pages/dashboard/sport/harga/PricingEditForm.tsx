@@ -51,6 +51,7 @@ export default function PricingEditForm({
   onSave,
 }: Props) {
   const isRule = "dayType" in item;
+  const minimumBookingHours = rateUnitLabel === "2 jam" ? 2 : 1;
   const [dayType, setDayType] = useState<PricingRule["dayType"]>(
     isRule ? item.dayType : "weekday",
   );
@@ -60,6 +61,11 @@ export default function PricingEditForm({
   const [tierEnd, setTierEnd] = useState(isRule ? item.tierEndTime : "09:00");
   const [pricePerHour, setPricePerHour] = useState(
     isRule ? String(item.pricePerHour) : "",
+  );
+  const [minimumBookingDuration, setMinimumBookingDuration] = useState(() =>
+    isRule
+      ? String(Math.max(minimumBookingHours, (item.minDurationMinutes ?? 0) / 60))
+      : String(minimumBookingHours),
   );
   const [name, setName] = useState(!isRule ? item.name : "");
   const [description, setDescription] = useState(
@@ -97,6 +103,10 @@ export default function PricingEditForm({
             tierStart,
             tierEnd,
             pricePerHour: Number(pricePerHour),
+            minDurationMinutes: Math.max(
+              minimumBookingHours * 60,
+              Math.round(Number(minimumBookingDuration) * 60),
+            ),
             priority: item.priority,
           }
         : {
@@ -233,6 +243,23 @@ export default function PricingEditForm({
                       onChange={(event) => setPricePerHour(event.target.value)}
                       required
                     />
+                  </label>
+                  <label className={labelClass}>
+                    Batas booking minimum (jam)
+                    <input
+                      className={inputClass}
+                      type="number"
+                      min={minimumBookingHours}
+                      step="0.5"
+                      value={minimumBookingDuration}
+                      onChange={(event) =>
+                        setMinimumBookingDuration(event.target.value)
+                      }
+                      required
+                    />
+                    <span className="mt-1 block font-normal text-obc-muted">
+                      Minimum {minimumBookingHours} jam untuk lapang ini.
+                    </span>
                   </label>
                 </div>
               </section>

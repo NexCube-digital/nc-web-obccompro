@@ -1,6 +1,7 @@
-import { Building2, Eye, ImageOff, MapPin, Pencil } from "lucide-react";
+import { Building2, Eye, MapPin, Pencil } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
 import { sportOptions, tableSportTypes, type CourtResource } from "../../services/sport/courtService";
+import CourtImage from "./CourtImage";
 
 interface Props {
   resources: CourtResource[];
@@ -34,16 +35,12 @@ export default function ResourceTable({ resources, loading, onView, onEdit }: Pr
         </thead>
         <tbody>
           {resources.map((resource) => {
-            const image = resource.imageUrl ?? resource.gallery?.[0];
+            const image = resource.imageUrl || resource.gallery?.[0] || null;
             const hasTables = resource.sportTypes.some((sport) => tableSportTypes.includes(sport));
             return (
               <tr key={resource.id} className="border-t border-obc-border align-middle transition-colors hover:bg-[#F8FAF4]">
                 <td className="px-5 py-4">
-                  {image ? (
-                    <img src={getMediaUrl(image)} alt={resource.name} loading="lazy" decoding="async" className="size-17 rounded-lg border border-obc-border bg-[#F1EFE8] object-cover shadow-sm" />
-                  ) : (
-                    <div className="grid size-17 place-items-center rounded-lg border border-obc-border bg-[#F1EFE8] text-obc-muted"><ImageOff size={20} /></div>
-                  )}
+                  <CourtImage src={image ? getMediaUrl(image) : null} alt={resource.name} className="size-17 rounded-lg border border-obc-border shadow-sm" />
                 </td>
                 <td className="max-w-80 px-5 py-4">
                   <p className="font-heading text-[14px] font-bold text-obc-charcoal">{resource.name}</p>

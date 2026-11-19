@@ -160,16 +160,18 @@ export const invoiceService = {
 		return response.data.data;
 	},
 
-	async getFacilityAvailability(resourceId: string, date: string, sportType?: string): Promise<FacilityAvailability> {
+	async getFacilityAvailability(resourceId: string, date: string, sportType?: string, includePrices = true, signal?: AbortSignal): Promise<FacilityAvailability> {
 		const response = await apiClient.get<ApiSuccess<FacilityAvailability>>("/sports/availability", {
-			params: { resourceId, date, ...(sportType ? { sportType } : {}) },
+			params: { resourceId, date, ...(sportType ? { sportType } : {}), ...(includePrices ? {} : { includePrices: false }) },
+			signal,
 		});
 		return response.data.data;
 	},
 
-	async getFacilityCalendar(resourceId: string, from: string, to: string): Promise<FacilityCalendar> {
+	async getFacilityCalendar(resourceId: string, from: string, to: string, signal?: AbortSignal): Promise<FacilityCalendar> {
 		const response = await apiClient.get<ApiSuccess<FacilityCalendar>>("/sports/availability/calendar", {
 			params: { resourceId, from, to },
+			signal,
 		});
 		return response.data.data;
 	},

@@ -11,6 +11,7 @@ import type {
   InvoiceBookingDetails,
   InvoiceStatus,
 } from "../../services/admin/invoiceService";
+import { formatIdr as rupiah, formatLongIdDate as formatDate } from "../../../../utils/formatters";
 
 const statusLabels: Record<InvoiceStatus, string> = {
   draft: "Draft",
@@ -31,22 +32,6 @@ const statusClasses: Record<InvoiceStatus, string> = {
   partial: "bg-[#FBF0D3] text-[#8A6100]",
   cancelled: "bg-[#FDF2F2] text-[#B42318]",
 };
-
-const rupiah = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-const formatDate = (value: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "-";
 
 interface InvoiceDetailModalProps {
   invoice: Invoice;

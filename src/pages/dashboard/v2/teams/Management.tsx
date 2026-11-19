@@ -1,39 +1,42 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import TeamForm from "./Form";
 import TeamTable from "./Table";
 import { teamService, type TeamMember } from "./teamService";
 
 export default function Management() {
-	const [teams, setTeams] = useState<TeamMember[]>([]);
-	const [loading, setLoading] = useState(true);
+	const queryClient = useQueryClient();
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [showForm, setShowForm] = useState(false);
 	const [editingTeam, setEditingTeam] = useState<TeamMember | null>(null);
-	const [reload, setReload] = useState(0);
+	const teamsQuery = useQuery({
+		queryKey: ["v2-teams"],
+		queryFn: () => teamService.getTeams(),
+	});
+	const teams = teamsQuery.data ?? [];
+	const loading = teamsQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		teamService.getTeams()
-			.then((data) => { if (active) setTeams(data); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [reload]);
+		if (teamsQuery.error) toast.error(getApiErrorMessage(teamsQuery.error));
+	}, [teamsQuery.error]);
 
 	const filteredTeams = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return teams.filter((team) => [team.name, team.position, team.expertise, team.bio, team.user?.email]
 			.filter(Boolean)
 			.join(" ")
 			.toLowerCase()
 			.includes(normalizedQuery));
-	}, [query, teams]);
-	const refresh = () => setReload((value) => value + 1);
+	}, [debouncedQuery, teams]);
+	const refresh = () => {
+		void queryClient.invalidateQueries({ queryKey: ["v2-teams"] });
+	};
 
 	const editTeam = (team: TeamMember) => {
 		setEditingTeam(team);

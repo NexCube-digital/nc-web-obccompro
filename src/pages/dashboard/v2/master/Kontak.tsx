@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import {
 	MapPin,
 	Search,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Pagination from "../../components/common/Pagination";
+import { formatShortIdDate as formatDate, getInitials as initials } from "../../../../utils/formatters";
 
 type Contact = {
 	id?: string;
@@ -48,17 +50,6 @@ const avatarGradients = [
 	"from-[#343133] to-[#404F14]",
 ];
 
-const formatDate = (iso: string) =>
-	new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-
-const initials = (name: string) =>
-	name
-		.split(" ")
-		.slice(0, 2)
-		.map((part) => part[0])
-		.join("")
-		.toUpperCase();
-
 type StatCardProps = {
 	icon: LucideIcon;
 	label: string;
@@ -96,6 +87,7 @@ export default function Kontak() {
 	const [contactData, setContactData] = useState<Contact[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [tab, setTab] = useState<Tab>("Semua");
 	const [page, setPage] = useState(1);
 
@@ -137,13 +129,13 @@ export default function Kontak() {
 	);
 
 	const filtered = useMemo(() => {
-		const q = query.trim().toLowerCase();
+		const q = debouncedQuery.trim().toLowerCase();
 		return contactData.filter((c) => {
 			const matchTab = tab === "Semua" || c.status === tab;
 			const matchQuery = `${c.name} ${c.email} ${c.phone} ${c.address}`.toLowerCase().includes(q);
 			return matchTab && matchQuery;
 		});
-	}, [query, tab, contactData]);
+	}, [debouncedQuery, tab, contactData]);
 
 	const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 	const currentPage = Math.min(page, totalPages);

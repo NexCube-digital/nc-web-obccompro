@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { id } from "date-fns/locale";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import { formatBookingDate as formatLongDate, toLocalDateKey as toDateValue } from "../../../../utils/formatters";
 import "react-day-picker/style.css";
 
 type Props = {
@@ -10,8 +11,6 @@ type Props = {
 	onDateChange: (date: string) => void;
 };
 
-const formatLongDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-const toDateValue = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const monthLabels = Array.from({ length: 12 }, (_, month) => new Intl.DateTimeFormat("id-ID", { month: "long" }).format(new Date(2024, month, 1)));
 const calendarYears = Array.from({ length: new Date().getFullYear() + 11 - 1990 }, (_, index) => 1990 + index);
 const monthOptions = monthLabels.map((label, month) => ({ value: String(month), label }));

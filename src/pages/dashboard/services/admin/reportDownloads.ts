@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
 import type { ReportPeriod, ReportRecord } from "./reportService";
+import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 export interface FinanceReportSnapshot {
 	period: ReportPeriod;
@@ -35,8 +36,6 @@ export interface InvoiceReportSnapshot {
 }
 
 const periodLabels: Record<ReportPeriod, string> = { day: "Harian", month: "Bulanan", year: "Tahunan", range: "Rentang tanggal" };
-const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(amount);
-
 function isPeriod(value: unknown): value is ReportPeriod {
 	return value === "day" || value === "month" || value === "year" || value === "range";
 }

@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { Clock3, MapPin } from "lucide-react";
 import { sportOptions } from "../../services/sport/courtService";
-import type { ResourceAvailability, SportBooking, SportType } from "../../services/sport/SportService";
+import type { BookingCalendarItem, ResourceAvailability, SportType } from "../../services/sport/SportService";
 import type { CourtResource } from "../../services/sport/courtService";
 import BookingDetailModal from "./BookingDetailModal";
 import FullDayBookingModal from "./FullDayBookingModal";
+import { formatBookingDate as formatDate } from "../../../../utils/formatters";
 
 type SelectedSlot = {
 	resource: CourtResource;
 	slot: ResourceAvailability["slots"][number];
-	bookings: SportBooking[];
+	bookings: BookingCalendarItem[];
 };
 
 type Props = {
 	resources: CourtResource[];
 	availability: Record<string, ResourceAvailability>;
-	bookings: SportBooking[];
+	bookings: BookingCalendarItem[];
 	loading: boolean;
 	selectedDate: string;
 	onBookingCreated: () => void;
@@ -34,7 +35,6 @@ const toMinutes = (time: string) => {
 	return hour * 60 + minute;
 };
 
-const formatDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 const sportLabel = (value: string) => sportOptions.find((option) => option.value === value)?.label ?? value.replaceAll("_", " ");
 
 export default function BookingList({ resources, availability, bookings, loading, selectedDate, onBookingCreated }: Props) {

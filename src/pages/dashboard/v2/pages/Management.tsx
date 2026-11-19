@@ -1,44 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { authService } from "../../../../services/auth";
 import { getApiErrorMessage } from "../../../../services/api";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import CmsPageForm from "./Form";
 import CmsPageTable from "./Table";
 import { cmsPageService, type CmsPage, type CmsPageStatus } from "./pageService";
 
 export default function Management() {
 	const sessionTenantId = authService.getCurrentSession()?.user.tenantId ?? "";
+	const queryClient = useQueryClient();
 	const [tenantId, setTenantId] = useState(sessionTenantId);
-	const [pages, setPages] = useState<CmsPage[]>([]);
-	const [loading, setLoading] = useState(true);
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [statusFilter, setStatusFilter] = useState<CmsPageStatus | "all">("all");
 	const [showForm, setShowForm] = useState(false);
 	const [editingPage, setEditingPage] = useState<CmsPage | null>(null);
 	const [updatingId, setUpdatingId] = useState<string | null>(null);
-	const [reload, setReload] = useState(0);
+	const pagesQuery = useQuery({
+		queryKey: ["v2-cms-pages", tenantId],
+		queryFn: () => cmsPageService.getPages(tenantId || undefined),
+	});
+	const pages = pagesQuery.data ?? [];
+	const loading = pagesQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		setLoading(true);
-		cmsPageService.getPages(tenantId || undefined)
-			.then((data) => { if (active) setPages(data); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [reload, tenantId]);
+		if (pagesQuery.error) toast.error(getApiErrorMessage(pagesQuery.error));
+	}, [pagesQuery.error]);
 
 	const filteredPages = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return pages.filter((page) => {
 			const statusMatches = statusFilter === "all" || page.status === statusFilter;
 			const textMatches = [page.title, page.slug, page.pageType].join(" ").toLowerCase().includes(normalizedQuery);
 			return statusMatches && textMatches;
 		});
-	}, [pages, query, statusFilter]);
-	const refresh = () => setReload((value) => value + 1);
+	}, [pages, debouncedQuery, statusFilter]);
+	const refresh = () => {
+		void queryClient.invalidateQueries({ queryKey: ["v2-cms-pages"] });
+	};
 
 	const deletePage = async (page: CmsPage) => {
 		if (!window.confirm(`Hapus halaman CMS "${page.title}" beserta section-nya?`)) return;
@@ -56,7 +59,7 @@ export default function Management() {
 		setUpdatingId(page.id);
 		try {
 			const updated = await cmsPageService.updatePage(page.id, { status });
-			setPages((current) => current.map((item) => item.id === updated.id ? { ...item, status: updated.status } : item));
+			queryClient.setQueryData<CmsPage[]>(["v2-cms-pages", tenantId], (current = []) => current.map((item) => item.id === updated.id ? { ...item, status: updated.status } : item));
 			toast.success("Status halaman berhasil diperbarui.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

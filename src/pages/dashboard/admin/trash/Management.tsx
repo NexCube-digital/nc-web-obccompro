@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArchiveRestore, Clock3 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
@@ -12,36 +13,35 @@ import {
 } from "../../services/admin/trashService";
 
 export default function TrashManagement() {
-  const [items, setItems] = useState<TrashItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [deletingItem, setDeletingItem] = useState<TrashItem | null>(null);
+  const queryClient = useQueryClient();
+  const trashQuery = useQuery({
+    queryKey: ["admin-trash"],
+    queryFn: getTrashItems,
+    staleTime: 30_000,
+  });
+  const items = trashQuery.data ?? [];
+  const loading = trashQuery.isPending;
 
   useEffect(() => {
-    let cancelled = false;
-    getTrashItems()
-      .then((result) => {
-        if (!cancelled) setItems(result);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          toast.error(error instanceof Error ? error.message : "Gagal memuat Sampah.");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (trashQuery.error) {
+      toast.error(
+        trashQuery.error instanceof Error
+          ? trashQuery.error.message
+          : "Gagal memuat Sampah.",
+      );
+    }
+  }, [trashQuery.error]);
 
   const restoreItem = async (item: TrashItem) => {
     const key = `${item.entityType}:${item.entityId}`;
     setProcessingId(key);
     try {
       await restoreTrashItem(item);
-      setItems((current) => current.filter((entry) => `${entry.entityType}:${entry.entityId}` !== key));
+      queryClient.setQueryData<TrashItem[]>(["admin-trash"], (current = []) =>
+        current.filter((entry) => `${entry.entityType}:${entry.entityId}` !== key),
+      );
       toast.success("Data berhasil dipulihkan.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Gagal memulihkan data.");
@@ -56,7 +56,9 @@ export default function TrashManagement() {
     setProcessingId(key);
     try {
       await permanentlyDeleteTrashItem(deletingItem);
-      setItems((current) => current.filter((entry) => `${entry.entityType}:${entry.entityId}` !== key));
+      queryClient.setQueryData<TrashItem[]>(["admin-trash"], (current = []) =>
+        current.filter((entry) => `${entry.entityType}:${entry.entityId}` !== key),
+      );
       setDeletingItem(null);
       toast.success("Data berhasil dihapus permanen.");
     } catch (error) {

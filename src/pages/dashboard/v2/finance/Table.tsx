@@ -1,23 +1,11 @@
 import { useMemo, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, Pencil, Search, Trash2 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import type { FinanceRecord } from "./financeService";
+import { formatIdr as rupiah, formatShortIdDate as formatDate } from "../../../../utils/formatters";
 
 const PAGE_SIZE = 10;
-
-const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
-	style: "currency",
-	currency: "IDR",
-	maximumFractionDigits: 0,
-}).format(amount);
-
-function formatDate(value: string) {
-	return new Date(value).toLocaleDateString("id-ID", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-}
 
 type Props = {
 	finances: FinanceRecord[];
@@ -28,15 +16,16 @@ type Props = {
 
 export default function FinanceTable({ finances, loading, onEdit, onDelete }: Props) {
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [page, setPage] = useState(1);
 	const filtered = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = debouncedQuery.trim().toLowerCase();
 		return finances.filter((finance) => [finance.division, finance.type, finance.category, finance.description, finance.status]
 			.filter(Boolean)
 			.join(" ")
 			.toLowerCase()
 			.includes(normalizedQuery));
-	}, [finances, query]);
+	}, [finances, debouncedQuery]);
 	const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 	const currentPage = Math.min(page, totalPages);
 	const rows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);

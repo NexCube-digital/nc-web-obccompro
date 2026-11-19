@@ -16,6 +16,7 @@ import type {
   AvailabilitySlot,
   InvoiceBookingDetails,
 } from "../../services/admin/invoiceService";
+import { toLocalDateKey as toDateKey } from "../../../../utils/formatters";
 
 type TimePeriod = {
   label: string;
@@ -65,10 +66,6 @@ const calendarYears = Array.from(
   { length: new Date().getFullYear() + 8 - 2019 },
   (_, index) => 2019 + index,
 );
-
-function toDateKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
 
 export default function InvoiceBookingStep({
   view,

@@ -1,4 +1,6 @@
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BadgePercent,
   CalendarDays,
@@ -59,48 +61,35 @@ function Metric({
 }
 
 export default function PromoManagement() {
-  const [promos, setPromos] = useState<Promo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<PromoStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [reload, setReload] = useState(0);
   const [editingItem, setEditingItem] = useState<Promo | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deletingItem, setDeletingItem] = useState<Promo | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [renderedAt] = useState(() => Date.now());
-
-  useEffect(() => {
-    let cancelled = false;
-    getPromos({
+  const promosQuery = useQuery({
+    queryKey: ["sport-promos", page, status, debouncedSearch],
+    queryFn: () => getPromos({
       page,
       limit: PAGE_SIZE,
       ...(status === "all" ? {} : { status }),
-      ...(search.trim() ? { search: search.trim() } : {}),
-    })
-      .then((result) => {
-        if (!cancelled) {
-          setPromos(result.data);
-          setTotal(result.meta.total);
-          setTotalPages(Math.max(1, result.meta.totalPages));
-        }
-      })
-      .catch((error: unknown) => {
-        if (!cancelled)
-          toast.error(
-            error instanceof Error ? error.message : "Gagal memuat promo.",
-          );
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [page, reload, search, status]);
+      ...(debouncedSearch.trim() ? { search: debouncedSearch.trim() } : {}),
+    }),
+  });
+  const promos = promosQuery.data?.data ?? [];
+  const total = promosQuery.data?.meta.total ?? 0;
+  const totalPages = Math.max(1, promosQuery.data?.meta.totalPages ?? 1);
+  const loading = promosQuery.isPending;
+
+  useEffect(() => {
+    if (promosQuery.error) {
+      toast.error(promosQuery.error instanceof Error ? promosQuery.error.message : "Gagal memuat promo.");
+    }
+  }, [promosQuery.error]);
 
   const savePromo = async (payload: Partial<PromoInput>) => {
     if (editingItem) {
@@ -112,17 +101,13 @@ export default function PromoManagement() {
     }
     setFormOpen(false);
     setEditingItem(null);
-    setReload((value) => value + 1);
+    void queryClient.invalidateQueries({ queryKey: ["sport-promos"] });
   };
 
   const updateStatus = async (item: Promo, nextStatus: PromoStatus) => {
     try {
       await updatePromo(item.id, { status: nextStatus });
-      setPromos((current) =>
-        current.map((promo) =>
-          promo.id === item.id ? { ...promo, status: nextStatus } : promo,
-        ),
-      );
+      void queryClient.invalidateQueries({ queryKey: ["sport-promos"] });
       toast.success("Status promo berhasil diperbarui.");
     } catch (error) {
       toast.error(
@@ -140,7 +125,7 @@ export default function PromoManagement() {
       await deletePromo(deletingItem.id);
       toast.success("Promo dipindahkan ke Sampah.");
       setDeletingItem(null);
-      setReload((value) => value + 1);
+      void queryClient.invalidateQueries({ queryKey: ["sport-promos"] });
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menghapus promo.",
@@ -226,7 +211,6 @@ export default function PromoManagement() {
                 role="tab"
                 aria-selected={status === filter}
                 onClick={() => {
-                  setLoading(true);
                   setStatus(filter);
                   setPage(1);
                 }}
@@ -245,7 +229,6 @@ export default function PromoManagement() {
               type="search"
               value={search}
               onChange={(event) => {
-                setLoading(true);
                 setSearch(event.target.value);
                 setPage(1);
               }}
@@ -277,7 +260,6 @@ export default function PromoManagement() {
           totalPages={totalPages}
           onPageChange={(nextPage) => {
             setPage(nextPage);
-            setLoading(true);
           }}
           totalItems={total}
           pageSize={PAGE_SIZE}

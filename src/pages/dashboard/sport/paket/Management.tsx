@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, CalendarRange, Package } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
@@ -52,47 +53,35 @@ function SummaryMetric({
 }
 
 export default function PaketManagement() {
-  const [packages, setPackages] = useState<PricingPackage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<ActiveStatus | "all">("all");
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [reload, setReload] = useState(0);
   const [editingItem, setEditingItem] = useState<PricingPackage | null>(null);
   const [deletingItem, setDeletingItem] = useState<PricingPackage | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const closeDeleteModal = useCallback(() => setDeletingItem(null), []);
+  const packagesQuery = useQuery({
+    queryKey: ["sport-pricing-packages", page, status],
+    queryFn: () => sportService.getPricingPackages({
+      page,
+      limit: PAGE_SIZE,
+      ...(status === "all" ? {} : { status }),
+    }),
+  });
+  const packages = packagesQuery.data?.data ?? [];
+  const total = packagesQuery.data?.meta.total ?? 0;
+  const totalPages = packagesQuery.data?.meta.totalPages ?? 1;
+  const loading = packagesQuery.isPending;
 
   useEffect(() => {
-    let cancelled = false;
-    sportService
-      .getPricingPackages({
-        page,
-        limit: PAGE_SIZE,
-        ...(status === "all" ? {} : { status }),
-      })
-      .then((result) => {
-        if (cancelled) return;
-        setPackages(result.data);
-        setTotal(result.meta.total);
-        setTotalPages(result.meta.totalPages);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled)
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Gagal memuat paket durasi.",
-          );
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [page, reload, status]);
+    if (packagesQuery.error) {
+      toast.error(
+        packagesQuery.error instanceof Error
+          ? packagesQuery.error.message
+          : "Gagal memuat paket durasi.",
+      );
+    }
+  }, [packagesQuery.error]);
 
   const updateStatus = async (
     item: PricingPackage,
@@ -100,13 +89,7 @@ export default function PaketManagement() {
   ) => {
     try {
       await sportService.updatePricingPackageStatus(item.id, nextStatus);
-      setPackages((current) =>
-        current.map((pricingPackage) =>
-          pricingPackage.id === item.id
-            ? { ...pricingPackage, status: nextStatus }
-            : pricingPackage,
-        ),
-      );
+      void queryClient.invalidateQueries({ queryKey: ["sport-pricing-packages"] });
       toast.success("Status paket durasi berhasil diperbarui.");
     } catch (error) {
       toast.error(
@@ -121,7 +104,7 @@ export default function PaketManagement() {
     if (!editingItem) return;
     await sportService.updatePricingPackage(editingItem.id, payload);
     toast.success("Paket durasi berhasil diperbarui.");
-    setReload((current) => current + 1);
+    void queryClient.invalidateQueries({ queryKey: ["sport-pricing-packages"] });
   };
 
   const confirmDeactivate = async () => {
@@ -131,7 +114,7 @@ export default function PaketManagement() {
       await sportService.deletePricingPackage(deletingItem.id);
       toast.success("Paket durasi dipindahkan ke Sampah.");
       setDeletingItem(null);
-      setReload((current) => current + 1);
+      void queryClient.invalidateQueries({ queryKey: ["sport-pricing-packages"] });
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -201,7 +184,6 @@ export default function PaketManagement() {
                   role="tab"
                   aria-selected={selected}
                   onClick={() => {
-                    setLoading(true);
                     setStatus(filterStatus);
                     setPage(1);
                   }}
@@ -230,7 +212,6 @@ export default function PaketManagement() {
           page={page}
           totalPages={totalPages}
           onPageChange={(nextPage) => {
-            setLoading(true);
             setPage(nextPage);
           }}
           totalItems={total}

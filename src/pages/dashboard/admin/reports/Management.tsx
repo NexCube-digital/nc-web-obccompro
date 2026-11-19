@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
@@ -11,36 +12,27 @@ import {
 } from "../../services/admin/reportService";
 
 export default function Management() {
-  const [reports, setReports] = useState<ReportRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [selectedReport, setSelectedReport] = useState<ReportRecord | null>(
     null,
   );
+  const reportsQuery = useQuery({
+    queryKey: ["admin-reports"],
+    queryFn: () => reportService.getReports(),
+    select: (data) => data.filter((report) => report.type !== "clients"),
+  });
+  const reports = reportsQuery.data ?? [];
+  const loading = reportsQuery.isPending;
 
   useEffect(() => {
-    let active = true;
-    reportService
-      .getReports()
-      .then((data) => {
-        if (active)
-          setReports(data.filter((report) => report.type !== "clients"));
-      })
-      .catch((error: unknown) => {
-        if (active) toast.error(getApiErrorMessage(error));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+    if (reportsQuery.error) toast.error(getApiErrorMessage(reportsQuery.error));
+  }, [reportsQuery.error]);
 
   const handleGenerated = (report: ReportRecord) => {
     if (report.type === "clients") return;
-    setReports((current) => [
+    queryClient.setQueryData<ReportRecord[]>(["admin-reports"], (current = []) => [
       report,
-      ...current.filter((item) => item.id !== report.id),
+      ...current.filter((item) => item.id !== report.id && item.type !== "clients"),
     ]);
     setSelectedReport(report);
   };

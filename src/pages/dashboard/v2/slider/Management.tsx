@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Images, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../../../../services/auth";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { getApiErrorMessage } from "../../../../services/api";
 import SliderForm from "./Form";
@@ -10,25 +12,27 @@ import { sliderService, type HeroContent, type HeroSlide } from "./sliderService
 
 export default function SliderManagement() {
 	const tenantId = authService.getCurrentSession()?.user.tenantId ?? "";
-	const [content, setContent] = useState<HeroContent>({ section: "hero", slides: [] });
-	const [loading, setLoading] = useState(true);
+	const queryClient = useQueryClient();
 	const [saving, setSaving] = useState(false);
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebouncedValue(query);
 	const [showForm, setShowForm] = useState(false);
 	const [editing, setEditing] = useState<{ slide: HeroSlide; index: number } | null>(null);
+	const contentQuery = useQuery({
+		queryKey: ["v2-slider-content", tenantId],
+		queryFn: async () => (await sliderService.getContent(tenantId || undefined)) as HeroContent | null,
+	});
+	const content = contentQuery.data ?? { section: "hero", slides: [] };
+	const loading = contentQuery.isPending;
 
 	useEffect(() => {
-		let active = true;
-		sliderService.getContent(tenantId || undefined).then((data) => { if (active && data) setContent(data as HeroContent); })
-			.catch((error: unknown) => { if (active) toast.error(getApiErrorMessage(error)); })
-			.finally(() => { if (active) setLoading(false); });
-		return () => { active = false; };
-	}, [tenantId]);
+		if (contentQuery.error) toast.error(getApiErrorMessage(contentQuery.error));
+	}, [contentQuery.error]);
 
 	const filteredSlides = useMemo(() => {
-		const normalized = query.trim().toLowerCase();
+		const normalized = debouncedQuery.trim().toLowerCase();
 		return content.slides.filter((slide) => [slide.title, slide.description, slide.image].join(" ").toLowerCase().includes(normalized));
-	}, [content.slides, query]);
+	}, [content.slides, debouncedQuery]);
 
 	const deleteSlide = async (slide: HeroSlide) => {
 		const index = content.slides.indexOf(slide);
@@ -37,7 +41,7 @@ export default function SliderManagement() {
 		setSaving(true);
 		try {
 			await sliderService.saveContent(nextContent, tenantId || undefined);
-			setContent(nextContent);
+			queryClient.setQueryData(["v2-slider-content", tenantId], nextContent);
 			toast.success("Slide Hero berhasil dihapus.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
@@ -53,7 +57,7 @@ export default function SliderManagement() {
 		setSaving(true);
 		try {
 			await sliderService.saveContent(nextContent, tenantId || undefined);
-			setContent(nextContent);
+			queryClient.setQueryData(["v2-slider-content", tenantId], nextContent);
 			setShowForm(false);
 			setEditing(null);
 			toast.success("Slide Hero berhasil disimpan.");
@@ -75,7 +79,7 @@ export default function SliderManagement() {
 		setSaving(true);
 		try {
 			await sliderService.saveContent(nextContent, tenantId || undefined);
-			setContent(nextContent);
+			queryClient.setQueryData(["v2-slider-content", tenantId], nextContent);
 			toast.success(`Slide berhasil ${active ? "diaktifkan" : "dinonaktifkan"}.`);
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
