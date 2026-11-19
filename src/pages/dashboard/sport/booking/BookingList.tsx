@@ -11,6 +11,7 @@ type SelectedSlot = {
 	resource: CourtResource;
 	slot: ResourceAvailability["slots"][number];
 	bookings: BookingCalendarItem[];
+	sportType: SportType;
 };
 
 type Props = {
@@ -52,7 +53,7 @@ export default function BookingList({ resources, availability, bookings, loading
 			if (booking.resource.id !== resource.id || ["cancelled", "expired", "refunded"].includes(booking.status)) return false;
 			return toMinutes(booking.startTime) < slotEnd && toMinutes(booking.endTime) > slotStart;
 		});
-		setSelectedSlot({ resource, slot, bookings: relatedBookings });
+		setSelectedSlot({ resource, slot, bookings: relatedBookings, sportType: activeSport as SportType });
 	};
 
 	return (
@@ -89,7 +90,7 @@ export default function BookingList({ resources, availability, bookings, loading
 				</div>}
 			</section>
 
-			{selectedSlot && <BookingDetailModal resource={selectedSlot.resource} slot={selectedSlot.slot} bookings={selectedSlot.bookings} date={selectedDate} onClose={() => setSelectedSlot(null)} />}
+			{selectedSlot && <BookingDetailModal resource={selectedSlot.resource} slot={selectedSlot.slot} bookings={selectedSlot.bookings} date={selectedDate} sportType={selectedSlot.sportType} onClose={() => setSelectedSlot(null)} />}
 			{fullDayTarget && <FullDayBookingModal resource={fullDayTarget.resource} date={selectedDate} startTime={fullDayTarget.startTime} endTime={fullDayTarget.endTime} sportType={fullDayTarget.sportType} onClose={() => setFullDayTarget(null)} onCreated={onBookingCreated} />}
 		</>
 	);

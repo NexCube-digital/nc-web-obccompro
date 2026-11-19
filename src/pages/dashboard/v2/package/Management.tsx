@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Package, Plus, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import { packageService, type PackageStatus, type ServicePackage } from "./packageService";
 import PackageForm from "./form";
@@ -52,10 +52,10 @@ export default function Management() {
 	};
 
 	const deletePackage = async (packageItem: ServicePackage) => {
-		if (!window.confirm(`Hapus paket "${packageItem.name}"?`)) return;
+		if (!window.confirm(getDeleteConfirmationMessage(`paket "${packageItem.name}"`))) return;
 		try {
 			await packageService.deletePackage(packageItem.id);
-			toast.success("Paket dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Paket"));
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

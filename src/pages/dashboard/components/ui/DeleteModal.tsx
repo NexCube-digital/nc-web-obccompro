@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AlertTriangle, LoaderCircle, Trash2 } from 'lucide-react'
+import { shouldDeletePermanently } from '../../../../services/api'
 
 interface DeleteModalProps {
 	isOpen: boolean
@@ -26,6 +27,12 @@ function DeleteModal({
 }: DeleteModalProps) {
 	const cancelButtonRef = useRef<HTMLButtonElement>(null)
 	const confirmButtonRef = useRef<HTMLButtonElement>(null)
+	const permanentDelete = shouldDeletePermanently() && !title.toLowerCase().includes('permanen')
+	const visibleTitle = permanentDelete ? 'Hapus permanen?' : title
+	const visibleDescription = permanentDelete
+		? `Data${itemName ? ` "${itemName}"` : ' ini'} akan dihapus permanen dan tidak dapat dipulihkan.`
+		: description
+	const visibleConfirmLabel = permanentDelete ? 'Hapus permanen' : confirmLabel
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -92,7 +99,7 @@ function DeleteModal({
 						<div className="min-w-0">
 							<p className="text-[10px] font-bold uppercase tracking-[0.12em] text-obc-red">Konfirmasi tindakan</p>
 							<h2 id="delete-modal-title" className="mt-1 font-heading text-xl font-bold leading-tight text-obc-charcoal">
-								{title}
+								{visibleTitle}
 							</h2>
 						</div>
 					</div>
@@ -100,7 +107,7 @@ function DeleteModal({
 
 				<div className="px-5 py-5 sm:px-7 sm:py-6">
 					<p id="delete-modal-description" className="text-[13px] leading-6 text-obc-muted">
-						{description}
+						{visibleDescription}
 					</p>
 					{itemName && (
 						<div className="mt-4 flex min-w-0 items-start gap-3 rounded-xl border border-[#F1D9D9] bg-[#FFF9F8] p-3.5">
@@ -133,7 +140,7 @@ function DeleteModal({
 						className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-obc-red px-5 font-heading text-sm font-bold text-white shadow-sm transition-colors hover:bg-obc-red-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-obc-red focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
 					>
 						{isLoading ? <LoaderCircle size={16} className="animate-spin" aria-hidden="true" /> : <Trash2 size={16} aria-hidden="true" />}
-						{isLoading ? 'Memproses...' : confirmLabel}
+						{isLoading ? 'Memproses...' : visibleConfirmLabel}
 					</button>
 				</div>
 			</section>

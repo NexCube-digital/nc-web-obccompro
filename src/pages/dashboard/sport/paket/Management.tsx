@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Pagination from "../../components/common/Pagination";
 import DeleteModal from "../../components/ui/DeleteModal";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import {
   sportService,
   type ActiveStatus,
@@ -112,7 +113,7 @@ export default function PaketManagement() {
     setDeleteLoading(true);
     try {
       await sportService.deletePricingPackage(deletingItem.id);
-      toast.success("Paket durasi dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Paket durasi"));
       setDeletingItem(null);
       void queryClient.invalidateQueries({ queryKey: ["sport-pricing-packages"] });
     } catch (error) {

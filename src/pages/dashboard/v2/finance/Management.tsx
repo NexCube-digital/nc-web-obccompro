@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDownToLine, ArrowUpFromLine, Banknote, Plus, RefreshCw, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { financeService, type FinanceRecord, type FinanceType } from "./financeService";
 import FinanceForm from "./form";
 import FinanceTable from "./Table";
@@ -58,10 +58,11 @@ export default function Management() {
 	};
 
 	const deleteFinance = async (finance: FinanceRecord) => {
-		if (!window.confirm(`Hapus transaksi "${finance.category || finance.description || finance.type}"?`)) return;
+		const name = finance.category || finance.description || finance.type;
+		if (!window.confirm(getDeleteConfirmationMessage(`transaksi "${name}"`))) return;
 		try {
 			await financeService.deleteFinance(finance.id);
-			toast.success("Transaksi dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Transaksi"));
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   CalendarDays,
-  Clock3,
   Eye,
   Mail,
   Phone,
@@ -10,6 +9,7 @@ import {
 import {
   getCustomerAvatarUrl,
   type CustomerRecord,
+  type CustomerStatus,
 } from "../../services/cms/customerService";
 import CustomerDetailModal from "./ModalDetail";
 import { formatProfileDate as formatDate, getInitials as initialsFor } from "../../../../utils/formatters";
@@ -17,6 +17,24 @@ import { formatProfileDate as formatDate, getInitials as initialsFor } from "../
 type Props = {
   customers: CustomerRecord[];
   loading: boolean;
+};
+
+const statusLabels: Record<CustomerStatus, string> = {
+  active: "Aktif",
+  inactive: "Nonaktif",
+  suspended: "Ditangguhkan",
+};
+
+const statusClasses: Record<CustomerStatus, string> = {
+  active: "border-[#DDE8D2] bg-[#F3F8E8] text-[#1F3320]",
+  inactive: "border-obc-border bg-[#F1EFE8] text-[#68665F]",
+  suspended: "border-[#F2D5D2] bg-[#FDF2F2] text-[#B42318]",
+};
+
+const statusDotClasses: Record<CustomerStatus, string> = {
+  active: "bg-obc-green",
+  inactive: "bg-[#8A8780]",
+  suspended: "bg-[#B42318]",
 };
 
 export default function CustomerTable({ customers, loading }: Props) {
@@ -68,7 +86,7 @@ export default function CustomerTable({ customers, loading }: Props) {
                 <th className="px-5 py-3.5">Pelanggan</th>
                 <th className="px-5 py-3.5">Aktivitas</th>
                 <th className="px-5 py-3.5">Terdaftar</th>
-                <th className="px-5 py-3.5">Login terakhir</th>
+                <th className="px-5 py-3.5">Status akun</th>
                 <th className="px-5 py-3.5 text-right">Detail</th>
               </tr>
             </thead>
@@ -133,10 +151,15 @@ export default function CustomerTable({ customers, loading }: Props) {
                         {formatDate(customer.createdAt)}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-[12px] text-obc-charcoal">
-                      <span className="flex items-center gap-2">
-                        <Clock3 size={14} className="text-obc-green" />
-                        {formatDate(customer.lastLoginAt)}
+                    <td className="px-5 py-4">
+                      <span
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold ${statusClasses[customer.status]}`}
+                      >
+                        <span
+                          className={`size-1.5 rounded-full ${statusDotClasses[customer.status]}`}
+                          aria-hidden="true"
+                        />
+                        {statusLabels[customer.status]}
                       </span>
                     </td>
                     <td className="px-5 py-4">

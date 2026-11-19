@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import DeleteModal from "../../components/ui/DeleteModal";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { portfolioService, type Portfolio } from "../../services/cms/portfolioService";
 import PortfolioForm from "./form";
 import PortfolioTable from "./Table";
@@ -89,7 +89,7 @@ export default function Management() {
     try {
       await portfolioService.deletePortfolio(deletingPortfolio.id);
       setDeletingPortfolio(null);
-      toast.success("Portfolio dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Portfolio"));
       refresh();
     } catch (error) {
       toast.error(getApiErrorMessage(error));

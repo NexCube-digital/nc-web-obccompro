@@ -55,6 +55,27 @@ export function getStoredAuthSession<T>(): T | null {
 	return null;
 }
 
+function hasPermanentDeletePermission(session: StoredSession | null): boolean {
+	const user = session?.user as { role?: unknown } | undefined;
+	return user?.role === "admin" || user?.role === "super_admin";
+}
+
+export function shouldDeletePermanently(): boolean {
+	return hasPermanentDeletePermission(getStoredAuthSession<StoredSession>());
+}
+
+export function getDeleteConfirmationMessage(itemName: string): string {
+	return shouldDeletePermanently()
+		? `Hapus permanen ${itemName}? Tindakan ini tidak dapat dibatalkan.`
+		: `Pindahkan ${itemName} ke Sampah?`;
+}
+
+export function getDeleteSuccessMessage(itemName: string): string {
+	return shouldDeletePermanently()
+		? `${itemName} berhasil dihapus permanen.`
+		: `${itemName} dipindahkan ke Sampah.`;
+}
+
 export function storeAuthSession<T>(session: T, rememberMe: boolean): void {
 	if (typeof window === "undefined") return;
 
@@ -85,9 +106,15 @@ apiClient.interceptors.request.use((config) => {
 	const isPublicAuthRequest = ["/auth/login", "/auth/refresh", "/auth/logout"]
 		.some((path) => config.url?.includes(path));
 	const session = getStoredAuthSession<StoredSession>();
+	const isDashboardDelete = config.method?.toLowerCase() === "delete" &&
+		config.url?.startsWith("/admin/") &&
+		!config.url.startsWith("/admin/trash/");
 
 	if (!isPublicAuthRequest && session?.accessToken) {
 		config.headers.Authorization = `Bearer ${session.accessToken}`;
+	}
+	if (isDashboardDelete && hasPermanentDeletePermission(session)) {
+		config.params = { ...(config.params ?? {}), permanent: true };
 	}
 
 	return config;

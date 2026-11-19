@@ -1,11 +1,12 @@
-import { ArrowLeft, CalendarDays, Receipt, UserRound } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, CalendarDays, Check, ChevronDown, Receipt, Search, UserRound } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import ThemedSelect from "../../components/common/ThemedSelect";
 import { courtService, type CourtResource } from "../../services/sport/courtService";
-import { invoiceService, type AvailabilitySlot, type FacilityCalendarDate, type Invoice, type InvoiceContact, type InvoicePaymentMethod, type PriceBreakdownItem } from "../../services/admin/invoiceService";
+import { customerService, type CustomerRecord } from "../../services/cms/customerService";
+import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
+import { invoiceService, type AvailabilitySlot, type FacilityCalendarDate, type Invoice, type InvoicePaymentMethod, type PriceBreakdownItem } from "../../services/admin/invoiceService";
 import InvoiceBookingStep from "./InvoiceBookingStep";
 import PaymentMethod, { getPaymentMethodLabel } from "./payment/PaymentMethod";
 import { formatBookingDate, formatIdr as rupiah, toLocalDateKey as toDateKey } from "../../../../utils/formatters";
@@ -23,21 +24,37 @@ const timeToMinutes = (time: string) => {
 const minutesToTime = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 const SERVICE_FEE_ITEM = "Biaya layanan";
 const DISCOUNT_ITEM = "Diskon";
-const EMPTY_CONTACTS: InvoiceContact[] = [];
+const EMPTY_CUSTOMERS: CustomerRecord[] = [];
 const EMPTY_FACILITIES: CourtResource[] = [];
 const EMPTY_CALENDAR_DATES: FacilityCalendarDate[] = [];
 const EMPTY_AVAILABILITY_SLOTS: AvailabilitySlot[] = [];
 
 interface InvoiceFormProps {
 	invoice?: Invoice | null;
+	initialBooking?: BookingInvoiceDraft | null;
 	onClose: () => void;
 	onSaved: (invoice: Invoice) => void;
 }
 
-export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormProps) {
+export type BookingInvoiceDraft = {
+	resourceId: string;
+	bookingDate: string;
+	startTime: string;
+	endTime: string;
+	sportType: string;
+};
+
+export default function InvoiceForm({ invoice, initialBooking, onClose, onSaved }: InvoiceFormProps) {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const [saving, setSaving] = useState(false);
 	const [activeStep, setActiveStep] = useState(1);
+	const initialDurationSlots = initialBooking
+		? Math.max(
+			initialBooking.sportType === "sepakbola" ? 2 : 1,
+			Math.ceil((timeToMinutes(initialBooking.endTime) - timeToMinutes(initialBooking.startTime)) / 60),
+		)
+		: 1;
 	const [invoiceNumber, setInvoiceNumber] = useState(invoice?.invoiceNumber ?? generateInvoiceNumber());
 	const [clientName, setClientName] = useState(invoice?.clientName ?? "");
 	const [clientEmail, setClientEmail] = useState(invoice?.clientEmail ?? "");
@@ -46,34 +63,73 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const [paymentMethod, setPaymentMethod] = useState<InvoicePaymentMethod | "">(invoice?.paymentMethod ?? "");
 	const service = invoice?.service ?? "";
 	const description = invoice?.description ?? "";
-	const [issueDate, setIssueDate] = useState(toDateInput(invoice?.issueDate ?? null));
-	const [bookingCalendarMonth, setBookingCalendarMonth] = useState(() => invoice?.issueDate ? new Date(`${invoice.issueDate.slice(0, 10)}T00:00:00`) : new Date());
+	const initialIssueDate = initialBooking?.bookingDate ?? toDateInput(invoice?.issueDate ?? null);
+	const [issueDate, setIssueDate] = useState(initialIssueDate);
+	const [bookingCalendarMonth, setBookingCalendarMonth] = useState(() => initialIssueDate ? new Date(`${initialIssueDate}T00:00:00`) : new Date());
 	const dueDate = toDateInput(invoice?.dueDate ?? null);
 	const initialPriceBreakdown = invoice?.priceBreakdown ?? [];
 	const [serviceFee, setServiceFee] = useState(() => initialPriceBreakdown.find((item) => item.name === SERVICE_FEE_ITEM)?.subtotal ?? 0);
 	const [discountAmount, setDiscountAmount] = useState(() => initialPriceBreakdown.find((item) => item.name === DISCOUNT_ITEM)?.subtotal ?? 0);
 	const [items, setItems] = useState<PriceBreakdownItem[]>(() => initialPriceBreakdown.filter((item) => item.name !== SERVICE_FEE_ITEM && item.name !== DISCOUNT_ITEM));
 	const choicesQuery = useQuery({
-		queryKey: ["invoice-form-choices"],
-		queryFn: () => Promise.all([invoiceService.getContacts(), courtService.getResources()]),
+		queryKey: ["invoice-form-facilities"],
+		queryFn: () => courtService.getResources(),
 		staleTime: 5 * 60 * 1000,
 	});
-	const contacts = choicesQuery.data?.[0] ?? EMPTY_CONTACTS;
-	const facilities = choicesQuery.data?.[1] ?? EMPTY_FACILITIES;
+	const customersQuery = useQuery({
+		queryKey: ["invoice-form-customers"],
+		queryFn: () => customerService.getCustomers({ page: 1, limit: 100 }),
+		staleTime: 5 * 60 * 1000,
+	});
+	const customers = customersQuery.data?.items ?? EMPTY_CUSTOMERS;
+	const [customerSearch, setCustomerSearch] = useState("");
+	const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
+	const customerPickerRef = useRef<HTMLDivElement>(null);
+	const debouncedCustomerSearch = useDebouncedValue(customerSearch, 300);
+	const filteredCustomers = useMemo(() => {
+		const query = debouncedCustomerSearch.trim().toLocaleLowerCase("id-ID");
+		return customers.filter((customer) =>
+			[customer.name, customer.email, customer.phone ?? ""]
+				.join(" ")
+				.toLocaleLowerCase("id-ID")
+				.includes(query),
+		);
+	}, [customers, debouncedCustomerSearch]);
+	const facilities = choicesQuery.data ?? EMPTY_FACILITIES;
 	const facilitiesLoaded = !choicesQuery.isPending;
 	const [contactId, setContactId] = useState(invoice?.contactId ?? "");
-	const [resourceId, setResourceId] = useState("");
-	const [startTime, setStartTime] = useState("");
-	const [endTime, setEndTime] = useState("");
-	const [durationSlots, setDurationSlots] = useState(1);
+	const [clientMode, setClientMode] = useState<"manual" | "registered">("manual");
+	const [selectedCustomerId, setSelectedCustomerId] = useState("");
+	const selectedRegisteredCustomer = customers.find((customer) => customer.id === selectedCustomerId) ?? null;
+	const [resourceId, setResourceId] = useState(initialBooking?.resourceId ?? "");
+	const [startTime, setStartTime] = useState(initialBooking?.startTime ?? "");
+	const [endTime, setEndTime] = useState(() => initialBooking ? minutesToTime(timeToMinutes(initialBooking.startTime) + 60 * initialDurationSlots) : "");
+	const [durationSlots, setDurationSlots] = useState(initialDurationSlots);
 	const [invoiceBooking, setInvoiceBooking] = useState<Awaited<ReturnType<typeof invoiceService.getBookingDetails>> | null>(null);
 	const [loadingInvoiceBooking, setLoadingInvoiceBooking] = useState(Boolean(invoice?.bookingId));
+
+	useEffect(() => {
+		if (!customerPickerOpen) return;
+		const closeOnOutsideClick = (event: PointerEvent) => {
+			if (event.target instanceof Node && !customerPickerRef.current?.contains(event.target)) {
+				setCustomerPickerOpen(false);
+			}
+		};
+		document.addEventListener("pointerdown", closeOnOutsideClick);
+		return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+	}, [customerPickerOpen]);
 
 	useEffect(() => {
 		if (choicesQuery.error) {
 			toast.error(choicesQuery.error instanceof Error ? choicesQuery.error.message : "Data pilihan gagal dimuat.");
 		}
 	}, [choicesQuery.error]);
+
+	useEffect(() => {
+		if (customersQuery.error) {
+			toast.error(customersQuery.error instanceof Error ? customersQuery.error.message : "Daftar pelanggan gagal dimuat.");
+		}
+	}, [customersQuery.error]);
 
 	useEffect(() => {
 		if (!invoice?.bookingId) return;
@@ -89,9 +145,11 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 		() => facilities.find((facility) => facility.id === resourceId) ?? null,
 		[facilities, resourceId],
 	);
-	const selectedSportType = selectedFacility?.sportTypes.includes("sepakbola")
-		? "sepakbola"
-		: selectedFacility?.sportTypes[0] ?? "";
+	const selectedSportType = initialBooking && selectedFacility?.sportTypes.includes(initialBooking.sportType)
+		? initialBooking.sportType
+		: selectedFacility?.sportTypes.includes("sepakbola")
+			? "sepakbola"
+			: selectedFacility?.sportTypes[0] ?? "";
 	const minimumDurationSlots = selectedFacility?.sportTypes.includes("sepakbola") ? 2 : 1;
 	const calendarRange = useMemo(() => ({
 		from: toDateKey(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth(), 1)),
@@ -190,9 +248,18 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const visibleFormSteps = invoice ? formSteps.slice(0, 2) : formSteps;
 
 	const validateStep = (step: number) => {
-		if (step === 1 && (!clientName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim()) || !/^(?:08[1-9]\d{7,10}|628[1-9]\d{7,10})$/.test(phone))) {
-			toast.error("Lengkapi nama, email yang valid, dan nomor telepon Indonesia yang valid.");
-			return false;
+		if (step === 1) {
+			if (clientMode === "registered" && !selectedCustomerId) {
+				toast.error("Pilih pelanggan terdaftar terlebih dahulu.");
+				return false;
+			}
+			const phoneIsValid = clientMode === "registered"
+				? !phone || /^(?:08[1-9]\d{7,10}|628[1-9]\d{7,10})$/.test(phone)
+				: /^(?:08[1-9]\d{7,10}|628[1-9]\d{7,10})$/.test(phone);
+			if (!clientName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim()) || !phoneIsValid) {
+				toast.error("Lengkapi nama, email yang valid, dan nomor telepon Indonesia yang valid.");
+				return false;
+			}
 		}
 		if (step === 2) {
 			if (invoice) return true;
@@ -318,6 +385,7 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 				notes: `Invoice ${finalInvoiceNumber} untuk ${clientName} (${clientEmail})${phone ? `, ${phone}` : ""}`,
 				returnUrl: `${window.location.origin}/invoice-payment/finalizing`,
 			});
+			void queryClient.invalidateQueries({ queryKey: ["sport-booking-day"] });
 			if (booking.payment && "unavailable" in booking.payment) throw new Error(booking.payment.message);
 
 			const bookingDescription = `${selectedFacility?.name ?? "Lapangan"} - ${issueDate} (${startTime}-${endTime})`;
@@ -359,12 +427,28 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 	const inputClass = "mt-1 h-11 w-full rounded-lg border border-obc-border bg-[#FDFCF7] px-3 text-[13px] text-obc-charcoal outline-none transition-colors focus:border-obc-green focus:bg-white focus:ring-2 focus:ring-[#CDF178]";
 
 	const chooseContact = (id: string) => {
-		setContactId(id);
-		const contact = contacts.find((item) => item.id === id);
-		if (!contact) return;
-		setClientName(contact.name);
-		setClientEmail(contact.email);
-		setPhone(contact.phone?.replace(/\D/g, "") ?? "");
+		const customer = customers.find((item) => item.id === id);
+		if (!customer) return;
+		setClientMode("registered");
+		setSelectedCustomerId(customer.id);
+		setContactId("");
+		setClientName(customer.name);
+		setClientEmail(customer.email);
+		setPhone(customer.phone?.replace(/\D/g, "") ?? "");
+		setCustomerSearch("");
+		setCustomerPickerOpen(false);
+	};
+
+	const chooseClientMode = (mode: "manual" | "registered") => {
+		if (mode === clientMode) return;
+		setClientMode(mode);
+		setContactId("");
+		setSelectedCustomerId("");
+		setCustomerSearch("");
+		setCustomerPickerOpen(false);
+		setClientName("");
+		setClientEmail("");
+		setPhone("");
 	};
 
 	const clearSelectedTime = () => {
@@ -463,16 +547,85 @@ export default function InvoiceForm({ invoice, onClose, onSaved }: InvoiceFormPr
 					</div>
 					{activeStep === 1 && <section className="rounded-xl border border-obc-border bg-white p-4 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-5">
 						<div className="mb-4 flex items-center gap-3 border-b border-obc-border pb-4"><span className="grid size-9 place-items-center rounded-lg bg-obc-ivory text-obc-green"><UserRound size={17} /></span><div><h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Data klien</h3><p className="mt-0.5 text-[12px] text-obc-muted">Informasi penerima tagihan.</p></div></div>
-						<label className="block text-[13px] font-medium text-obc-charcoal">Pilih klien terdaftar
-							<ThemedSelect
-								label="Pilih klien terdaftar"
-								value={contactId || "manual"}
-								options={[{ value: "manual", label: "Isi manual" }, ...contacts.map((contact) => ({ value: contact.id, label: `${contact.name} - ${contact.email}` }))]}
-								onValueChange={(value) => chooseContact(value === "manual" ? "" : value)}
-								className="mt-1 h-11 w-full text-[13px]"
-							/>
-						</label>
-						<div className="mt-4 grid gap-4 md:grid-cols-2"><label className="text-[13px] font-medium">Nama klien<input required value={clientName} onChange={(event) => setClientName(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Email klien<input required type="email" value={clientEmail} onChange={(event) => setClientEmail(event.target.value)} className={inputClass} /></label><label className="text-[13px] font-medium">Telepon<input required type="tel" inputMode="numeric" pattern="(?:08[1-9][0-9]{7,10}|628[1-9][0-9]{7,10})" title="Masukkan nomor telepon Indonesia yang valid menggunakan digit saja" value={phone} onChange={(event) => setPhone(event.target.value.replace(/\D/g, ""))} className={inputClass} /></label><label className="text-[13px] font-medium">Nomor invoice<input disabled={Boolean(invoice)} placeholder={invoice ? "" : "Otomatis dibuat jika kosong"} value={invoiceNumber} onChange={(event) => setInvoiceNumber(event.target.value)} className={inputClass} /></label></div>
+						<div className="grid grid-cols-2 gap-1 rounded-lg bg-[#F1F3EE] p-1" role="group" aria-label="Sumber data klien">
+							<button type="button" aria-pressed={clientMode === "registered"} onClick={() => chooseClientMode("registered")} className={`h-10 rounded-md px-3 text-[12px] font-semibold transition-colors ${clientMode === "registered" ? "bg-white text-obc-green shadow-sm" : "text-obc-muted hover:text-obc-charcoal"}`}>Pelanggan terdaftar</button>
+							<button type="button" aria-pressed={clientMode === "manual"} onClick={() => chooseClientMode("manual")} className={`h-10 rounded-md px-3 text-[12px] font-semibold transition-colors ${clientMode === "manual" ? "bg-white text-obc-green shadow-sm" : "text-obc-muted hover:text-obc-charcoal"}`}>Isi manual</button>
+						</div>
+						{clientMode === "registered" && (
+							<div ref={customerPickerRef} className="relative mt-4">
+								<span className="text-[13px] font-medium text-obc-charcoal">Pilih pelanggan</span>
+								<button
+									type="button"
+									aria-label="Cari dan pilih pelanggan terdaftar"
+									aria-expanded={customerPickerOpen}
+									aria-controls="invoice-customer-options"
+									disabled={customersQuery.isPending || !customers.length}
+									onClick={() => {
+										setCustomerSearch("");
+										setCustomerPickerOpen((open) => !open);
+									}}
+									className="mt-1 flex h-11 w-full items-center justify-between gap-3 rounded-lg border border-obc-border bg-[#FDFCF7] px-3 text-left text-[13px] outline-none transition-colors hover:border-obc-green focus-visible:ring-2 focus-visible:ring-[#CDF178] disabled:cursor-not-allowed disabled:opacity-60"
+								>
+									<span className={`min-w-0 truncate ${selectedRegisteredCustomer ? "font-medium text-obc-charcoal" : "text-obc-muted"}`}>
+										{customersQuery.isPending ? "Memuat pelanggan..." : selectedRegisteredCustomer ? `${selectedRegisteredCustomer.name} · ${selectedRegisteredCustomer.email}` : customers.length ? "Cari nama, email, atau telepon..." : "Belum ada pelanggan terdaftar"}
+									</span>
+									<ChevronDown size={16} className={`shrink-0 text-obc-green transition-transform ${customerPickerOpen ? "rotate-180" : ""}`} />
+								</button>
+								{customerPickerOpen && (
+									<div id="invoice-customer-options" className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-lg border border-obc-border bg-white shadow-[0_12px_30px_rgba(31,51,32,0.16)]">
+										<label className="relative block border-b border-obc-border p-2">
+											<Search size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-obc-muted" />
+											<input
+												autoFocus
+												value={customerSearch}
+												onChange={(event) => setCustomerSearch(event.target.value)}
+												onKeyDown={(event) => { if (event.key === "Escape") setCustomerPickerOpen(false); }}
+												placeholder="Cari nama, email, atau telepon..."
+												className="h-10 w-full rounded-md border border-obc-border bg-[#FDFCF7] pl-9 pr-3 text-[12px] outline-none focus:border-obc-green focus:ring-2 focus:ring-[#CDF178]"
+											/>
+										</label>
+										<div role="listbox" aria-label="Hasil pelanggan" className="max-h-60 overflow-y-auto p-1.5">
+											{filteredCustomers.length ? filteredCustomers.map((customer) => (
+												<button
+													key={customer.id}
+													type="button"
+													role="option"
+													aria-selected={selectedCustomerId === customer.id}
+													onClick={() => chooseContact(customer.id)}
+													className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#F3F8E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-obc-green"
+												>
+													<span className="min-w-0">
+														<span className="block truncate text-[12px] font-semibold text-obc-charcoal">{customer.name}</span>
+														<span className="mt-0.5 block truncate text-[11px] text-obc-muted">{customer.email}{customer.phone ? ` · ${customer.phone}` : ""}</span>
+													</span>
+													{selectedCustomerId === customer.id && <Check size={15} className="shrink-0 text-obc-green" />}
+												</button>
+											)) : (
+												<p className="px-3 py-6 text-center text-[12px] text-obc-muted">
+													{customersQuery.isPending ? "Memuat pelanggan..." : debouncedCustomerSearch ? "Pelanggan tidak ditemukan." : "Belum ada pelanggan terdaftar."}
+												</p>
+											)}
+										</div>
+									</div>
+								)}
+							</div>
+						)}
+						{clientMode === "registered" && selectedCustomerId ? (
+							<dl className="mt-4 grid gap-3 rounded-lg border border-obc-border bg-[#FDFCF7] p-4 text-[12px] sm:grid-cols-3">
+								<div><dt className="text-[10px] text-obc-muted">Nama</dt><dd className="mt-1 font-semibold text-obc-charcoal">{clientName}</dd></div>
+								<div><dt className="text-[10px] text-obc-muted">Email</dt><dd className="mt-1 break-all font-semibold text-obc-charcoal">{clientEmail}</dd></div>
+								<div><dt className="text-[10px] text-obc-muted">Telepon</dt><dd className="mt-1 font-semibold text-obc-charcoal">{phone || "-"}</dd></div>
+							</dl>
+						) : clientMode === "manual" ? (
+							<div className="mt-4 grid gap-4 md:grid-cols-2">
+								<label className="text-[13px] font-medium">Nama klien<input required value={clientName} onChange={(event) => setClientName(event.target.value)} className={inputClass} /></label>
+								<label className="text-[13px] font-medium">Email klien<input required type="email" value={clientEmail} onChange={(event) => setClientEmail(event.target.value)} className={inputClass} /></label>
+								<label className="text-[13px] font-medium">Telepon<input required type="tel" inputMode="numeric" pattern="(?:08[1-9][0-9]{7,10}|628[1-9][0-9]{7,10})" title="Masukkan nomor telepon Indonesia yang valid menggunakan digit saja" value={phone} onChange={(event) => setPhone(event.target.value.replace(/\D/g, ""))} className={inputClass} /></label>
+							</div>
+						) : (
+							<p role="status" className="mt-4 rounded-lg border border-dashed border-obc-border px-4 py-6 text-center text-[12px] text-obc-muted">Pilih pelanggan terdaftar untuk mengisi data klien.</p>
+						)}
+						<label className="mt-4 block text-[13px] font-medium">Nomor invoice<input disabled={Boolean(invoice)} placeholder={invoice ? "" : "Otomatis dibuat jika kosong"} value={invoiceNumber} onChange={(event) => setInvoiceNumber(event.target.value)} className={inputClass} /></label>
 					</section>}
 					{activeStep === 2 && (
 						<InvoiceBookingStep view="selection" {...bookingStepProps} />

@@ -123,4 +123,10 @@ export const unitbisnisService = {
 	async deleteUnit(id: string): Promise<void> {
 		await apiClient.delete(`/admin/tenants/${encodeURIComponent(id)}`);
 	},
+
+	async deleteUnitPermanently(id: string): Promise<void> {
+		await apiClient.delete(`/admin/tenants/${encodeURIComponent(id)}`, {
+			params: { permanent: true },
+		});
+	},
 };

@@ -1,4 +1,4 @@
-import { Building2, Eye, ImageOff } from "lucide-react";
+import { Building2, Eye, ImageOff, Trash2 } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
 import type { BusinessUnit } from "../../services/cms/unitbisnisService";
 
@@ -7,6 +7,7 @@ type Props = {
   loading: boolean;
   selectedSlug: string | null;
   onView: (unit: BusinessUnit) => void;
+  onDelete?: (unit: BusinessUnit) => void;
 };
 
 function getConfigString(config: Record<string, unknown>, key: string): string {
@@ -18,6 +19,7 @@ export default function BusinessUnitTable({
   loading,
   selectedSlug,
   onView,
+  onDelete,
 }: Props) {
   return (
     <section>
@@ -87,6 +89,17 @@ export default function BusinessUnitTable({
                     >
                       <Eye size={14} />
                     </button>
+                    {onDelete && (
+                      <button
+                        type="button"
+                        title="Hapus permanen"
+                        aria-label={`Hapus permanen unit bisnis ${unit.name}`}
+                        onClick={() => onDelete(unit)}
+                        className="grid size-8 place-items-center rounded-lg border border-white/70 bg-white/95 text-obc-red shadow-sm transition hover:bg-obc-red hover:text-white"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="p-3.5">

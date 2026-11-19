@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import ThemedSelect from "../../components/common/ThemedSelect";
-import { accountService, type StaffRole } from "../../services/admin/AccountService";
+import { accountService, type Staff, type StaffRole } from "../../services/admin/AccountService";
 
 type StaffFormValues = {
   name: string;
@@ -10,25 +10,29 @@ type StaffFormValues = {
   phone: string;
   password: string;
   role: StaffRole | "";
-  position: string;
-  expertise: string;
 };
 
-const initialValues: StaffFormValues = {
-  name: "",
-  email: "",
-  phone: "",
+const getInitialValues = (staff?: Staff): StaffFormValues => ({
+  name: staff?.name ?? "",
+  email: staff?.email ?? "",
+  phone: staff?.phone ?? "",
   password: "",
-  role: "",
-  position: "",
-  expertise: "",
-};
+  role: staff?.role ?? "",
+});
 
 const inputClass =
   "h-11 w-full rounded-xl border border-obc-border bg-white px-3 text-[13px] text-[#343133] outline-none focus:border-[#404F14] focus:ring-2 focus:ring-[#CDF178]";
 
-export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
-  const [values, setValues] = useState<StaffFormValues>(initialValues);
+export default function StaffForm({
+  staff,
+  onCreated,
+  onSaved,
+}: {
+  staff?: Staff;
+  onCreated?: () => void;
+  onSaved?: () => void;
+}) {
+  const [values, setValues] = useState<StaffFormValues>(() => getInitialValues(staff));
   const [submitting, setSubmitting] = useState(false);
 
   const update = (field: keyof StaffFormValues, value: string) => {
@@ -41,7 +45,7 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
       toast.error("Role staff wajib dipilih.");
       return;
     }
-    if (values.password.length < 8 || values.password.length > 128) {
+    if ((!staff || values.password) && (values.password.length < 8 || values.password.length > 128)) {
       toast.error("Password harus berisi 8-128 karakter.");
       return;
     }
@@ -53,20 +57,25 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
 
     try {
       setSubmitting(true);
-      await accountService.createStaff({
+      const payload = {
         name: values.name.trim(),
         email: values.email.trim(),
-        password: values.password,
         role: values.role,
         phone: phone || null,
-        team: {
-          position: values.position.trim() || null,
-          expertise: values.expertise.trim() || null,
-        },
-      });
-      toast.success("Staff berhasil ditambahkan.");
-      setValues(initialValues);
-      onCreated?.();
+      };
+      if (staff) {
+        await accountService.updateStaff(staff.id, {
+          ...payload,
+          ...(values.password ? { password: values.password } : {}),
+        });
+        toast.success("Data staff berhasil diperbarui.");
+        onSaved?.();
+      } else {
+        await accountService.createStaff({ ...payload, password: values.password });
+        toast.success("Staff berhasil ditambahkan.");
+        setValues(getInitialValues());
+        onCreated?.();
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menambahkan staff.",
@@ -78,7 +87,7 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
 
   return (
     <section className="w-full rounded-2xl border border-obc-border bg-white p-5 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-7">
-      <h2 className="font-heading text-[17px] font-semibold text-[#343133]">
+      <h2 className="font-heading text-[17px] font-semibold text-obc-charcoal">
         Informasi staff
       </h2>
       <form
@@ -122,16 +131,19 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
           />
         </label>
         <label className="grid gap-1.5">
-          <span className="text-[13px] font-semibold">Password awal *</span>
+          <span className="text-[13px] font-semibold">
+            {staff ? "Password baru" : "Password awal *"}
+          </span>
           <input
-            required
+            required={!staff}
             type="password"
-            minLength={8}
+            minLength={staff && !values.password ? undefined : 8}
             maxLength={128}
             autoComplete="new-password"
             value={values.password}
             onChange={(event) => update("password", event.target.value)}
             className={inputClass}
+            placeholder={staff ? "Kosongkan jika tidak diubah" : undefined}
           />
         </label>
         <label className="grid gap-1.5">
@@ -151,34 +163,13 @@ export default function StaffForm({ onCreated }: { onCreated?: () => void }) {
             className="h-11 w-full rounded-xl text-[13px]"
           />
         </label>
-        <label className="grid gap-1.5">
-          <span className="text-[13px] font-semibold">Posisi tim</span>
-          <input
-            maxLength={255}
-            value={values.position}
-            onChange={(event) => update("position", event.target.value)}
-            className={inputClass}
-            placeholder="Opsional"
-          />
-        </label>
-        <label className="grid gap-1.5 sm:col-span-2">
-          <span className="text-[13px] font-semibold">Keahlian</span>
-          <textarea
-            maxLength={500}
-            rows={3}
-            value={values.expertise}
-            onChange={(event) => update("expertise", event.target.value)}
-            className="w-full rounded-xl border border-obc-border bg-white p-3 text-[13px] outline-none focus:border-[#404F14] focus:ring-2 focus:ring-[#CDF178]"
-            placeholder="Opsional"
-          />
-        </label>
         <div className="flex justify-end sm:col-span-2">
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#004000] px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-[#265021] disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-obc-green px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-obc-green-hover disabled:cursor-wait disabled:opacity-60"
           >
-            <Send size={16} /> {submitting ? "Menyimpan..." : "Simpan staff"}
+            <Send size={16} /> {submitting ? "Menyimpan..." : staff ? "Simpan perubahan" : "Simpan staff"}
           </button>
         </div>
       </form>

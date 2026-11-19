@@ -5,15 +5,24 @@ import {
   CalendarDays,
   Eye,
   Mail,
+  Pencil,
   Search,
   ShieldAlert,
+  Trash2,
   UserRound,
   Users,
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import DeleteModal from "../../components/ui/DeleteModal";
+import {
+  filterTabButtonClass,
+  filterTabCountClass,
+  filterTabListClass,
+} from "../../components/common/filterTabStyles";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { toast } from "sonner";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import { accountService, type Staff, type StaffStatus } from "../../services/admin/AccountService";
 import StaffModal from "./StaffModal";
 import { formatProfileDate as formatDate, getInitials as initialsFor } from "../../../../utils/formatters";
@@ -65,8 +74,10 @@ function Summary({
   );
 }
 
-export default function StaffTable() {
+export default function StaffTable({ onEdit }: { onEdit: (staff: Staff) => void }) {
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const [deletingStaff, setDeletingStaff] = useState<Staff | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query);
   const [statusFilter, setStatusFilter] = useState<"all" | StaffStatus>("all");
@@ -159,6 +170,25 @@ export default function StaffTable() {
     }
   };
 
+  const confirmDelete = async () => {
+    if (!deletingStaff) return;
+    setDeleteLoading(true);
+    try {
+      await accountService.deleteStaff(deletingStaff.id);
+      queryClient.setQueryData<Staff[]>(["admin-staff"], (current = []) =>
+        current.filter((user) => user.id !== deletingStaff.id),
+      );
+      setDeletingStaff(null);
+      toast.success(getDeleteSuccessMessage("Staff"));
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menghapus staff.",
+      );
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <>
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -193,7 +223,7 @@ export default function StaffTable() {
           <div
             role="tablist"
             aria-label="Filter status staff"
-            className="flex gap-1 overflow-x-auto rounded-xl border border-obc-border bg-[#FDFCF7] p-1"
+            className={filterTabListClass}
           >
             {(["all", "active", "inactive", "suspended"] as const).map(
               (status) => (
@@ -206,10 +236,12 @@ export default function StaffTable() {
                     setStatusFilter(status);
                     setPage(1);
                   }}
-                  className={`shrink-0 rounded-lg px-3 py-2 text-[12px] font-medium transition-colors ${statusFilter === status ? "bg-white text-obc-green shadow-sm" : "text-obc-muted hover:text-obc-charcoal"}`}
+                  className={filterTabButtonClass(statusFilter === status)}
                 >
                   {status === "all" ? "Semua" : statusLabels[status]}{" "}
-                  <span className="ml-1">{counts[status]}</span>
+                  <span className={filterTabCountClass(statusFilter === status)}>
+                    {counts[status]}
+                  </span>
                 </button>
               ),
             )}
@@ -240,7 +272,7 @@ export default function StaffTable() {
                 <th className="px-5 py-3.5">Role</th>
                 <th className="px-5 py-3.5">Bergabung</th>
                 <th className="px-5 py-3.5">Status akun</th>
-                <th className="px-5 py-3.5 text-right">Detail</th>
+                <th className="px-5 py-3.5 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="text-[13px]">
@@ -309,7 +341,16 @@ export default function StaffTable() {
                       />
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(user)}
+                          title={`Edit ${user.name}`}
+                          aria-label={`Edit ${user.name}`}
+                          className="grid size-9 place-items-center rounded-lg border border-obc-border bg-white text-obc-muted transition-colors hover:border-obc-green hover:bg-[#F3F8E8] hover:text-obc-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CDF178]"
+                        >
+                          <Pencil size={15} />
+                        </button>
                         <button
                           type="button"
                           onClick={() => setSelectedStaff(user)}
@@ -318,6 +359,15 @@ export default function StaffTable() {
                           className="grid size-9 place-items-center rounded-lg border border-obc-border bg-white text-obc-green transition-colors hover:border-obc-green hover:bg-[#F3F8E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CDF178]"
                         >
                           <Eye size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingStaff(user)}
+                          title={`Hapus ${user.name}`}
+                          aria-label={`Hapus ${user.name}`}
+                          className="grid size-9 place-items-center rounded-lg border border-obc-border bg-white text-obc-muted transition-colors hover:border-obc-red hover:bg-red-50 hover:text-obc-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200"
+                        >
+                          <Trash2 size={15} />
                         </button>
                       </div>
                     </td>
@@ -355,6 +405,16 @@ export default function StaffTable() {
       <StaffModal
         staff={selectedStaff}
         onClose={() => setSelectedStaff(null)}
+      />
+      <DeleteModal
+        isOpen={Boolean(deletingStaff)}
+        title="Hapus staff?"
+        description="Akun staff akan dihapus atau dipindahkan ke Sampah sesuai hak akses Anda."
+        itemName={deletingStaff?.name}
+        confirmLabel="Hapus staff"
+        isLoading={deleteLoading}
+        onClose={() => setDeletingStaff(null)}
+        onConfirm={confirmDelete}
       />
     </>
   );

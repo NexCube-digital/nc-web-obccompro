@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import DeleteModal from "../../components/ui/DeleteModal";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import { courtService, type CourtResource } from "../../services/sport/courtService";
 import {
   sportService,
@@ -125,7 +126,7 @@ export default function SportHarga() {
       queryClient.setQueryData<PricingData>(pricingQueryKey, (current) =>
         current ? [current[0], current[1].filter((rule) => rule.id !== deletingItem.id)] : current,
       );
-      toast.success("Aturan tarif dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Aturan tarif"));
       setDeletingItem(null);
     } catch (error) {
       toast.error(

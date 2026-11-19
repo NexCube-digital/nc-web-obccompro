@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import {
-	BriefcaseBusiness,
 	CalendarDays,
 	Clock3,
 	Mail,
@@ -184,38 +183,6 @@ export default function StaffModal({ staff, onClose }: Props) {
 								</dt>
 								<dd className="mt-1 break-all font-mono text-[11px] text-obc-muted">
 									{staff.id}
-								</dd>
-							</div>
-						</dl>
-					</section>
-					<section>
-						<h3 className="flex items-center gap-2 font-heading text-[13px] font-semibold text-obc-charcoal">
-							<BriefcaseBusiness size={15} className="text-obc-green" />
-							Profil tim
-						</h3>
-						<dl className="mt-3 grid gap-x-6 gap-y-4 border-t border-obc-border pt-4 text-[12px] sm:grid-cols-2">
-							<div>
-								<dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-									Posisi
-								</dt>
-								<dd className="mt-1 font-medium text-obc-charcoal">
-									{staff.teamProfile?.position || "Belum diisi"}
-								</dd>
-							</div>
-							<div>
-								<dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-									Keahlian
-								</dt>
-								<dd className="mt-1 font-medium text-obc-charcoal">
-									{staff.teamProfile?.expertise || "Belum diisi"}
-								</dd>
-							</div>
-							<div className="sm:col-span-2">
-								<dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">
-									Bio
-								</dt>
-								<dd className="mt-1 whitespace-pre-line leading-5 text-obc-charcoal">
-									{staff.bio || "Belum ada bio."}
 								</dd>
 							</div>
 						</dl>

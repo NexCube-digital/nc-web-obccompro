@@ -9,6 +9,11 @@ import {
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import {
+  filterTabButtonClass,
+  filterTabCountClass,
+  filterTabListClass,
+} from "../../components/common/filterTabStyles";
 import { getTestimonialAvatarUrl } from "../../../../services/Public/Testimonial";
 import type { Testimonial, TestimonialListResponse } from "../../services/cms/testimonialService";
 import TestimonialDetailModal from "./ModalDetail";
@@ -167,7 +172,7 @@ export default function TestimonialTable({
           <div
             role="tablist"
             aria-label="Filter status testimoni"
-            className="mt-4 flex gap-1 overflow-x-auto"
+            className={`mt-4 ${filterTabListClass}`}
           >
             {filters.map((filter) => {
               const count =
@@ -183,10 +188,18 @@ export default function TestimonialTable({
                   onClick={() => {
                     onStatusFilterChange(filter.value);
                   }}
-                  className={`shrink-0 rounded-lg border px-3 py-2 text-[11px] font-semibold transition-colors ${statusFilter === filter.value ? "border-[#D9E7BB] bg-[#F3F8E8] text-obc-green" : "border-transparent text-obc-muted hover:border-obc-border hover:bg-[#FDFCF7]"}`}
+                  className={filterTabButtonClass(
+                    statusFilter === filter.value,
+                  )}
                 >
                   {filter.label}
-                  <span className="ml-1.5 opacity-65">{count}</span>
+                  <span
+                    className={filterTabCountClass(
+                      statusFilter === filter.value,
+                    )}
+                  >
+                    {count}
+                  </span>
                 </button>
               );
             })}

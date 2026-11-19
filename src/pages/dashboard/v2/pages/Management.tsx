@@ -4,7 +4,7 @@ import { FileText, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { authService } from "../../../../services/auth";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import CmsPageForm from "./Form";
 import CmsPageTable from "./Table";
@@ -44,10 +44,10 @@ export default function Management() {
 	};
 
 	const deletePage = async (page: CmsPage) => {
-		if (!window.confirm(`Hapus halaman CMS "${page.title}" beserta section-nya?`)) return;
+		if (!window.confirm(getDeleteConfirmationMessage(`halaman CMS "${page.title}" beserta section-nya`))) return;
 		try {
 			await cmsPageService.deletePage(page.id);
-			toast.success("Halaman CMS dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Halaman CMS"));
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

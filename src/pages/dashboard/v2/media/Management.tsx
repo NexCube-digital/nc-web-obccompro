@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Files, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../../../../services/auth";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import MediaForm from "./Form";
@@ -57,12 +57,12 @@ export default function Management() {
 	};
 
 	const removeMedia = async (item: MediaRecord) => {
-		if (!window.confirm(`Pindahkan file "${item.originalName}" ke Sampah? File dapat dipulihkan admin selama 30 hari.`)) return;
+		if (!window.confirm(getDeleteConfirmationMessage(`file "${item.originalName}"`))) return;
 		setDeletingId(item.id);
 		try {
 			await mediaService.deleteMedia(item.id);
 			void queryClient.invalidateQueries({ queryKey: ["v2-media"] });
-			toast.success("Media dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Media"));
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
 		} finally {

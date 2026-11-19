@@ -1,5 +1,17 @@
 import { useRef, useState, type FormEvent } from "react";
-import { ImagePlus, Plus, X } from "lucide-react";
+import {
+  Building2,
+  Car,
+  Droplets,
+  ImagePlus,
+  LockKeyhole,
+  Plus,
+  Sparkles,
+  Utensils,
+  Wifi,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import { getMediaUrl } from "../../v2/media/mediaService";
 import { sportOptions, tableSportTypes, type CourtResource, type CourtResourceUpdateInput } from "../../services/sport/courtService";
@@ -20,10 +32,20 @@ const facilityOptions = [
   { value: "foodcourt", label: "Food court" },
 ];
 
+const facilityIcons: Record<string, LucideIcon> = {
+  parkir_luas: Car,
+  musholla: Building2,
+  shower: Droplets,
+  loker: LockKeyhole,
+  wifi: Wifi,
+  foodcourt: Utensils,
+};
+
 export default function CourtResourceForm({ resource, onClose, onSave }: Props) {
   const [name, setName] = useState(resource.name);
   const [description, setDescription] = useState(resource.description ?? "");
   const [sportTypes, setSportTypes] = useState(resource.sportTypes);
+  const [hiddenSportTypes, setHiddenSportTypes] = useState<string[]>([]);
   const [capacity, setCapacity] = useState(resource.capacity);
   const [parallelUnits, setParallelUnits] = useState(resource.parallelUnits);
   const [slotMinutes, setSlotMinutes] = useState(resource.slotMinutes);
@@ -31,6 +53,7 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
   const [customFacilities, setCustomFacilities] = useState(() => resource.amenities
     .filter((value) => !facilityOptions.some((facility) => facility.value === value))
     .map((value) => ({ value, label: value.replace(/[_-]/g, " ") })));
+  const [hiddenFacilityOptions, setHiddenFacilityOptions] = useState<string[]>([]);
   const [newFacility, setNewFacility] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState(resource.imageUrl ?? "");
@@ -38,6 +61,8 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const facilities = [...facilityOptions, ...customFacilities];
+  const visibleFacilities = facilities.filter((facility) => !hiddenFacilityOptions.includes(facility.value));
+  const visibleSportOptions = sportOptions.filter(({ value }) => !hiddenSportTypes.includes(value));
   const hasTableUnits = sportTypes.some((sport) => tableSportTypes.includes(sport));
 
   const addFacility = () => {
@@ -48,6 +73,20 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
     setCustomFacilities((current) => [...current, { value: label, label }]);
     setAmenities((current) => [...current, label]);
     setNewFacility("");
+  };
+
+  const removeSportType = (sport: string) => {
+    setSportTypes((current) => current.filter((item) => item !== sport));
+    setHiddenSportTypes((current) => current.includes(sport) ? current : [...current, sport]);
+  };
+
+  const removeFacility = (value: string, removeOption = false) => {
+    setAmenities((current) => current.filter((item) => item !== value));
+    if (removeOption) {
+      setCustomFacilities((current) => current.filter((facility) => facility.value !== value));
+    } else {
+      setHiddenFacilityOptions((current) => current.includes(value) ? current : [...current, value]);
+    }
   };
 
   const submit = async (event: FormEvent) => {
@@ -109,16 +148,28 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
           <fieldset className="sm:col-span-2">
             <legend className="text-[13px] font-medium text-obc-charcoal">Jenis olahraga</legend>
             <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
-              {sportOptions.map(({ value: sport, label }) => {
+              {visibleSportOptions.map(({ value: sport, label }) => {
                 const checked = sportTypes.includes(sport);
                 return (
-                  <label key={sport} className={`flex h-9 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[12px] capitalize transition-colors ${checked ? "border-obc-green bg-obc-ivory text-obc-charcoal" : "border-obc-border bg-white text-obc-muted hover:border-obc-green"}`}>
-                    <input type="checkbox" checked={checked} onChange={(event) => setSportTypes((current) => event.target.checked ? [...current, sport] : current.filter((item) => item !== sport))} className="size-3.5 accent-obc-green" />
-                    {label}
-                  </label>
+                  <div key={sport} className={`flex h-9 min-w-0 items-center rounded-lg border transition-colors ${checked ? "border-obc-green bg-obc-ivory text-obc-charcoal" : "border-obc-border bg-white text-obc-muted hover:border-obc-green"}`}>
+                    <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 px-3 text-[12px] capitalize">
+                      <input type="checkbox" checked={checked} onChange={(event) => setSportTypes((current) => event.target.checked ? [...current, sport] : current.filter((item) => item !== sport))} className="size-3.5 shrink-0 accent-obc-green" />
+                      <span className="truncate">{label}</span>
+                    </label>
+                    {checked && (
+                      <button type="button" title={`Hapus ${label} dari lapangan`} aria-label={`Hapus ${label} dari lapangan`} onClick={() => removeSportType(sport)} className="mr-1 grid size-7 shrink-0 place-items-center rounded-md text-obc-muted transition-colors hover:bg-red-50 hover:text-obc-red">
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
+            {hiddenSportTypes.length > 0 && (
+              <button type="button" onClick={() => setHiddenSportTypes([])} className="mt-2 text-[11px] font-medium text-obc-green underline-offset-2 hover:underline">
+                Pulihkan {hiddenSportTypes.length} jenis olahraga yang dihapus
+              </button>
+            )}
             {sportTypes.length === 0 && <p className="mt-1 text-[12px] text-red-600">Pilih minimal satu jenis olahraga.</p>}
             {hasTableUnits && <div className="mt-4 rounded-lg border border-obc-border bg-[#FDFCF7] p-3 sm:max-w-sm">
               <label className="block text-[12px] font-medium text-obc-charcoal">Jumlah meja
@@ -134,16 +185,31 @@ export default function CourtResourceForm({ resource, onClose, onSave }: Props) 
             <legend className="text-[13px] font-medium text-obc-charcoal">Fasilitas</legend>
             <p className="mt-1 text-[12px] text-obc-muted">Pilih fasilitas yang tersedia di lapangan.</p>
             <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
-              {facilities.map((facility) => {
+              {visibleFacilities.map((facility) => {
                 const checked = amenities.includes(facility.value);
+                const isCustom = customFacilities.some((item) => item.value === facility.value);
+                const Icon = facilityIcons[facility.value] ?? Sparkles;
                 return (
-                  <label key={facility.value} className={`flex h-9 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[12px] transition-colors ${checked ? "border-obc-green bg-obc-ivory text-obc-charcoal" : "border-obc-border bg-white text-obc-muted hover:border-obc-green"}`}>
-                    <input type="checkbox" checked={checked} onChange={(event) => setAmenities((current) => event.target.checked ? [...current, facility.value] : current.filter((value) => value !== facility.value))} className="size-3.5 accent-obc-green" />
-                    <span className="capitalize">{facility.label}</span>
-                  </label>
+                  <div key={facility.value} className={`flex h-9 min-w-0 items-center rounded-lg border transition-colors ${checked ? "border-obc-green bg-obc-ivory text-obc-charcoal" : "border-obc-border bg-white text-obc-muted hover:border-obc-green"}`}>
+                    <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 px-3 text-[12px]">
+                      <input type="checkbox" checked={checked} onChange={(event) => setAmenities((current) => event.target.checked ? [...current, facility.value] : current.filter((value) => value !== facility.value))} className="size-3.5 shrink-0 accent-obc-green" />
+                      <Icon size={14} className="shrink-0 text-obc-green" aria-hidden="true" />
+                      <span className="truncate capitalize">{facility.label}</span>
+                    </label>
+                    {(checked || isCustom) && (
+                      <button type="button" title={isCustom ? `Hapus fasilitas ${facility.label}` : `Hapus ${facility.label} dari lapangan`} aria-label={isCustom ? `Hapus fasilitas ${facility.label}` : `Hapus ${facility.label} dari lapangan`} onClick={() => removeFacility(facility.value, isCustom)} className="mr-1 grid size-7 shrink-0 place-items-center rounded-md text-obc-muted transition-colors hover:bg-red-50 hover:text-obc-red">
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
+            {hiddenFacilityOptions.length > 0 && (
+              <button type="button" onClick={() => setHiddenFacilityOptions([])} className="mt-2 text-[11px] font-medium text-obc-green underline-offset-2 hover:underline">
+                Pulihkan {hiddenFacilityOptions.length} fasilitas yang dihapus
+              </button>
+            )}
             <div className="mt-3 flex gap-2">
               <input
                 value={newFacility}

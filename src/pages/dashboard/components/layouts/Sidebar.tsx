@@ -38,19 +38,8 @@ const SUPER_ADMIN_ROLE: StaffRole[] = ["super_admin"];
 
 const MENU: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, to: "/dashboard", roles: ALL_ROLES },
-  { label: "Booking", category: "OPERASIONAL", icon: Dumbbell, to: "/sport/booking", roles: OPERATIONAL_ROLES },
-  { label: "Lapangan", category: "OPERASIONAL", icon: Building2, to: "/sport/court", roles: OPERATIONAL_ROLES },
-  { label: "Harga & Tarif", category: "OPERASIONAL", icon: Receipt, to: "/sport/harga", roles: OPERATIONAL_ROLES },
-  { label: "Paket", category: "OPERASIONAL", icon: Package, to: "/sport/paket", roles: OPERATIONAL_ROLES },
-  { label: "Promo", category: "OPERASIONAL", icon: BadgePercent, to: "/sport/promo", roles: OPERATIONAL_ROLES },
-  { label: "Membership", category: "OPERASIONAL", icon: Users, to: "/sport/membership", roles: OPERATIONAL_ROLES },
-  { label: "Invoice Management", category: "TRANSAKSI & KEUANGAN", icon: Receipt, to: "/admin/invoices", roles: ADMIN_ROLES },
-  { label: "Pelanggan", category: "TRANSAKSI & KEUANGAN", icon: Users, to: "/admin/customers", roles: ADMIN_ROLES },
-  { label: "Laporan", category: "TRANSAKSI & KEUANGAN", icon: FileBarChart, to: "/laporan", roles: ADMIN_ROLES },
-  { label: "Staff", category: "KONTEN & ADMINISTRASI", icon: Users, to: "/staff", roles: SUPER_ADMIN_ROLE },
   {
     label: "Konten Website",
-    category: "KONTEN & ADMINISTRASI",
     icon: Globe,
     roles: CONTENT_ROLES,
     children: [
@@ -60,9 +49,19 @@ const MENU: MenuItem[] = [
       { label: "Kontak Situs", to: "/kontak-lokasi", roles: CONTENT_ROLES },
     ],
   },
+  { label: "Booking", category: "Data master", icon: Dumbbell, to: "/sport/booking", roles: OPERATIONAL_ROLES },
+  { label: "Lapangan", category: "Data master", icon: Building2, to: "/sport/court", roles: OPERATIONAL_ROLES },
+  { label: "Harga & Tarif", category: "Data master", icon: Receipt, to: "/sport/harga", roles: OPERATIONAL_ROLES },
+  { label: "Staff", category: "Data master", icon: Users, to: "/staff", roles: SUPER_ADMIN_ROLE },
+  { label: "Paket", category: "Data master", icon: Package, to: "/sport/paket", roles: OPERATIONAL_ROLES },
+  { label: "Promo", category: "Data master", icon: BadgePercent, to: "/sport/promo", roles: OPERATIONAL_ROLES },
+  { label: "Membership", category: "Data master", icon: Users, to: "/sport/membership", roles: OPERATIONAL_ROLES },
+  { label: "Invoice Management", category: "Administrasi", icon: Receipt, to: "/admin/invoices", roles: ADMIN_ROLES },
+  { label: "Pelanggan", category: "Administrasi", icon: Users, to: "/admin/customers", roles: ADMIN_ROLES },
+  { label: "Laporan", category: "Administrasi", icon: FileBarChart, to: "/laporan", roles: ADMIN_ROLES },
   {
     label: "Akses & Audit",
-    category: "KONTEN & ADMINISTRASI",
+    category: "Administrasi",
     icon: FileBarChart,
     roles: SUPER_ADMIN_ROLE,
     children: [
@@ -70,17 +69,14 @@ const MENU: MenuItem[] = [
       { label: "Audit Log", to: "/admin/activities", roles: SUPER_ADMIN_ROLE },
     ],
   },
-  { label: "Sampah", category: "KONTEN & ADMINISTRASI", icon: ArchiveRestore, to: "/admin/trash", roles: ADMIN_ROLES },
+  { label: "Sampah", category: "Administrasi", icon: ArchiveRestore, to: "/admin/trash", roles: ADMIN_ROLES },
 
 ];
 
 type Props = {
-  /** Mode PC: sidebar ciut menjadi rail ikon */
   collapsed: boolean;
-  /** Mode mobile/tablet: drawer terbuka */
   mobileOpen: boolean;
   onCloseMobile: () => void;
-  /** Dipanggil saat menu bercabang diklik ketika sidebar sedang ciut */
   onExpand: () => void;
 };
 
@@ -106,8 +102,6 @@ export default function Sidebar({
   ))?.label ?? null;
   const [expanded, setExpanded] = useState<string | null>(() => activeGroup);
 
-  // Semua kelas "ciut" hanya berlaku di layar PC (lg ke atas).
-  // Di mobile drawer selalu tampil penuh.
   const hide = collapsed ? "lg:hidden" : "";
   const center = collapsed ? "lg:justify-center lg:gap-0 lg:px-0" : "";
 

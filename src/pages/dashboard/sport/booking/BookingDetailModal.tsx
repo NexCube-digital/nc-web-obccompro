@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, Clock3, CreditCard, FileText, MapPin, UserRound, X } from "lucide-react";
-import { sportService, type BookingCalendarItem, type BookingStatus, type ResourceAvailability, type SportBookingDetails } from "../../services/sport/SportService";
+import { useNavigate } from "react-router-dom";
+import { CalendarDays, Clock3, CreditCard, FileText, MapPin, Receipt, UserRound, X } from "lucide-react";
+import { toast } from "sonner";
+import { sportService, type BookingCalendarItem, type BookingStatus, type ResourceAvailability, type SportBookingDetails, type SportType } from "../../services/sport/SportService";
 import type { CourtResource } from "../../services/sport/courtService";
 import { formatBookingDate as formatDate, formatIdDateTime as formatDateTime, formatIdr as formatMoney } from "../../../../utils/formatters";
 
@@ -9,6 +11,7 @@ type Props = {
 	slot: ResourceAvailability["slots"][number];
 	bookings: BookingCalendarItem[];
 	date: string;
+	sportType: SportType;
 	onClose: () => void;
 };
 
@@ -50,9 +53,11 @@ const slotStatusLabels: Record<ResourceAvailability["slots"][number]["status"], 
 
 const humanize = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
-export default function BookingDetailModal({ resource, slot, bookings, date, onClose }: Props) {
+export default function BookingDetailModal({ resource, slot, bookings, date, sportType, onClose }: Props) {
+	const navigate = useNavigate();
 	const [details, setDetails] = useState<BookingDetailResult[]>([]);
 	const [loading, setLoading] = useState(bookings.length > 0);
+	const [checkingAvailability, setCheckingAvailability] = useState(false);
 
 	useEffect(() => {
 		let active = true;
@@ -72,6 +77,33 @@ export default function BookingDetailModal({ resource, slot, bookings, date, onC
 
 		return () => { active = false; };
 	}, [bookings]);
+
+	const createInvoiceForSlot = async () => {
+		setCheckingAvailability(true);
+		try {
+			const availability = await sportService.getResourceAvailability(resource.id, date, false);
+			const currentSlot = availability.slots.find((item) => item.startTime === slot.startTime && item.endTime === slot.endTime);
+			if (!currentSlot?.available || currentSlot.status !== "available") {
+				toast.error("Slot sudah tidak tersedia. Muat ulang jadwal dan pilih slot lain.");
+				return;
+			}
+			navigate("/admin/invoices", {
+				state: {
+					bookingInvoiceDraft: {
+						resourceId: resource.id,
+						bookingDate: date,
+						startTime: slot.startTime,
+						endTime: slot.endTime,
+						sportType,
+					},
+				},
+			});
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Ketersediaan slot gagal diperiksa.");
+		} finally {
+			setCheckingAvailability(false);
+		}
+	};
 
 	return (
 		<div className="fixed inset-0 z-50 flex justify-center overflow-y-auto bg-black/45 p-3 sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
@@ -151,6 +183,14 @@ export default function BookingDetailModal({ resource, slot, bookings, date, onC
 						</article>)}
 					</div>}
 				</div>
+				<footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-obc-border bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+					<button type="button" onClick={onClose} className="h-10 rounded-lg border border-obc-border px-4 text-[12px] font-semibold text-obc-charcoal transition-colors hover:bg-obc-ivory">Tutup</button>
+					{slot.status === "available" && bookings.length === 0 && (
+						<button type="button" disabled={checkingAvailability} onClick={() => void createInvoiceForSlot()} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[12px] font-semibold text-white transition-colors hover:bg-obc-green-hover disabled:cursor-wait disabled:opacity-60">
+							<Receipt size={15} />{checkingAvailability ? "Memeriksa slot..." : "Buat invoice untuk slot ini"}
+						</button>
+					)}
+				</footer>
 			</section>
 		</div>
 	);

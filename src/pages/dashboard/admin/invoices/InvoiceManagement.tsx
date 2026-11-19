@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BadgeCheck,
   CircleDollarSign,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import DeleteModal from "../../components/ui/DeleteModal";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import {
   invoiceService,
   type Invoice,
@@ -16,7 +18,7 @@ import {
   type InvoiceStatus,
 } from "../../services/admin/invoiceService";
 import { toast } from "sonner";
-import InvoiceForm from "./Form";
+import InvoiceForm, { type BookingInvoiceDraft } from "./Form";
 import InvoiceTable from "./Table";
 import InvoiceDetailModal from "./InvoiceDetailModal";
 import InvoicePaymentModal from "./InvoicePaymentModal";
@@ -31,6 +33,14 @@ const statuses: InvoiceStatus[] = [
   "partial",
   "cancelled",
 ];
+
+function isBookingInvoiceDraft(value: unknown): value is BookingInvoiceDraft {
+  if (typeof value !== "object" || value === null) return false;
+  const draft = value as Record<string, unknown>;
+  return ["resourceId", "bookingDate", "startTime", "endTime", "sportType"]
+    .every((key) => typeof draft[key] === "string");
+}
+
 function Summary({
   label,
   value,
@@ -63,6 +73,8 @@ function Summary({
 
 export default function InvoiceManagement() {
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const navigate = useNavigate();
   const invoiceQuery = useQuery({
     queryKey: ["admin-invoices"],
     queryFn: () => invoiceService.getInvoiceList(),
@@ -72,6 +84,7 @@ export default function InvoiceManagement() {
   const loading = invoiceQuery.isPending;
   const [formOpen, setFormOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [bookingDraft, setBookingDraft] = useState<BookingInvoiceDraft | null>(null);
   const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [detailBooking, setDetailBooking] =
     useState<InvoiceBookingDetails | null>(null);
@@ -96,6 +109,15 @@ export default function InvoiceManagement() {
     }
   }, [invoiceQuery.error]);
 
+  useEffect(() => {
+    const state = location.state as { bookingInvoiceDraft?: unknown } | null;
+    if (!state || !isBookingInvoiceDraft(state.bookingInvoiceDraft)) return;
+    setEditingInvoice(null);
+    setBookingDraft(state.bookingInvoiceDraft);
+    setFormOpen(true);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
+
   const counts = useMemo(
     () =>
       Object.fromEntries(
@@ -115,10 +137,12 @@ export default function InvoiceManagement() {
 
   const openCreateForm = () => {
     setEditingInvoice(null);
+    setBookingDraft(null);
     setFormOpen(true);
   };
 
   const openEditForm = (invoice: Invoice) => {
+    setBookingDraft(null);
     setEditingInvoice(invoice);
     setFormOpen(true);
   };
@@ -161,7 +185,7 @@ export default function InvoiceManagement() {
         current.filter((item) => item.id !== deletingInvoice.id),
       );
       setDeletingInvoice(null);
-      toast.success("Invoice dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Invoice"));
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menghapus invoice.",
@@ -243,7 +267,11 @@ export default function InvoiceManagement() {
       >
         <InvoiceForm
           invoice={editingInvoice}
-          onClose={() => setFormOpen(false)}
+          initialBooking={bookingDraft}
+          onClose={() => {
+            setFormOpen(false);
+            setBookingDraft(null);
+          }}
           onSaved={handleSaved}
         />
       </DashboardPageLayout>

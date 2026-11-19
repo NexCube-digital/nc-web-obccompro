@@ -4,14 +4,32 @@ import { Plus } from "lucide-react";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import StaffForm from "./StaffForm";
 import StaffTable from "./StaffTable";
+import type { Staff } from "../../services/admin/AccountService";
 
 export default function Management() {
   const [showForm, setShowForm] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
   const queryClient = useQueryClient();
 
-  const handleStaffCreated = () => {
+  const handleStaffSaved = () => {
     void queryClient.invalidateQueries({ queryKey: ["admin-staff"] });
     setShowForm(false);
+    setEditingStaff(null);
+  };
+
+  const openCreateForm = () => {
+    setEditingStaff(null);
+    setShowForm(true);
+  };
+
+  const openEditForm = (staff: Staff) => {
+    setEditingStaff(staff);
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingStaff(null);
   };
 
   return (
@@ -22,7 +40,7 @@ export default function Management() {
         {!showForm && (
           <button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={openCreateForm}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-obc-green-hover"
           >
             <Plus size={15} />
@@ -35,21 +53,27 @@ export default function Management() {
         {showForm && (
           <div className="rounded-2xl border border-obc-border bg-white p-5 shadow-[0_1px_2px_rgba(52,49,51,0.04)] sm:p-7">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-heading text-[17px] font-semibold text-[#343133]">
-                Tambah staff baru
+              <h2 className="font-heading text-[17px] font-semibold text-obc-charcoal">
+                {editingStaff ? "Edit data staff" : "Tambah staff baru"}
               </h2>
               <button
-                onClick={() => setShowForm(false)}
-                className="rounded-lg border border-obc-border px-4 py-2 text-[13px] font-medium text-[#343133] hover:bg-[#FDFCF7]"
+                type="button"
+                onClick={closeForm}
+                className="rounded-lg border border-obc-border px-4 py-2 text-[13px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]"
               >
                 Batal
               </button>
             </div>
-            <StaffForm onCreated={handleStaffCreated} />
+            <StaffForm
+              key={editingStaff?.id ?? "new-staff"}
+              staff={editingStaff ?? undefined}
+              onCreated={handleStaffSaved}
+              onSaved={handleStaffSaved}
+            />
           </div>
         )}
 
-        {!showForm && <StaffTable />}
+        {!showForm && <StaffTable onEdit={openEditForm} />}
       </div>
     </DashboardPageLayout>
   );

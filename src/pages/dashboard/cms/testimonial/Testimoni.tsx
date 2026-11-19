@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import DeleteModal from "../../components/ui/DeleteModal";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import { testimonialService, type Testimonial, type TestimonialListResponse } from "../../services/cms/testimonialService";
 import { toast } from "sonner";
 import TestimonialForm, { type TestimonialFormValues } from "./Form";
@@ -106,7 +107,7 @@ export default function Testimoni() {
       await testimonialService.deleteTestimonial(deletingItem.id);
       setDeletingItem(null);
       refresh();
-      toast.success("Testimoni dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Testimoni"));
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menghapus testimoni.",

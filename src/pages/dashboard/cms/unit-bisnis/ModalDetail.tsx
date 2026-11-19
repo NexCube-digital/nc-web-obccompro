@@ -3,7 +3,7 @@ import {
   Building2,
   Pencil,
   Power,
-  PowerOff,
+  Trash2,
   X,
 } from "lucide-react";
 import { getMediaUrl } from "../../v2/media/mediaService";
@@ -12,6 +12,8 @@ import type { BusinessUnitDetail } from "../../services/cms/unitbisnisService";
 
 type Props = {
   unit: BusinessUnitDetail;
+  canDelete: boolean;
+  canManage: boolean;
   onClose: () => void;
   onEdit: () => void;
   onToggleStatus: () => void;
@@ -44,6 +46,8 @@ function DetailField({
 
 export default function BusinessUnitDetails({
   unit,
+  canDelete,
+  canManage,
   onClose,
   onEdit,
   onToggleStatus,
@@ -204,31 +208,35 @@ export default function BusinessUnitDetails({
 
         </div>
         <footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-obc-border bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-          <button
-            type="button"
-            onClick={onToggleStatus}
-            className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-4 text-[12px] font-semibold transition-colors ${unit.status === "active" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-obc-border text-obc-charcoal hover:bg-obc-ivory"}`}
-          >
-            {unit.status === "active" ? (
-              <>
-                <PowerOff size={14} />
-                Nonaktifkan unit
-              </>
-            ) : (
-              <>
-                <Power size={14} />
-                Aktifkan unit
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={onEdit}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-obc-green-hover"
-          >
-            <Pencil size={14} />
-            Edit unit
-          </button>
+          {(unit.status === "active" ? canDelete : canManage) && (
+            <button
+              type="button"
+              onClick={onToggleStatus}
+              className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-4 text-[12px] font-semibold transition-colors ${unit.status === "active" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-obc-border text-obc-charcoal hover:bg-obc-ivory"}`}
+            >
+              {unit.status === "active" ? (
+                <>
+                  <Trash2 size={14} />
+                  Hapus permanen
+                </>
+              ) : (
+                <>
+                  <Power size={14} />
+                  Aktifkan unit
+                </>
+              )}
+            </button>
+          )}
+          {canManage && (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-obc-green-hover"
+            >
+              <Pencil size={14} />
+              Edit unit
+            </button>
+          )}
         </footer>
       </section>
     </div>

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { Clock3, Eye, Search, Trash2 } from "lucide-react";
+import { Check, Clock3, Eye, Search, SlidersHorizontal, Trash2 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import ThemedSelect from "../../components/common/ThemedSelect";
 import type { ActiveStatus, PricingRule } from "../../services/sport/SportService";
-import type { CourtResource } from "../../services/sport/courtService";
+import { sportOptions, tableSportTypes, type CourtResource } from "../../services/sport/courtService";
 import { formatIdr } from "../../../../utils/formatters";
 
 type Props = {
@@ -86,14 +86,32 @@ export default function PricingTable({
   onView,
   onDelete,
 }: Props) {
+  const [selectedSport, setSelectedSport] = useState("all");
   const [selectedResourceId, setSelectedResourceId] = useState("");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
   const [page, setPage] = useState(1);
+  const sports = Array.from(
+    new Set(
+      resources.flatMap((resource) =>
+        resource.sportTypes.filter((sport) => !tableSportTypes.includes(sport)),
+      ),
+    ),
+  ).map((value) => ({
+    value,
+    label: sportOptions.find((option) => option.value === value)?.label ?? value.replaceAll("_", " "),
+  }));
+  const filteredResources =
+    selectedSport === "all"
+      ? resources
+      : resources.filter((resource) => resource.sportTypes.includes(selectedSport));
   const selectedResource =
-    resources.find((resource) => resource.id === selectedResourceId) ??
-    resources[0] ??
+    filteredResources.find((resource) => resource.id === selectedResourceId) ??
+    filteredResources[0] ??
     null;
+  const showSportFilter =
+    sports.length > 0 &&
+    !selectedResource?.sportTypes.some((sport) => tableSportTypes.includes(sport));
   const rateUnitLabel = selectedResource?.sportTypes.includes("sepakbola")
     ? "2 jam"
     : "jam";
@@ -138,6 +156,11 @@ export default function PricingTable({
     setPage(1);
   };
 
+  const changeSport = (sport: string) => {
+    setSelectedSport(sport);
+    setPage(1);
+  };
+
   const statusSelect = (rule: PricingRule) => (
     <ThemedSelect
       label={`Status tarif ${rule.tierStartTime} ${dayLabels[rule.dayType]}`}
@@ -153,24 +176,61 @@ export default function PricingTable({
 
   return (
     <div className="space-y-3">
-      {resources.length > 0 && (
-        <div
-          role="tablist"
-          aria-label="Filter lapang"
-          className="flex gap-1 overflow-x-auto rounded-xl border border-obc-border bg-white p-1.5"
-        >
-          {resources.map((resource) => (
-            <button
-              key={resource.id}
-              type="button"
-              role="tab"
-              aria-selected={selectedResource?.id === resource.id}
-              onClick={() => changeResource(resource.id)}
-              className={`shrink-0 rounded-lg px-3.5 py-2.5 text-[12px] font-semibold transition-colors ${selectedResource?.id === resource.id ? "bg-[#E7F5D0] text-[#1F3320]" : "text-obc-muted hover:bg-obc-ivory hover:text-obc-charcoal"}`}
-            >
-              {resource.name}
-            </button>
-          ))}
+      {showSportFilter && (
+        <div className="rounded-xl border border-obc-border bg-white px-3 py-3 sm:px-4">
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold text-obc-charcoal">
+            <SlidersHorizontal size={14} className="text-obc-green" aria-hidden="true" />
+            <span>Jenis olahraga</span>
+            <span className="font-normal text-obc-muted">Pilih untuk menyaring lapang</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-0.5" aria-label="Filter jenis olahraga">
+            {[{ value: "all", label: "Semua olahraga" }, ...sports].map((sport) => {
+              const isSelected = selectedSport === sport.value;
+              return (
+                <button
+                  key={sport.value}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => changeSport(sport.value)}
+                  className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CDF178] ${isSelected ? "border-obc-green bg-[#E7F5D0] text-[#1F3320] shadow-sm" : "border-obc-border bg-white text-obc-muted hover:border-obc-green hover:bg-[#F3F8E8] hover:text-obc-charcoal"}`}
+                >
+                  {isSelected && <Check size={13} aria-hidden="true" />}
+                  {sport.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {filteredResources.length > 0 && (
+        <div className="rounded-xl border border-obc-border bg-[#FDFCF7] p-3 sm:p-3.5">
+          <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-1">
+            <span className="text-[12px] font-semibold text-obc-charcoal">Pilih lapang</span>
+            <span className="text-[10px] text-obc-muted">Klik nama lapang untuk melihat tarifnya</span>
+          </div>
+          <div
+            role="tablist"
+            aria-label="Filter lapang"
+            className="flex gap-2 overflow-x-auto pb-0.5"
+          >
+            {filteredResources.map((resource) => {
+              const isSelected = selectedResource?.id === resource.id;
+              return (
+                <button
+                  key={resource.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => changeResource(resource.id)}
+                  className={`inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2.5 text-[12px] font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CDF178] ${isSelected ? "border-obc-green bg-[#E7F5D0] text-[#1F3320] shadow-sm" : "border-obc-border bg-white text-obc-muted shadow-[0_1px_2px_rgba(31,51,32,0.06)] hover:border-obc-green hover:bg-white hover:text-obc-charcoal hover:shadow-md"}`}
+                >
+                  {isSelected && <Check size={14} aria-hidden="true" />}
+                  {resource.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

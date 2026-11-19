@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Pagination from "../../components/common/Pagination";
 import DeleteModal from "../../components/ui/DeleteModal";
+import { getDeleteSuccessMessage } from "../../../../services/api";
 import PromoForm from "./Form";
 import PromoTable from "./Table";
 import {
@@ -123,7 +124,7 @@ export default function PromoManagement() {
     setDeleteLoading(true);
     try {
       await deletePromo(deletingItem.id);
-      toast.success("Promo dipindahkan ke Sampah.");
+      toast.success(getDeleteSuccessMessage("Promo"));
       setDeletingItem(null);
       void queryClient.invalidateQueries({ queryKey: ["sport-promos"] });
     } catch (error) {

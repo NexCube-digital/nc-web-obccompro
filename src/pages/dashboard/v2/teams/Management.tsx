@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Users } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import TeamForm from "./Form";
 import TeamTable from "./Table";
@@ -44,10 +44,10 @@ export default function Management() {
 	};
 
 	const deleteTeam = async (team: TeamMember) => {
-		if (!window.confirm(`Hapus anggota tim "${team.name}"?`)) return;
+		if (!window.confirm(getDeleteConfirmationMessage(`anggota tim "${team.name}"`))) return;
 		try {
 			await teamService.deleteTeam(team.id);
-			toast.success("Anggota tim dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Anggota tim"));
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dumbbell, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, shouldDeletePermanently } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import SportCenterForm from "./Form";
 import SportCenterTable from "./Table";
@@ -58,7 +58,7 @@ export default function SportCenterManagement() {
 			<section className="mb-4 grid gap-3 rounded-xl border border-obc-border bg-white p-4 sm:grid-cols-2 sm:p-5"><label className="text-[12px] font-medium">Judul section<input value={content.title} onChange={(event) => setContent({ ...content, title: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-obc-border px-3 text-[13px]" /></label><label className="text-[12px] font-medium sm:col-span-2">Subjudul<textarea rows={3} value={content.subtitle} onChange={(event) => setContent({ ...content, subtitle: event.target.value })} className="mt-1 w-full rounded-lg border border-obc-border p-3 text-[13px]" /></label></section>
 			<section className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><label className="relative block w-full sm:w-[280px]"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-obc-muted" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari badge atau fasilitas..." className="h-10 w-full rounded-lg border border-obc-border bg-white pl-9 pr-3 text-[13px] outline-none focus:border-obc-olive" /></label><div className="flex gap-2"><button type="button" onClick={saveContent} disabled={saving || loading} className="h-10 rounded-lg border border-obc-border bg-white px-4 text-[13px] font-semibold text-obc-charcoal disabled:opacity-60">{saving ? "Menyimpan..." : "Simpan perubahan"}</button>{!showForm && <button type="button" onClick={() => { setEditing(null); setShowForm(true); }} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[13px] font-semibold text-white hover:bg-obc-green-hover"><Plus size={15} />Tambah kartu</button>}</div></section>
 			{showForm && <SportCenterForm card={editing?.card ?? null} onClose={() => { setShowForm(false); setEditing(null); }} onSubmit={saveCard} />}
-			<SportCenterTable cards={filteredCards} loading={loading} onEdit={(card) => { const index = content.cards.indexOf(card); setEditing({ card, index }); setShowForm(true); }} onDelete={(card) => { const index = content.cards.indexOf(card); if (index >= 0 && window.confirm("Hapus kartu Sport Center ini?")) setContent((current) => ({ ...current, cards: current.cards.filter((_, cardIndex) => cardIndex !== index) })); }} />
+			<SportCenterTable cards={filteredCards} loading={loading} onEdit={(card) => { const index = content.cards.indexOf(card); setEditing({ card, index }); setShowForm(true); }} onDelete={(card) => { if (!shouldDeletePermanently()) { toast.error("Hanya admin dan superadmin yang dapat menghapus permanen."); return; } const index = content.cards.indexOf(card); if (index >= 0 && window.confirm(getDeleteConfirmationMessage(`kartu Sport Center "${card.badge}"`))) setContent((current) => ({ ...current, cards: current.cards.filter((_, cardIndex) => cardIndex !== index) })); }} />
 		</DashboardPageLayout>
 	);
 }

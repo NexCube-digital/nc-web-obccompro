@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { authService } from "../../../../services/auth";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, shouldDeletePermanently } from "../../../../services/api";
 import SliderForm from "./Form";
 import SliderTable from "./Table";
 import { sliderService, type HeroContent, type HeroSlide } from "./sliderService";
@@ -36,13 +36,17 @@ export default function SliderManagement() {
 
 	const deleteSlide = async (slide: HeroSlide) => {
 		const index = content.slides.indexOf(slide);
-		if (index < 0 || !window.confirm("Hapus slide Hero ini?")) return;
+		if (!shouldDeletePermanently()) {
+			toast.error("Hanya admin dan superadmin yang dapat menghapus permanen.");
+			return;
+		}
+		if (index < 0 || !window.confirm(getDeleteConfirmationMessage(`slide Hero "${slide.title}"`))) return;
 		const nextContent = { ...content, slides: content.slides.filter((_, slideIndex) => slideIndex !== index) };
 		setSaving(true);
 		try {
 			await sliderService.saveContent(nextContent, tenantId || undefined);
 			queryClient.setQueryData(["v2-slider-content", tenantId], nextContent);
-			toast.success("Slide Hero berhasil dihapus.");
+			toast.success("Slide Hero berhasil dihapus permanen.");
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));
 		} finally {

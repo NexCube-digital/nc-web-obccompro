@@ -2,6 +2,11 @@ import { useMemo, useState } from "react";
 import { Eye, Pencil, Search, Trash2, WalletCards } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import {
+  filterTabButtonClass,
+  filterTabCountClass,
+  filterTabListClass,
+} from "../../components/common/filterTabStyles";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import type { Invoice, InvoiceStatus } from "../../services/admin/invoiceService";
 import { formatIdr as rupiah, formatShortIdDate as formatDate } from "../../../../utils/formatters";
@@ -121,7 +126,7 @@ export default function InvoiceTable({
         <div
           role="tablist"
           aria-label="Filter status invoice"
-          className="mt-4 flex gap-1 overflow-x-auto pb-0.5"
+          className={`mt-4 ${filterTabListClass}`}
         >
           {(
             ["all", "draft", "pending", "success", "failed"] as StatusFilter[]
@@ -135,10 +140,10 @@ export default function InvoiceTable({
                 setStatusFilter(status);
                 setPage(1);
               }}
-              className={`shrink-0 rounded-lg border px-3 py-2 text-[12px] font-medium transition-colors ${statusFilter === status ? "border-obc-green bg-[#F3F8E8] text-obc-green" : "border-transparent text-obc-muted hover:border-obc-border hover:bg-[#FDFCF7]"}`}
+              className={filterTabButtonClass(statusFilter === status)}
             >
-              {status === "all" ? "Semua" : statusLabel[status]}{" "}
-              <span className="ml-1 opacity-70">
+              {status === "all" ? "Semua" : statusLabel[status]}
+              <span className={filterTabCountClass(statusFilter === status)}>
                 {status === "all"
                   ? invoices.length
                   : status === "draft"

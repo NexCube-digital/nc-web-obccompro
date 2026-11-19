@@ -4,7 +4,7 @@ import { Layers, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
 import { authService } from "../../../../services/auth";
-import { getApiErrorMessage } from "../../../../services/api";
+import { getApiErrorMessage, getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 import { cmsPageService } from "../pages/pageService";
 import CmsSectionForm, { CmsTranslationForm } from "./Form";
@@ -52,10 +52,10 @@ export default function Management() {
 	};
 
 	const deleteSection = async (section: CmsSection) => {
-		if (!window.confirm(`Hapus section "${section.title}" beserta terjemahannya?`)) return;
+		if (!window.confirm(getDeleteConfirmationMessage(`section "${section.title}" beserta terjemahannya`))) return;
 		try {
 			await cmsSectionService.deleteSection(section.id);
-			toast.success("Section dipindahkan ke Sampah.");
+			toast.success(getDeleteSuccessMessage("Section"));
 			refresh();
 		} catch (error) {
 			toast.error(getApiErrorMessage(error));

@@ -172,14 +172,6 @@ export default function CustomerDetailModal({ customer, onClose }: Props) {
                 </dd>
               </div>
               <div>
-                <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">Username</dt>
-                <dd className="mt-1 font-medium text-obc-charcoal">{customer.username || "-"}</dd>
-              </div>
-              <div>
-                <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">Metode masuk</dt>
-                <dd className="mt-1 capitalize font-medium text-obc-charcoal">{customer.authProvider || "-"}</dd>
-              </div>
-              <div>
                 <dt className="text-[10px] font-medium uppercase tracking-wide text-obc-muted">Terdaftar</dt>
                 <dd className="mt-1 font-medium text-obc-charcoal">{formatDate(customer.createdAt, true)}</dd>
               </div>

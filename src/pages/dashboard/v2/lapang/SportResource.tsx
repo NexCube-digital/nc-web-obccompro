@@ -9,6 +9,7 @@ import { getMediaUrl } from "../media/mediaService";
 import { mediaService } from "../media/mediaService";
 import { unitbisnisService } from "../../services/cms/unitbisnisService";
 import { sportService, type SportResource, type SportResourceInput } from "../../services/sport/SportService";
+import { getDeleteConfirmationMessage, getDeleteSuccessMessage } from "../../../../services/api";
 import ResourceForm, { type LocationOption } from "./ResourceForm";
 import ResourceTable from "./Table";
 
@@ -78,8 +79,8 @@ export default function SportResource() {
   };
 
   const deleteResource = async (resource: SportResource) => {
-    if (!window.confirm(`Hapus resource ${resource.name}?`)) return;
-    try { await sportService.deleteResource(resource.id); void queryClient.invalidateQueries({ queryKey: ["v2-sport-resources"] }); toast.success("Resource dipindahkan ke Sampah."); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
+    if (!window.confirm(getDeleteConfirmationMessage(`resource "${resource.name}"`))) return;
+    try { await sportService.deleteResource(resource.id); void queryClient.invalidateQueries({ queryKey: ["v2-sport-resources"] }); toast.success(getDeleteSuccessMessage("Resource")); } catch (error) { toast.error(error instanceof Error ? error.message : "Gagal menghapus resource."); }
   };
 
   return (

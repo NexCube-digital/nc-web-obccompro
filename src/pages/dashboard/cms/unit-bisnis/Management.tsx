@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, CircleCheck, MapPin, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import DashboardPageLayout from "../../components/layouts/DashboardPageLayout";
+import DeleteModal from "../../components/ui/DeleteModal";
+import { authService } from "../../../../services/auth";
 import { getApiErrorMessage } from "../../../../services/api";
 import BusinessUnitDetails from "./ModalDetail";
 import BusinessUnitEditor from "./Form";
@@ -17,6 +19,9 @@ import { useDebouncedValue } from "../../components/hooks/useDebouncedValue";
 
 export default function Management() {
   const queryClient = useQueryClient();
+  const role = authService.getCurrentSession()?.user.role;
+  const canDeletePermanently = role === "admin" || role === "super_admin";
+  const canManageUnits = role === "super_admin";
   const [selectedUnit, setSelectedUnit] = useState<BusinessUnitDetail | null>(
     null,
   );
@@ -25,6 +30,9 @@ export default function Management() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [editorUnit, setEditorUnit] = useState<BusinessUnit | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [deletingUnit, setDeletingUnit] = useState<BusinessUnit | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const closeDeleteModal = useCallback(() => setDeletingUnit(null), []);
   const unitsQuery = useQuery({
     queryKey: ["cms-business-units"],
     queryFn: () => unitbisnisService.getUnits(),
@@ -82,16 +90,21 @@ export default function Management() {
     }
   };
 
-  const deactivateUnit = async (unit: BusinessUnit): Promise<boolean> => {
-    if (!window.confirm(`Nonaktifkan unit bisnis ${unit.name}?`)) return false;
+  const deleteUnit = (unit: BusinessUnit) => setDeletingUnit(unit);
+
+  const confirmDeleteUnit = async () => {
+    if (!deletingUnit) return;
+    setDeleteLoading(true);
     try {
-      await unitbisnisService.deleteUnit(unit.id);
-      toast.success("Unit bisnis dipindahkan ke Sampah.");
+      await unitbisnisService.deleteUnitPermanently(deletingUnit.id);
+      if (selectedUnit?.id === deletingUnit.id) setSelectedUnit(null);
+      setDeletingUnit(null);
+      toast.success("Unit bisnis berhasil dihapus permanen.");
       refresh();
-      return true;
     } catch (error) {
       toast.error(getApiErrorMessage(error));
-      return false;
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -133,11 +146,11 @@ export default function Management() {
     if (!selectedUnit) return;
     const listUnit = units.find((unit) => unit.id === selectedUnit.id);
     if (!listUnit) return;
-    const updated =
-      listUnit.status === "active"
-        ? await deactivateUnit(listUnit)
-        : await activateUnit(listUnit);
-    if (updated) setSelectedUnit(null);
+    if (listUnit.status === "active") {
+      if (canDeletePermanently) deleteUnit(listUnit);
+      return;
+    }
+    if (canManageUnits && (await activateUnit(listUnit))) setSelectedUnit(null);
   };
 
   return (
@@ -205,14 +218,16 @@ export default function Management() {
             className="h-10 w-full rounded-lg border border-obc-border bg-white pl-9 pr-3 text-[13px] outline-none focus:border-obc-olive"
           />
         </label>
-        <button
-          type="button"
-          onClick={() => openEditor()}
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[12px] font-semibold text-white shadow-sm transition hover:bg-obc-green-hover"
-        >
-          <Plus size={15} />
-          Tambah unit bisnis
-        </button>
+        {canManageUnits && (
+          <button
+            type="button"
+            onClick={() => openEditor()}
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-obc-green px-4 text-[12px] font-semibold text-white shadow-sm transition hover:bg-obc-green-hover"
+          >
+            <Plus size={15} />
+            Tambah unit bisnis
+          </button>
+        )}
       </section>
 
       {detailLoading && (
@@ -223,6 +238,8 @@ export default function Management() {
       {selectedUnit && (
         <BusinessUnitDetails
           unit={selectedUnit}
+          canDelete={canDeletePermanently}
+          canManage={canManageUnits}
           onClose={() => setSelectedUnit(null)}
           onEdit={editSelectedUnit}
           onToggleStatus={() => void toggleSelectedUnitStatus()}
@@ -240,6 +257,17 @@ export default function Management() {
         loading={loading}
         selectedSlug={selectedUnit?.slug ?? null}
         onView={viewDetails}
+        onDelete={canDeletePermanently ? deleteUnit : undefined}
+      />
+      <DeleteModal
+        isOpen={canDeletePermanently && Boolean(deletingUnit)}
+        title="Hapus unit bisnis permanen?"
+        description="Unit bisnis akan dihapus permanen dan tidak dapat dipulihkan. Penghapusan ditolak jika unit masih memiliki resource."
+        itemName={deletingUnit?.name}
+        confirmLabel="Hapus permanen"
+        isLoading={deleteLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDeleteUnit}
       />
     </DashboardPageLayout>
   );
