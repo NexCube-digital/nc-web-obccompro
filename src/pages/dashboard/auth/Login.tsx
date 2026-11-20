@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [ingat, setIngat] = useState(false);
+  const [ingat, setIngat] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -65,7 +65,7 @@ export default function LoginPage() {
             Satu ekosistem untuk berbagai kebutuhan.
           </h1>
           <p className="mt-5 max-w-[440px] font-body text-[16px] leading-relaxed text-white/60">
-            OBC Group menghadirkan layanan olahraga, hospitality, kuliner, personal care, dan ruang acara untuk menemani berbagai aktivitas Anda.
+            OBC Group menghadirkan layanan olahraga, penginapan, kuliner, laundry, serta ruang acara untuk mendukung berbagai aktivitas Anda.
           </p>
         </div>
 

@@ -1,16 +1,11 @@
-import type { CSSProperties } from "react";
 import {
   CalendarDays,
   Check,
-  ChevronLeft,
-  ChevronRight,
   Clock3,
   Timer,
 } from "lucide-react";
-import { DayPicker } from "react-day-picker";
-import { id } from "date-fns/locale";
-import "react-day-picker/style.css";
 import ThemedSelect from "../../components/common/ThemedSelect";
+import BookingCalendar from "../../sport/booking/BookingCalendar";
 import type { CourtResource } from "../../services/sport/courtService";
 import type {
   AvailabilitySlot,
@@ -56,16 +51,6 @@ type InvoiceBookingStepProps = {
   isRangeAvailable: (start: string, duration: number) => boolean;
   onChooseStartTime: (time: string) => void;
 };
-
-const calendarMonths = Array.from({ length: 12 }, (_, month) =>
-  new Intl.DateTimeFormat("id-ID", { month: "long" }).format(
-    new Date(2024, month, 1),
-  ),
-);
-const calendarYears = Array.from(
-  { length: new Date().getFullYear() + 8 - 2019 },
-  (_, index) => 2019 + index,
-);
 
 export default function InvoiceBookingStep({
   view,
@@ -312,60 +297,20 @@ export default function InvoiceBookingStep({
       )}
 
       {view !== "selection" && !isEditing && (
-        <aside className="h-fit overflow-hidden rounded-xl border border-obc-border bg-white shadow-[0_1px_2px_rgba(52,49,51,0.04)] lg:sticky lg:top-5">
-          <div className="flex items-center gap-3 border-b border-obc-border px-4 py-4 sm:px-5">
-            <span className="grid size-9 place-items-center rounded-lg bg-[#E7F5D0] text-obc-green"><CalendarDays size={17} /></span>
-            <div>
-              <h3 className="font-heading text-[15px] font-semibold text-obc-charcoal">Tanggal booking</h3>
-              <p className="mt-0.5 text-[11px] text-obc-muted">{issueDate ? formatBookingDate(issueDate) : "Pilih tanggal yang tersedia."}</p>
-            </div>
-          </div>
-          <div className="p-3 sm:p-4">
-            <div id="invoice-booking-calendar" className="w-full rounded-lg border border-obc-border bg-[#FDFCF7] p-2.5 sm:p-3">
-              <div className="mb-2 grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_32px] items-center gap-1.5">
-                <button type="button" aria-label="Bulan sebelumnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() - 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronLeft size={16} /></button>
-                <ThemedSelect
-                  label="Pilih bulan"
-                  value={String(bookingCalendarMonth.getMonth())}
-                  options={calendarMonths.map((month, index) => ({ value: String(index), label: month }))}
-                  onValueChange={(value) => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), Number(value), 1))}
-                  capitalize
-                />
-                <ThemedSelect
-                  label="Pilih tahun"
-                  value={String(bookingCalendarMonth.getFullYear())}
-                  options={calendarYears.map((year) => ({ value: String(year), label: String(year) }))}
-                  onValueChange={(value) => loadCalendarMonth(new Date(Number(value), bookingCalendarMonth.getMonth(), 1))}
-                />
-                <button type="button" aria-label="Bulan berikutnya" onClick={() => loadCalendarMonth(new Date(bookingCalendarMonth.getFullYear(), bookingCalendarMonth.getMonth() + 1, 1))} className="grid size-8 place-items-center rounded-lg border border-obc-border text-obc-muted transition-colors hover:border-obc-green hover:bg-obc-ivory hover:text-obc-green"><ChevronRight size={16} /></button>
-              </div>
-              <DayPicker
-                mode="single"
-                selected={issueDate ? new Date(`${issueDate}T00:00:00`) : undefined}
-                onSelect={(date) => onChooseBookingDate(date ? toDateKey(date) : "")}
-                month={bookingCalendarMonth}
-                onMonthChange={loadCalendarMonth}
-                locale={id}
-                weekStartsOn={1}
-                hideNavigation
-                showOutsideDays
-                disabled={loadingCalendarDates ? true : [{ before: today }, ...unavailableDateValues]}
-                modifiers={{ booked: bookedDateValues }}
-                modifiersClassNames={{ booked: "relative after:absolute after:bottom-0 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-obc-red [&>button]:font-semibold", disabled: "cursor-not-allowed opacity-45" }}
-                className="w-full"
-                style={{ "--rdp-accent-color": "#1F3320", "--rdp-accent-background-color": "#E7F5D0", "--rdp-day-height": "36px", "--rdp-day-width": "34px", "--rdp-day_button-border-radius": "0.5rem", "--rdp-day_button-height": "31px", "--rdp-day_button-width": "31px" } as CSSProperties}
-                classNames={{ root: "w-full", months: "w-full", month: "w-full", month_caption: "sr-only", caption_label: "sr-only", month_grid: "w-full border-collapse", weekdays: "grid grid-cols-7", weekday: "py-2 text-center text-[10px] font-semibold uppercase text-obc-muted", weeks: "grid gap-y-1", week: "grid grid-cols-7", day: "grid place-items-center p-0", day_button: "grid size-8 place-items-center rounded-lg text-[12px] text-inherit transition-colors hover:bg-obc-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-obc-green", selected: "rounded-lg !bg-obc-green !font-bold !text-white [&>button]:!bg-obc-green [&>button]:!text-white [&>button:hover]:!bg-obc-green-hover", today: "rounded-lg font-bold text-obc-green ring-1 ring-inset ring-obc-green/70", outside: "text-obc-muted/40" }}
-              />
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-obc-border pt-2">
-                <div className="flex items-center gap-3 text-[10px] text-obc-muted">
-                  <span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-obc-red" />Ada booking</span>
-                  <span>{loadingCalendarDates ? "Memeriksa tanggal..." : "Tanggal penuh nonaktif"}</span>
-                </div>
-                <button type="button" disabled={loadingCalendarDates || unavailableDateValues.some((date) => toDateKey(date) === todayKey)} onClick={() => onChooseBookingDate(todayKey)} className="rounded-lg px-3 py-2 text-[12px] font-medium text-obc-green transition-colors hover:bg-obc-ivory disabled:cursor-not-allowed disabled:opacity-40">Hari ini</button>
-              </div>
-            </div>
-          </div>
-        </aside>
+        <BookingCalendar
+          selectedDate={issueDate}
+          onDateChange={onChooseBookingDate}
+          visibleMonth={bookingCalendarMonth}
+          onVisibleMonthChange={loadCalendarMonth}
+          minDate={today}
+          disabledDates={unavailableDateValues}
+          bookedDates={bookedDateValues}
+          loadingDates={loadingCalendarDates}
+          todayDisabled={unavailableDateValues.some((date) => toDateKey(date) === todayKey)}
+          showAvailabilityLegend
+          showClearAction={false}
+          emptyDateLabel="Pilih tanggal yang tersedia."
+        />
       )}
     </>
   );

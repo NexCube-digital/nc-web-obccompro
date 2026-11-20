@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -20,8 +20,8 @@ import {
 import { toast } from "sonner";
 import InvoiceForm, { type BookingInvoiceDraft } from "./Form";
 import InvoiceTable from "./Table";
-import InvoiceDetailModal from "./InvoiceDetailModal";
-import InvoicePaymentModal from "./InvoicePaymentModal";
+import InvoiceDetailModal from "./DetailModal";
+import InvoicePaymentModal from "./PaymentModal";
 import { formatIdr as rupiah } from "../../../../utils/formatters";
 
 const statuses: InvoiceStatus[] = [
@@ -39,6 +39,33 @@ function isBookingInvoiceDraft(value: unknown): value is BookingInvoiceDraft {
   const draft = value as Record<string, unknown>;
   return ["resourceId", "bookingDate", "startTime", "endTime", "sportType"]
     .every((key) => typeof draft[key] === "string");
+}
+
+function isBookingInvoiceDraftCurrent(draft: BookingInvoiceDraft): boolean {
+  const bookingDate = new Date(`${draft.bookingDate}T00:00:00`);
+  const today = new Date();
+  if (Number.isNaN(bookingDate.getTime())) return false;
+
+  bookingDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  if (bookingDate < today) return false;
+  if (bookingDate > today) return true;
+
+  const [hour, minute] = draft.startTime.split(":").map(Number);
+  if (
+    !Number.isInteger(hour) ||
+    !Number.isInteger(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return false;
+  }
+  const startTimeMinutes = hour * 60 + minute;
+  const now = new Date();
+  const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+  return startTimeMinutes > currentTimeMinutes;
 }
 
 function Summary({
@@ -80,7 +107,7 @@ export default function InvoiceManagement() {
     queryFn: () => invoiceService.getInvoiceList(),
     staleTime: 15_000,
   });
-  const invoices = invoiceQuery.data ?? [];
+  const invoices = useMemo(() => invoiceQuery.data ?? [], [invoiceQuery.data]);
   const loading = invoiceQuery.isPending;
   const [formOpen, setFormOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
@@ -112,9 +139,18 @@ export default function InvoiceManagement() {
   useEffect(() => {
     const state = location.state as { bookingInvoiceDraft?: unknown } | null;
     if (!state || !isBookingInvoiceDraft(state.bookingInvoiceDraft)) return;
-    setEditingInvoice(null);
-    setBookingDraft(state.bookingInvoiceDraft);
-    setFormOpen(true);
+    const draft = state.bookingInvoiceDraft;
+    const draftIsCurrent = isBookingInvoiceDraftCurrent(draft);
+    startTransition(() => {
+      setEditingInvoice(null);
+      setBookingDraft(draftIsCurrent ? draft : null);
+      setFormOpen(true);
+    });
+    if (!draftIsCurrent) {
+      toast.info(
+        "Jadwal booking sebelumnya sudah tidak valid. Silakan pilih jadwal booking lagi.",
+      );
+    }
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, navigate]);
 
@@ -235,29 +271,6 @@ export default function InvoiceManagement() {
     }
   };
 
-  const changeStatus = async (invoice: Invoice, status: InvoiceStatus) => {
-    try {
-      const updated = await invoiceService.updateInvoiceStatus(
-        invoice.id,
-        status,
-      );
-      queryClient.setQueryData<Invoice[]>(["admin-invoices"], (current = []) =>
-        current.map((item) =>
-          item.id === updated.id
-            ? { ...item, status: updated.status, paidAt: updated.paidAt }
-            : item,
-        ),
-      );
-      toast.success("Status invoice berhasil diperbarui.");
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Gagal memperbarui status invoice.",
-      );
-    }
-  };
-
   if (formOpen) {
     return (
       <DashboardPageLayout
@@ -328,7 +341,6 @@ export default function InvoiceManagement() {
         onEdit={openEditForm}
         onRecordPayment={openPayment}
         onDelete={deleteInvoice}
-        onChangeStatus={changeStatus}
       />
       <DeleteModal
         isOpen={Boolean(deletingInvoice)}

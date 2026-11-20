@@ -190,8 +190,8 @@ function KeamananTab() {
       toast.error("Semua kolom kata sandi wajib diisi.");
       return;
     }
-    if (newPassword.length < 12 || !/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
-      toast.error("Kata sandi baru harus minimal 12 karakter dan mengandung huruf kecil, huruf besar, serta angka.");
+    if (newPassword.length < 8 || !/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      toast.error("Kata sandi baru harus minimal 8 karakter dan mengandung huruf kecil, huruf besar, serta angka.");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -223,7 +223,7 @@ function KeamananTab() {
             <input type="password" className={inputCls} value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
           </Field>
           <Field label="Kata sandi baru">
-            <input type="password" className={inputCls} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} placeholder="Minimal 12 karakter" autoComplete="new-password" />
+            <input type="password" minLength={8} className={inputCls} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} placeholder="Minimal 8 karakter" autoComplete="new-password" />
           </Field>
           <Field label="Konfirmasi kata sandi">
             <input type="password" className={inputCls} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Ulangi kata sandi baru" autoComplete="new-password" />

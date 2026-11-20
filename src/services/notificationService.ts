@@ -21,7 +21,7 @@ interface ApiSuccess<T> {
 	};
 }
 
-export async function getAdminNotifications(limit = 8): Promise<AdminNotification[]> {
+export async function getAdminNotifications(limit = 10): Promise<AdminNotification[]> {
 	const response = await apiClient.get<ApiSuccess<AdminNotification[]>>("/admin/notifications", {
 		params: { page: 1, limit },
 	});

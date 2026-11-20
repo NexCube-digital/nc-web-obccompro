@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TransitionLink from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
@@ -83,6 +83,8 @@ type Props = {
 const isDesktop = () =>
   typeof window !== "undefined" && window.innerWidth >= 1024;
 
+let savedSidebarScrollTop = 0;
+
 export default function Sidebar({
   collapsed,
   mobileOpen,
@@ -90,6 +92,7 @@ export default function Sidebar({
   onExpand,
 }: Props) {
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
   const role = authService.getCurrentSession()?.user.role as StaffRole | undefined;
   const visibleMenu = MENU.flatMap((item) => {
     if (!role) return [];
@@ -101,6 +104,15 @@ export default function Sidebar({
     location.pathname === child.to || location.pathname.startsWith(`${child.to}/`),
   ))?.label ?? null;
   const [expanded, setExpanded] = useState<string | null>(() => activeGroup);
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    nav.scrollTop = savedSidebarScrollTop;
+    return () => {
+      savedSidebarScrollTop = nav.scrollTop;
+    };
+  }, []);
 
   const hide = collapsed ? "lg:hidden" : "";
   const center = collapsed ? "lg:justify-center lg:gap-0 lg:px-0" : "";
@@ -166,6 +178,7 @@ export default function Sidebar({
 
         {/* Menu */}
         <nav
+          ref={navRef}
           className={`flex-1 overflow-y-auto overflow-x-hidden px-3 pb-4 ${
             collapsed ? "lg:px-3" : ""
           }`}

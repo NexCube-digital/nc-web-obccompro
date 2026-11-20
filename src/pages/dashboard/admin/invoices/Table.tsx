@@ -50,7 +50,6 @@ interface InvoiceTableProps {
   onEdit: (invoice: Invoice) => void;
   onRecordPayment: (invoice: Invoice) => void;
   onDelete: (invoice: Invoice) => void;
-  onChangeStatus: (invoice: Invoice, status: InvoiceStatus) => void;
 }
 
 export default function InvoiceTable({
@@ -61,7 +60,6 @@ export default function InvoiceTable({
   onEdit,
   onRecordPayment,
   onDelete,
-  onChangeStatus,
 }: InvoiceTableProps) {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query);
@@ -214,9 +212,7 @@ export default function InvoiceTable({
                           { value: "paid", label: "Success" },
                           { value: "cancelled", label: "Gagal" },
                         ]}
-                        onValueChange={(value) =>
-                          onChangeStatus(invoice, value as InvoiceStatus)
-                        }
+                        onValueChange={() => undefined}
                         className={`h-8 w-fit max-w-40 rounded-full border-0 px-2.5 py-1 text-[11px] font-semibold ${statusClasses[displayStatus(invoice.status)]}`}
                       />
                     </td>

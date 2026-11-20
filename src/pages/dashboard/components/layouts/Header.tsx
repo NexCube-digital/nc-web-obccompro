@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, ChevronDown, LoaderCircle, LogOut, Menu, Search, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TransitionLink, { navigateWithTransition } from "../../../../components/common/TransitionLink";
 import { authService } from "../../../../services/auth";
 import { getProfilePhotoUrl } from "../../../../services/accountService";
-import { getAdminNotifications, type AdminNotification } from "../../../../services/notificationService";
+import { getAdminNotifications } from "../../../../services/notificationService";
 
 type Props = { onToggleSidebar: () => void };
 
@@ -15,8 +15,14 @@ export default function Header({ onToggleSidebar }: Props) {
   const [user, setUser] = useState(() => authService.getCurrentSession()?.user ?? null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
-  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const notificationsQuery = useQuery({
+    queryKey: ["admin-notifications"],
+    queryFn: () => getAdminNotifications(10),
+    staleTime: 30_000,
+    refetchInterval: notificationsOpen ? 60_000 : false,
+  });
+  const notifications = notificationsQuery.data ?? [];
+  const notificationsLoading = notificationsQuery.isPending;
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
@@ -54,30 +60,6 @@ export default function Header({ onToggleSidebar }: Props) {
     setUser(null);
     await navigateWithTransition("/login", navigate, { replace: true });
   };
-
-  useEffect(() => {
-    if (!notificationsOpen) return;
-
-    let active = true;
-
-    const loadNotifications = async () => {
-      setNotificationsLoading(true);
-      try {
-        const items = await getAdminNotifications();
-        if (active) setNotifications(items);
-      } finally {
-        if (active) setNotificationsLoading(false);
-      }
-    };
-
-    void loadNotifications();
-    const intervalId = window.setInterval(() => void loadNotifications(), 60_000);
-
-    return () => {
-      active = false;
-      window.clearInterval(intervalId);
-    };
-  }, [notificationsOpen]);
 
   useEffect(() => {
     if (!profileMenuOpen && !notificationsOpen) return;

@@ -53,7 +53,7 @@ const TestimoniPage = lazyPreload(() => import('../pages/dashboard/cms/testimoni
 const KontakLokasiPage = lazyPreload(() => import('../pages/dashboard/cms/contact/SiteContactManagement'))
 const PelangganPage = lazyPreload(() => import('../pages/dashboard/cms/customer/Management'))
 const LaporanPage = lazyPreload(() => import('../pages/dashboard/admin/reports/Management'))
-const InvoiceManagementPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/InvoiceManagement'))
+const InvoiceManagementPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/Management'))
 const InvoiceCardPaymentPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/CreditCardPaymentPage'))
 const InvoiceFinalizingPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/FinalisasiOrder'))
 const InvoiceSuccessPage = lazyPreload(() => import('../pages/dashboard/admin/invoices/detail/SuccessOrder'))
