@@ -12,20 +12,20 @@ export default function DashboardLayout({ children }: Props) {
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-obc-bg lg:flex-row">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-obc-bg lg:flex-row">
       <Sidebar
         collapsed={sidebarCollapsed}
         mobileOpen={sidebarMobileOpen}
         onCloseMobile={() => setSidebarMobileOpen(false)}
         onExpand={() => setSidebarCollapsed(false)}
       />
-      <div className={`flex flex-1 flex-col overflow-hidden transition-[margin] duration-200 ${
+      <div className={`flex min-h-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 ${
         sidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-[258px]"
       }`}>
         <Header
           onToggleSidebar={() => setSidebarMobileOpen((open) => !open)}
         />
-        <main className="flex-1 overflow-y-auto">
+        <main className="min-h-0 flex-1 overflow-y-auto">
           {children}
         </main>
         <Footer />

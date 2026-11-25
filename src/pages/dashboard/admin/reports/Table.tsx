@@ -40,7 +40,8 @@ export default function ReportTable({ reports, loading, onView }: Props) {
           Riwayat laporan
         </h2>
         <p className="mt-0.5 text-[12px] text-obc-muted">
-          {reports.length.toLocaleString("id-ID")} laporan tersimpan
+          {reports.length.toLocaleString("id-ID")} laporan dalam 90 hari
+          terakhir. Laporan dihapus otomatis setelah 90 hari.
         </p>
       </div>
       <div className="overflow-x-auto">

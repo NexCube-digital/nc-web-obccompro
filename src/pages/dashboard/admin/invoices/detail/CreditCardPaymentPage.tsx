@@ -1,14 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { invoiceService, type InvoiceBookingDetails } from "../../../services/admin/invoiceService";
 import CreditCardPaymentForm from "../payment/CreditCardPaymentForm";
+
+function isFinalPaymentStatus(details: InvoiceBookingDetails): boolean {
+  const paymentStatus = details.payments[0]?.status ?? "";
+  return (
+    ["fully_paid", "completed", "cancelled", "expired", "refunded"].includes(details.status) ||
+    ["paid", "settlement", "capture", "expired", "refunded"].includes(paymentStatus)
+  );
+}
 
 function CreditCardPaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const bookingId = new URLSearchParams(location.search).get("bookingId") ?? "";
-  const [booking, setBooking] = useState<InvoiceBookingDetails | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    data: booking,
+    error,
+    isFetching,
+  } = useQuery({
+    queryKey: ["invoice-booking-details", bookingId],
+    queryFn: ({ signal }) => invoiceService.getBookingDetails(bookingId, signal),
+    enabled: Boolean(bookingId),
+    staleTime: 0,
+    refetchInterval: (query) =>
+      query.state.data && isFinalPaymentStatus(query.state.data) ? false : 4000,
+  });
 
   useEffect(() => {
     if (!bookingId) {
@@ -16,57 +35,23 @@ function CreditCardPaymentPage() {
       return;
     }
 
-    let active = true;
-    invoiceService
-      .getBookingDetails(bookingId)
-      .then((details) => {
-        if (!active) return;
-        if (
-          details.status === "fully_paid" ||
-          details.status === "completed" ||
-          details.payments[0]?.status === "paid"
-        ) {
-          navigate(
-            `/invoice-payment/success?bookingId=${encodeURIComponent(bookingId)}`,
-            {
-              replace: true,
-            },
-          );
-          return;
-        }
-        if (["cancelled", "expired", "refunded"].includes(details.status)) {
-          navigate(
-            `/invoice-payment/failed?bookingId=${encodeURIComponent(bookingId)}`,
-            {
-              replace: true,
-            },
-          );
-          return;
-        }
-        if (details.payments[0]?.method !== "credit_card") {
-          navigate(
-            `/invoice-payment/finalizing?bookingId=${encodeURIComponent(bookingId)}`,
-            {
-              replace: true,
-            },
-          );
-          return;
-        }
-        setBooking(details);
-      })
-      .catch((error: unknown) => {
-        if (active)
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "Booking tidak dapat dimuat.",
-          );
-      });
+    if (!booking) return;
 
-    return () => {
-      active = false;
-    };
-  }, [bookingId, navigate]);
+    const paymentStatus = booking.payments[0]?.status ?? "";
+    if (["fully_paid", "completed"].includes(booking.status) || ["paid", "settlement", "capture"].includes(paymentStatus)) {
+      navigate(`/invoice-payment/success?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+    } else if (["cancelled", "expired", "refunded"].includes(booking.status) || ["expired", "refunded"].includes(paymentStatus)) {
+      navigate(`/invoice-payment/failed?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+    } else if (booking.payments[0]?.method !== "credit_card") {
+      navigate(`/invoice-payment/finalizing?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+    }
+  }, [booking, bookingId, navigate]);
+
+  const errorMessage = error instanceof Error
+    ? error.message
+    : error
+      ? "Booking tidak dapat dimuat."
+      : "";
 
   const openInformationOrder = () => {
     navigate(
@@ -78,8 +63,8 @@ function CreditCardPaymentPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white font-body text-[#343133]">
-      <main className="mx-auto w-full max-w-[560px] flex-1 px-4 pt-6 pb-16">
+    <div className="flex min-h-screen flex-col bg-white font-body text-obc-charcoal">
+      <main className="mx-auto w-full max-w-140 flex-1 px-4 pt-6 pb-16">
         {errorMessage ? (
           <p
             role="alert"
@@ -87,15 +72,15 @@ function CreditCardPaymentPage() {
           >
             {errorMessage}
           </p>
-        ) : booking ? (
+        ) : booking && booking.payments[0]?.method === "credit_card" ? (
           <CreditCardPaymentForm
             bookingId={booking.id}
             amount={booking.payments[0]?.amount ?? booking.pricing.totalPrice}
             onPaymentStarted={openInformationOrder}
           />
         ) : (
-          <p role="status" className="text-center text-sm text-[#6F6B6E]">
-            Memuat pembayaran kartu...
+          <p role="status" className="text-center text-sm text-obc-muted">
+            {isFetching ? "Memeriksa status pembayaran kartu..." : "Memuat pembayaran kartu..."}
           </p>
         )}
       </main>

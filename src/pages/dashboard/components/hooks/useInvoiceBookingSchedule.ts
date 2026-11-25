@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { CourtResource } from "../../services/sport/courtService";
@@ -6,10 +6,11 @@ import {
   invoiceService,
   type AvailabilitySlot,
   type FacilityCalendarDate,
+  type InvoiceBookingDetails,
   type PriceBreakdownItem,
 } from "../../services/admin/invoiceService";
 import { toLocalDateKey as toDateKey } from "../../../../utils/formatters";
-import type { BookingInvoiceDraft } from "./Form";
+import type { BookingInvoiceDraft } from "../../admin/invoices/Form";
 
 const EMPTY_CALENDAR_DATES: FacilityCalendarDate[] = [];
 const EMPTY_AVAILABILITY_SLOTS: AvailabilitySlot[] = [];
@@ -57,6 +58,12 @@ export default function useInvoiceBookingSchedule({
   );
   const [resourceId, setResourceId] = useState(initialBooking?.resourceId ?? "");
   const [startTime, setStartTime] = useState(initialBooking?.startTime ?? "");
+  const [sportTypeOverride, setSportTypeOverride] = useState(initialBooking?.sportType ?? "");
+  const [editingBookingSchedule, setEditingBookingSchedule] = useState<{
+    bookingDate: string;
+    startTime: string;
+    endTime: string;
+  } | null>(null);
   const [endTime, setEndTime] = useState(() =>
     initialBooking
       ? minutesToTime(
@@ -70,9 +77,9 @@ export default function useInvoiceBookingSchedule({
     [facilities, resourceId],
   );
   const selectedSportType =
-    initialBooking &&
-    selectedFacility?.sportTypes.includes(initialBooking.sportType)
-      ? initialBooking.sportType
+    sportTypeOverride &&
+    selectedFacility?.sportTypes.includes(sportTypeOverride)
+      ? sportTypeOverride
       : selectedFacility?.sportTypes.includes("sepakbola")
         ? "sepakbola"
         : (selectedFacility?.sportTypes[0] ?? "");
@@ -196,6 +203,12 @@ export default function useInvoiceBookingSchedule({
       availabilitySlots.map((slot) => [slot.startTime, slot]),
     );
     const isRangeAvailable = (start: string, duration: number) => {
+      const isUnchangedBookingRange =
+        editingBookingSchedule?.bookingDate === issueDate &&
+        editingBookingSchedule.startTime === start &&
+        timeToMinutes(editingBookingSchedule.endTime) ===
+          timeToMinutes(start) + duration;
+      if (isUnchangedBookingRange) return true;
       if (timeToMinutes(start) % 60 !== 0 || duration % 60 !== 0) return false;
       if (
         issueDate < todayKey ||
@@ -261,6 +274,7 @@ export default function useInvoiceBookingSchedule({
     availabilitySlots,
     currentTimeMinutes,
     durationMinutes,
+    editingBookingSchedule,
     issueDate,
     minimumDurationSlots,
     todayKey,
@@ -277,6 +291,8 @@ export default function useInvoiceBookingSchedule({
 
   const chooseFacility = (id: string) => {
     setResourceId(id);
+    setSportTypeOverride("");
+    setEditingBookingSchedule(null);
     setDurationSlots(
       facilities
         .find((facility) => facility.id === id)
@@ -292,7 +308,8 @@ export default function useInvoiceBookingSchedule({
     const dateAvailability = calendarDates.find((day) => day.date === date);
     if (
       dateAvailability &&
-      ["full", "closed", "maintenance"].includes(dateAvailability.status)
+      ["full", "closed", "maintenance"].includes(dateAvailability.status) &&
+      date !== editingBookingSchedule?.bookingDate
     ) {
       toast.error(
         dateAvailability.status === "full"
@@ -323,6 +340,21 @@ export default function useInvoiceBookingSchedule({
     setEndTime(minutesToTime(timeToMinutes(time) + durationMinutes));
   };
 
+  const loadExistingBooking = useCallback((booking: InvoiceBookingDetails) => {
+    const bookingDate = booking.bookingDate.slice(0, 10);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const bookingDateValue = new Date(`${bookingDate}T00:00:00`);
+    setResourceId(booking.resource.id);
+    setIssueDate(bookingDate);
+    setBookingCalendarMonth(bookingDateValue < today ? today : bookingDateValue);
+    setStartTime(booking.startTime);
+    setEndTime(booking.endTime);
+    setDurationSlots(Math.max(1, Math.ceil(booking.durationMinutes / 60)));
+    setSportTypeOverride(booking.sportType);
+    setEditingBookingSchedule({ bookingDate, startTime: booking.startTime, endTime: booking.endTime });
+  }, []);
+
   return {
     issueDate,
     bookingCalendarMonth,
@@ -351,6 +383,7 @@ export default function useInvoiceBookingSchedule({
     chooseBookingDate,
     chooseDuration,
     chooseStartTime,
+    loadExistingBooking,
     clearSelectedTime,
   };
 }

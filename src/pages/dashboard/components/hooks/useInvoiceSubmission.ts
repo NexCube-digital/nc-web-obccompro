@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import {
   invoiceService,
   type Invoice,
+  type InvoiceBookingDetails,
   type InvoicePaymentMethod,
   type PriceBreakdownItem,
 } from "../../services/admin/invoiceService";
+import { sportService } from "../../services/sport/SportService";
 
 export const SERVICE_FEE_ITEM = "Biaya layanan";
 export const DISCOUNT_ITEM = "Diskon";
@@ -46,6 +48,8 @@ type UseInvoiceSubmissionOptions = {
   selectedSportType: string;
   selectedFacilityName?: string;
   paymentMethod: InvoicePaymentMethod | "";
+  invoiceBooking: InvoiceBookingDetails | null;
+  loadingInvoiceBooking: boolean;
   onSaved: (invoice: Invoice) => void;
   onClose: () => void;
 };
@@ -79,6 +83,8 @@ export default function useInvoiceSubmission({
   selectedSportType,
   selectedFacilityName,
   paymentMethod,
+  invoiceBooking,
+  loadingInvoiceBooking,
   onSaved,
   onClose,
 }: UseInvoiceSubmissionOptions) {
@@ -87,6 +93,7 @@ export default function useInvoiceSubmission({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (invoice) return;
     if (!resourceId || !issueDate || !startTime || !endTime || !selectedSportType)
       return;
 
@@ -146,6 +153,7 @@ export default function useInvoiceSubmission({
     selectedSportType,
     selectedFacilityName,
     paymentMethod,
+    invoice,
     setAmount,
     setServiceFee,
     setDiscountAmount,
@@ -194,6 +202,22 @@ export default function useInvoiceSubmission({
     setSaving(true);
     try {
       if (invoice) {
+        if (invoice.bookingId && loadingInvoiceBooking) {
+          throw new Error("Tunggu detail booking selesai dimuat.");
+        }
+        if (
+          invoiceBooking &&
+          (issueDate !== invoiceBooking.bookingDate.slice(0, 10) ||
+            startTime !== invoiceBooking.startTime ||
+            endTime !== invoiceBooking.endTime)
+        ) {
+          await sportService.rescheduleBooking(invoiceBooking.id, {
+            bookingDate: issueDate,
+            startTime,
+            endTime,
+            reason: `Jadwal diperbarui melalui edit invoice ${invoice.invoiceNumber}`,
+          });
+        }
         const saved = await invoiceService.updateInvoice(invoice.id, {
           clientName: clientName.trim(),
           clientEmail: clientEmail.trim(),
@@ -221,6 +245,9 @@ export default function useInvoiceSubmission({
         paymentChannel: paymentMethod as InvoicePaymentMethod,
         allowPastSlot: false,
         invoiceCheckout: true,
+        guestName: clientName.trim(),
+        guestEmail: clientEmail.trim(),
+        guestPhone: phone.trim() || undefined,
         notes: `Invoice ${finalInvoiceNumber} untuk ${clientName} (${clientEmail})${phone ? `, ${phone}` : ""}`,
         returnUrl: `${window.location.origin}/invoice-payment/finalizing`,
       });

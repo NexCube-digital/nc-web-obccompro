@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   FileDown,
   FileSpreadsheet,
@@ -42,7 +43,22 @@ const typeIcons: Record<ReportType, typeof Receipt> = {
 };
 export default function ReportDetailModal({ report, onClose }: Props) {
   const [detailPage, setDetailPage] = useState(1);
+  const [downloading, setDownloading] = useState<"pdf" | "excel" | null>(null);
   if (!report) return null;
+
+  const runDownload = async (
+    format: "pdf" | "excel",
+    download: () => Promise<void>,
+  ) => {
+    setDownloading(format);
+    try {
+      await download();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unduhan laporan gagal.");
+    } finally {
+      setDownloading(null);
+    }
+  };
 
   const ReportIcon = typeIcons[report.type as ReportType] ?? FileText;
   const financeSnapshot =
@@ -106,23 +122,25 @@ export default function ReportDetailModal({ report, onClose }: Props) {
               <>
                 <button
                   type="button"
-                  onClick={() => downloadFinanceReportPdf(report, financeSnapshot)}
+                  disabled={downloading !== null}
+                  onClick={() => void runDownload("pdf", () => downloadFinanceReportPdf(report, financeSnapshot))}
                   title="Unduh PDF"
                   aria-label="Unduh laporan PDF"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7] disabled:cursor-wait disabled:opacity-60"
                 >
                   <FileDown size={15} />
-                  <span>PDF</span>
+                  <span>{downloading === "pdf" ? "Memuat..." : "PDF"}</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => downloadFinanceReportExcel(report, financeSnapshot)}
+                  disabled={downloading !== null}
+                  onClick={() => void runDownload("excel", () => downloadFinanceReportExcel(report, financeSnapshot))}
                   title="Unduh Excel"
                   aria-label="Unduh laporan Excel"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7] disabled:cursor-wait disabled:opacity-60"
                 >
                   <FileSpreadsheet size={15} />
-                  <span>Excel</span>
+                  <span>{downloading === "excel" ? "Memuat..." : "Excel"}</span>
                 </button>
               </>
             )}
@@ -130,23 +148,25 @@ export default function ReportDetailModal({ report, onClose }: Props) {
               <>
                 <button
                   type="button"
-                  onClick={() => downloadInvoiceReportPdf(report, invoiceSnapshot)}
+                  disabled={downloading !== null}
+                  onClick={() => void runDownload("pdf", () => downloadInvoiceReportPdf(report, invoiceSnapshot))}
                   title="Unduh PDF"
                   aria-label="Unduh laporan invoice PDF"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7] disabled:cursor-wait disabled:opacity-60"
                 >
                   <FileDown size={15} />
-                  <span>PDF</span>
+                  <span>{downloading === "pdf" ? "Memuat..." : "PDF"}</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => downloadInvoiceReportExcel(report, invoiceSnapshot)}
+                  disabled={downloading !== null}
+                  onClick={() => void runDownload("excel", () => downloadInvoiceReportExcel(report, invoiceSnapshot))}
                   title="Unduh Excel"
                   aria-label="Unduh laporan invoice Excel"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7]"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-obc-border px-3 text-[12px] font-medium text-obc-charcoal hover:bg-[#FDFCF7] disabled:cursor-wait disabled:opacity-60"
                 >
                   <FileSpreadsheet size={15} />
-                  <span>Excel</span>
+                  <span>{downloading === "excel" ? "Memuat..." : "Excel"}</span>
                 </button>
               </>
             )}

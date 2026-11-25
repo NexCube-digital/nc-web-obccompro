@@ -85,6 +85,11 @@ export default function InvoiceBookingStep({
   isRangeAvailable,
   onChooseStartTime,
 }: InvoiceBookingStepProps) {
+  const calendarUnavailableDates = invoiceBooking
+    ? unavailableDateValues.filter(
+        (date) => toDateKey(date) !== invoiceBooking.bookingDate.slice(0, 10),
+      )
+    : unavailableDateValues;
   const loadCalendarMonth = (month: Date) => onCalendarMonthChange(month);
 
   return (
@@ -143,7 +148,8 @@ export default function InvoiceBookingStep({
           </div>
         )}
 
-        <div className={isEditing ? "hidden" : ""}>
+        <div>
+          {!isEditing && (
           <div className="mt-4">
             <div className="mb-2 flex items-center justify-between gap-3">
               <span className="text-[13px] font-semibold text-obc-charcoal">
@@ -183,6 +189,7 @@ export default function InvoiceBookingStep({
               </p>
             )}
           </div>
+          )}
 
           {resourceId && issueDate && (
             <div className="mt-5 border-t border-obc-border pt-4 lg:col-start-1">
@@ -224,7 +231,8 @@ export default function InvoiceBookingStep({
                   <div className="mt-4 flex flex-wrap items-center gap-3 text-[11px] text-obc-muted">
                     <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#E7F5D0]" />Kosong</span>
                     <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#F1EFE8]" />Tidak tersedia</span>
-                    <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-obc-green" />Dipilih</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-obc-green" />Jam mulai</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#D9DDD5]" />Dalam durasi</span>
                     <span className="ml-auto font-semibold text-obc-green">{availableStartSlots.length} jam tersedia</span>
                   </div>
                   {availableStartSlots.length === 0 && (
@@ -249,18 +257,28 @@ export default function InvoiceBookingStep({
                             {period.slots.map((slot) => {
                               const available = isRangeAvailable(slot.startTime, durationMinutes);
                               const selected = startTime === slot.startTime;
+                              const slotMinute = Number(slot.startTime.slice(0, 2)) * 60 + Number(slot.startTime.slice(3, 5));
+                              const selectedStartMinute = startTime
+                                ? Number(startTime.slice(0, 2)) * 60 + Number(startTime.slice(3, 5))
+                                : -1;
+                              const withinSelectedDuration = Boolean(
+                                selectedStartMinute >= 0 &&
+                                slotMinute > selectedStartMinute &&
+                                slotMinute < selectedStartMinute + durationMinutes,
+                              );
                               const unavailableStyle = slot.available
                                 ? "cursor-not-allowed border-obc-border bg-[#F4F4F1] text-obc-muted"
                                 : "cursor-not-allowed border-[#F3CACA] bg-[#FDF2F2] text-[#A53B3B]";
+                              const selectedDurationStyle = "border-[#C9CEC5] bg-[#D9DDD5] text-[#465043] hover:border-obc-green hover:bg-[#E5E8E2]";
                               return (
                                 <button
                                   key={slot.startTime}
                                   type="button"
                                   disabled={!available}
                                   aria-pressed={selected}
-                                  title={available ? `Pilih ${slot.startTime}` : slot.available ? "Tidak cukup slot kosong untuk durasi ini" : "Jadwal sudah terisi"}
+                                  title={available ? withinSelectedDuration ? `${slot.startTime} berada dalam rentang terpilih. Klik untuk memulai booking dari jam ini.` : `Pilih ${slot.startTime}` : slot.available ? "Tidak cukup slot kosong untuk durasi ini" : "Jadwal sudah terisi"}
                                   onClick={() => onChooseStartTime(slot.startTime)}
-                                  className={`h-10 rounded-lg border text-[12px] font-semibold transition-colors ${selected ? "border-obc-green bg-obc-green text-white shadow-sm" : available ? "border-obc-border bg-white text-obc-charcoal hover:border-obc-green hover:bg-[#F3F8E8]" : unavailableStyle}`}
+                                  className={`h-10 rounded-lg border text-[12px] font-semibold transition-colors ${selected ? "border-obc-green bg-obc-green text-white shadow-sm" : available && withinSelectedDuration ? selectedDurationStyle : available ? "border-obc-border bg-white text-obc-charcoal hover:border-obc-green hover:bg-[#F3F8E8]" : unavailableStyle}`}
                                 >
                                   <Clock3 size={13} className="mr-1 inline" />
                                   {slot.startTime}
@@ -296,17 +314,17 @@ export default function InvoiceBookingStep({
         </section>
       )}
 
-      {view !== "selection" && !isEditing && (
+      {view !== "selection" && (!isEditing || invoiceBooking) && (
         <BookingCalendar
           selectedDate={issueDate}
           onDateChange={onChooseBookingDate}
           visibleMonth={bookingCalendarMonth}
           onVisibleMonthChange={loadCalendarMonth}
           minDate={today}
-          disabledDates={unavailableDateValues}
+          disabledDates={calendarUnavailableDates}
           bookedDates={bookedDateValues}
           loadingDates={loadingCalendarDates}
-          todayDisabled={unavailableDateValues.some((date) => toDateKey(date) === todayKey)}
+          todayDisabled={calendarUnavailableDates.some((date) => toDateKey(date) === todayKey)}
           showAvailabilityLegend
           showClearAction={false}
           emptyDateLabel="Pilih tanggal yang tersedia."

@@ -46,4 +46,8 @@ export const sportBookingService = {
 	getBookingDetails(id: string): Promise<SportBookingDetails> {
 		return apiClient.get<ApiSuccess<SportBookingDetails>>(`/admin/bookings/${id}`).then((response) => response.data.data);
 	},
+	rescheduleBooking(id: string, input: { bookingDate: string; startTime: string; endTime: string; reason?: string }): Promise<{ message: string }> {
+		return apiClient.patch<ApiSuccess<{ message: string }>>(`/admin/bookings/${id}/reschedule`, input)
+			.then((response) => response.data.data);
+	},
 };

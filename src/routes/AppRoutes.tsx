@@ -1,6 +1,7 @@
-import { lazy, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
-import { Navigate, Route } from 'react-router-dom'
+import { lazy, useEffect, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
+import { Navigate, Route, useNavigate } from 'react-router-dom'
 import { authService } from '../services/auth'
+import { clearAuthSession } from '../services/api'
 
 type PreloadablePage<T extends ComponentType> = LazyExoticComponent<T> & {
 	preload: () => Promise<{ default: T }>
@@ -25,7 +26,22 @@ export function lazyPreload<T extends ComponentType>(factory: () => Promise<{ de
 }
 
 function RequireAuth({ children }: { children: ReactNode }) {
-	return authService.getCurrentSession() ? <>{children}</> : <Navigate to="/login" replace />
+	const navigate = useNavigate()
+	const session = authService.getCurrentSession()
+	const sessionExpiresAt = (session as (typeof session & { sessionExpiresAt?: number }))?.sessionExpiresAt
+
+	useEffect(() => {
+		if (typeof sessionExpiresAt !== 'number') return
+
+		const timeout = window.setTimeout(() => {
+			clearAuthSession()
+			navigate('/login', { replace: true })
+		}, Math.max(0, sessionExpiresAt - Date.now()))
+
+		return () => window.clearTimeout(timeout)
+	}, [navigate, sessionExpiresAt])
+
+	return session ? <>{children}</> : <Navigate to="/login" replace />
 }
 
 const HomePage = lazyPreload(() => import('../pages/public/HomePage'))

@@ -1,10 +1,12 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export const AUTH_SESSION_KEY = "obc.auth.session";
+const AUTH_SESSION_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 
 interface StoredSession {
 	accessToken: string;
 	refreshToken: string;
+	sessionExpiresAt: number;
 	user: unknown;
 }
 
@@ -46,7 +48,12 @@ export function getStoredAuthSession<T>(): T | null {
 		if (!serialized) continue;
 
 		try {
-			return JSON.parse(serialized) as T;
+			const session = JSON.parse(serialized) as Partial<StoredSession>;
+			if (typeof session.sessionExpiresAt !== "number" || session.sessionExpiresAt <= Date.now()) {
+				storage.removeItem(AUTH_SESSION_KEY);
+				continue;
+			}
+			return session as T;
 		} catch {
 			storage.removeItem(AUTH_SESSION_KEY);
 		}
@@ -79,10 +86,16 @@ export function getDeleteSuccessMessage(itemName: string): string {
 export function storeAuthSession<T>(session: T, rememberMe: boolean): void {
 	if (typeof window === "undefined") return;
 
+	const sessionData = session as T & { sessionExpiresAt?: number };
+	const sessionExpiresAt = typeof sessionData.sessionExpiresAt === "number" &&
+		sessionData.sessionExpiresAt > Date.now()
+		? sessionData.sessionExpiresAt
+		: Date.now() + AUTH_SESSION_MAX_AGE_MS;
+	const sessionWithExpiry = { ...sessionData, sessionExpiresAt };
 	window.sessionStorage.removeItem(AUTH_SESSION_KEY);
 	window.localStorage.removeItem(AUTH_SESSION_KEY);
 	const storage = rememberMe ? window.localStorage : window.sessionStorage;
-	storage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+	storage.setItem(AUTH_SESSION_KEY, JSON.stringify(sessionWithExpiry));
 }
 
 export function clearAuthSession(): void {

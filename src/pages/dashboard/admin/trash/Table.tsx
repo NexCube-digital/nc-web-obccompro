@@ -21,6 +21,7 @@ type Props = {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const TRASH_RETENTION_DAYS = 90;
 const ENTITY_LABELS: Record<string, string> = {
 	Tenant: "Unit bisnis",
 	User: "User",
@@ -43,7 +44,7 @@ const ENTITY_LABELS: Record<string, string> = {
 };
 
 function daysRemaining(deletedAt: string): number {
-	const expiresAt = new Date(deletedAt).getTime() + 30 * DAY_MS;
+	const expiresAt = new Date(deletedAt).getTime() + TRASH_RETENTION_DAYS * DAY_MS;
 	return Math.max(0, Math.ceil((expiresAt - Date.now()) / DAY_MS));
 }
 
@@ -191,7 +192,7 @@ export default function TrashTable({
 											<span className="h-1.5 w-16 overflow-hidden rounded-full bg-[#EEF0E9]">
 												<span
 													className={`block h-full rounded-full ${urgent ? "bg-obc-red" : soon ? "bg-[#D6A53D]" : "bg-obc-green"}`}
-													style={{ width: `${Math.min(100, (remaining / 30) * 100)}%` }}
+													style={{ width: `${Math.min(100, (remaining / TRASH_RETENTION_DAYS) * 100)}%` }}
 												/>
 											</span>
 										</div>

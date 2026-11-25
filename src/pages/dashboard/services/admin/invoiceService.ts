@@ -199,6 +199,9 @@ export const invoiceService = {
 		paymentChannel: InvoicePaymentMethod;
 		allowPastSlot: false;
 		invoiceCheckout: true;
+		guestName: string;
+		guestEmail: string;
+		guestPhone?: string;
 		notes: string;
 		returnUrl: string;
 	}): Promise<InvoiceBookingResult> {

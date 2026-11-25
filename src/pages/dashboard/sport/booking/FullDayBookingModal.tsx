@@ -68,7 +68,7 @@ export default function FullDayBookingModal({ resource, date, startTime, endTime
 	};
 
 	return (
-		<div className="fixed inset-0 z-[70] grid place-items-center bg-[#162017]/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+		<div className="fixed inset-0 z-70 grid place-items-center bg-[#162017]/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
 			<section role="dialog" aria-modal="true" aria-labelledby="full-day-booking-title" className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-[#DCE5D8] bg-white shadow-[0_24px_80px_rgba(16,32,18,0.28)]">
 				<header className="bg-[#1F3320] px-5 py-5 text-white sm:px-7 sm:py-6">
 					<div className="flex items-start gap-4">
@@ -105,7 +105,7 @@ export default function FullDayBookingModal({ resource, date, startTime, endTime
 						{selectedCustomer && <p className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-[#F3F8E8] px-3 py-2 text-[11px] font-semibold text-obc-green"><CheckCircle2 size={14} />Dipilih: {selectedCustomer.name}</p>}
 					</div> : <div className="grid gap-3 sm:grid-cols-2">
 						<label className="text-xs font-semibold text-obc-charcoal">Nama walk-in<input required value={guestName} onChange={(event) => setGuestName(event.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-obc-border px-3 text-sm outline-none focus:border-obc-green" /></label>
-						<label className="text-xs font-semibold text-obc-charcoal">Email<input type="email" value={guestEmail} onChange={(event) => setGuestEmail(event.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-obc-border px-3 text-sm outline-none focus:border-obc-green" placeholder="Opsional" /></label>
+						<label className="text-xs font-semibold text-obc-charcoal">Email<input required type="email" value={guestEmail} onChange={(event) => setGuestEmail(event.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-obc-border px-3 text-sm outline-none focus:border-obc-green" /></label>
 						<label className="text-xs font-semibold text-obc-charcoal">Telepon<input value={guestPhone} onChange={(event) => setGuestPhone(event.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-obc-border px-3 text-sm outline-none focus:border-obc-green" placeholder="Opsional" /></label>
 					</div>}
 

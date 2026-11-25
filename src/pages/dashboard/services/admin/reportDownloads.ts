@@ -1,5 +1,3 @@
-import { jsPDF } from "jspdf";
-import * as XLSX from "xlsx";
 import type { ReportPeriod, ReportRecord } from "./reportService";
 import { formatIdr as rupiah } from "../../../../utils/formatters";
 
@@ -107,7 +105,8 @@ function fileName(report: ReportRecord, extension: "pdf" | "xlsx") {
 	return `${name || "laporan-obc"}.${extension}`;
 }
 
-function saveWorkbook(report: ReportRecord, summaryRows: (string | number)[][], detailRows: (string | number)[][], widths: number[]) {
+async function saveWorkbook(report: ReportRecord, summaryRows: (string | number)[][], detailRows: (string | number)[][], widths: number[]) {
+	const XLSX = await import("xlsx");
 	const workbook = XLSX.utils.book_new();
 	const summarySheet = XLSX.utils.aoa_to_sheet([[report.title], ...summaryRows]);
 	const detailSheet = XLSX.utils.aoa_to_sheet(detailRows);
@@ -119,8 +118,8 @@ function saveWorkbook(report: ReportRecord, summaryRows: (string | number)[][], 
 	XLSX.writeFile(workbook, fileName(report, "xlsx"));
 }
 
-export function downloadFinanceReportExcel(report: ReportRecord, snapshot: FinanceReportSnapshot) {
-	saveWorkbook(report, [
+export async function downloadFinanceReportExcel(report: ReportRecord, snapshot: FinanceReportSnapshot) {
+	await saveWorkbook(report, [
 		["Periode", snapshot.period === "range" ? `${snapshot.range.from} - ${snapshot.range.to}` : `${periodLabels[snapshot.period]} ${snapshot.periodValue}`],
 		["Rentang tanggal", `${snapshot.range.from} - ${snapshot.range.to}`],
 		["Total pemasukan", snapshot.summary.totalIncome],
@@ -131,10 +130,10 @@ export function downloadFinanceReportExcel(report: ReportRecord, snapshot: Finan
 	], [14, 24, 42, 18, 18, 16]);
 }
 
-export function downloadInvoiceReportExcel(report: ReportRecord, snapshot: InvoiceReportSnapshot) {
+export async function downloadInvoiceReportExcel(report: ReportRecord, snapshot: InvoiceReportSnapshot) {
 	const total = snapshot.rows.reduce((sum, item) => sum + item.amount, 0);
 	const paid = snapshot.rows.filter((item) => item.status.toLowerCase() === "paid").reduce((sum, item) => sum + item.amount, 0);
-	saveWorkbook(report, [
+	await saveWorkbook(report, [
 		["Rentang tanggal", snapshot.range ? `${snapshot.range.from} - ${snapshot.range.to}` : "-"],
 		["Jumlah invoice", snapshot.rows.length],
 		["Total nominal", total],
@@ -151,7 +150,8 @@ interface PdfColumn {
 	align?: "left" | "right";
 }
 
-function createStyledPdf(report: ReportRecord, subtitle: string, cards: [string, string][], columns: PdfColumn[], rows: string[][]) {
+async function createStyledPdf(report: ReportRecord, subtitle: string, cards: [string, string][], columns: PdfColumn[], rows: string[][]) {
+	const { jsPDF } = await import("jspdf");
 	const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 	const pageWidth = pdf.internal.pageSize.getWidth();
 	const pageHeight = pdf.internal.pageSize.getHeight();
@@ -250,9 +250,9 @@ function createStyledPdf(report: ReportRecord, subtitle: string, cards: [string,
 	pdf.save(fileName(report, "pdf"));
 }
 
-export function downloadFinanceReportPdf(report: ReportRecord, snapshot: FinanceReportSnapshot) {
+export async function downloadFinanceReportPdf(report: ReportRecord, snapshot: FinanceReportSnapshot) {
 	const periodDescription = snapshot.period === "range" ? `${snapshot.range.from} - ${snapshot.range.to}` : `${periodLabels[snapshot.period]} ${snapshot.periodValue}`;
-	createStyledPdf(report, `${periodDescription}  |  ${snapshot.range.from} - ${snapshot.range.to}`, [
+	await createStyledPdf(report, `${periodDescription}  |  ${snapshot.range.from} - ${snapshot.range.to}`, [
 		["Total pemasukan", rupiah(snapshot.summary.totalIncome)],
 		["Jumlah transaksi", snapshot.summary.count.toLocaleString("id-ID")],
 	], [
@@ -264,11 +264,11 @@ export function downloadFinanceReportPdf(report: ReportRecord, snapshot: Finance
 	], snapshot.transactions.map((item) => [item.date.slice(0, 10), item.category || item.description || "-", item.division, item.status, rupiah(item.amount)]));
 }
 
-export function downloadInvoiceReportPdf(report: ReportRecord, snapshot: InvoiceReportSnapshot) {
+export async function downloadInvoiceReportPdf(report: ReportRecord, snapshot: InvoiceReportSnapshot) {
 	const total = snapshot.rows.reduce((sum, item) => sum + item.amount, 0);
 	const paid = snapshot.rows.filter((item) => item.status.toLowerCase() === "paid").reduce((sum, item) => sum + item.amount, 0);
 	const rangeDescription = snapshot.range ? `${snapshot.range.from} - ${snapshot.range.to}` : "Semua periode";
-	createStyledPdf(report, `Rentang ${rangeDescription}  |  Dokumen administrasi OBC Group`, [
+	await createStyledPdf(report, `Rentang ${rangeDescription}  |  Dokumen administrasi OBC Group`, [
 		["Jumlah invoice", snapshot.rows.length.toLocaleString("id-ID")],
 		["Total nominal", rupiah(total)],
 		["Total lunas", rupiah(paid)],

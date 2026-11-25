@@ -24,11 +24,10 @@ import useInvoiceSubmission, {
   DISCOUNT_ITEM,
   generateInvoiceNumber,
   SERVICE_FEE_ITEM,
-} from "./useInvoiceSubmission";
-import useInvoiceBookingSchedule from "./useInvoiceBookingSchedule";
+} from "../../components/hooks/useInvoiceSubmission";
+import useInvoiceBookingSchedule from "../../components/hooks/useInvoiceBookingSchedule";
 import { formatBookingDate } from "../../../../utils/formatters";
 
-const toDateInput = (value: string | null) => (value ? value.slice(0, 10) : "");
 const EMPTY_CUSTOMERS: CustomerRecord[] = [];
 const EMPTY_FACILITIES: CourtResource[] = [];
 
@@ -60,6 +59,11 @@ export default function InvoiceForm({
   const [clientName, setClientName] = useState(invoice?.clientName ?? "");
   const [clientEmail, setClientEmail] = useState(invoice?.clientEmail ?? "");
   const [phone, setPhone] = useState(invoice?.phone ?? "");
+  const [manualClientDraft, setManualClientDraft] = useState(() => ({
+    clientName: invoice?.clientName ?? "",
+    clientEmail: invoice?.clientEmail ?? "",
+    phone: invoice?.phone ?? "",
+  }));
   const [amount, setAmount] = useState(invoice?.amount ?? 0);
   const [paymentMethod, setPaymentMethod] = useState<InvoicePaymentMethod | "">(
     invoice?.paymentMethod ?? "",
@@ -67,18 +71,14 @@ export default function InvoiceForm({
   const service = invoice?.service ?? "";
   const description = invoice?.description ?? "";
   const initialIssueDate =
-    initialBooking?.bookingDate ?? toDateInput(invoice?.issueDate ?? null);
-  const dueDate = toDateInput(invoice?.dueDate ?? null);
+    initialBooking?.bookingDate ?? (invoice?.issueDate ? invoice.issueDate.slice(0, 10) : "");
+  const dueDate = invoice?.dueDate ? invoice.dueDate.slice(0, 10) : "";
   const initialPriceBreakdown = invoice?.priceBreakdown ?? [];
   const [serviceFee, setServiceFee] = useState(
-    () =>
-      initialPriceBreakdown.find((item) => item.name === SERVICE_FEE_ITEM)
-        ?.subtotal ?? 0,
+    () => initialPriceBreakdown.find((item) => item.name === SERVICE_FEE_ITEM)?.subtotal ?? 0,
   );
   const [discountAmount, setDiscountAmount] = useState(
-    () =>
-      initialPriceBreakdown.find((item) => item.name === DISCOUNT_ITEM)
-        ?.subtotal ?? 0,
+    () => initialPriceBreakdown.find((item) => item.name === DISCOUNT_ITEM)?.subtotal ?? 0,
   );
   const [items, setItems] = useState<PriceBreakdownItem[]>(() =>
     initialPriceBreakdown.filter(
@@ -134,6 +134,7 @@ export default function InvoiceForm({
     chooseBookingDate,
     chooseDuration,
     chooseStartTime,
+    loadExistingBooking,
   } = bookingSchedule;
   const [contactId, setContactId] = useState(invoice?.contactId ?? "");
   const [clientMode, setClientMode] = useState<"manual" | "registered">(
@@ -193,6 +194,10 @@ export default function InvoiceForm({
     };
   }, [invoice?.bookingId]);
 
+  useEffect(() => {
+    if (invoiceBooking) loadExistingBooking(invoiceBooking);
+  }, [invoiceBooking, loadExistingBooking]);
+
   const formSteps = [
     { id: 1, title: "Data klien", subtitle: "Penerima tagihan" },
     { id: 2, title: "Detail booking", subtitle: "Lapangan dan jadwal" },
@@ -222,7 +227,21 @@ export default function InvoiceForm({
       }
     }
     if (step === 2) {
-      if (invoice) return true;
+      if (invoice) {
+        if (invoice.bookingId && loadingInvoiceBooking) {
+          toast.error("Tunggu detail booking selesai dimuat.");
+          return false;
+        }
+        if (invoiceBooking && (!resourceId || !issueDate || !startTime || !endTime)) {
+          toast.error("Pilih lapangan, tanggal, dan waktu booking terlebih dahulu.");
+          return false;
+        }
+        if (invoiceBooking && !isRangeAvailable(startTime, durationMinutes)) {
+          toast.error("Rentang waktu ini tidak lagi tersedia. Silakan pilih slot lain.");
+          return false;
+        }
+        return true;
+      }
       if (!resourceId || !issueDate || !startTime || !endTime) {
         toast.error("Pilih lapangan, tanggal, dan slot waktu terlebih dahulu.");
         return false;
@@ -293,6 +312,8 @@ export default function InvoiceForm({
     selectedSportType,
     selectedFacilityName: selectedFacility?.name,
     paymentMethod,
+    invoiceBooking,
+    loadingInvoiceBooking,
     onSaved,
     onClose,
   });
@@ -311,14 +332,33 @@ export default function InvoiceForm({
     setPhone(customer.phone?.replace(/\D/g, "") ?? "");
   };
 
+  const updateManualClientName = (value: string) => {
+    setManualClientDraft((current) => ({ ...current, clientName: value }));
+    setClientName(value);
+  };
+
+  const updateManualClientEmail = (value: string) => {
+    setManualClientDraft((current) => ({ ...current, clientEmail: value }));
+    setClientEmail(value);
+  };
+
+  const updateManualClientPhone = (value: string) => {
+    setManualClientDraft((current) => ({ ...current, phone: value }));
+    setPhone(value);
+  };
+
   const chooseClientMode = (mode: "manual" | "registered") => {
     if (mode === clientMode) return;
+    if (mode === "manual") {
+      setClientName(manualClientDraft.clientName);
+      setClientEmail(manualClientDraft.clientEmail);
+      setPhone(manualClientDraft.phone);
+    } else if (selectedRegisteredCustomer) {
+      setClientName(selectedRegisteredCustomer.name);
+      setClientEmail(selectedRegisteredCustomer.email);
+      setPhone(selectedRegisteredCustomer.phone?.replace(/\D/g, "") ?? "");
+    }
     setClientMode(mode);
-    setContactId("");
-    setSelectedCustomerId("");
-    setClientName("");
-    setClientEmail("");
-    setPhone("");
   };
 
   const bookingStepProps = {
@@ -353,6 +393,8 @@ export default function InvoiceForm({
     isRangeAvailable,
     onChooseStartTime: chooseStartTime,
   };
+  const showBookingCalendar = activeStep === 2 &&
+    (!invoice || Boolean(invoice.bookingId && invoiceBooking));
 
   return (
     <div className="mx-auto max-w-6xl pb-8">
@@ -384,7 +426,7 @@ export default function InvoiceForm({
       </header>
       <form
         onSubmit={handleSubmit}
-        className={`grid gap-5 ${!invoice && (activeStep === 2 || activeStep === 3) ? "lg:grid-cols-[minmax(0,1fr)_340px]" : ""}`}
+        className={`grid gap-5 ${showBookingCalendar || (!invoice && activeStep === 3) ? "lg:grid-cols-[minmax(0,1fr)_340px]" : ""}`}
       >
         <div className="space-y-5">
           <div
@@ -433,11 +475,11 @@ export default function InvoiceForm({
               selectedRegisteredCustomer={selectedRegisteredCustomer}
               onChooseContact={chooseContact}
               clientName={clientName}
-              onClientNameChange={setClientName}
+              onClientNameChange={updateManualClientName}
               clientEmail={clientEmail}
-              onClientEmailChange={setClientEmail}
+              onClientEmailChange={updateManualClientEmail}
               phone={phone}
-              onPhoneChange={setPhone}
+              onPhoneChange={updateManualClientPhone}
               invoiceNumber={invoiceNumber}
               onInvoiceNumberChange={setInvoiceNumber}
               invoiceExists={Boolean(invoice)}
@@ -482,7 +524,7 @@ export default function InvoiceForm({
             )}
           </div>
         </div>
-        {activeStep === 2 && !invoice && (
+        {showBookingCalendar && (
           <InvoiceBookingStep view="calendar" {...bookingStepProps} />
         )}
         {activeStep === 3 && !invoice && (
